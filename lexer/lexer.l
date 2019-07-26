@@ -1,12 +1,13 @@
 %option noyywrap
 
 %{
-#include "token_defs.h"
+#include "token.h"
+#include "stdio.h"
+
+struct token tokRead;
 %}
 
 digit        [0-9]
-
-
 
 %%
 
@@ -21,3 +22,11 @@ digit        [0-9]
 <<EOF>>         return TOK_EOF;
 
 %%
+
+struct token getNextToken(){
+    tokRead.id = yylex();
+    tokRead.lexem = yytext;
+    tokRead.lexemLen = yyleng;
+
+    return tokRead;
+}

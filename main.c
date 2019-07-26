@@ -1,13 +1,14 @@
 #include <stdio.h>
-#include "lexer/token_defs.h"
+#include "lexer/token.h"
 
 int main(){
-    char tok;
+    struct token tokRead;
 
     // Reads all the tokens from the input file
-    while((tok = yylex()) != TOK_EOF){
-        printf("Token read: %c\n", tok);
+    while((tokRead = getNextToken()).id != TOK_EOF){
+        printf("Token read: %s\n", tokRead.lexem);
     }
-    
+
+    printf("%s", tokRead.lexem);
     return 0;
 }
