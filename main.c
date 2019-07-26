@@ -9,6 +9,5 @@ int main(){
         printf("Token read: %s\n", tokRead.lexem);
     }
 
-    printf("%s", tokRead.lexem);
     return 0;
 }

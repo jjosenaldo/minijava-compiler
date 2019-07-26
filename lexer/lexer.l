@@ -2,7 +2,6 @@
 
 %{
 #include "token.h"
-#include "stdio.h"
 
 struct token tokRead;
 %}
