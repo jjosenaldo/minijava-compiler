@@ -6,7 +6,10 @@ int main(){
 
     // Reads all the tokens from the input file
     while((tokRead = getNextToken()).id != TOK_EOF){
-        printf("Token read: %s\n", tokRead.lexem);
+        if(tokRead.id != TOK_ERROR)
+            printf("Token read: %s\n", tokRead.lexem);
+        else
+            printf("%s is not a valid symbol\n", tokRead.lexem);
     }
 
     return 0;

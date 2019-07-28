@@ -11,14 +11,12 @@ digit        [0-9]
 %%
 
 [ \n\t\r]+      ;
-     
 {digit}+        return TOK_LIT_INT;
-
-\+              return '+';
-\-              return '-';
-\*              return '*';
-
+\+              return TOK_PLUS;
+\-              return TOK_MINUS;
+\*              return TOK_TIMES;
 <<EOF>>         return TOK_EOF;
+.               return TOK_ERROR;  
 
 %%
 
