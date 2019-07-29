@@ -23,24 +23,7 @@ static const char TOK_TRUE = 'T';
 static const char TOK_VOID = 'v';
 static const char TOK_WHILE = 'w';
 static const char TOK_EXTENDS = 'x';
-
-// Tokens whose ID is the token's lexeme itself
-static const char TOK_PLUS = '+';
-static const char TOK_MINUS = '-';
-static const char TOK_TIMES  = '*';
 static const char TOK_AND = '&';
-static const char TOK_EQUAL = '=';
-static const char TOK_LESSTHAN = '<';
-static const char TOK_LBRACE = '{';
-static const char TOK_RBRACE = '}';
-static const char TOK_LPAREN = '(';
-static const char TOK_RPAREN = ')';
-static const char TOK_LBRACKET = '[';
-static const char TOK_RBRACKET = ']';
-static const char TOK_SEMICOLON = ';';
-static const char TOK_COMMA = ',';
-static const char TOK_DOT = '.';
-static const char TOK_EXCLAMATION = '!';
 
 struct token{
     char id;

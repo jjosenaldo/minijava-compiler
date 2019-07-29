@@ -15,12 +15,12 @@ letter       [a-zA-Z]
 [ \n\t\r]+        { /* spaces, tabs and newlines */ }
 
 {digit}+        { return TOK_LIT_INT; }
-\+              { return TOK_PLUS; }
-\-              { return TOK_MINUS; }
-\*              { return TOK_TIMES; }
-\=              { return TOK_EQUAL; }
+\+              { return '+'; }
+\-              { return '-'; }
+\*              { return '*'; }
+\=              { return '='; }
 \&\&            { return TOK_AND; }
-\<              { return TOK_LESSTHAN; }
+\<              { return '<'; }
 String          { return TOK_STRING; }
 int             { return TOK_INT; }
 true            { return TOK_TRUE; }
@@ -36,20 +36,19 @@ return          { return TOK_RETURN; }
 if              { return TOK_IF; }
 else            { return TOK_ELSE; }
 while           { return TOK_WHILE; }
-System\.out\.println   { return TOK_PRINT; }
 length          { return TOK_LENGTH; }
 this            { return TOK_THIS; }
 new             { return TOK_NEW; }
-\{              { return TOK_LBRACE; }
-\}              { return TOK_RBRACE; }
-\(              { return TOK_LPAREN; }
-\)              { return TOK_RPAREN; }
-\[              { return TOK_LBRACKET; }
-\]              { return TOK_RBRACKET; }
-\;              { return TOK_SEMICOLON; }
-\,              { return TOK_COMMA; }
-\.              { return TOK_DOT; }
-\!              { return TOK_EXCLAMATION; }
+\{              { return '{'; }
+\}              { return '}'; }
+\(              { return '('; }
+\)              { return ')'; }
+\[              { return '['; }
+\]              { return ']'; }
+\;              { return ';'; }
+\,              { return ','; }
+\.              { return '.'; }
+\!              { return '!'; }
 
 {letter}({digit}|{letter}|"_")*    { return TOK_ID; }
 <<EOF>>         { return TOK_EOF; }
