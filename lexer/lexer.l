@@ -6,13 +6,21 @@
 struct token tokRead;
 %}
 
-digit        [0-9]
-letter       [a-zA-Z]
+digit                   [0-9]
+letter                  [a-zA-Z]
+C_START                   "/*"
+C_WORRYING                "*"
+C_NOT_WORRYING            [^*]
+C_NOT_WOR_NOR_FINAL       [^*/]
+C_FINAL                   "/"
 
 %%
 \/\/(.*)\n        { /* single line comment */ }
 \/\*(\n|.)*\*\/   { /* multiline comment */ }
 [ \n\t\r]+        { /* spaces, tabs and newlines */ }
+
+{C_START}({C_NOT_WORRYING}*{C_WORRYING}+{C_NOT_WOR_NOR_FINAL})*
+{C_NOT_WORRYING}*{C_WORRYING}+{C_FINAL} { /* multiline comment */ }
 
 {digit}+        { return TOK_LIT_INT; }
 \+              { return TOK_PLUS; }
