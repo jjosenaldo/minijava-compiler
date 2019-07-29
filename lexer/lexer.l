@@ -27,11 +27,11 @@ C_NOT_WORRYING            [^*]
 C_NOT_WOR_NOR_FINAL       [^*/]
 C_FINAL                   "/"
 
-S_START                   "\""
-S_WORRYING                [^\\]
-S_NOT_WORRYING            "\\"
-S_NOT_WOR_NOR_FINAL       [^\\"]
-S_FINAL                   "\""
+S_START                   \"
+S_WORRYING                \\
+S_NOT_WORRYING            [^\\"]
+S_NOT_WOR_NOR_FINAL       [\\tn"]
+S_FINAL                   \"
 
 %%
  int start_line, start_column;
@@ -40,11 +40,41 @@ S_FINAL                   "\""
 \/\/(.*)\n        { /* single line comment */ }
 [ \n\t\r]+        { /* spaces, tabs and newlines */ }
 
-{C_START}({C_NOT_WORRYING}*{C_WORRYING}+{C_NOT_WOR_NOR_FINAL})*
-{C_NOT_WORRYING}*{C_WORRYING}+{C_FINAL} { /* multiline comment */ }
+{C_START}({C_NOT_WORRYING}*{C_WORRYING}+{C_NOT_WOR_NOR_FINAL})*{C_NOT_WORRYING}*{C_WORRYING}+{C_FINAL} { /* multiline comment */ }
+{S_START}({S_WORRYING}{S_NOT_WOR_NOR_FINAL}|{S_NOT_WORRYING})*{S_FINAL} { 
+    char aux[yyleng];
+    int pointer = 1;
+    int writing = 0;
+    while(pointer < yyleng-2){
+        if(yytext[pointer] == '\\'){
+            ++pointer;
 
-{S_START}({S_NOT_WORRYING}*{S_WORRYING}+{S_NOT_WOR_NOR_FINAL})*
-{S_NOT_WORRYING}*{S_WORRYING}+{S_FINAL} { return TOK_STRING; }
+            if(yytext[pointer] == '\\'){
+                aux[writing] = '\\';
+            } else if(yytext[pointer] == 'n'){
+                aux[writing] = '\n';
+            } else if(yytext[pointer] == 't'){
+                aux[writing] = '\t';
+            } else if(yytext[pointer] == '\"'){
+                aux[writing] = '\"';
+            } else{
+                // we can assume the string is well-formed, so this else won't be reached
+            }
+        } else{
+            aux[writing] = yytext[pointer];
+        }
+
+        ++pointer;
+        ++writing;
+    }
+
+    aux[writing++] = '\0';
+    strcpy (yytext,aux);
+    yyleng = writing;
+    return TOK_STRING; }
+
+
+
 
 {digit}+        { return TOK_LIT_INT; }
 \+              { return '+'; }
