@@ -14,12 +14,21 @@ C_NOT_WORRYING            [^*]
 C_NOT_WOR_NOR_FINAL       [^*/]
 C_FINAL                   "/"
 
+S_START                   "\""
+S_WORRYING                [^\]
+S_NOT_WORRYING            "\"
+S_NOT_WOR_NOR_FINAL       [^\"]
+S_FINAL                   "\""
+
 %%
 \/\/(.*)\n        { /* single line comment */ }
 [ \n\t\r]+        { /* spaces, tabs and newlines */ }
 
 {C_START}({C_NOT_WORRYING}*{C_WORRYING}+{C_NOT_WOR_NOR_FINAL})*
 {C_NOT_WORRYING}*{C_WORRYING}+{C_FINAL} { /* multiline comment */ }
+
+{S_START}({S_NOT_WORRYING}*{S_WORRYING}+{S_NOT_WOR_NOR_FINAL})*
+{S_NOT_WORRYING}*{S_WORRYING}+{S_FINAL} { return TOK_STRING; }
 
 {digit}+        { return TOK_LIT_INT; }
 \+              { return '+'; }
