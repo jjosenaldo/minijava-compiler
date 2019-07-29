@@ -29,6 +29,8 @@ struct token{
     char id;
     char* lexem;
     int lexemLen;
+    int row;
+    int col;
 };
 
 struct token getNextToken();

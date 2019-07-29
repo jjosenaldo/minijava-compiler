@@ -1,6 +1,6 @@
 class Main{
     public static void main (String[] args){
-
+        String a = '\n';
            // temporarily ignoring the fact that minijava doesnt support strings
         System.out.println(args[0]);
 
