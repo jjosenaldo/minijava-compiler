@@ -15,9 +15,9 @@ C_NOT_WOR_NOR_FINAL       [^*/]
 C_FINAL                   "/"
 
 S_START                   "\""
-S_WORRYING                [^\]
-S_NOT_WORRYING            "\"
-S_NOT_WOR_NOR_FINAL       [^\"]
+S_WORRYING                [^\\]
+S_NOT_WORRYING            "\\"
+S_NOT_WOR_NOR_FINAL       [^\\"]
 S_FINAL                   "\""
 
 %%
