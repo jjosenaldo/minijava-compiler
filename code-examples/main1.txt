@@ -22,6 +22,7 @@ class Cat extends Mammal{
 
     */
     public boolean meow(){
+        b_aif848ru8usd8f = "testando uma string";
         System.out.println(42);
         return false;
     }
