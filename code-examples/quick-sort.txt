@@ -1,0 +1,40 @@
+// Como deve ser a clase Main? Qual o tipo de retorno dos métodos? Passagem por valor ou referência? Tipo do array?
+
+class Main{
+    public static void main(String[] args){
+        QuickSort sorter = new QuickSort();
+    }
+}
+
+class QuickSort{
+   public void quickSort(Object arr[], int begin, int end) {
+        if (begin < end) {
+            int pivot = partition(arr, begin, end);
+    
+            quickSort(arr, begin, pivot-1);
+            quickSort(arr, pivot+1, end);
+        }
+    }
+
+    private int partition(int arr[], int begin, int end) {
+        int pivot = arr[end];
+        int i = begin;
+        int j = begin;
+    
+        while (j < end) {
+            if (arr[j] <= pivot) {
+                int aux = arr[i];
+                arr[i] = arr[j];
+                arr[j] = aux;
+                i = i+1;
+            }
+            j = j+1;
+        }
+    
+        int aux = arr[i];
+        arr[i] = arr[end];
+        arr[end] = aux;
+    
+        return i;
+    }
+}

@@ -1,0 +1,25 @@
+class Main{
+    public static void main(String[] args){
+        QuickSort sorter = new QuickSort();
+    }
+}
+
+class BubbleSort {
+    public void sort(Object[] vetor) {
+        boolean troca = true;
+        int aux;
+        while (troca) {
+            troca = false;
+            int i = 0;
+            while (i < vetor.length - 1) {
+                if (vetor[i] > vetor[i + 1]) {
+                    aux = vetor[i];
+                    vetor[i] = vetor[i + 1];
+                    vetor[i + 1] = aux;
+                    troca = true;
+                }
+                i=i+1;
+            }
+        }
+    }
+}
