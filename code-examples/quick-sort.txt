@@ -1,13 +1,25 @@
-// Como deve ser a clase Main? Qual o tipo de retorno dos métodos? Passagem por valor ou referência? Tipo do array?
+// Adaptado de: https://www.baeldung.com/java-quicksort
 
 class Main{
     public static void main(String[] args){
         QuickSort sorter = new QuickSort();
+        int[] v = {1,5,3,6,3,845,23,56};
+        sorter.quickSort(v);
+
+        int i = 0;
+        while(i < v.length){
+            System.out.println(v[i]);
+            i = i+1;
+        }
     }
 }
 
 class QuickSort{
-   public void quickSort(Object arr[], int begin, int end) {
+    public void sort(int arr[]){
+        quickSort(arr, 0, arr.length-1);
+    }
+
+    public void quickSort(int arr[], int begin, int end) {
         if (begin < end) {
             int pivot = partition(arr, begin, end);
     
@@ -16,7 +28,7 @@ class QuickSort{
         }
     }
 
-    private int partition(int arr[], int begin, int end) {
+    public int partition(int arr[], int begin, int end) {
         int pivot = arr[end];
         int i = begin;
         int j = begin;
