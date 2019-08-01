@@ -1,0 +1,35 @@
+// Adaptado de: https://github.com/sqmedeiros/pegparser/blob/master/test/java18/test/yes/SortMain.java
+
+class Main{
+    public static void main(String[] args){
+        BubbleSort sorter = new BubbleSort();
+        int[] v = {1,5,3,6,3,845,23,56};
+        sorter.sort(v);
+
+        int i = 0;
+        while(i < v.length){
+            System.out.println(v[i]);
+            i = i+1;
+        }
+    }
+}
+
+class BubbleSort {
+    public void sort(int[] vetor) {
+        boolean troca = true;
+        int aux;
+        while (troca) {
+            troca = false;
+            int i = 0;
+            while (i < vetor.length - 1) {
+                if (vetor[i] > vetor[i + 1]) {
+                    aux = vetor[i];
+                    vetor[i] = vetor[i + 1];
+                    vetor[i + 1] = aux;
+                    troca = true;
+                }
+                i=i+1;
+            }
+        }
+    }
+}

@@ -1,0 +1,52 @@
+// Adaptado de: https://www.baeldung.com/java-quicksort
+
+class Main{
+    public static void main(String[] args){
+        QuickSort sorter = new QuickSort();
+        int[] v = {1,5,3,6,3,845,23,56};
+        sorter.quickSort(v);
+
+        int i = 0;
+        while(i < v.length){
+            System.out.println(v[i]);
+            i = i+1;
+        }
+    }
+}
+
+class QuickSort{
+    public void sort(int arr[]){
+        quickSort(arr, 0, arr.length-1);
+    }
+
+    public void quickSort(int arr[], int begin, int end) {
+        if (begin < end) {
+            int pivot = partition(arr, begin, end);
+    
+            quickSort(arr, begin, pivot-1);
+            quickSort(arr, pivot+1, end);
+        }
+    }
+
+    public int partition(int arr[], int begin, int end) {
+        int pivot = arr[end];
+        int i = begin;
+        int j = begin;
+    
+        while (j < end) {
+            if (arr[j] <= pivot) {
+                int aux = arr[i];
+                arr[i] = arr[j];
+                arr[j] = aux;
+                i = i+1;
+            }
+            j = j+1;
+        }
+    
+        int aux = arr[i];
+        arr[i] = arr[end];
+        arr[end] = aux;
+    
+        return i;
+    }
+}
