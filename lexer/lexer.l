@@ -71,7 +71,7 @@ S_FINAL                   \"
     aux[writing++] = '\0';
     strcpy (yytext,aux);
     yyleng = writing;
-    return TOK_STRING; }
+    return TOK_LIT_STR; }
 
 
 
@@ -101,6 +101,7 @@ while           { return TOK_WHILE; }
 length          { return TOK_LENGTH; }
 this            { return TOK_THIS; }
 new             { return TOK_NEW; }
+null            { return TOK_NULL; }
 \{              { return '{'; }
 \}              { return '}'; }
 \(              { return '('; }

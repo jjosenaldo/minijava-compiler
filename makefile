@@ -3,10 +3,11 @@ LEX := lex
 
 # path #
 LEXER_PATH = lexer
+PARSER_PATH = parser
 
 #flags #
 FLAGS =
-INC = -I include/
+INC = -I $(LEXER_PATH) -I $(PARSER_PATH)
 
 main.out: lex.yy.c
 	$(CC) $(FLAGS) $(INC) $(LEXER_PATH)/lex.yy.c main.c -o main.out

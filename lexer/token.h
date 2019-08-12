@@ -14,8 +14,10 @@ static const char TOK_INT = 'i';
 static const char TOK_LENGTH = 'l';
 static const char TOK_MAIN = 'm';
 static const char TOK_NEW = 'n';
+static const char TOK_NULL = 'N';
 static const char TOK_PRINT = 'p';
 static const char TOK_RETURN = 'r';
+static const char TOK_LIT_STR = 'R';
 static const char TOK_ELSE = 's';
 static const char TOK_STATIC = 'S';
 static const char TOK_THIS = 't';
@@ -24,6 +26,7 @@ static const char TOK_VOID = 'v';
 static const char TOK_WHILE = 'w';
 static const char TOK_EXTENDS = 'x';
 static const char TOK_AND = '&';
+static const char EPS = '@';
 
 struct token{
     char id;
