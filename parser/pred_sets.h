@@ -18,4 +18,9 @@
         x == TOK_LIT_STR || x == TOK_THIS ||x == TOK_NULL ||x == '{' ||x == '(' ||x == '-' || \
         x == '!'
 
+#define F_STMT(x) x == '{' || x == TOK_WHILE || x == TOK_PRINT || x == TOK_ID || x == TOK_CONTINUE || \
+                  x == TOK_BREAK || x == TOK_RETURN || x == ';' || x == TOK_IF
+
+
+
 #endif
