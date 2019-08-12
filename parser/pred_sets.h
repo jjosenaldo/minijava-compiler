@@ -25,6 +25,10 @@
 
 #define F_BLK_STMT(x) x == TOK_BOOLEAN || x == TOK_INT || x == TOK_ID || x == TOK_VOID || \
                       x == '{' || x == TOK_WHILE || x == TOK_PRINT || x == TOK_ID || x == TOK_CONTINUE || \
-                      x == TOK_BREAK || x == TOK_RETURN || x == ';' || x == TOK_IF \
+                      x == TOK_BREAK || x == TOK_RETURN || x == ';' || x == TOK_IF || x == EPS
+
+#define F_TYPE(x) x == TOK_BOOLEAN || x == TOK_INT || x == TOK_ID || x == TOK_VOID
+
+#define F_TYPE1(x) x == '[' || x == EPS
 
 #endif
