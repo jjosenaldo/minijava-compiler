@@ -21,6 +21,7 @@
 #define F_STMT(x) x == '{' || x == TOK_WHILE || x == TOK_PRINT || x == TOK_ID || x == TOK_CONTINUE || \
                   x == TOK_BREAK || x == TOK_RETURN || x == ';' || x == TOK_IF
 
+#define F_AFT_ID(x) x == '[' || x == '='
 
 
 #endif
