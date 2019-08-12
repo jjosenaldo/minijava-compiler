@@ -4,6 +4,7 @@
 static const char TOK_LIT_INT = '1';
 static const char TOK_PUBLIC = 'b';
 static const char TOK_BREAK = 'B';
+static const char TOK_BOOLEAN = 'o';
 static const char TOK_CONTINUE = 'C';
 static const char TOK_CLASS = 'c';
 static const char TOK_ID = 'd';
