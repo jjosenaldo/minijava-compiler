@@ -26,7 +26,7 @@
 #define FR_E(x) F_E1(x)
 
 // E' -> rel_op E1
-#define FR_Ep_1(x) F_Relop(x) 
+#define FR_Ep_1(x) F_Relop(x)
 
 // E' -> eps
 #define FR_Ep_2(x) x == EPS
@@ -58,11 +58,11 @@
 // E3' -> eps
 #define FR_E3p_2(x) x == EPS
 
-// T -> F T’ 
+// T -> F T’
 #define FR_T(x) F_F(x)
 
 // T’ -> X T’
-#define FR_Tp_1(x) 
+#define FR_Tp_1(x)
 
 /*
 E -> E1 E’
@@ -81,7 +81,7 @@ add_op      -> + | -
 
 T -> F T’
 T’-> X T’ | EPSILON
-T2 -> , E | EPSILON                   
+T2 -> , E | EPSILON
 T3 -> E T4 | EPSILON
 T4 -> , E T4 | EPSILON
 X -> . X’ | [ E ]
