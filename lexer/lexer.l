@@ -87,6 +87,7 @@ String          { return TOK_STRING; }
 int             { return TOK_INT; }
 true            { return TOK_TRUE; }
 false           { return TOK_FALSE; }
+boolean         { return TOK_BOOLEAN; }
 
 break           { return TOK_BREAK; }
 class           { return TOK_CLASS; }
