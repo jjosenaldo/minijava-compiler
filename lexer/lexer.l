@@ -41,7 +41,7 @@ S_FINAL                   \"
 [ \n\t\r]+        { /* spaces, tabs and newlines */ }
 
 {C_START}({C_NOT_WORRYING}*{C_WORRYING}+{C_NOT_WOR_NOR_FINAL})*{C_NOT_WORRYING}*{C_WORRYING}+{C_FINAL} { /* multiline comment */ }
-{S_START}({S_WORRYING}{S_NOT_WOR_NOR_FINAL}|{S_NOT_WORRYING})*{S_FINAL} { 
+{S_START}({S_WORRYING}{S_NOT_WOR_NOR_FINAL}|{S_NOT_WORRYING})*{S_FINAL} {
     char aux[yyleng];
     int pointer = 1;
     int writing = 0;
@@ -94,7 +94,9 @@ int             { return TOK_INT; }
 true            { return TOK_TRUE; }
 false           { return TOK_FALSE; }
 
+break           { return TOK_BREAK; }
 class           { return TOK_CLASS; }
+continue        { return TOK_CONTINUE; }
 public          { return TOK_PUBLIC; }
 static          { return TOK_STATIC; }
 void            { return TOK_VOID; }
@@ -117,7 +119,7 @@ null            { return TOK_NULL; }
 \;              { return ';'; }
 \,              { return ','; }
 \.              { return '.'; }
-\!              { return '!'; }
+'!'              { return '!'; }
 
 {letter}({digit}|{letter}|"_")*    { return TOK_ID; }
 <<EOF>>         { return TOK_EOF; }

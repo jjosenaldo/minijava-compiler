@@ -3,6 +3,8 @@
 
 static const char TOK_LIT_INT = '1';
 static const char TOK_PUBLIC = 'b';
+static const char TOK_BREAK = 'B';
+static const char TOK_CONTINUE = 'C';
 static const char TOK_CLASS = 'c';
 static const char TOK_ID = 'd';
 static const char TOK_DIFF = 'D';
@@ -32,6 +34,7 @@ static const char TOK_EXTENDS = 'x';
 static const char TOK_AND = '&';
 static const char TOK_OR = '|';
 static const char EPS = '@';
+
 
 struct token{
     char id;
