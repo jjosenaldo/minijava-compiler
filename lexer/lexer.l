@@ -80,9 +80,15 @@ S_FINAL                   \"
 \+              { return '+'; }
 \-              { return '-'; }
 \*              { return '*'; }
+\=\=            { return TOK_EQ; }
+\!              { return TOK_DIFF; }
 \=              { return '='; }
+\<\=            { return TOK_LESS_EQ; }
+\>\=            { return TOK_GREAT_EQ; }
 \&\&            { return TOK_AND; }
+\|\|            { return TOK_OR; }
 \<              { return '<'; }
+\>              { return '>'; }
 String          { return TOK_STRING; }
 int             { return TOK_INT; }
 true            { return TOK_TRUE; }
