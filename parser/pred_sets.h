@@ -27,7 +27,7 @@
 #define FR_E(x) F_E1(x)
 
 // E' -> rel_op E1
-#define FR_Ep_1(x) F_Relop(x) 
+#define FR_Ep_1(x) F_Relop(x)
 
 // E' -> EPS
 #define FR_Ep_2(x) x == EPS
@@ -59,7 +59,7 @@
 // E3' -> EPS
 #define FR_E3p_2(x) x == EPS
 
-// T -> F T’ 
+// T -> F T’
 #define FR_T(x) F_F(x)
 
 // T’ -> X T’
@@ -132,6 +132,10 @@
 
 #define F_BLK_STMT(x) x == TOK_BOOLEAN || x == TOK_INT || x == TOK_ID || x == TOK_VOID || \
                       x == '{' || x == TOK_WHILE || x == TOK_PRINT || x == TOK_ID || x == TOK_CONTINUE || \
-                      x == TOK_BREAK || x == TOK_RETURN || x == ';' || x == TOK_IF \
+                      x == TOK_BREAK || x == TOK_RETURN || x == ';' || x == TOK_IF || x == EPS
+
+#define F_TYPE(x) x == TOK_BOOLEAN || x == TOK_INT || x == TOK_ID || x == TOK_VOID
+
+#define F_TYPE1(x) x == '[' || x == EPS
 
 #endif
