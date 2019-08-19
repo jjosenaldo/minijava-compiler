@@ -156,7 +156,7 @@
 #define FR_Xp_2(x) x == TOK_SUBSTRING
 
 // Xp -> id ( T3 ) .
-#define FR_Xp_1(x) x == TOK_ID
+#define FR_Xp_3(x) x == TOK_ID
 
 // P -> ( ) .
 #define FR_P_1(x) x == '('
@@ -209,6 +209,128 @@
 // Elp -> .
 #define FR_Elp_2(x) x == EPS
 
+// then rbracket ) comma id lbrace while system continue break return semicolon if boolean int void rbrace
+#define FF_Ep(x) x == TOK_THEN || x == ']' || x == ')' || x == TOK_ID || x == '{' || x == TOK_WHILE || \
+        x == TOK_SYSTEM || x == TOK_CONTINUE || x == TOK_BREAK || x == TOK_RETURN || x == ';' || \
+        x == TOK_IF || x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID || x == '}'
+
+// less lesseq greatereq greater isequal isdiff then rbracket ) comma id lbrace while system continue break return semicolon if boolean int void rbrace
+#define FF_E1(x) x == '<' || x == TOK_LESS_EQ || X == TOK_GREAT_EQ || X  == '>' || X == TOK_EQ || X == TOK_DIFF || \
+        X == TOK_THEN || X == ']' || X == ')' || X == ',' || X == TOK_ID || X == '{' || X == TOK_WHILE || \
+        X == TOK_SYSTEM || X == TOK_CONTINUE || X == TOK_BREAK || X == TOK_RETURN || X == ';' || X == TOK_IF || \
+        X == TOK_BOOLEAN || X == TOK_INT || X == TOK_VOID || X == '}'
+ 
+// less lesseq greatereq greater isequal isdiff then rbracket ) comma id lbrace while system continue break return semicolon if boolean int void rbrace
+#define FF_E1p(x) FF_E1(x)
+
+// and or less lesseq greatereq greater isequal isdiff then rbracket ) comma id lbrace while system continue break return semicolon if boolean int void rbrace
+#define FF_E2(x) x == TOK_AND || X == TOK_OR || X == '<' || X == TOK_LESS_EQ || X == TOK_GREAT_EQ || X  == '>' || X == TOK_EQ || X == TOK_DIFF || \
+        X == TOK_THEN || X == ']' || X == ')' || X == ',' || X == TOK_ID || X == '}' || X == TOK_WHILE || X == TOK_SYSTEM || X == TOK_CONTINUE || \
+        X == TOK_BREAK || X == TOK_RETURN || X == ';' || X == TOK_IF || X == TOK_BOOLEAN || X == TOK_INT || X == TOK_VOID || X == '}'
+
+// and or less lesseq greatereq greater isequal isdiff then rbracket ) comma id lbrace while system continue break return semicolon if boolean int void rbrace
+#define FF_E2p(x) x == TOK_AND || x == TOK_OR || x == '<' || x == TOK_LESS_EQ || x == TOK_GREATER_EQ || x == '>' || x == TOK_EQ || x == TOK_DIFF || \
+        x == TOK_THEN || x == ']' || x == ')' || x == ',' || x == TOK_ID || x == '{' || x == TOK_WHILE || x == TOK_SYSTEM || x == TOK_CONTINUE || \
+        x == TOK_BREAK || x == TOK_RETURN || x == ';' || x == TOK_IF || x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID || x == '}'
+
+// plus minus and or less lesseq greatereq greater isequal isdiff then rbracket ) comma id lbrace while system continue break return semicolon if boolean int void rbrace
+#define FF_E3(x) x == '+' || x == '-' || x == TOK_AND || x == TOK_OR || x == '<' || x == TOK_LESS_EQ || x == TOK_GREATER_EQ || x == '>' || \
+        x == TOK_EQ || x == TOK_DIFF || x == TOK_THEN || x == ']' || x == ')' || x == ',' || x == TOK_ID || x == '{' || x == TOK_WHILE || \
+        x == TOK_SYSTEM || x == TOK_CONTINUE || x == TOK_BREAK || x == TOK_RETURN || x == ';' || x == TOK_IF || x == TOK_BOOLEAN || x == TOK_INT || \
+        x == TOK_VOID || x == '}'
+
+// plus minus and or less lesseq greatereq greater isequal isdiff then rbracket ) comma id lbrace while system continue break return semicolon if boolean int void rbrace
+#define FF_E3p(x) x == '+' || x == '-' || x == TOK_AND || x == TOK_OR || x == '<' || x == TOK_LESS_EQ || x == TOK_GREATER_EQ || x == '>' || \
+        x == TOK_EQ || x == TOK_DIFF || x == TOK_THEN || x == ']' || x == ')' || x == ',' || x == TOK_ID || x == '{' || x == TOK_WHILE || \
+        x == TOK_SYSTEM || x == TOK_CONTINUE || x == TOK_BREAK || x == TOK_RETURN || x == ';' || x == TOK_IF || x == TOK_BOOLEAN || x == TOK_INT || \
+        x == TOK_VOID || x == '}'
+
+// times div mod plus minus and or less lesseq greatereq greater isequal isdiff then rbracket ) comma id lbrace while system continue break return semicolon if boolean int void rbrace
+#define FF_T(x) x == '*' || x == '/' || x == '%' || x == '+' || x == '-' || x == TOK_AND || x == TOK_OR || x == '<' || x == TOK_LESS_EQ || \
+        x == TOK_GREATER_EQ || x == '>' || x == TOK_EQ || x == TOK_DIFF || x == TOK_THEN || x == ']' || x == ')' || x == ',' || x == TOK_ID || \
+        x == '{' || x == TOK_WHILE || x == TOK_SYSTEM || x == TOK_CONTINUE || x == TOK_BREAK || x == TOK_RETURN || x == ';' || x == TOK_IF || \
+        x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID || x == '}'
+
+// times div mod plus minus and or less lesseq greatereq greater isequal isdiff then rbracket ) comma id lbrace while system continue break return semicolon if boolean int void rbrace
+#define FF_Tp(x) x == '*' || x == '/' || x == '%' || x == '+' || x == '-' || x == TOK_AND || x == TOK_OR || x == '<' || x == TOK_LESS_EQ || \
+        x == TOK_GREATER_EQ || x == '>' || x == TOK_EQ || x == TOK_DIFF || x == TOK_THEN || x == ']' || x == ')' || x == ',' || x == TOK_ID || \
+        x == '{' || x == TOK_WHILE || x == TOK_SYSTEM || x == TOK_CONTINUE || x == TOK_BREAK || x == TOK_RETURN || x == ';' || x == TOK_IF || \
+        x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID || x == '}'
+
+// )
+#define FF_T4(x) x == ')'
+
+// dot lbracket times div mod plus minus and or less lesseq greatereq greater isequal isdiff then rbracket ) comma id lbrace while system continue break return semicolon if boolean int void rbrace
+#define FF_X(x) x == '.' || x == '[' || x == '*' || x == '/' || x == '%' || x == '+' || x == '-' || x == TOK_AND || x == TOK_OR || x == '<' || \
+        x == TOK_LESS_EQ || x == TOK_GREATER_EQ || x == '>' || x == TOK_EQ || x == TOK_DIFF || x == TOK_THEN || x == ']' || x == ')' || x == ',' || \
+        x == TOK_ID || x == '{' || x == TOK_WHILE || x == TOK_SYSTEM || x == TOK_CONTINUE || x == TOK_BREAK || x == TOK_RETURN || x == ';' || \
+        x == TOK_IF || x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID || x == '}'
+
+// dot lbracket times div mod plus minus and or less lesseq greatereq greater isequal isdiff then rbracket ) comma id lbrace while system continue break return semicolon if boolean int void rbrace
+#define FF_Xp(x) x == '.' || x == '[' || x == '*' || x == '/' || x == '%' || x == '+' || x == '-' || x == TOK_AND || x == TOK_OR || x == '<' || \
+        x == TOK_LESS_EQ || x == TOK_GREATER_EQ || x == '>' || x == TOK_EQ || x == TOK_DIFF || x == TOK_THEN || x == ']' || x == ')' || x == ',' || \
+        x == TOK_ID || x == '{' || x == TOK_WHILE || x == TOK_SYSTEM || x == TOK_CONTINUE || x == TOK_BREAK || x == TOK_RETURN || x == ';' || \
+        x == TOK_IF || x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID || x == '}'
+
+// )
+#define FF_T2(x) x == ')'
+
+// )
+#define FF_T3(x) x == ')'
+
+// dot lbracket times div mod plus minus and or less lesseq greatereq greater isequal isdiff then rbracket ) comma id lbrace while system continue break return semicolon if boolean int void rbrace
+#define FF_P(x) x == '.' || x == '[' || x == '*' || x == '/' || x == '%' || x == '+' || x == '-' || x == TOK_AND || x == TOK_OR || x == '<' || \
+        x == TOK_LESS_EQ || x == TOK_GREATER_EQ || x == '>' || x == TOK_EQ || x == TOK_DIFF || x == TOK_THEN || x == ']' || x == ')' || x == ',' || \
+                x == TOK_ID || x == '{' || x == TOK_WHILE || x == TOK_SYSTEM || x == TOK_CONTINUE || x == TOK_BREAK || x == TOK_RETURN || x == ';' || \
+                x == TOK_IF || x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID || x == '}'
+
+// dot lbracket times div mod plus minus and or less lesseq greatereq greater isequal isdiff then rbracket ) comma id lbrace while system continue break return semicolon if boolean int void rbrace
+#define FF_F(x) x == '.' || x == '[' || x == '*' || x == '/' || x == '%' || x == '+' || x == '-' || x == TOK_AND || x == TOK_OR || x == '<' || \
+        x == TOK_LESS_EQ || x == TOK_GREATER_EQ || x == '>' || x == TOK_EQ || x == TOK_DIFF || x == TOK_THEN || x == ']' || x == ')' || x == ',' || \
+        x == TOK_ID || x == '{' || x == TOK_WHILE || x == TOK_SYSTEM || x == TOK_CONTINUE || x == TOK_BREAK || x == TOK_RETURN || x == ';' || \
+        x == TOK_IF || x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID || x == '}'
+
+// dot lbracket times div mod plus minus and or less lesseq greatereq greater isequal isdiff then rbracket ) comma id lbrace while system continue break return semicolon if boolean int void rbrace
+#define FF_TT(x) x == '.' || x == '[' || x == '*' || x == '/' || x == '%' || x == '+' || x == '-' || x == TOK_AND || x == TOK_OR || x == '<' || \
+        x == TOK_LESS_EQ || x == TOK_GREATER_EQ || x == '>' || x == TOK_EQ || x == TOK_DIFF || x == TOK_THEN || x == ']' || x == ')' || x == ',' || \
+        x == TOK_ID || x == '{' || x == TOK_WHILE || x == TOK_SYSTEM || x == TOK_CONTINUE || x == TOK_BREAK || x == TOK_RETURN || x == ';' || \
+        x == TOK_IF || x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID || x == '}'
+
+// dot lbracket times div mod plus minus and or less lesseq greatereq greater isequal isdiff then rbracket ) comma id lbrace while system continue break return semicolon if boolean int void rbrace
+#define FF_R(x) x == '.' || x == '[' || x == '*' || x == '/' || x == '%' || x == '+' || x == '-' || x == TOK_AND || x == TOK_OR || x == '<' || \
+        x == TOK_LESS_EQ || x == TOK_GREATER_EQ || x == '>' || x == TOK_EQ || x == TOK_DIFF || x == TOK_THEN || x == ']' || x == ')' || x == ',' || \
+        x == TOK_ID || x == '{' || x == TOK_WHILE || x == TOK_SYSTEM || x == TOK_CONTINUE || x == TOK_BREAK || x == TOK_RETURN || x == ';' || \
+        x == TOK_IF || x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID || x == '}'
+
+// }
+#define FF_El(x) x == '}'
+
+// then rbracket ) comma id lbrace while system continue break return semicolon if boolean int void rbrace
+#define FF_E(x) x == TOK_THEN || x == ']' || x == ')' || x == ',' || x == TOK_ID || x == '{' || x == TOK_WHILE || x == TOK_SYSTEM || x == TOK_CONTINUE || \
+        x == TOK_BREAK || x == TOK_RETURN || x == ';' || x == TOK_IF || x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID || x == '}'
+
+// }
+#define FF_Elp(x) x == '}'
+
+// minus excl litint true false id litstr this null lbrace (
+#define FF_Relop(x) x == '-' || x == '!' || x == TOK_LIT_INT || x == TOK_TRUE || x == TOK_FALSE || x == TOK_ID || x == TOK_LIT_STR || x == TOK_THIS || \
+        x == TOK_NULL || x == '{' || x == '('
+
+// minus excl litint true false id litstr this null lbrace (
+#define FF_Boolop(x) x == '-' || x == '!' || x == TOK_LIT_INT || x == TOK_TRUE || x == TOK_FALSE || x == TOK_ID || x == TOK_LIT_STR || x == TOK_THIS || \
+        x == TOK_NULL || x == '{' || x == '('
+
+// minus excl litint true false id litstr this null lbrace (
+#define FF_Addop(x) x == '-' || x == '!' || x == TOK_LIT_INT || x == TOK_TRUE || x == TOK_FALSE || x == TOK_ID || x == TOK_LIT_STR || x == TOK_THIS || \
+        x == TOK_NULL || x == '{' || x == '('
+
+// minus excl litint true false id litstr this null lbrace (
+#define FF_Multop(x) x == '-' || x == '!' || x == TOK_LIT_INT || x == TOK_TRUE || x == TOK_FALSE || x == TOK_ID || x == TOK_LIT_STR || x == TOK_THIS || \
+        x == TOK_NULL || x == '{' || x == '('
+
+// minus excl litint true false id litstr this null lbrace (
+#define FF_Unop(x) x == '-' || x == '!' || x == TOK_LIT_INT || x == TOK_TRUE || x == TOK_FALSE || x == TOK_ID || x == TOK_LIT_STR || x == TOK_THIS || \
+        x == TOK_NULL || x == '{' || x == '('
 
 
 /*
