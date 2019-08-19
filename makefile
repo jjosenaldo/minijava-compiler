@@ -9,8 +9,8 @@ PARSER_PATH = parser
 FLAGS =
 INC = -I $(LEXER_PATH) -I $(PARSER_PATH)
 
-main.out: lex.yy.c
-	$(CC) $(FLAGS) $(INC) $(LEXER_PATH)/lex.yy.c main.c -o main.out
+main.out: lex.yy.c main.c
+	$(CC) $(FLAGS) $(INC) $(LEXER_PATH)/lex.yy.c main.c $(PARSER_PATH)/rec_parser.c -o main.out
 
 lex.o: lex.yy.c
 	$(CC) $(FLAGS) 	-c $(LEXER_PATH)/lex.yy.c -o $(LEXER_PATH)/lex.o
