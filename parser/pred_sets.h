@@ -15,7 +15,7 @@
 #define F_El(x) F_E1(x) || x == EPS
 #define F_R(x) x == '{' || x == '(' || x == '-' || x == '!'
 #define F_t(x) x == TOK_LIT_INT || x == TOK_TRUE || x == TOK_FALSE || x == TOK_ID || \
-        x == TOK_LIT_STR || x == TOK_THIS ||x == TOK_NULL 
+        x == TOK_LIT_STR || x == TOK_THIS ||x == TOK_NULL
 #define F_Relop(x) x == '<' || x == TOK_LESS_EQ || x == '>' || x == TOK_GREAT_EQ || x == TOK_EQ || \
         x == TOK_DIFF
 #define F_Multop(x) x == '/' || x == '*' || x == '%'
@@ -125,17 +125,63 @@
 // El' -> EPS
 #define FR_Elp_2(x) x == EPS
 
-#define F_STMT(x) x == '{' || x == TOK_WHILE || x == TOK_PRINT || x == TOK_ID || x == TOK_CONTINUE || \
+#define F_STMT(x) x == '{' || x == TOK_WHILE || x == TOK_PRINT || x == TOK_CONTINUE || \
                   x == TOK_BREAK || x == TOK_RETURN || x == ';' || x == TOK_IF
 
-#define F_AFT_ID(x) x == '[' || x == '='
+#define F_ARR_ASSGMT(x) x == TOK_ID
 
-#define F_BLK_STMT(x) x == TOK_BOOLEAN || x == TOK_INT || x == TOK_ID || x == TOK_VOID || \
+#define F_AFT_ID(x) x == '[' || x == '=' || x == TOK_ID
+
+#define F_RMNG_ARR_ASSGMT(x) x == '{' || x == '='
+
+#define F_BLK_STMTS(x) x == TOK_BOOLEAN || x == TOK_INT || x == TOK_ID || x == TOK_VOID || \
                       x == '{' || x == TOK_WHILE || x == TOK_PRINT || x == TOK_ID || x == TOK_CONTINUE || \
                       x == TOK_BREAK || x == TOK_RETURN || x == ';' || x == TOK_IF || x == EPS
 
+#define F_BLK_STMT(x) x == TOK_BOOLEAN || x == TOK_INT || x == TOK_ID || x == TOK_VOID || \
+                      x == '{' || x == TOK_WHILE || x == TOK_PRINT || x == TOK_ID || x == TOK_CONTINUE || \
+                      x == TOK_BREAK || x == TOK_RETURN || x == ';' || x == TOK_IF
+
 #define F_TYPE(x) x == TOK_BOOLEAN || x == TOK_INT || x == TOK_ID || x == TOK_VOID
 
-#define F_TYPE1(x) x == '[' || x == EPS
+#define F_TYPE1(x) x == '['
+
+#define F_NON_CLASS_TYPE(x) x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID
+
+#define F_ID_TYPE(x) x == TOK_ID
+
+#define F_GOAL(x) x == TOK_CLASS || x == EPS
+
+#define F_MAIN(x) x == TOK_CLASS || x == EPS
+
+#define F_CLASS_DCRLTS(x) x == TOK_CLASS || x == EPS
+
+#define F_CLASS_DCRLT(x) x == TOK_CLASS  || x == EPS
+
+#define F_EXTNDS(x) x == TOK_EXTENDS || x == EPS
+
+#define F_CLASS_BODY(x) x == '{'
+
+#define F_CLASS_CONTENT(x) x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID || x == TOK_ID || x == EPS
+
+#define F_CLASS_COMPONENT(x) x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID || x == TOK_ID
+
+#define F_REST_DEC(x) x == ';' || x == '('
+
+#define F_VAR_DEC(x) x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID || x == TOK_ID
+
+#define F_NONCLASS_VAR_DEC(x) x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID
+
+#define F_VAR_OBJ_DEC(x) x == TOK_ID
+
+#define F_PARAMS_OPT(x) x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID || x == TOK_ID
+
+#define F_PARAMS_REST(x) x == ','
+
+#define F_PARAMS(x) x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID || x == TOK_ID
+
+#define F_PARAM(x) x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID || x == TOK_ID
+
+#define F_OPT_ELSE(x) x == TOK_ELSE || x == EPS
 
 #endif
