@@ -69,11 +69,6 @@
 
 // comma
 #define F_Elp(x) x == ',' || x == EPS
-#define F_El(x) F_E1(x) || x == EPS
-#define F_R(x) x == '{' || x == '(' || x == '-' || x == '!'
-#define F_t(x) x == TOK_LIT_INT || x == TOK_TRUE || x == TOK_FALSE || x == TOK_ID || \
-        x == TOK_LIT_STR || x == TOK_THIS ||x == TOK_NULL
-
 #define F_Unop(x) x == '-' || x == '!'
 #define F_Relop(x) x == '<' || x == TOK_LESS_EQ || x == '>' || x == TOK_GREAT_EQ || x == TOK_EQ || \
         x == TOK_DIFF
@@ -213,7 +208,6 @@
 // Elp -> .
 #define FR_Elp_2(x) x == EPS
 
-#define F_STMT(x) x == '{' || x == TOK_WHILE || x == TOK_PRINT || x == TOK_CONTINUE || \
 // then rbracket ) comma id lbrace while system continue break return semicolon if boolean int void rbrace
 #define FF_Ep(x) x == TOK_THEN || x == ']' || x == ')' || x == TOK_ID || x == '{' || x == TOK_WHILE || \
         x == TOK_SYSTEM || x == TOK_CONTINUE || x == TOK_BREAK || x == TOK_RETURN || x == ';' || \
@@ -337,45 +331,6 @@
 #define FF_Unop(x) x == '-' || x == '!' || x == TOK_LIT_INT || x == TOK_TRUE || x == TOK_FALSE || x == TOK_ID || x == TOK_LIT_STR || x == TOK_THIS || \
         x == TOK_NULL || x == '{' || x == '('
 
-
-/*
-Goal -> MainClass ClassDeclarations .
-MainClass -> class id lbrace void main ( string lbracket rbracket id ) lbrace Blockstatements rbrace rbrace .
-Blockstatements -> BlockStatement Blockstatements | .
-BlockStatement -> NonclassVarDec | Statement | id AfterId .
-
-ClassDeclarations -> ClassDeclaration ClassDeclarations  | .
-ClassDeclaration -> class id Extends ClassBody .
-Extends -> extends id | .
-ClassBody -> lbrace ClassContent rbrace .
-ClassContent -> ClassComponent ClassContent | .
-
-ClassComponent -> Type id RestDec .
-
-RestDec -> semicolon | ( ParamsOpt ) lbrace Blockstatements rbrace .
-VarDec -> NonclassVarDec |  VarObjDec .
-NonclassVarDec -> NonclassType id semicolon .
-VarObjDec -> id id semicolon .
-
-ParamsOpt -> Params | .
-Params -> Param ParamsRest .
-ParamsRest -> comma Params | .
-Param -> Type id .
-
-Type1 -> lbracket rbracket Type1 | .
-NonclassType -> boolean Type1 | int Type1 | void .
-IdType -> id Type1 .
-Type -> NonclassType | IdType .
-
-Statement ->  lbrace Blockstatements rbrace |  while ( E ) Statement | system dot out dot println ( E ) semicolon  | continue semicolon | break semicolon | return E semicolon | semicolon | if E then Statement OptEelse .
-
-OptElse -> else Statement | .
-
-ArrAssignment -> id  RemainingArrAssignment .
-RemainingArrAssignment -> lbracket E rbracket equal E | equal E .
-AfterId -> RemainingArrAssignment | id semicolon .
-*/
-
 #define F_STMT(x) x == '{' || x == TOK_WHILE || x == TOK_PRINT || x == TOK_ID || x == TOK_CONTINUE || \
                   x == TOK_BREAK || x == TOK_RETURN || x == ';' || x == TOK_IF
 
@@ -434,5 +389,158 @@ AfterId -> RemainingArrAssignment | id semicolon .
 #define F_PARAM(x) x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID || x == TOK_ID
 
 #define F_OPT_ELSE(x) x == TOK_ELSE || x == EPS
+
+
+// Goal -> MainClass ClassDeclarations .
+#define FR_GOAL(x) F_MAIN(x) || F_CLASS_DCRLTS(x) || x == EPS
+
+// MainClass -> class id lbrace void main ( string lbracket rbracket id ) lbrace Blockstatements rbrace rbrace .
+#define FR_MAIN(x) x == TOK_CLASS
+
+// Blockstatements -> BlockStatement Blockstatements .
+#define FR_BLK_STMTS(x) F_BLK_STMT(x)
+
+// Blockstatements -> .
+#define FR_BLK_STMTS2(x) x == EPS
+
+// BlockStatement -> NonclassVarDec .
+#define FR_BLK_STMT(x) F_NONCLASS_VAR_DEC(x)
+// BlockStatement -> Statement .
+#define FR_BLK_STMT1(x) F_STMT(x)
+
+// BlockStatement -> id AfterId .
+#define FR_BLK_STMT2(x) x == TOK_ID
+
+// ClassDeclarations -> ClassDeclaration ClassDeclarations .
+#define FR_CLASS_DCRLTS(x) F_CLASS_DCRLT(x)
+
+// ClassDeclarations -> .
+#define FR_CLASS_DCRLTS2(x) x == EPS
+
+// ClassDeclaration -> class id Extends ClassBody .
+#define FR_CLASS_DCRLT(x) x == TOK_CLASS
+
+// Extends -> extends id .
+#define FR_EXTNDS(x) x == TOK_EXTENDS
+
+// Extends -> .
+#define FR_EXTNDS2(x) x == EPS
+
+// ClassBody -> lbrace ClassContent rbrace .
+#define FR_CLASS_BODY(x) x == '{'
+
+// ClassContent -> ClassComponent ClassContent .
+#define FR_CLASS_CONTENT(x) F_CLASS_COMPONENT(x)
+
+// ClassContent -> .
+#define FR_CLASS_CONTENT1(x) x == EPS
+
+// ClassComponent -> Type id RestDec .
+#define FR_CLASS_COMPONENT(x) F_TYPE(x)
+
+// RestDec -> semicolon .
+#define FR_REST_DEC(x) x == ';'
+
+// RestDec -> ( ParamsOpt ) lbrace Blockstatements rbrace .
+#define FR_REST_DEC1(x) x == '('
+
+// VarDec -> NonclassVarDec .
+#define FR_VAR_DEC(x) F_NONCLASS_VAR_DEC(x)
+
+// VarDec ->  VarObjDec .
+#define FR_VAR_DEC1(x) F_VAR_OBJ_DEC(x)
+
+// NonclassVarDec -> NonclassType id semicolon .
+#define FR_NONCLASS_VAR_DEC(x) F_NON_CLASS_TYPE(x)
+
+// VarObjDec -> id id semicolon .
+#define FR_VAR_OBJ_DEC(x) x == TOK_ID
+
+// ParamsOpt -> Params .
+#define FR_PARAMS_OPT(x) F_PARAMS(x)
+
+// ParamsOpt1 -> .
+#define FR_PARAMS_OPT1(x) x == EPS
+
+// Params -> Param ParamsRest .
+#define FR_PARAMS(x) F_PARAM(x)
+
+// ParamsRest -> comma Params .
+#define FR_PARAMS_REST(x) x == ','
+
+// ParamsRest -> .
+#define FR_PARAMS_REST1(x) x == EPS
+
+// Param -> Type id .
+#define FR_PARAM(x) F_TYPE(x)
+
+// Type1 -> lbracket rbracket Type1 .
+#define FR_TYPE1(x) x == '{'
+
+// Type1 -> .
+#define FR_TYPE1_1(x) x == EPS
+
+// NonclassType -> boolean Type1 .
+#define FR_NON_CLASS_TYPE(x) x == TOK_BOOLEAN
+
+// NonclassType -> int Type1 .
+#define FR_NON_CLASS_TYPE1(x) x == TOK_INT
+
+// NonclassType -> void .
+#define FR_NON_CLASS_TYPE2(x) x == TOK_VOID
+
+// IdType -> id Type1 .
+#define FR_ID_TYPE(x) x == TOK_ID
+
+// Type -> NonclassType .
+#define FR_TYPE(x) F_NON_CLASS_TYPE(x)
+
+// Type -> IdType .
+#define FR_TYPE_1(x) F_ID_TYPE(x)
+
+// Statement ->  lbrace Blockstatements rbrace .
+#define FR_STMT(x) x == '{'
+
+// Statement ->  while ( E ) Statement .
+#define FR_STMT1(x) x == TOK_WHILE
+
+// Statement ->  system dot out dot println ( E ) semicolon .
+#define FR_STMT2(x) x == TOK_PRINT
+
+// Statement ->  continue semicolon .
+#define FR_STMT3(x) x == TOK_CONTINUE
+
+// Statement ->  break semicolon .
+#define FR_STMT4(x) x == TOK_BREAK
+
+// Statement ->  return E semicolon .
+#define FR_STMT5(x) x == TOK_RETURN
+
+// Statement ->  semicolon .
+#define FR_STMT6(x) x == ';'
+
+// Statement ->  if E then Statement OptElse .
+#define FR_STMT7(x) x == TOK_IF
+
+// OptElse -> else Statement .
+#define FR_OPT_ELSE(x) x == TOK_ELSE
+
+// OptElse ->  .
+#define FR_OPT_ELSE1(x) x == EPS
+
+// ArrAssignment -> id  RemainingArrAssignment .
+#define FR_ARR_ASSGMT(x) x == TOK_ID
+
+// RemainingArrAssignment -> lbracket E rbracket equal E .
+#define FR_RMNG_ARR_ASSGMT(x) == '{'
+
+// RemainingArrAssignment -> equal E .
+#define FR_RMNG_ARR_ASSGMT1(x) == TOK_EQ
+
+// AfterId -> RemainingArrAssignment .
+#define FR_AFTER_ID(x) F_RMNG_ARR_ASSGMT(x)
+
+// AfterId -> id semicolon .
+#define FR_AFTER_ID1(x) F_RMNG_ARR_ASSGMT(x)
 
 #endif
