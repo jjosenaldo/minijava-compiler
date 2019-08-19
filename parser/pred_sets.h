@@ -390,7 +390,6 @@
 
 #define F_OPT_ELSE(x) x == TOK_ELSE || x == EPS
 
-
 // Goal -> MainClass ClassDeclarations .
 #define FR_GOAL(x) F_MAIN(x) || F_CLASS_DCRLTS(x) || x == EPS
 
@@ -543,4 +542,91 @@
 // AfterId -> id semicolon .
 #define FR_AFTER_ID1(x) F_RMNG_ARR_ASSGMT(x)
 
+// ∅
+#define FF_GOAL(x) 0
+
+// class
+#define FF_MAIN_CLASS(x) x == TOK_CLASS
+
+// id lbrace while system continue break return semicolon if boolean int void rbrace
+#define FF_BLK_STMT(x) x == TOK_ID || x == '{' || x == TOK_WHILE || x == TOK_SYSTEM || x == TOK_CONTINUE || x == TOK_BREAK || \
+        x == TOK_RETURN || x == ';' || x == TOK_IF || x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID || x == '}'
+
+// ∅
+#define FF_CLASS_DECLARATIONS(x) 0
+
+// class
+#define FF_CLASS_DECLARATION (x) x == TOK_CLASS
+
+// lbrace
+#define FF_EXTENDS(x) X == '{'
+
+// class
+#define FF_CLASS_BODY(x) X == TOK_CLASS
+
+// rbrace
+#define FF_CLASS_CONTENT(x) X == '}'
+
+// boolean int void id rbrace
+#define FF_CLASS_COMPONENT(x) x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID || x == TOK_ID || x == '}'
+
+// boolean int void id rbrace
+#define FF_REST_DEC(x) x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID || x == TOK_ID || x == '}'
+
+// ∅
+#define FF_VAR_DEC(x) 0
+
+// id lbrace while system continue break return semicolon if boolean int void rbrace
+#define FF_NONCLASS_VAR_DEC(x) x == TOK_ID || x == '{' || x == TOK_WHILE || x == TOK_SYSTEM || x == TOK_CONTINUE || \
+        x == TOK_BREAK || x == TOK_RETURN || x == ';' || x == TOK_IF || x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID || x == '}'
+
+// ∅
+#define FF_VAR_OBJ_DEC(x) 0
+
+// )
+#define FF_PARAMS_OPT(x) x == ')'
+
+// )
+#define FF_PARAMS_REST(x) x == ')'
+
+// )
+#define FF_PARAMS(x) x == ')'
+
+// comma )
+#define FF_PARAM(x) x == ',' || x == ')'
+
+// id
+#define FF_TYPE1(x) x == TOK_ID
+
+// id
+#define FF_TYPE(x) x == TOK_ID
+
+// id
+#define FF_NONCLASS_TYPE(x) x == TOK_ID
+
+// id
+#define FF_ID_TYPE(x) x == TOK_ID
+
+// rbrace
+#define FF_BLK_STMTS(x) x == '}'
+
+// else id lbrace while system continue break return semicolon if boolean int void rbrace
+#define FF_OPT_ELSE(x) x == TOK_ELSE || x == TOK_ID || x == '{' || x == TOK_WHILE || x == TOK_SYSTEM || x == TOK_CONTINUE || \
+        x == TOK_BREAK || x == TOK_RETURN || x == ';' || x == TOK_IF || x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID || x == '}'
+
+// else id lbrace while system continue break return semicolon if boolean int void rbrace
+#define FF_STMT(x) x == TOK_ELSE || x == TOK_ID || x == '{' || x == TOK_WHILE || x == TOK_SYSTEM || \
+        x == TOK_CONTINUE || x == TOK_BREAK || x == TOK_RETURN || x == ';' || x == TOK_IF || x == TOK_BOOLEAN || x == TOK_INT || \
+        x == TOK_VOID || x == '}'
+
+// ∅
+#define FF_ARR_ASSIGNMENT(x) 0
+
+// id lbrace while system continue break return semicolon if boolean int void rbrace
+#define FF_AFTER_ID(x) x == TOK_ID || x == '{' || x == TOK_WHILE || x == TOK_SYSTEM || x == TOK_CONTINUE || x == TOK_BREAK || \
+        x == TOK_RETURN || x == ';' || x == TOK_IF || x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID || x == '}'
+
+// id lbrace while system continue break return semicolon if boolean int void rbrace
+#define FF_REMAINING_ARR_ASSIGNMENT(x) x == TOK_ID || x == '{' || x == TOK_WHILE || x == TOK_SYSTEM || x == TOK_CONTINUE || \
+        x == TOK_BREAK || x == TOK_RETURN || x == ';' || x == TOK_IF || x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID || x == '}'
 #endif

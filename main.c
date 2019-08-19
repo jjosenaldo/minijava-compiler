@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include "pred_sets.h"
+#include "rec_parser.h"
 
 int main(){
-    printf("%i\n", FR_E('9'));
+    parse();
     return 0;
 }
