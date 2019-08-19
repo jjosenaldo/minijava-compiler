@@ -542,6 +542,9 @@
 // AfterId -> id semicolon .
 #define FR_AFTER_ID1(x) F_RMNG_ARR_ASSGMT(x)
 
+// AfterId -> id semicolon .
+#define FR_Relop(x) F_Relop(x)
+
 // ∅
 #define FF_GOAL(x) 0
 
