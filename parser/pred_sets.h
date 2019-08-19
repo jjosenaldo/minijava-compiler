@@ -33,7 +33,7 @@
 #define F_T(x) F_E(x)
 
 // dot lbracket
-#define F_Tp(x) x == '.' || x == '{' || x == EPS
+#define F_Tp(x) x == '.' || x == '[' || x == EPS
 
 // comma
 #define F_T2(x) x == ',' || x == EPS
@@ -51,7 +51,7 @@
 #define F_Xp(x) x == TOK_LENGTH || x == TOK_SUBSTRING || x == TOK_ID
 
 // ()
-#define F_P(x) x == '(' || x == ')' || x == EPS
+#define F_P(x) x == '(' || x == EPS
 
 // 	litint true false id litstr this null lbrace (
 #define F_F(x) x == TOK_LIT_INT || x == TOK_TRUE || x == TOK_FALSE || x == TOK_ID || x == TOK_LIT_STR || \
@@ -80,27 +80,134 @@
 // E -> E1 Ep .
 #define FR_E(x) F_E1(x)
 
-// Ep -> relop E1 | .
-// E1 -> E2 E1p .
-// E1p -> boolop E2 E1p | .
-// E2 -> E3 E2p .
-// E2p -> addop E3 E2p | .
-// E3 -> T E3p .
-// E3p -> multop T E3p | .
-// T -> F Tp | unop T .
-// Tp-> X Tp | .
-// T2 -> comma E | .                   
-// T3 -> E T4 | .
-// T4 -> comma E T4 | .
-// X -> dot Xp | lbracket E rbracket .
-// Xp -> length P | substring ( E T2 ) | id ( T3 ) .
-// P -> () | .
-// F -> TT | R .
-// TT -> litint | true | false | id | litstr | this | null .
-// R -> lbrace El rbrace | ( E ) .
-// El -> E Elp | .
-// Elp -> comma E Elp | .
+// Ep -> relop E1 .
+#define FR_Ep_1(x) F_Relop(x)
 
+// Ep -> .
+#define FR_Ep_2(x) x == EPS
+
+// E1 -> E2 E1p .
+#define FR_E1(x) F_E2(x)
+
+// E1p -> boolop E2 E1p .
+#define FR_E1p_1(x) F_Boolop(x)
+
+// E1p -> .
+#define FR_E1p_2(x) x == EPS
+
+// E2 -> E3 E2p .
+#define FR_E2(x) F_E3(x)
+
+// E2p -> addop E3 E2p .
+#define FR_E2p_1(x) F_Addop(x)
+
+// E2p -> .
+#define FR_E2p_2(x) x == EPS
+
+// E3 -> T E3p .
+#define FR_E3(x) F_T(x)
+
+// E3p -> multop T E3p .
+#define FR_E3p_1(x) F_Multop(x)
+
+// E3p -> .
+#define FR_E3p_2(x) x == EPS
+
+// T -> F Tp  .
+#define FR_T_1(x) F_F(x)
+
+// T -> unop T .
+#define FR_T_2(x) F_Unop(x)
+
+// Tp -> X Tp .
+#define FR_Tp_1(x) F_X(x)
+
+// Tp -> .
+#define FR_Tp_2(x) x == EPS
+
+// T2 -> comma E .                   
+#define FR_T2_1(x) x == ','
+
+// T2 -> .
+#define FR_T2_2(x) x == EPS
+
+// T3 -> E T4 .
+#define FR_T3_1(x) F_E(x)
+
+// T3 -> .
+#define FR_T3_2(x) x == EPS
+
+// T4 -> comma E T4 .
+#define FR_T4_1(x) x == ','
+
+// T4 -> .
+#define FR_T4_2(x) x == EPS
+
+// X -> dot Xp .
+#define FR_X_1(x) x == '.'
+
+// X -> lbracket E rbracket .
+#define FR_X_2(x) x == '['
+
+// Xp -> length P .
+#define FR_Xp_1(x) x == TOK_LENGTH
+
+// Xp -> substring ( E T2 ) .
+#define FR_Xp_2(x) x == TOK_SUBSTRING
+
+// Xp -> id ( T3 ) .
+#define FR_Xp_1(x) x == TOK_ID
+
+// P -> ( ) .
+#define FR_P_1(x) x == '('
+
+// P -> .
+#define FR_P_2(x) x == EPS
+
+// F -> TT .
+#define FR_F_1(x) F_TT(x)
+
+// F -> R .
+#define FR_F_2(x) F_R(x)
+
+// TT -> litint .
+#define FR_TT_1(x) x == TOK_LIT_INT
+
+// TT -> true .
+#define FR_TT_2(x) x == TOK_TRUE
+
+// TT -> false .
+#define FR_TT_3(x) x == TOK_FALSE
+
+// TT -> id .
+#define FR_TT_4(x) x == TOK_ID
+
+// TT -> litstr .
+#define FR_TT_5(x) x == TOK_LIT_STR
+
+// TT -> this .
+#define FR_TT_6(x) x == TOK_THIS
+
+// TT -> null .
+#define FR_TT_7(x) x == TOK_NULL
+
+// R -> lbrace El rbrace .
+#define FR_R_1(x) x == '{'
+
+// R -> ( E ) .
+#define FR_R_2(x) x == '('
+
+// El -> E Elp .
+#define FR_El_1(x) F_E(x)
+
+// El -> .
+#define FR_El_2(x) x == EPS
+
+// Elp -> comma E Elp .
+#define FR_Elp_1(x) x == ','
+
+// Elp -> .
+#define FR_Elp_2(x) x == EPS
 
 
 
