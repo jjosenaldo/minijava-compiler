@@ -3,8 +3,17 @@
 #include "stdio.h"
 #include <stdlib.h> // exit()
 
+void match(struct token tok){
+	if (lookahead = tok.id){
+		lookahead = getNextToken().id;
+	} else{
+		printf("Syntax error when reading the token %c\n", tok.id);
+		exit(EXIT_FAILURE);
+	}
+}
+
 void parse(){
-	lookahead = getNextToken();
+	lookahead = getNextToken().id;
     printf("not parsing anything yet...\n");
 }
 
