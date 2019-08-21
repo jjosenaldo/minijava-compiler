@@ -311,53 +311,58 @@ void Elp() {
 }
 
 void Relop() {
-	/*
-	if(lookahead == less ||
-	   lookahead == lesseq ||
-	   lookahead == greatereq ||
-	   lookahead == greater ||
-	   lookahead == isequal ||
-	   lookahead == isdiff) // Do Something
-		;
-	else error();
-	*/
+	if(FR_Relop_1(lookahead))
+		match('<');
+	else if(FR_Relop_2(lookahead))
+		match(TOK_LESS_EQ);
+	else if(FR_Relop_3(lookahead))
+		match(TOK_GREATER_EQ);
+	else if(FR_Relop_4(lookahead))
+		match('>');
+	else if(FR_Relop_5(lookahead))
+		match(TOK_EQ);
+	else if(FR_Relop_6(lookahead))
+		match(TOK_DIFF);	
+	else
+		error();
 }
 
 void Boolop() {
-	/*
-	if(lookahead == and ||
-	   lookahead == or) // Do Something
-		;
-	else error();
-	*/
+	if(FR_Boolop_1(lookahead))
+		match(TOK_AND);
+	else if(FR_Boolop_2(lookahead))
+		match(TOK_OR);	
+	else
+		error();
 }
 
 void Addop() {
-	/*
-	if(lookahead == plus ||
-	   lookahead == minus) // Do Something
-		;
-	else error();
-	*/
+	if(FR_Addop_1(lookahead))
+		match('+');
+	else if(FR_Addop_2(lookahead))
+		match('-');	
+	else
+		error();
 }
 
 void Multop() {
-	/*
-	if(lookahead == times ||
-	   lookahead == div ||
-	   lookahead == mod) // Do Something
-		;
-	else error();
-	*/
+	if(FR_Multop_1(lookahead))
+		match('*');
+	else if(FR_Multop_2(lookahead))
+		match('/');
+	else if(FR_Multop_3(lookahead))
+		match('%');
+	else
+		error();
 }
 
 void Unop() {
-	/*
-	if(lookahead == minus || ;
-	   lookahead == excl) // Do Something
-		;
-	else error();
-	*/
+	if(FR_Unop_1(lookahead))
+		match('-');
+	else if(FR_Unop_2(lookahead))
+		match('!');	
+	else
+		error();
 }
 
 // ---------- ^^^^^^^ Gilney ^^^^^^^ ---------- //
