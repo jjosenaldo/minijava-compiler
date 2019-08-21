@@ -3,11 +3,12 @@
 #include "stdio.h"
 #include <stdlib.h> // exit()
 
-void match(struct token tok){
-	if (lookahead = tok.id){
+void match(char tok_id){
+	if (lookahead == tok_id){
 		lookahead = getNextToken().id;
 	} else{
-		printf("Syntax error when reading the token %c\n", tok.id);
+		printf("\n\nSYNTAX ERROR: the token %c couldn't be matched \
+		with the input symbol of id %c!\n", tok_id, lookahead);
 		exit(EXIT_FAILURE);
 	}
 }
@@ -19,8 +20,9 @@ void parse(){
 
 // ---------- vvvvvvv Gilney vvvvvvv ---------- //
 
-void error() {
-	printf("\n\nERROR: The input doesn't a valid program! :(\n");
+void error(char* nonterminal) {
+	printf("\n\nSYNTAX ERROR: the non-terminal %s couldn't be matched \
+	with the input symbol of id %c!\n", nonterminal, lookahead);
 	exit(EXIT_FAILURE);
 }
 
@@ -118,7 +120,7 @@ void T() {
 		printf(", ");
 		T();
 	}
-	else error();
+	else error("T");
 	printf(" }");
 }
 
@@ -182,7 +184,7 @@ void X() {
 		printf(", ");
 		match(']');
 	}
-	else error();
+	else error("X");
 	printf(" }");
 }
 
@@ -213,7 +215,7 @@ void Xp() {
 		printf(", ");
 		match(')');
 	}
-	else error();
+	else error("Xp");
 	printf(" }");
 }
 
@@ -256,7 +258,7 @@ void TT() {
 		match(TOK_THIS);
 	else if(FR_TT_7(lookahead))
 		match(TOK_NULL);
-	else error();
+	else error("TT");
 	printf(" }");
 }
 
@@ -276,7 +278,7 @@ void R() {
 		printf(", ");
 		match(')');
 	}
-	else error();
+	else error("R");
 	printf(" }");
 }
 
@@ -300,58 +302,63 @@ void Elp() {
 		printf(", ");
 		Elp();
 	}
-	else error();
+	else error("Elp");
 	printf(" }");
 }
 
 void Relop() {
-	/*
-	if(lookahead == less ||
-	   lookahead == lesseq ||
-	   lookahead == greatereq ||
-	   lookahead == greater ||
-	   lookahead == isequal ||
-	   lookahead == isdiff) // Do Something
-		;
-	else error();
-	*/
+	if(FR_Relop_1(lookahead))
+		match('<');
+	else if(FR_Relop_2(lookahead))
+		match(TOK_LESS_EQ);
+	else if(FR_Relop_3(lookahead))
+		match(TOK_GREATER_EQ);
+	else if(FR_Relop_4(lookahead))
+		match('>');
+	else if(FR_Relop_5(lookahead))
+		match(TOK_EQ);
+	else if(FR_Relop_6(lookahead))
+		match(TOK_DIFF);	
+	else
+		error("Relop");
 }
 
 void Boolop() {
-	/*
-	if(lookahead == and ||
-	   lookahead == or) // Do Something
-		;
-	else error();
-	*/
+	if(FR_Boolop_1(lookahead))
+		match(TOK_AND);
+	else if(FR_Boolop_2(lookahead))
+		match(TOK_OR);	
+	else
+		error("Boolop");
 }
 
 void Addop() {
-	/*
-	if(lookahead == plus ||
-	   lookahead == minus) // Do Something
-		;
-	else error();
-	*/
+	if(FR_Addop_1(lookahead))
+		match('+');
+	else if(FR_Addop_2(lookahead))
+		match('-');	
+	else
+		error("Addop");
 }
 
 void Multop() {
-	/*
-	if(lookahead == times ||
-	   lookahead == div ||
-	   lookahead == mod) // Do Something
-		;
-	else error();
-	*/
+	if(FR_Multop_1(lookahead))
+		match('*');
+	else if(FR_Multop_2(lookahead))
+		match('/');
+	else if(FR_Multop_3(lookahead))
+		match('%');
+	else
+		error("Multop");
 }
 
 void Unop() {
-	/*
-	if(lookahead == minus || ;
-	   lookahead == excl) // Do Something
-		;
-	else error();
-	*/
+	if(FR_Unop_1(lookahead))
+		match('-');
+	else if(FR_Unop_2(lookahead))
+		match('!');	
+	else
+		error("Unop");
 }
 
 // ---------- ^^^^^^^ Gilney ^^^^^^^ ---------- //
