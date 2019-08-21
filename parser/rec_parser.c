@@ -3,11 +3,11 @@
 #include "stdio.h"
 #include <stdlib.h> // exit()
 
-void match(struct token tok){
-	if (lookahead = tok.id){
+void match(char tok_id){
+	if (lookahead == tok_id){
 		lookahead = getNextToken().id;
 	} else{
-		printf("Syntax error when reading the token %c\n", tok.id);
+		printf("Syntax error when reading the token %c\n", tok_id);
 		exit(EXIT_FAILURE);
 	}
 }
@@ -16,6 +16,55 @@ void parse(){
 	lookahead = getNextToken().id;
     printf("not parsing anything yet...\n");
 }
+// ---------- vvvvvvv Giovannni vvvvvvv ---------- //
+
+void Goal() {
+	MainClass();
+	ClassDeclarations();
+}
+
+void MainClass() {
+		match(TOK_CLASS);
+		match(TOK_ID);
+		match('{');
+		match(TOK_VOID);
+		match(TOK_MAIN);
+		match('(');
+		match(TOK_STRING);
+		match('[');
+		match(']');
+		match(TOK_ID);
+		match(')');
+		match('{');
+		BlockStmts();
+		match('}');
+		match('}');
+	}
+}
+
+void BlockStmts(){
+	if(FR_BLK_STMT(lookahead)){
+		BlockStmt();
+		BlockStmts();
+	}
+}
+
+void BlockStmt(){
+	if(FR_NONCLASS_VAR_DEC(lookahead)){
+
+	} else if (FR_STMT(lookahead)) {
+
+	} else if (lookahead == TOK_ID) {
+		match(TOK_ID);
+		AfterId();
+	} else error();
+}
+
+
+// ---------- vvvvvvv Giovanni vvvvvvv ---------- //
+
+
+
 
 // ---------- vvvvvvv Gilney vvvvvvv ---------- //
 
