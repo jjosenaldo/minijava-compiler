@@ -51,14 +51,146 @@ void BlockStmts(){
 
 void BlockStmt(){
 	if(FR_NONCLASS_VAR_DEC(lookahead)){
-
+		NonClassVarDec();
 	} else if (FR_STMT(lookahead)) {
-
+		Stmt();
 	} else if (lookahead == TOK_ID) {
 		match(TOK_ID);
 		AfterId();
-	} else error();
+	} else error("BlockStatement");
 }
+
+void NonClassVarDec(){
+
+}
+
+void Stmt() {
+
+}
+
+void ClassDeclarations() {
+	if(FR_CLASS_DCRLT(lookahead)) {
+		ClassDeclaration();
+		ClassDeclarations();
+	}
+}
+
+void ClassDeclaration() {
+	match(TOK_CLASS);
+	match(TOK_ID);
+	Extends();
+	ClassBody();
+}
+
+void Extends() {
+	if(FR_EXTNDS(lookahead)) {
+		match(TOK_EXTENDS);
+		match(TOK_ID);
+	} else {}
+}
+
+void ClassBody(){
+	match('{');
+	ClassContent();
+	match('}');
+}
+
+void ClassContent(){
+	if(FR_CLASS_COMPONENT(lookahead)){
+		ClassComponent();
+		ClassContent();
+	}
+}
+
+void ClassComponent(){
+	Type();
+	match(TOK_ID);
+	RestDec();
+}
+
+void RestDec() {
+	if(FR_REST_DEC(lookahead)) {
+		match(';');
+	} else if (FR_REST_DEC1(lookahead)) {
+		match('(');
+		ParamsOpt();
+		match(')');
+		match('{');
+		BlockStmts();
+		match('}');
+	} else error("RestDec");
+}
+
+void VarDec(){
+	if(FR_VAR_DEC(lookahead)){
+		NonClassVarDec();
+		VarObjDec();
+	}
+}
+
+void ParamsOpt(){
+	if(FR_PARAMS_OPT(lookahead)) {
+		Params();
+	}
+	//
+}
+
+void Params(){
+	Param();
+	ParamsRest();
+}
+
+void ParamsRest(){
+	if(FR_PARAMS_REST(lookahead)) {
+		match(',');
+		Params();
+	} // eps
+}
+
+void Param() {
+	Type();
+	match(TOK_ID)
+}
+
+void Type1(){
+	if(FR_TYPE1(lookahead)) {
+		match('{');
+		match('}');
+		Type1();
+	} // eps
+}
+
+void NonClassType(){
+	if(FR_NON_CLASS_TYPE(lookahead)) {
+		match(TOK_BOOLEAN);
+		Type1();
+	} else if(FR_NON_CLASS_TYPE1(lookahead)) {
+		match(TOK_INT);
+		Type1();
+	} else if(FR_NON_CLASS_TYPE2(lookahead)) {
+		match(TOK_VOID);
+		Type1();
+	}
+}
+
+void IdType(){
+	match(TOK_ID);
+	Type1();
+}
+
+void Type() {
+	if(FR_TYPE(lookahead)) {
+		NonClassType();
+	} else if (FR_TYPE_1(lookahead)) {
+		IdType();
+	}
+}
+
+void Stmt() {
+
+}
+
+
 
 
 // ---------- vvvvvvv Giovanni vvvvvvv ---------- //
