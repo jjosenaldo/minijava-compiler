@@ -7,7 +7,8 @@ void match(char tok_id){
 	if (lookahead == tok_id){
 		lookahead = getNextToken().id;
 	} else{
-		printf("Syntax error when reading the token %c\n", tok_id);
+		printf("\n\nSYNTAX ERROR: the token %c couldn't be matched \
+		with the input symbol of id %c!\n", tok_id, lookahead);
 		exit(EXIT_FAILURE);
 	}
 }
@@ -19,8 +20,9 @@ void parse(){
 
 // ---------- vvvvvvv Gilney vvvvvvv ---------- //
 
-void error() {
-	printf("\n\nERROR: The input doesn't a valid program! :(\n");
+void error(char* nonterminal) {
+	printf("\n\nSYNTAX ERROR: the non-terminal %s couldn't be matched \
+	with the input symbol of id %c!\n", nonterminal, lookahead);
 	exit(EXIT_FAILURE);
 }
 
@@ -118,7 +120,7 @@ void T() {
 		printf(", ");
 		T();
 	}
-	else error();
+	else error("T");
 	printf(" }");
 }
 
@@ -182,7 +184,7 @@ void X() {
 		printf(", ");
 		rbracket();
 	}
-	else error();
+	else error("X");
 	printf(" }");
 }
 
@@ -213,7 +215,7 @@ void Xp() {
 		printf(", ");
 		rpar();
 	}
-	else error();
+	else error("Xp");
 	printf(" }");
 }
 
@@ -262,7 +264,7 @@ void TT() {
 	else if(FR_null(lookahead)) {
 		//null();
 	}
-	else error();
+	else error("TT");
 	printf(" }");
 }
 
@@ -282,7 +284,7 @@ void R() {
 		printf(", ");
 		rpar();
 	}
-	else error();
+	else error("R");
 	printf(" }");
 }
 
@@ -306,7 +308,7 @@ void Elp() {
 		printf(", ");
 		Elp();
 	}
-	else error();
+	else error("Elp");
 	printf(" }");
 }
 
@@ -324,7 +326,7 @@ void Relop() {
 	else if(FR_Relop_6(lookahead))
 		match(TOK_DIFF);	
 	else
-		error();
+		error("Relop");
 }
 
 void Boolop() {
@@ -333,7 +335,7 @@ void Boolop() {
 	else if(FR_Boolop_2(lookahead))
 		match(TOK_OR);	
 	else
-		error();
+		error("Boolop");
 }
 
 void Addop() {
@@ -342,7 +344,7 @@ void Addop() {
 	else if(FR_Addop_2(lookahead))
 		match('-');	
 	else
-		error();
+		error("Addop");
 }
 
 void Multop() {
@@ -353,7 +355,7 @@ void Multop() {
 	else if(FR_Multop_3(lookahead))
 		match('%');
 	else
-		error();
+		error("Multop");
 }
 
 void Unop() {
@@ -362,7 +364,7 @@ void Unop() {
 	else if(FR_Unop_2(lookahead))
 		match('!');	
 	else
-		error();
+		error("Unop");
 }
 
 // ---------- ^^^^^^^ Gilney ^^^^^^^ ---------- //
