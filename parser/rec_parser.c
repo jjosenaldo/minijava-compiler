@@ -3,11 +3,11 @@
 #include "stdio.h"
 #include <stdlib.h> // exit()
 
-void match(struct token tok){
-	if (lookahead = tok.id){
+void match(char tok_id){
+	if (lookahead == tok_id){
 		lookahead = getNextToken().id;
 	} else{
-		printf("Syntax error when reading the token %c\n", tok.id);
+		printf("Syntax error when reading the token %c\n", tok_id);
 		exit(EXIT_FAILURE);
 	}
 }
