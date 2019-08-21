@@ -16,25 +16,34 @@ void error() {
 }
 
 void E() {
+	printf("E { ");
 	E1();
+	printf(", ");
 	Ep();
+	printf(" }");
 }
 
 void Ep() {
-	if(FR_Relop(lookahead.id)) {
+	printf("Ep { ");
+	if(FR_Relop(lookahead)) {
 		Relop();
+		printf(", ");
 		E1();
 	}
-	else /* Epsilon */;
+	else printf("Epsilon");;
+	printf(" }");
 }
 
 void E1() {
+	printf("E1 { ");
 	E2();
+	printf(", ");
 	E1p();
+	printf(" }");
 }
 
 void E1p() {
-	if(FR_Boolop(lookahead.id)) {
+	if(FR_Boolop(lookahead)) {
 		Boolop();
 		E2();
 		E1p();
@@ -48,7 +57,7 @@ void E2() {
 }
 
 void E2p() {
-	if(FR_Addop(lookahead.id)) {
+	if(FR_Addop(lookahead)) {
 		Addop();
 		E3();
 		E2p();
@@ -62,7 +71,7 @@ void E3() {
 }
 
 void E3p() {
-	if(FR_Multop(lookahead.id)) {
+	if(FR_Multop(lookahead)) {
 		Multop();
 		T();
 		E3p();
@@ -71,11 +80,11 @@ void E3p() {
 }
 
 void T() {
-	if(FR_F(lookahead.id)) {
+	if(FR_F(lookahead)) {
 		F();
 		Tp();
 	}
-	else if(FR_Unop(lookahead.id)) {
+	else if(FR_Unop(lookahead)) {
 		Unop();
 		T();
 	}
@@ -83,7 +92,7 @@ void T() {
 }
 
 void Tp() {
-	if(FR_X(lookahead.id)) {
+	if(FR_X(lookahead)) {
 		X();
 		Tp()
 	}
@@ -91,7 +100,7 @@ void Tp() {
 }
 
 void T2() {
-	if(FR_comma(lookahead.id)) {
+	if(FR_comma(lookahead)) {
 		comma();
 		E();
 	}
@@ -99,7 +108,7 @@ void T2() {
 }
 
 void T3() {
-	if(FR_E(lookahead.id)) {
+	if(FR_E(lookahead)) {
 		E();
 		T4();
 	}
@@ -107,7 +116,7 @@ void T3() {
 }
 
 void T4() {
-	if(FR_comma(lookahead.id)) {
+	if(FR_comma(lookahead)) {
 		comma();
 		E();
 		T4();
@@ -116,11 +125,11 @@ void T4() {
 }
 
 void X() {
-	if(FR_dot(lookahead.id)) {
+	if(FR_dot(lookahead)) {
 		dot();
 		Xp();
 	}
-	else if(FR_lbracket(lookahead.id)) {
+	else if(FR_lbracket(lookahead)) {
 		lookahead();
 		E();
 		rbracket();
@@ -129,18 +138,18 @@ void X() {
 }
 
 void Xp() {
-	if(FR_length(lookahead.id)) {
+	if(FR_length(lookahead)) {
 		length();
 		P();
 	}
-	else if(FR_substring(lookahead.id)) {
+	else if(FR_substring(lookahead)) {
 		substring();
 		lpar();
 		E();
 		T2();
 		rpar();
 	}
-	else if(FR_id(lookahead.id)) {
+	else if(FR_id(lookahead)) {
 		id();
 		lpar();
 		T3();
@@ -150,7 +159,7 @@ void Xp() {
 }
 
 void P() {
-	if(FR_lpar(lookahead.id)) {
+	if(FR_lpar(lookahead)) {
 		lpar();
 		rpar();
 	}
@@ -158,46 +167,46 @@ void P() {
 }
 
 void F() {
-	if(FR_TT(lookahead.id)) {
+	if(FR_TT(lookahead)) {
 		TT();
 	}
-	else if(FR_R(lookahead.id)) {
+	else if(FR_R(lookahead)) {
 		R();
 	}
 	else error();
 }
 
 void TT() {
-	if(FR_litint(lookahead.id))
+	if(FR_litint(lookahead))
 		litint();
-	else if(FR_true(lookahead.id)) {
+	else if(FR_true(lookahead)) {
 		//true();
 	}
-	else if(FR_false(lookahead.id)) {
+	else if(FR_false(lookahead)) {
 		//false();
 	}
-	else if(FR_id(lookahead.id)) {
+	else if(FR_id(lookahead)) {
 		id();
 	}
-	else if(FR_litstr(lookahead.id)) {
+	else if(FR_litstr(lookahead)) {
 		litstr();
 	}
-	else if(FR_this(lookahead.id)) {
+	else if(FR_this(lookahead)) {
 		//this();
 	}
-	else if(FR_null(lookahead.id)) {
+	else if(FR_null(lookahead)) {
 		//null();
 	}
 	else error();
 }
 
 void R() {
-	if(FR_lbrace(lookahead.id)) {
+	if(FR_lbrace(lookahead)) {
 		lbrace();
 		El();
 		rbrace();
 	}
-	else if(FR_lpar(lookahead.id)) {
+	else if(FR_lpar(lookahead)) {
 		lpar();
 		E();
 		rpar();
@@ -206,7 +215,7 @@ void R() {
 }
 
 void El() {
-	if(FR_E(lookahead.id)) {
+	if(FR_E(lookahead)) {
 		E();
 		Elp();
 	}
@@ -214,7 +223,7 @@ void El() {
 }
 
 void Elp() {
-	if(FR_comma(lookahead.id)) {
+	if(FR_comma(lookahead)) {
 		comma();
 		E();
 		Elp();
