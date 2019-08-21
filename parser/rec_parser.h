@@ -3,7 +3,7 @@
 
 void parse();
 
-struct token lookahead;
+char lookahead;
 void error();
 void E();
 void Ep();
