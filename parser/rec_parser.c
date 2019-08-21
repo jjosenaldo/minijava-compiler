@@ -34,7 +34,7 @@ void E() {
 
 void Ep() {
 	printf("Ep { ");
-	if(FR_Relop(lookahead)) {
+	if(FR_Ep_1(lookahead)) {
 		Relop();
 		printf(", ");
 		E1();
@@ -53,7 +53,7 @@ void E1() {
 
 void E1p() {
 	printf("E1p { ");
-	if(FR_Boolop(lookahead)) {
+	if(FR_E1p_1(lookahead)) {
 		Boolop();
 		printf(", ");
 		E2();
@@ -74,7 +74,7 @@ void E2() {
 
 void E2p() {
 	printf("E2p { ");
-	if(FR_Addop(lookahead)) {
+	if(FR_E2p_1(lookahead)) {
 		Addop();
 		printf(", ");
 		E3();
@@ -95,7 +95,7 @@ void E3() {
 
 void E3p() {
 	printf("E3p { ");
-	if(FR_Multop(lookahead)) {
+	if(FR_E3p_1(lookahead)) {
 		Multop();
 		printf(", ");
 		T();
@@ -108,12 +108,12 @@ void E3p() {
 
 void T() {
 	printf("T { ");
-	if(FR_F(lookahead)) {
+	if(FR_T_1(lookahead)) {
 		F();
 		printf(", ");
 		Tp();
 	}
-	else if(FR_Unop(lookahead)) {
+	else if(FR_T_2(lookahead)) {
 		Unop();
 		printf(", ");
 		T();
@@ -124,7 +124,7 @@ void T() {
 
 void Tp() {
 	printf("Tp { ");
-	if(FR_X(lookahead)) {
+	if(FR_Tp_1(lookahead)) {
 		X();
 		printf(", ");
 		Tp()
@@ -135,8 +135,8 @@ void Tp() {
 
 void T2() {
 	printf("T2 { ");
-	if(FR_comma(lookahead)) {
-		comma();
+	if(FR_T2_1(lookahead)) {
+		match(',');
 		printf(", ");
 		E();
 	}
@@ -146,7 +146,7 @@ void T2() {
 
 void T3() {
 	printf("T3 { ");
-	if(FR_E(lookahead)) {
+	if(FR_T3_1(lookahead)) {
 		E();
 		printf(", ");
 		T4();
@@ -156,9 +156,9 @@ void T3() {
 }
 
 void T4() {
-	printf("T4 {");
-	if(FR_comma(lookahead)) {
-		comma();
+	printf("T4 { ");
+	if(FR_T4_1(lookahead)) {
+		match(',');
 		printf(", ");
 		E();
 		printf(", ");
@@ -169,18 +169,18 @@ void T4() {
 }
 
 void X() {
-	printf("X {");
-	if(FR_dot(lookahead)) {
-		dot();
+	printf("X { ");
+	if(FR_X_1(lookahead)) {
+		match('.');
 		printf(", ");
 		Xp();
 	}
-	else if(FR_lbracket(lookahead)) {
-		lbracket();
+	else if(FR_X_2(lookahead)) {
+		match('[');
 		printf(", ");
 		E();
 		printf(", ");
-		rbracket();
+		match(']');
 	}
 	else error();
 	printf(" }");
@@ -188,30 +188,30 @@ void X() {
 
 void Xp() {
 	printf("Xp { ");
-	if(FR_length(lookahead)) {
-		length();
+	if(FR_Xp_1(lookahead)) {
+		match(TOK_LENGTH);
 		printf(", ");
 		P();
 	}
-	else if(FR_substring(lookahead)) {
-		substring();
+	else if(FR_Xp_2(lookahead)) {
+		match(TOK_SUBSTRING);
 		printf(", ");
-		lpar();
+		match('(');
 		printf(", ");
 		E();
 		printf(", ");
 		T2();
 		printf(", ");
-		rpar();
+		match(')');
 	}
-	else if(FR_id(lookahead)) {
-		id();
+	else if(FR_Xp_3(lookahead)) {
+		match(TOK_ID);
 		printf(", ");
-		lpar();
+		match('(');
 		printf(", ");
 		T3();
 		printf(", ");
-		rpar();
+		match(')');
 	}
 	else error();
 	printf(" }");
@@ -219,10 +219,10 @@ void Xp() {
 
 void P() {
 	printf("P { ");
-	if(FR_lpar(lookahead)) {
-		lpar();
+	if(FR_P_1(lookahead)) {
+		match('(');
 		printf(", ");
-		rpar();
+		match(')');
 	}
 	else printf("\u03B5") /* Epsilon */;
 	printf(" }");
@@ -230,10 +230,10 @@ void P() {
 
 void F() {
 	printf("F { ");
-	if(FR_TT(lookahead)) {
+	if(FR_F_1(lookahead)) {
 		TT();
 	}
-	else if(FR_R(lookahead)) {
+	else if(FR_F_2(lookahead)) {
 		R();
 	}
 	else error();
@@ -242,45 +242,39 @@ void F() {
 
 void TT() {
 	printf("TT { ");
-	if(FR_litint(lookahead))
-		litint();
-	else if(FR_true(lookahead)) {
-		//true();
-	}
-	else if(FR_false(lookahead)) {
-		//false();
-	}
-	else if(FR_id(lookahead)) {
-		id();
-	}
-	else if(FR_litstr(lookahead)) {
-		litstr();
-	}
-	else if(FR_this(lookahead)) {
-		//this();
-	}
-	else if(FR_null(lookahead)) {
-		//null();
-	}
+	if(FR_TT_1(lookahead))
+		match(TOK_LIT_INT);
+	else if(FR_TT_2(lookahead))
+		match(TOK_TRUE);
+	else if(FR_TT_3(lookahead))
+		match(TOK_FALSE);
+	else if(FR_TT_4(lookahead))
+		match(TOK_ID);
+	else if(FR_TT_5(lookahead))
+		match(TOK_LIT_STR);
+	else if(FR_TT_6(lookahead))
+		match(TOK_THIS);
+	else if(FR_TT_7(lookahead))
+		match(TOK_NULL);
 	else error();
 	printf(" }");
 }
 
 void R() {
 	printf("R { ");
-	if(FR_lbrace(lookahead)) {
-		lbrace();
+	if(FR_R_1(lookahead)) {
+		match('{')
 		printf(", ");
 		El();
 		printf(", ");
-		rbrace();
+		match('}');
 	}
-	else if(FR_lpar(lookahead)) {
-		lpar();
+	else if(FR_R_2(lookahead)) {
+		match('(');
 		printf(", ");
 		E();
 		printf(", ");
-		rpar();
+		match(')');
 	}
 	else error();
 	printf(" }");
@@ -288,7 +282,7 @@ void R() {
 
 void El() {
 	printf("El { ");
-	if(FR_E(lookahead)) {
+	if(FR_El_1(lookahead)) {
 		E();
 		printf(", ");
 		Elp();
@@ -299,8 +293,8 @@ void El() {
 
 void Elp() {
 	printf("Elp { ");
-	if(FR_comma(lookahead)) {
-		comma();
+	if(FR_Elp_1(lookahead)) {
+		match(',');
 		printf(", ");
 		E();
 		printf(", ");

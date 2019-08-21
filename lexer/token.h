@@ -35,6 +35,7 @@ static const char TOK_EXTENDS = 'x';
 static const char TOK_AND = '&';
 static const char TOK_OR = '|';
 static const char EPS = '@';
+static const char TOK_SUBSTRING = 'a';
 
 
 struct token{
