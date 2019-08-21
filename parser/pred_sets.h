@@ -542,8 +542,50 @@
 // AfterId -> id semicolon .
 #define FR_AFTER_ID1(x) F_RMNG_ARR_ASSGMT(x)
 
-// AfterId -> id semicolon .
-#define FR_Relop(x) F_Relop(x)
+// Relop -> less  .
+#define FR_Relop_1(x) x == '<'
+
+// Relop ->  lesseq  .
+#define FR_Relop_2(x) x == TOK_LESS_EQ
+
+// Relop -> greatereq .
+#define FR_Relop_3(x) x == TOK_GREATER_EQ
+
+// Relop -> greater .
+#define FR_Relop_4(x) x == '>'
+
+// Relop -> isequal .
+#define FR_Relop_5(x) x == TOK_EQ
+
+// Relop -> isdiff .
+#define FR_Relop_6(x) x == TOK_DIFF
+
+// Boolop -> and .
+#define FR_Boolop_1(x) x == TOK_AND
+
+// Boolop -> or .
+#define FR_Boolop_2(x) x == TOK_OR
+
+// Addop -> plus .
+#define FR_Addop_1(x) x == '+'
+
+// Addop -> minus .
+#define FR_Addop_2(x) x == '-'
+
+// Multop -> times .
+#define FR_Multop_1(x) x == '*'
+
+// Multop -> div .
+#define FR_Multop_2(x) x == '/'
+
+// Multop -> mod .
+#define FR_Multop_3(x) x == '%'
+
+// Unop -> minus .
+#define FR_Unop_1(x) x == '-'
+
+// Unop -> excl .
+#define FR_Unop_2(x) x == '!'
 
 // ∅
 #define FF_GOAL(x) 0
