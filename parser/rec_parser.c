@@ -1,6 +1,7 @@
 #include "rec_parser.h"
 #include "pred_sets.h"
 #include "stdio.h"
+#include <stdlib.h> // exit()
 
 void parse(){
 	lookahead = getNextToken();
@@ -21,7 +22,7 @@ void E() {
 
 void Ep() {
 	if(FR_Relop(lookahead.id)) {
-		RelOp();
+		Relop();
 		E1();
 	}
 	else /* Epsilon */;
