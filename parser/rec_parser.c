@@ -10,7 +10,7 @@ void match(char tok_id){
 	} else{
 		if(lookahead.id == TOK_EOF)
 		printf("\n\nSYNTAX ERROR: the token %c couldn't be matched with the end of file!\n", tok_id);
-		else 
+		else
 			printf("\n\nSYNTAX ERROR: the token %c couldn't be matched with the input symbol %s!\n", tok_id, lookahead.lexem);
 		exit(EXIT_FAILURE);
 	}
@@ -78,11 +78,11 @@ void BlockStmts(){
 
 void BlockStmt(){
 	printf("BlockStmt { ");
-	if(FR_NONCLASS_VAR_DEC(lookahead.id)){
+	if(FR_BLK_STMT(lookahead.id)){
 		NonClassVarDec();
-	} else if (FR_STMT(lookahead.id)) {
+	} else if (FR_BLK_STMT1(lookahead.id)) {
 		Stmt();
-	} else if (lookahead.id == TOK_ID) {
+	} else if (R_BLK_STMT2(lookahead.id)) {
 		match(TOK_ID);
 		AfterId();
 	} else error("BlockStatement");
@@ -136,11 +136,11 @@ void Stmt() {
 	} else if(FR_STMT3(lookahead.id)){
 		match(TOK_CONTINUE);
 		printf(", ");
-		match(';');		
+		match(';');
 	} else if(FR_STMT4(lookahead.id)){
 		match(TOK_BREAK);
 		printf(", ");
-		match(';');		
+		match(';');
 	} else if(FR_STMT5(lookahead.id)){
 		match(TOK_RETURN);
 		printf(", ");
@@ -148,7 +148,7 @@ void Stmt() {
 		printf(", ");
 		match(';');
 	} else if(FR_STMT6(lookahead.id)){
-		match(';');		
+		match(';');
 	} else if(FR_STMT7(lookahead.id)){
 		// TODO
 	} else error("Stmt");
