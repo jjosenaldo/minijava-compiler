@@ -82,7 +82,7 @@ void BlockStmt(){
 		NonClassVarDec();
 	} else if (FR_BLK_STMT1(lookahead.id)) {
 		Stmt();
-	} else if (R_BLK_STMT2(lookahead.id)) {
+	} else if (FR_BLK_STMT2(lookahead.id)) {
 		match(TOK_ID);
 		AfterId();
 	} else error("BlockStatement");
