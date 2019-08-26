@@ -135,14 +135,6 @@ void Stmt() {
 	}
 }
 
-/*
-
-// Statement ->  semicolon .
-#define FR_STMT6(x) x == ';'
-
-// Statement ->  if E then Statement OptElse .
-#define FR_STMT7(x) x == TOK_IF
-*/
 
 void ClassDeclarations() {
 	printf("ClassDeclarations { ");
