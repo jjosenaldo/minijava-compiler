@@ -58,7 +58,7 @@
         x == TOK_THIS || x == TOK_NULL || x == '{' || x == '('
 
 // litint true false id litstr this null
-#define F_TT(x) x == LIT_INT || x == TOK_TRUE || x == TOK_FALSE || x == TOK_ID || x == TOK_LIT_STR || \
+#define F_TT(x) x == TOK_LIT_INT || x == TOK_TRUE || x == TOK_FALSE || x == TOK_ID || x == TOK_LIT_STR || \
         x == TOK_THIS || x == TOK_NULL
 
 // lbrace (
@@ -549,7 +549,7 @@
 #define FR_Relop_2(x) x == TOK_LESS_EQ
 
 // Relop -> greatereq .
-#define FR_Relop_3(x) x == TOK_GREATER_EQ
+#define FR_Relop_3(x) x == TOK_GREAT_EQ
 
 // Relop -> greater .
 #define FR_Relop_4(x) x == '>'

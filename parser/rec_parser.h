@@ -7,6 +7,8 @@ char lookahead;
 void error();
 void Goal();
 void MainClass();
+void AfterId();
+void VarObjDec();
 void BlockStmts();
 void BlockStmt();
 void NonClassVarDec();

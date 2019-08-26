@@ -25,22 +25,21 @@ void Goal() {
 }
 
 void MainClass() {
-		match(TOK_CLASS);
-		match(TOK_ID);
-		match('{');
-		match(TOK_VOID);
-		match(TOK_MAIN);
-		match('(');
-		match(TOK_STRING);
-		match('[');
-		match(']');
-		match(TOK_ID);
-		match(')');
-		match('{');
-		BlockStmts();
-		match('}');
-		match('}');
-	}
+	match(TOK_CLASS);
+	match(TOK_ID);
+	match('{');
+	match(TOK_VOID);
+	match(TOK_MAIN);
+	match('(');
+	match(TOK_STRING);
+	match('[');
+	match(']');
+	match(TOK_ID);
+	match(')');
+	match('{');
+	BlockStmts();
+	match('}');
+	match('}');
 }
 
 void BlockStmts(){
@@ -150,7 +149,7 @@ void ParamsRest(){
 
 void Param() {
 	Type();
-	match(TOK_ID)
+	match(TOK_ID);
 }
 
 void Type1(){
@@ -186,13 +185,6 @@ void Type() {
 		IdType();
 	}
 }
-
-void Stmt() {
-
-}
-
-
-
 
 // ---------- vvvvvvv Giovanni vvvvvvv ---------- //
 
@@ -310,7 +302,7 @@ void Tp() {
 	if(FR_Tp_1(lookahead)) {
 		X();
 		printf(", ");
-		Tp()
+		Tp();
 	}
 	else printf("\u03B5") /* Epsilon */;
 	printf(" }");
@@ -419,7 +411,7 @@ void F() {
 	else if(FR_F_2(lookahead)) {
 		R();
 	}
-	else error();
+	else error("F");
 	printf(" }");
 }
 
@@ -446,7 +438,7 @@ void TT() {
 void R() {
 	printf("R { ");
 	if(FR_R_1(lookahead)) {
-		match('{')
+		match('{');
 		printf(", ");
 		El();
 		printf(", ");
@@ -487,13 +479,21 @@ void Elp() {
 	printf(" }");
 }
 
+void AfterId(){
+
+}
+
+void VarObjDec(){
+	
+}
+
 void Relop() {
 	if(FR_Relop_1(lookahead))
 		match('<');
 	else if(FR_Relop_2(lookahead))
 		match(TOK_LESS_EQ);
 	else if(FR_Relop_3(lookahead))
-		match(TOK_GREATER_EQ);
+		match(TOK_GREAT_EQ);
 	else if(FR_Relop_4(lookahead))
 		match('>');
 	else if(FR_Relop_5(lookahead))
