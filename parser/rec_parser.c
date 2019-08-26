@@ -150,11 +150,17 @@ void Stmt() {
 	} else if(FR_STMT6(lookahead.id)){
 		match(';');
 	} else if(FR_STMT7(lookahead.id)){
-		// TODO
+		match(TOK_IF);
+		printf(", ");
+		E();
+		printf(", ");
+		Stmt();
+		printf(", ");
+		OptElse();
+		printf(", ");
 	} else error("Stmt");
 	printf(" }");
 }
-
 
 void ClassDeclarations() {
 	printf("ClassDeclarations { ");
@@ -333,6 +339,18 @@ void Type() {
 		NonClassType();
 	} else if (FR_TYPE_1(lookahead.id)) {
 		IdType();
+	}
+	else printf("\u03B5") /* Epsilon */;
+	printf(" }");
+}
+
+void OptElse(){
+	printf("Type { ");
+	if(FR_OPT_ELSE(lookahead.id)) {
+		match(TOK_ELSE);
+		printf(", ");
+		Stmt();
+		printf(", ");
 	}
 	else printf("\u03B5") /* Epsilon */;
 	printf(" }");
