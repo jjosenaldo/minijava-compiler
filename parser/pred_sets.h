@@ -531,10 +531,10 @@
 #define FR_ARR_ASSGMT(x) x == TOK_ID
 
 // RemainingArrAssignment -> lbracket E rbracket equal E .
-#define FR_RMNG_ARR_ASSGMT(x) == '{'
+#define FR_RMNG_ARR_ASSGMT(x) x == '{'
 
 // RemainingArrAssignment -> equal E .
-#define FR_RMNG_ARR_ASSGMT1(x) == TOK_EQ
+#define FR_RMNG_ARR_ASSGMT1(x) x == TOK_EQ
 
 // AfterId -> RemainingArrAssignment .
 #define FR_AFTER_ID(x) F_RMNG_ARR_ASSGMT(x)
