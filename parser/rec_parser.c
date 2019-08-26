@@ -620,7 +620,11 @@ void AfterId(){
 }
 
 void VarObjDec(){
-	
+	if(FR_VAR_OBJ_DEC(lookahead.id)){
+		match(TOK_ID);
+		match(TOK_ID);
+		match(';');
+	} else error("VarObjDec");
 }
 
 void RemainingArrAssignment(){
