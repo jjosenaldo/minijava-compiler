@@ -65,12 +65,59 @@ void BlockStmt(){
 }
 
 void NonClassVarDec(){
-
+	if(FR_NONCLASS_VAR_DEC(lookahead.id)){
+		NonClassType();
+		match(TOK_ID);
+		match(';');
+	} else error("NonClassVarDec");
 }
 
 void Stmt() {
-
+	if(FR_STMT(lookahead.id)){
+		match('{');
+		BlockStmts();
+		match('}');
+	} else if(FR_STMT1(lookahead.id)){
+		match(TOK_WHILE);
+		match('(');
+		E();
+		match(')');
+		Stmt();
+	} else if(FR_STMT2(lookahead.id)){
+		match(TOK_ID);
+		match('.');
+		match(TOK_ID);
+		match('.');
+		match(TOK_ID);
+		match('(');
+		E();
+		match(')');
+		match(';');
+	} else if(FR_STMT3(lookahead.id)){
+		match(TOK_CONTINUE);
+		match(';');		
+	} else if(FR_STMT4(lookahead.id)){
+		match(TOK_BREAK);
+		match(';');		
+	} else if(FR_STMT5(lookahead.id)){
+		match(TOK_RETURN);
+		E();
+		match(';');
+	} else if(FR_STMT6(lookahead.id)){
+		match(';');		
+	} else if(FR_STMT7(lookahead.id)){
+		// TODO
+	}
 }
+
+/*
+
+// Statement ->  semicolon .
+#define FR_STMT6(x) x == ';'
+
+// Statement ->  if E then Statement OptElse .
+#define FR_STMT7(x) x == TOK_IF
+*/
 
 void ClassDeclarations() {
 	if(FR_CLASS_DCRLT(lookahead.id)) {
