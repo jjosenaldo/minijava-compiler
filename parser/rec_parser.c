@@ -98,41 +98,61 @@ void NonClassVarDec(){
 }
 
 void Stmt() {
+	printf("Stmt { ");
 	if(FR_STMT(lookahead.id)){
 		match('{');
+		printf(", ");
 		BlockStmts();
+		printf(", ");
 		match('}');
 	} else if(FR_STMT1(lookahead.id)){
 		match(TOK_WHILE);
+		printf(", ");
 		match('(');
+		printf(", ");
 		E();
+		printf(", ");
 		match(')');
+		printf(", ");
 		Stmt();
 	} else if(FR_STMT2(lookahead.id)){
 		match(TOK_ID);
+		printf(", ");
 		match('.');
+		printf(", ");
 		match(TOK_ID);
+		printf(", ");
 		match('.');
+		printf(", ");
 		match(TOK_ID);
+		printf(", ");
 		match('(');
+		printf(", ");
 		E();
+		printf(", ");
 		match(')');
+		printf(", ");
 		match(';');
 	} else if(FR_STMT3(lookahead.id)){
 		match(TOK_CONTINUE);
+		printf(", ");
 		match(';');		
 	} else if(FR_STMT4(lookahead.id)){
 		match(TOK_BREAK);
+		printf(", ");
 		match(';');		
 	} else if(FR_STMT5(lookahead.id)){
 		match(TOK_RETURN);
+		printf(", ");
 		E();
+		printf(", ");
 		match(';');
 	} else if(FR_STMT6(lookahead.id)){
 		match(';');		
 	} else if(FR_STMT7(lookahead.id)){
 		// TODO
-	}
+	} else error("Stmt");
+	printf(" }");
 }
 
 
