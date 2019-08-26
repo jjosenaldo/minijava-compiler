@@ -631,11 +631,29 @@ void Elp() {
 }
 
 void AfterId(){
-
+	if(FR_AFTER_ID(lookahead.id)){
+		RemainingArrAssignment();
+	} else if(FR_AFTER_ID1(lookahead.id)){
+		match(TOK_ID);
+		match(';');
+	} else error("AfterId");
 }
 
 void VarObjDec(){
 	
+}
+
+void RemainingArrAssignment(){
+	if(FR_RMNG_ARR_ASSGMT(lookahead.id)){
+		match('[');
+		E();
+		match(']');
+		match('=');
+		E();
+	} else if(FR_RMNG_ARR_ASSGMT1(lookahead.id)){
+		match('=');
+		E();
+	}
 }
 
 void Relop() {

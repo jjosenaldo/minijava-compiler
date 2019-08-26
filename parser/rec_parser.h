@@ -14,6 +14,7 @@ void BlockStmt();
 void NonClassVarDec();
 void Stmt();
 void ClassDeclarations();
+void RemainingArrAssignment();
 void ClassDeclaration();
 void Extends();
 void ClassBody();
