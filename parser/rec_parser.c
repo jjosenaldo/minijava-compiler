@@ -158,7 +158,7 @@ void Stmt() {
 
 void ClassDeclarations() {
 	printf("ClassDeclarations { ");
-	if(FR_CLASS_DCRLT(lookahead.id)) {
+	if(FR_CLASS_DCRLTS(lookahead.id)) {
 		ClassDeclaration();
 		printf(", ");
 		ClassDeclarations();
@@ -202,7 +202,7 @@ void ClassBody(){
 
 void ClassContent(){
 	printf("ClassContent { ");
-	if(FR_CLASS_COMPONENT(lookahead.id)){
+	if(FR_CLASS_CONTENT(lookahead.id)){
 		ClassComponent();
 		printf(", ");
 		ClassContent();
