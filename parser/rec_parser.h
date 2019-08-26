@@ -3,7 +3,7 @@
 
 void parse();
 
-char lookahead;
+struct token lookahead;
 void error();
 void Goal();
 void MainClass();

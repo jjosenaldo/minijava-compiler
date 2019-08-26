@@ -4,18 +4,19 @@
 #include <stdlib.h> // exit()
 
 void match(char tok_id){
-	if (lookahead == tok_id){
-		lookahead = getNextToken().id;
+	if (lookahead.id == tok_id){
+		printf("%s", lookahead.lexem);
+		lookahead = getNextToken();
 	} else{
-		printf("\n\nSYNTAX ERROR: the token %c couldn't be matched \
-		with the input symbol of id %c!\n", tok_id, lookahead);
+		printf("\n\nSYNTAX ERROR: the token %c couldn't be matched with the input symbol %s!\n", tok_id, lookahead.lexem);
 		exit(EXIT_FAILURE);
 	}
 }
 
 void parse(){
-	lookahead = getNextToken().id;
-    printf("not parsing anything yet...\n");
+	lookahead = getNextToken();
+    E();
+    printf("\n");
 }
 // ---------- vvvvvvv Giovannni vvvvvvv ---------- //
 
@@ -43,18 +44,18 @@ void MainClass() {
 }
 
 void BlockStmts(){
-	if(FR_BLK_STMT(lookahead)){
+	if(FR_BLK_STMT(lookahead.id)){
 		BlockStmt();
 		BlockStmts();
 	}
 }
 
 void BlockStmt(){
-	if(FR_NONCLASS_VAR_DEC(lookahead)){
+	if(FR_NONCLASS_VAR_DEC(lookahead.id)){
 		NonClassVarDec();
-	} else if (FR_STMT(lookahead)) {
+	} else if (FR_STMT(lookahead.id)) {
 		Stmt();
-	} else if (lookahead == TOK_ID) {
+	} else if (lookahead.id == TOK_ID) {
 		match(TOK_ID);
 		AfterId();
 	} else error("BlockStatement");
@@ -69,7 +70,7 @@ void Stmt() {
 }
 
 void ClassDeclarations() {
-	if(FR_CLASS_DCRLT(lookahead)) {
+	if(FR_CLASS_DCRLT(lookahead.id)) {
 		ClassDeclaration();
 		ClassDeclarations();
 	}
@@ -83,7 +84,7 @@ void ClassDeclaration() {
 }
 
 void Extends() {
-	if(FR_EXTNDS(lookahead)) {
+	if(FR_EXTNDS(lookahead.id)) {
 		match(TOK_EXTENDS);
 		match(TOK_ID);
 	} else {}
@@ -96,7 +97,7 @@ void ClassBody(){
 }
 
 void ClassContent(){
-	if(FR_CLASS_COMPONENT(lookahead)){
+	if(FR_CLASS_COMPONENT(lookahead.id)){
 		ClassComponent();
 		ClassContent();
 	}
@@ -109,9 +110,9 @@ void ClassComponent(){
 }
 
 void RestDec() {
-	if(FR_REST_DEC(lookahead)) {
+	if(FR_REST_DEC(lookahead.id)) {
 		match(';');
-	} else if (FR_REST_DEC1(lookahead)) {
+	} else if (FR_REST_DEC1(lookahead.id)) {
 		match('(');
 		ParamsOpt();
 		match(')');
@@ -122,14 +123,14 @@ void RestDec() {
 }
 
 void VarDec(){
-	if(FR_VAR_DEC(lookahead)){
+	if(FR_VAR_DEC(lookahead.id)){
 		NonClassVarDec();
 		VarObjDec();
 	}
 }
 
 void ParamsOpt(){
-	if(FR_PARAMS_OPT(lookahead)) {
+	if(FR_PARAMS_OPT(lookahead.id)) {
 		Params();
 	}
 	//
@@ -141,7 +142,7 @@ void Params(){
 }
 
 void ParamsRest(){
-	if(FR_PARAMS_REST(lookahead)) {
+	if(FR_PARAMS_REST(lookahead.id)) {
 		match(',');
 		Params();
 	} // eps
@@ -153,7 +154,7 @@ void Param() {
 }
 
 void Type1(){
-	if(FR_TYPE1(lookahead)) {
+	if(FR_TYPE1(lookahead.id)) {
 		match('{');
 		match('}');
 		Type1();
@@ -161,13 +162,13 @@ void Type1(){
 }
 
 void NonClassType(){
-	if(FR_NON_CLASS_TYPE(lookahead)) {
+	if(FR_NON_CLASS_TYPE(lookahead.id)) {
 		match(TOK_BOOLEAN);
 		Type1();
-	} else if(FR_NON_CLASS_TYPE1(lookahead)) {
+	} else if(FR_NON_CLASS_TYPE1(lookahead.id)) {
 		match(TOK_INT);
 		Type1();
-	} else if(FR_NON_CLASS_TYPE2(lookahead)) {
+	} else if(FR_NON_CLASS_TYPE2(lookahead.id)) {
 		match(TOK_VOID);
 		Type1();
 	}
@@ -179,9 +180,9 @@ void IdType(){
 }
 
 void Type() {
-	if(FR_TYPE(lookahead)) {
+	if(FR_TYPE(lookahead.id)) {
 		NonClassType();
-	} else if (FR_TYPE_1(lookahead)) {
+	} else if (FR_TYPE_1(lookahead.id)) {
 		IdType();
 	}
 }
@@ -194,13 +195,12 @@ void Type() {
 // ---------- vvvvvvv Gilney vvvvvvv ---------- //
 
 void error(char* nonterminal) {
-	printf("\n\nSYNTAX ERROR: the non-terminal %s couldn't be matched \
-	with the input symbol of id %c!\n", nonterminal, lookahead);
+	printf("\n\nSYNTAX ERROR: the non-terminal %s couldn't be matched with the input symbol %s!\n", nonterminal, lookahead.lexem);
 	exit(EXIT_FAILURE);
 }
 
 void E() {
-	printf("E { ");
+	printf("E {");
 	E1();
 	printf(", ");
 	Ep();
@@ -209,7 +209,7 @@ void E() {
 
 void Ep() {
 	printf("Ep { ");
-	if(FR_Ep_1(lookahead)) {
+	if(FR_Ep_1(lookahead.id)) {
 		Relop();
 		printf(", ");
 		E1();
@@ -228,7 +228,7 @@ void E1() {
 
 void E1p() {
 	printf("E1p { ");
-	if(FR_E1p_1(lookahead)) {
+	if(FR_E1p_1(lookahead.id)) {
 		Boolop();
 		printf(", ");
 		E2();
@@ -249,7 +249,7 @@ void E2() {
 
 void E2p() {
 	printf("E2p { ");
-	if(FR_E2p_1(lookahead)) {
+	if(FR_E2p_1(lookahead.id)) {
 		Addop();
 		printf(", ");
 		E3();
@@ -270,7 +270,7 @@ void E3() {
 
 void E3p() {
 	printf("E3p { ");
-	if(FR_E3p_1(lookahead)) {
+	if(FR_E3p_1(lookahead.id)) {
 		Multop();
 		printf(", ");
 		T();
@@ -283,12 +283,12 @@ void E3p() {
 
 void T() {
 	printf("T { ");
-	if(FR_T_1(lookahead)) {
+	if(FR_T_1(lookahead.id)) {
 		F();
 		printf(", ");
 		Tp();
 	}
-	else if(FR_T_2(lookahead)) {
+	else if(FR_T_2(lookahead.id)) {
 		Unop();
 		printf(", ");
 		T();
@@ -299,7 +299,7 @@ void T() {
 
 void Tp() {
 	printf("Tp { ");
-	if(FR_Tp_1(lookahead)) {
+	if(FR_Tp_1(lookahead.id)) {
 		X();
 		printf(", ");
 		Tp();
@@ -310,7 +310,7 @@ void Tp() {
 
 void T2() {
 	printf("T2 { ");
-	if(FR_T2_1(lookahead)) {
+	if(FR_T2_1(lookahead.id)) {
 		match(',');
 		printf(", ");
 		E();
@@ -321,7 +321,7 @@ void T2() {
 
 void T3() {
 	printf("T3 { ");
-	if(FR_T3_1(lookahead)) {
+	if(FR_T3_1(lookahead.id)) {
 		E();
 		printf(", ");
 		T4();
@@ -332,7 +332,7 @@ void T3() {
 
 void T4() {
 	printf("T4 { ");
-	if(FR_T4_1(lookahead)) {
+	if(FR_T4_1(lookahead.id)) {
 		match(',');
 		printf(", ");
 		E();
@@ -345,12 +345,12 @@ void T4() {
 
 void X() {
 	printf("X { ");
-	if(FR_X_1(lookahead)) {
+	if(FR_X_1(lookahead.id)) {
 		match('.');
 		printf(", ");
 		Xp();
 	}
-	else if(FR_X_2(lookahead)) {
+	else if(FR_X_2(lookahead.id)) {
 		match('[');
 		printf(", ");
 		E();
@@ -363,12 +363,12 @@ void X() {
 
 void Xp() {
 	printf("Xp { ");
-	if(FR_Xp_1(lookahead)) {
+	if(FR_Xp_1(lookahead.id)) {
 		match(TOK_LENGTH);
 		printf(", ");
 		P();
 	}
-	else if(FR_Xp_2(lookahead)) {
+	else if(FR_Xp_2(lookahead.id)) {
 		match(TOK_SUBSTRING);
 		printf(", ");
 		match('(');
@@ -379,7 +379,7 @@ void Xp() {
 		printf(", ");
 		match(')');
 	}
-	else if(FR_Xp_3(lookahead)) {
+	else if(FR_Xp_3(lookahead.id)) {
 		match(TOK_ID);
 		printf(", ");
 		match('(');
@@ -394,7 +394,7 @@ void Xp() {
 
 void P() {
 	printf("P { ");
-	if(FR_P_1(lookahead)) {
+	if(FR_P_1(lookahead.id)) {
 		match('(');
 		printf(", ");
 		match(')');
@@ -405,10 +405,10 @@ void P() {
 
 void F() {
 	printf("F { ");
-	if(FR_F_1(lookahead)) {
+	if(FR_F_1(lookahead.id)) {
 		TT();
 	}
-	else if(FR_F_2(lookahead)) {
+	else if(FR_F_2(lookahead.id)) {
 		R();
 	}
 	else error("F");
@@ -417,19 +417,19 @@ void F() {
 
 void TT() {
 	printf("TT { ");
-	if(FR_TT_1(lookahead))
+	if(FR_TT_1(lookahead.id))
 		match(TOK_LIT_INT);
-	else if(FR_TT_2(lookahead))
+	else if(FR_TT_2(lookahead.id))
 		match(TOK_TRUE);
-	else if(FR_TT_3(lookahead))
+	else if(FR_TT_3(lookahead.id))
 		match(TOK_FALSE);
-	else if(FR_TT_4(lookahead))
+	else if(FR_TT_4(lookahead.id))
 		match(TOK_ID);
-	else if(FR_TT_5(lookahead))
+	else if(FR_TT_5(lookahead.id))
 		match(TOK_LIT_STR);
-	else if(FR_TT_6(lookahead))
+	else if(FR_TT_6(lookahead.id))
 		match(TOK_THIS);
-	else if(FR_TT_7(lookahead))
+	else if(FR_TT_7(lookahead.id))
 		match(TOK_NULL);
 	else error("TT");
 	printf(" }");
@@ -437,14 +437,14 @@ void TT() {
 
 void R() {
 	printf("R { ");
-	if(FR_R_1(lookahead)) {
+	if(FR_R_1(lookahead.id)) {
 		match('{');
 		printf(", ");
 		El();
 		printf(", ");
 		match('}');
 	}
-	else if(FR_R_2(lookahead)) {
+	else if(FR_R_2(lookahead.id)) {
 		match('(');
 		printf(", ");
 		E();
@@ -457,7 +457,7 @@ void R() {
 
 void El() {
 	printf("El { ");
-	if(FR_El_1(lookahead)) {
+	if(FR_El_1(lookahead.id)) {
 		E();
 		printf(", ");
 		Elp();
@@ -468,7 +468,7 @@ void El() {
 
 void Elp() {
 	printf("Elp { ");
-	if(FR_Elp_1(lookahead)) {
+	if(FR_Elp_1(lookahead.id)) {
 		match(',');
 		printf(", ");
 		E();
@@ -488,55 +488,55 @@ void VarObjDec(){
 }
 
 void Relop() {
-	if(FR_Relop_1(lookahead))
+	if(FR_Relop_1(lookahead.id))
 		match('<');
-	else if(FR_Relop_2(lookahead))
+	else if(FR_Relop_2(lookahead.id))
 		match(TOK_LESS_EQ);
-	else if(FR_Relop_3(lookahead))
+	else if(FR_Relop_3(lookahead.id))
 		match(TOK_GREAT_EQ);
-	else if(FR_Relop_4(lookahead))
+	else if(FR_Relop_4(lookahead.id))
 		match('>');
-	else if(FR_Relop_5(lookahead))
+	else if(FR_Relop_5(lookahead.id))
 		match(TOK_EQ);
-	else if(FR_Relop_6(lookahead))
+	else if(FR_Relop_6(lookahead.id))
 		match(TOK_DIFF);
 	else
 		error("Relop");
 }
 
 void Boolop() {
-	if(FR_Boolop_1(lookahead))
+	if(FR_Boolop_1(lookahead.id))
 		match(TOK_AND);
-	else if(FR_Boolop_2(lookahead))
+	else if(FR_Boolop_2(lookahead.id))
 		match(TOK_OR);
 	else
 		error("Boolop");
 }
 
 void Addop() {
-	if(FR_Addop_1(lookahead))
+	if(FR_Addop_1(lookahead.id))
 		match('+');
-	else if(FR_Addop_2(lookahead))
+	else if(FR_Addop_2(lookahead.id))
 		match('-');
 	else
 		error("Addop");
 }
 
 void Multop() {
-	if(FR_Multop_1(lookahead))
+	if(FR_Multop_1(lookahead.id))
 		match('*');
-	else if(FR_Multop_2(lookahead))
+	else if(FR_Multop_2(lookahead.id))
 		match('/');
-	else if(FR_Multop_3(lookahead))
+	else if(FR_Multop_3(lookahead.id))
 		match('%');
 	else
 		error("Multop");
 }
 
 void Unop() {
-	if(FR_Unop_1(lookahead))
+	if(FR_Unop_1(lookahead.id))
 		match('-');
-	else if(FR_Unop_2(lookahead))
+	else if(FR_Unop_2(lookahead.id))
 		match('!');
 	else
 		error("Unop");
