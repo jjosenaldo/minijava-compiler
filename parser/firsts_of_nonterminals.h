@@ -4,10 +4,10 @@
 #include "token.h"
 
 // class
-#define F_GOAL(x) x == TOK_CLASS 
+#define F_Goal(x) x == TOK_CLASS 
 
 // class
-#define F_MAIN_CLASS(x) x == TOK_CLASS 
+#define F_Main(x) x == TOK_CLASS 
 
 //  id lbrace while system continue break return if semicolon boolean int void
 #define F_BLK_STMT(x) x == TOK_ID || x == '{' || x == TOK_WHILE || x == TOK_SYSOUT || x == TOK_CONTINUE || x == TOK_BREAK || x == TOK_RETURN || x == TOK_IF || x == ';' || x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID

@@ -5,10 +5,10 @@
 #include "firsts_of_nonterminals.h"
 
 // Goal -> MainClass ClassDeclarations .
-#define FR_GOAL(x) F_MAIN(x)
+#define FR_Goal(x) F_Main(x)
 
 // MainClass -> class id lbrace void main ( string lbracket rbracket id ) lbrace Blockstatements rbrace rbrace .
-#define FR_MAIN(x) x == TOK_CLASS
+#define FR_Main(x) x == TOK_CLASS
 
 // Blockstatements -> BlockStatement Blockstatements .
 #define FR_BLK_STMTS_1(x) F_BLK_STMT(x)

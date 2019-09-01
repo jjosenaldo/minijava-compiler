@@ -31,44 +31,49 @@ void parse(){
 // Goal -> MainClass ClassDeclarations .
 void Goal() {
 	printf("Goal { ");
-	MainClass();
-	printf(", ");
-	ClassDeclarations();
+	if(FR_Goal(lookahead.id)){
+		MainClass();
+		printf(", ");
+		ClassDeclarations();
+	} else error("Goal");
 	printf(" }");
 }
 
 // MainClass -> class id lbrace void main ( string lbracket rbracket id ) lbrace Blockstatements rbrace rbrace .
 void MainClass() {
 	printf("MainClass { ");
-	match(TOK_CLASS);
-	printf(", ");
-	match(TOK_ID);
-	printf(", ");
-	match('{');
-	printf(", ");
-	match(TOK_VOID);
-	printf(", ");
-	match(TOK_MAIN);
-	printf(", ");
-	match('(');
-	printf(", ");
-	match(TOK_STRING);
-	printf(", ");
-	match('[');
-	printf(", ");
-	match(']');
-	printf(", ");
-	match(TOK_ID);
-	printf(", ");
-	match(')');
-	printf(", ");
-	match('{');
-	printf(", ");
-	BlockStmts();
-	printf(", ");
-	match('}');
-	printf(", ");
-	match('}');
+	if(FR_Main(lookahead.id)){
+		match(TOK_CLASS);
+		printf(", ");
+		match(TOK_ID);
+		printf(", ");
+		match('{');
+		printf(", ");
+		match(TOK_VOID);
+		printf(", ");
+		match(TOK_MAIN);
+		printf(", ");
+		match('(');
+		printf(", ");
+		match(TOK_STRING);
+		printf(", ");
+		match('[');
+		printf(", ");
+		match(']');
+		printf(", ");
+		match(TOK_ID);
+		printf(", ");
+		match(')');
+		printf(", ");
+		match('{');
+		printf(", ");
+		BlockStmts();
+		printf(", ");
+		match('}');
+		printf(", ");
+		match('}');
+	} else error("MainClass");
+	
 	printf(" }");
 }
 
@@ -160,7 +165,7 @@ void NonClassType(){
 		Type1();
 	} else if(FR_NON_CLASS_TYPE_3(lookahead.id)) {
 		match(TOK_VOID);
-	} else printf("\u03B5") /* Epsilon */;
+	} else error("NonClassType");
 	printf(" }");
 }
 
@@ -173,7 +178,7 @@ void Type() {
 		match(TOK_ID);
 		Type1();
 	}
-	else printf("\u03B5") /* Epsilon */;
+	else error("Type");
 	printf(" }");
 }
 
@@ -340,13 +345,16 @@ void ClassDeclarations() {
 // ClassDeclaration -> class id Extends ClassBody .
 void ClassDeclaration() {
 	printf("ClassDeclaration { ");
-	match(TOK_CLASS);
-	printf(", ");
-	match(TOK_ID);
-	printf(", ");
-	Extends();
-	printf(", ");
-	ClassBody();
+	if(FR_CLASS_DCRLT(lookahead.id)){
+		match(TOK_CLASS);
+		printf(", ");
+		match(TOK_ID);
+		printf(", ");
+		Extends();
+		printf(", ");
+		ClassBody();	
+	} else error("ClassDeclaration");
+	
 	printf(" }");
 }
 
@@ -364,12 +372,15 @@ void Extends() {
 
 // ClassBody -> lbrace ClassContent rbrace .
 void ClassBody(){
-	printf("ClassBody { ");
-	match('{');
-	printf(", ");
-	ClassContent();
-	printf(", ");
-	match('}');
+	if(FR_CLASS_BODY(lookahead.id)){
+		printf("ClassBody { ");
+		match('{');
+		printf(", ");
+		ClassContent();
+		printf(", ");
+		match('}');	
+	} else error("ClassBody");
+	
 	printf(" }");
 }
 
@@ -388,11 +399,14 @@ void ClassContent(){
 // ClassComponent -> Type id RestDec .
 void ClassComponent(){
 	printf("ClassComponent { ");
-	Type();
-	printf(", ");
-	match(TOK_ID);
-	printf(", ");
-	RestDec();
+	if(FR_CLASS_COMPONENT(lookahead.id)){
+		Type();
+		printf(", ");
+		match(TOK_ID);
+		printf(", ");
+		RestDec();	
+	} error("ClassComponent");
+	
 	printf(" }");
 }
 
@@ -431,10 +445,12 @@ void ParamsOpt(){
 // Params -> Param ParamsRest .
 void Params(){
 	printf("Params { ");
-	Param();
-	printf(", ");
-	ParamsRest();
-	printf(" }");
+	if(FR_PARAMS(lookahead.id)){
+		Param();
+		printf(", ");
+		ParamsRest();
+		printf(" }");
+	} else error("Params");
 }
 
 // ParamsRest -> comma Params | .
@@ -452,18 +468,23 @@ void ParamsRest(){
 // Param -> Type id .
 void Param() {
 	printf("Param { ");
-	Type();
-	printf(", ");
-	match(TOK_ID);
+	if(FR_PARAM(lookahead.id)){
+		Type();
+		printf(", ");
+		match(TOK_ID);
+	} error("Param");
+	
 	printf(" }");
 }
 
 // E -> E1 Ep .
 void E() {
 	printf("E {");
-	E1();
-	printf(", ");
-	Ep();
+	if(FR_E(lookahead.id)){
+		E1();
+		printf(", ");
+		Ep();
+	} error("E");
 	printf(" }");
 }
 
@@ -482,9 +503,11 @@ void Ep() {
 // E1 -> E2 E1p .
 void E1() {
 	printf("E1 { ");
-	E2();
-	printf(", ");
-	E1p();
+	if(FR_E1(lookahead.id)){
+		E2();
+		printf(", ");
+		E1p();
+	} else error("E1");
 	printf(" }");
 }
 
@@ -505,9 +528,11 @@ void E1p() {
 // E2 -> E3 E2p .
 void E2() {
 	printf("E2 { ");
-	E3();
-	printf(", ");
-	E2p();
+	if(FR_E2(lookahead.id)){
+		E3();
+		printf(", ");
+		E2p();
+	} error("E2");
 	printf(" }");
 }
 
@@ -528,9 +553,11 @@ void E2p() {
 // E3 -> T E3p .
 void E3() {
 	printf("E3 { ");
-	T();
-	printf(", ");
-	E3p();
+	if(FR_E3(lookahead.id)){
+		T();
+		printf(", ");
+		E3p();
+	} else error("E3");
 	printf(" }");
 }
 
