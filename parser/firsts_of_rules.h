@@ -20,7 +20,7 @@
 #define FR_BLK_STMT_1(x) x == TOK_ID
 
 // BlockStatement -> NonclassVarDec semicolon .
-#define FR_BLK_STMT_2(x) F_NONCLASS_VAR_DEC(x)
+#define FR_BLK_STMT_2(x) F_NON_CLASS_VAR_DEC(x)
 
 // BlockStatement -> StmtWithoutId .
 #define FR_BLK_STMT_3(x) F_StmtWithoutId(x)

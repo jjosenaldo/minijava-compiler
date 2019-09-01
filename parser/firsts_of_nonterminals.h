@@ -15,11 +15,14 @@
 // id dot lbracket
 #define F_AFTER_ID(x) x == TOK_ID || x == '.' || x == '['
 
-// lbracket
-#define F_TYPE1(x) x == '['
+// boolean int void
+#define F_NON_CLASS_VAR_DEC(x) x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID
 
 // boolean int void
 #define F_NON_CLASS_TYPE(x) x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID
+
+// lbracket
+#define F_TYPE1(x) x == '['
 
 // lbrace while system continue break return if semicolon
 #define F_StmtWithoutId(x) x == '{' || x == TOK_WHILE || x == TOK_SYSOUT || x == TOK_CONTINUE || x == TOK_BREAK || x == TOK_RETURN || x  == TOK_IF || x == ';'
