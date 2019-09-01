@@ -2,7 +2,7 @@ Goal -> MainClass ClassDeclarations .
 MainClass -> class id lbrace void main ( string lbracket rbracket id ) lbrace Blockstatements rbrace rbrace .
 
 Blockstatements -> BlockStatement Blockstatements | .
-BlockStatement -> id AfterId | NonclassVarDec | StmtWithoutId .
+BlockStatement -> id AfterId semicolon | NonclassVarDec semicolon | StmtWithoutId .
 AfterId -> id Eq | AfterIdExceptId . 
 
 Eq -> eq E | .
@@ -11,7 +11,7 @@ Type1 -> lbracket rbracket Type1 | .
 NonclassType -> boolean Type1 | int Type1 | void .
 Type -> NonclassType | id .
 
-Stmt -> id AfterIdExceptId | StmtWithoutId .
+Stmt -> id AfterIdExceptId semicolon | StmtWithoutId .
 StmtWithoutId -> lbrace Blockstatements rbrace |  while ( E ) Stmt | system dot out dot println ( E ) semicolon  | continue semicolon | break semicolon | return E semicolon | semicolon .
 
 AfterIdExceptId -> Dot Eq | Bracket Eq .
@@ -28,7 +28,7 @@ Extends -> extends id | .
 ClassBody -> lbrace ClassContent rbrace .
 ClassContent -> ClassComponent ClassContent | .
 
-ClassComponent -> Type id RestDec .
+ClassComponent -> Type id RestDec Eq .
 
 RestDec -> semicolon | ( ParamsOpt ) lbrace Blockstatements rbrace .
 

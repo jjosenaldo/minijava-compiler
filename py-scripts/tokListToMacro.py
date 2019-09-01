@@ -55,8 +55,8 @@ def get(x):
 		return "'-'"
 	elif x == "excl":
 		return "'!'"
-	elif x == ')':
-		return "')'"
+	elif x == '(':
+		return "'('"
 	elif x == "times":
 		return "'*'"
 	elif x == "mod":
