@@ -58,7 +58,8 @@ P -> ( ) | .
 F -> TT | R .
 TT -> litint | true | false | id | litstr | this | null | new AfterNew .
 AfterNew -> int FilledBrackets | boolean FilledBrackets | id AfterNewId .
-AfterNewId -> FilledBrackets | ( T3 ) . 
+AfterNewId -> lbracket E rbracket FilledBrackets | ( T3 ) . 
+FilledBrackets -> lbracket E rbracket FilledBrackets | .
 
 R -> lbrace El rbrace | ( E ) .
 El -> E Elp | .

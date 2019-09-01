@@ -648,6 +648,10 @@ void TT() {
 	printf(" }");
 }
 
+void AfterNew(){
+	
+}
+
 void R() {
 	printf("R { ");
 	if(FR_R_1(lookahead.id)) {
