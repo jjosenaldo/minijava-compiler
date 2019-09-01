@@ -118,6 +118,9 @@
 // TT -> null .
 #define FR_TT_7(x) x == TOK_NULL
 
+// TT -> new AfterNew .
+#define FR_TT_8(x) x == TOK_NEW
+
 // R -> lbrace El rbrace .
 #define FR_R_1(x) x == '{'
 

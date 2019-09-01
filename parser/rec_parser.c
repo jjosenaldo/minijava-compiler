@@ -640,6 +640,10 @@ void TT() {
 		match(TOK_THIS);
 	else if(FR_TT_7(lookahead.id))
 		match(TOK_NULL);
+	else if(FR_TT_8(lookahead.id)){
+		match(TOK_NEW);
+		AfterNew();
+	}
 	else error("TT");
 	printf(" }");
 }

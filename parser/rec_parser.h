@@ -38,6 +38,7 @@ void Bracket();
 void DotR();
 void BracketR();
 void BracketEmpty();
+void AfterNew();
 void Eq();
 void E();
 void Ep();

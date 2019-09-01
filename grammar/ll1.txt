@@ -56,7 +56,10 @@ X -> dot Xp | lbracket E rbracket .
 Xp -> length P | substring ( E T2 ) | id ( T3 ) .
 P -> ( ) | .
 F -> TT | R .
-TT -> litint | true | false | id | litstr | this | null .
+TT -> litint | true | false | id | litstr | this | null | new AfterNew .
+AfterNew -> int FilledBrackets | boolean FilledBrackets | id AfterNewId .
+AfterNewId -> FilledBrackets | ( T3 ) . 
+
 R -> lbrace El rbrace | ( E ) .
 El -> E Elp | .
 Elp -> comma E Elp | .
