@@ -88,10 +88,10 @@
 #define F_Eq(x) x == '='
 
 // id lbrace while system continue break return semicolon
-#define F_STMT(x) x == TOK_ID || x == '{' || x == TOK_WHILE || x == TOK_SYSTEM || x == TOK_CONTINUE || x == TOK_BREAK || x == TOK_RETURN || x == ';'
+#define F_STMT(x) x == TOK_ID || x == '{' || x == TOK_WHILE || x == TOK_SYSOUT || x == TOK_CONTINUE || x == TOK_BREAK || x == TOK_RETURN || x == ';'
 
 // lbrace while system continue break return semicolon
-#define F_StmtWithoutId(x) x == '{' || x == TOK_WHILE || x == TOK_SYSTEM || x == TOK_CONTINUE || x == TOK_BREAK || x == TOK_RETURN || x == ';'
+#define F_StmtWithoutId(x) x == '{' || x == TOK_WHILE || x == TOK_SYSOUT || x == TOK_CONTINUE || x == TOK_BREAK || x == TOK_RETURN || x == ';'
 
 // dot lbracket
 #define F_AfterIdExceptId(x) x == '.' || x == '['
@@ -122,7 +122,7 @@
 #define F_BLK_STMTS(x) F_BLK_STMT(x)
 
 //  id lbrace while system continue break return semicolon boolean int void
-#define F_BLK_STMT(x) x == TOK_ID || x == '{' || x == TOK_WHILE || x == TOK_SYSTEM || x == TOK_CONTINUE || x == TOK_BREAK || x == TOK_RETURN || x == ';' || x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID
+#define F_BLK_STMT(x) x == TOK_ID || x == '{' || x == TOK_WHILE || x == TOK_SYSOUT || x == TOK_CONTINUE || x == TOK_BREAK || x == TOK_RETURN || x == ';' || x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID
 
 // id boolean int void
 #define F_TYPE(x) x == TOK_BOOLEAN || x == TOK_INT || x == TOK_ID || x == TOK_VOID
@@ -157,8 +157,8 @@
 // id boolean int void
 #define F_CLASS_COMPONENT(x) x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID || x == TOK_ID
 
-// semicolon (
-#define F_REST_DEC(x) x == ';' || x == '('
+// semicolon ( eq
+#define F_REST_DEC(x) x == ';' || x == '(' || x == '='
 
 //  boolean int void
 #define F_NONCLASS_VAR_DEC(x) x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID

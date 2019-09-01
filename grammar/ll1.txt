@@ -15,8 +15,8 @@ Stmt -> id AfterIdExceptId semicolon | StmtWithoutId .
 StmtWithoutId -> lbrace Blockstatements rbrace |  while ( E ) Stmt | system dot out dot println ( E ) semicolon  | continue semicolon | break semicolon | return E semicolon | semicolon .
 
 AfterIdExceptId -> Dot Eq | Bracket Eq .
-Dot -> dot id ( ) DotR .
-DotR -> dot id ( ) DotR | lbracket E rbracket DotR | .
+Dot -> dot id ( ParamsOpt ) DotR .
+DotR -> dot id ( ParamsOpt ) DotR | lbracket E rbracket DotR | .
 Bracket -> lbracket BracketR .
 BracketR -> E rbracket DotR | rbracket BracketEmpty id .
 BracketEmpty -> lbracket rbracket BracketEmpty | .
@@ -28,9 +28,9 @@ Extends -> extends id | .
 ClassBody -> lbrace ClassContent rbrace .
 ClassContent -> ClassComponent ClassContent | .
 
-ClassComponent -> Type id RestDec Eq .
+ClassComponent -> Type id RestDec .
 
-RestDec -> semicolon | ( ParamsOpt ) lbrace Blockstatements rbrace .
+RestDec -> Eq semicolon | ( ParamsOpt ) lbrace Blockstatements rbrace .
 
 ParamsOpt -> Params | .
 Params -> Param ParamsRest .

@@ -2,6 +2,7 @@
 #define FIRSTS_OF_RULES_H
 
 #include "token.h"
+#include "firsts_of_nonterminals.h"
 
 // E -> E1 Ep .
 #define FR_E(x) F_E1(x)
@@ -225,11 +226,11 @@
 // ClassContent -> .
 #define FR_CLASS_CONTENT_2(x) x == EPS
 
-// ClassComponent -> Type id RestDec Eq .
+// ClassComponent -> Type id RestDec .
 #define FR_CLASS_COMPONENT(x) F_TYPE(x)
 
-// RestDec -> semicolon .
-#define FR_REST_DEC_1(x) x == ';'
+// RestDec -> Eq semicolon .
+#define FR_REST_DEC_1(x) F_Eq(x)
 
 // RestDec -> ( ParamsOpt ) lbrace Blockstatements rbrace .
 #define FR_REST_DEC_2(x) x == '('
@@ -265,7 +266,7 @@
 #define FR_PARAM(x) F_TYPE(x)
 
 // Type1 -> lbracket rbracket Type1 .
-#define FR_TYPE1_1(x) x == '{'
+#define FR_TYPE1_1(x) x == '['
 
 // Type1 -> .
 #define FR_TYPE1_2(x) x == EPS
@@ -283,13 +284,10 @@
 #define FR_ID_TYPE(x) x == TOK_ID
 
 // Type -> NonclassType .
-#define FR_TYPE(x) F_NON_CLASS_TYPE(x)
+#define FR_TYPE_1(x) F_NON_CLASS_TYPE(x)
 
 // Type -> id .
-#define FR_TYPE_1(x) x == TOK_ID
-
-// Statement ->  lbrace Blockstatements rbrace .
-#define FR_STMT(x) x == '{'
+#define FR_TYPE_2(x) x == TOK_ID
 
 // Stmt -> id AfterIdExceptId semicolon .
 #define FR_Stmt_1(x) x == TOK_ID 
@@ -304,7 +302,7 @@
  #define FR_StmtWithoutId_2(x) x == TOK_WHILE
 
 // StmtWithoutId -> system dot out dot println ( E ) semicolon .
-#define FR_StmtWithoutId_3(x) x == TOK_SYSTEM
+#define FR_StmtWithoutId_3(x) x == TOK_SYSOUT
 
 // StmtWithoutId -> continue semicolon .
 #define FR_StmtWithoutId_4(x) x == TOK_CONTINUE
@@ -324,10 +322,10 @@
 // AfterIdExceptId -> Bracket Eq .
 #define FR_AfterIdExceptId_2(x) F_Bracket(x)
 
-// Dot -> dot id ( ) DotR .
+// Dot -> dot id ( ParamsOpt ) DotR .
 #define FR_Dot(x) x == '.'
 
-// DotR -> dot id ( ) DotR .
+// DotR -> dot id ( ParamsOpt ) DotR .
 #define FR_DotR_1(x) x == '.'
 
 // DotR -> lbracket E rbracket DotR .
@@ -364,7 +362,7 @@
 #define FR_AFTER_ID_1(x) x == TOK_ID 
 
 // AfterId -> AfterIdExceptId
-#define FR_AFTER_ID1(x) F_AfterIdExceptId(x)
+#define FR_AFTER_ID_2(x) F_AfterIdExceptId(x)
 
 // Eq -> eq E .
 #define FR_Eq_1(x) x == '='

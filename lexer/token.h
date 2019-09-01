@@ -21,6 +21,7 @@ static const char TOK_LESS_EQ = 'L';
 static const char TOK_MAIN = 'm';
 static const char TOK_NEW = 'n';
 static const char TOK_NULL = 'N';
+static const char TOK_SYSOUT = 'o';
 static const char TOK_PRINT = 'p';
 static const char TOK_EQ = 'q';
 static const char TOK_RETURN = 'r';
