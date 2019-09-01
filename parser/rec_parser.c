@@ -18,13 +18,14 @@ void match(char tok_id){
 }
 
 void error(char* nonterminal) {
-	printf("\n\nSYNTAX ERROR: the non-terminal %s couldn't be matched with the input symbol %s!\n", nonterminal, lookahead.lexem);
+	printf("\n\nSYNTAX ERROR: the non-terminal %s couldn't be matched with the input symbol %s of id %c!\n", nonterminal, lookahead.lexem, lookahead.id);
 	exit(EXIT_FAILURE);
 }
 
 void parse(){
 	lookahead = getNextToken();
     E();
+    //match(TOK_EOF);
     printf("\n");
 }
 
@@ -405,7 +406,7 @@ void ClassComponent(){
 		match(TOK_ID);
 		printf(", ");
 		RestDec();	
-	} error("ClassComponent");
+	} else error("ClassComponent");
 	
 	printf(" }");
 }
@@ -472,7 +473,7 @@ void Param() {
 		Type();
 		printf(", ");
 		match(TOK_ID);
-	} error("Param");
+	} else error("Param");
 	
 	printf(" }");
 }
@@ -484,7 +485,7 @@ void E() {
 		E1();
 		printf(", ");
 		Ep();
-	} error("E");
+	} else error("E");
 	printf(" }");
 }
 
@@ -532,7 +533,7 @@ void E2() {
 		E3();
 		printf(", ");
 		E2p();
-	} error("E2");
+	} else error("E2");
 	printf(" }");
 }
 
