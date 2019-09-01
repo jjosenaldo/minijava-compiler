@@ -4,10 +4,181 @@
 #include "token.h"
 #include "firsts_of_nonterminals.h"
 
+// Goal -> MainClass ClassDeclarations .
+#define FR_GOAL(x) F_MAIN(x)
+
+// MainClass -> class id lbrace void main ( string lbracket rbracket id ) lbrace Blockstatements rbrace rbrace .
+#define FR_MAIN(x) x == TOK_CLASS
+
+// Blockstatements -> BlockStatement Blockstatements .
+#define FR_BLK_STMTS_1(x) F_BLK_STMT(x)
+
+// Blockstatements -> .
+#define FR_BLK_STMTS_2(x) x == EPS
+
+// BlockStatement -> id AfterId semicolon .
+#define FR_BLK_STMT_1(x) x == TOK_ID
+
+// BlockStatement -> NonclassVarDec semicolon .
+#define FR_BLK_STMT_2(x) F_NONCLASS_VAR_DEC(x)
+
+// BlockStatement -> StmtWithoutId .
+#define FR_BLK_STMT_3(x) F_StmtWithoutId(x)
+
+// AfterId -> id Eq . 
+#define FR_AFTER_ID_1(x) x == TOK_ID 
+
+// AfterId -> AfterIdExceptId
+#define FR_AFTER_ID_2(x) F_AfterIdExceptId(x)
+
+// Eq -> eq E .
+#define FR_Eq_1(x) x == '='
+
+// Eq -> .
+#define FR_Eq_2(x) x == EPS
+
+// NonclassVarDec -> NonclassType id Eq .
+#define FR_NONCLASS_VAR_DEC(x) F_NON_CLASS_TYPE(x)
+
+// Type1 -> lbracket rbracket Type1 .
+#define FR_TYPE1_1(x) x == '['
+
+// Type1 -> .
+#define FR_TYPE1_2(x) x == EPS
+
+// NonclassType -> boolean Type1 .
+#define FR_NON_CLASS_TYPE_1(x) x == TOK_BOOLEAN
+
+// NonclassType -> int Type1 .
+#define FR_NON_CLASS_TYPE_2(x) x == TOK_INT
+
+// NonclassType -> void .
+#define FR_NON_CLASS_TYPE_3(x) x == TOK_VOID
+
+// Type -> NonclassType .
+#define FR_TYPE_1(x) F_NON_CLASS_TYPE(x)
+
+// Type -> id .
+#define FR_TYPE_2(x) x == TOK_ID
+
+// Stmt -> id AfterIdExceptId semicolon .
+#define FR_Stmt_1(x) x == TOK_ID 
+
+// Stmt -> StmtWithoutId .
+#define FR_Stmt_2(x) F_StmtWithoutId(x) 
+
+// StmtWithoutId -> lbrace Blockstatements rbrace .
+#define FR_StmtWithoutId_1(x) x == '{'
+
+// StmtWithoutId -> while ( E ) Stmt .
+ #define FR_StmtWithoutId_2(x) x == TOK_WHILE
+
+// StmtWithoutId -> system dot out dot println ( E ) semicolon .
+#define FR_StmtWithoutId_3(x) x == TOK_SYSOUT
+
+// StmtWithoutId -> continue semicolon .
+#define FR_StmtWithoutId_4(x) x == TOK_CONTINUE
+
+// StmtWithoutId -> break semicolon .
+#define FR_StmtWithoutId_5(x) x == TOK_BREAK
+
+// StmtWithoutId -> return E semicolon .
+#define FR_StmtWithoutId_6(x) x == TOK_RETURN 
+
+// StmtWithoutId -> if ( E ) Stmt OptElse .
+#define FR_StmtWithoutId_7(x) x == TOK_IF 
+
+// StmtWithoutId -> semicolon .
+#define FR_StmtWithoutId_8(x) x == ';'
+
+// OptElse -> else Stmt .
+#define FR_OptElse_1(x) x == TOK_ELSE 
+
+// OptElse -> .
+#define FR_OptElse_2(x) x == EPS 
+
+// AfterIdExceptId -> Dot Eq .
+#define FR_AfterIdExceptId_1(x) F_Dot(x) 
+
+// AfterIdExceptId -> Bracket Eq .
+#define FR_AfterIdExceptId_2(x) F_Bracket(x)
+
+// Dot -> dot id ( ParamsOpt ) DotR .
+#define FR_Dot(x) x == '.'
+
+// DotR -> dot id ( ParamsOpt ) DotR .
+#define FR_DotR_1(x) x == '.'
+
+// DotR -> lbracket E rbracket DotR .
+#define FR_DotR_2(x) x == '['
+
+// DotR -> .
+#define FR_DotR_3(x) x == EPS
+
+// Bracket -> lbracket BracketR .
+#define FR_Bracket(x) x == '['
+
+// BracketR -> E rbracket DotR .
+#define FR_BracketR_1(x) F_E(x)
+
+// BracketR -> rbracket BracketEmpty id .
+#define FR_BracketR_2(x) x == ']'
+
+// ClassDeclarations -> ClassDeclaration ClassDeclarations .
+#define FR_CLASS_DCRLTS_1(x) F_CLASS_DCRLT(x)
+
+// ClassDeclarations -> .
+#define FR_CLASS_DCRLTS_2(x) x == EPS
+
+// ClassDeclaration -> class id Extends ClassBody .
+#define FR_CLASS_DCRLT(x) x == TOK_CLASS
+
+// Extends -> extends id .
+#define FR_EXTNDS_1(x) x == TOK_EXTENDS
+
+// Extends -> .
+#define FR_EXTNDS_2(x) x == EPS
+
+// ClassBody -> lbrace ClassContent rbrace .
+#define FR_CLASS_BODY(x) x == '{'
+
+// ClassContent -> ClassComponent ClassContent .
+#define FR_CLASS_CONTENT_1(x) F_CLASS_COMPONENT(x)
+
+// ClassContent -> .
+#define FR_CLASS_CONTENT_2(x) x == EPS
+
+// ClassComponent -> Type id RestDec .
+#define FR_CLASS_COMPONENT(x) F_TYPE(x)
+
+// RestDec -> Eq semicolon .
+#define FR_REST_DEC_1(x) F_Eq(x)
+
+// RestDec -> ( ParamsOpt ) lbrace Blockstatements rbrace .
+#define FR_REST_DEC_2(x) x == '('
+
+// ParamsOpt -> Params .
+#define FR_PARAMS_OPT_1(x) F_PARAMS(x)
+
+// ParamsOpt1 -> .
+#define FR_PARAMS_OPT_2(x) x == EPS
+
+// Params -> Param ParamsRest .
+#define FR_PARAMS(x) F_PARAM(x)
+
+// ParamsRest -> comma Params .
+#define FR_PARAMS_REST_1(x) x == ','
+
+// ParamsRest -> .
+#define FR_PARAMS_REST_2(x) x == EPS
+
+// Param -> Type id .
+#define FR_PARAM(x) F_TYPE(x)
+
 // E -> E1 Ep .
 #define FR_E(x) F_E1(x)
 
-// Ep -> relop E1 .
+// Ep -> Relop E1 .
 #define FR_Ep_1(x) F_Relop(x)
 
 // Ep -> .
@@ -16,7 +187,7 @@
 // E1 -> E2 E1p .
 #define FR_E1(x) F_E2(x)
 
-// E1p -> boolop E2 E1p .
+// E1p -> Boolop E2 E1p .
 #define FR_E1p_1(x) F_Boolop(x)
 
 // E1p -> .
@@ -25,7 +196,7 @@
 // E2 -> E3 E2p .
 #define FR_E2(x) F_E3(x)
 
-// E2p -> addop E3 E2p .
+// E2p -> Addop E3 E2p .
 #define FR_E2p_1(x) F_Addop(x)
 
 // E2p -> .
@@ -34,7 +205,7 @@
 // E3 -> T E3p .
 #define FR_E3(x) F_T(x)
 
-// E3p -> multop T E3p .
+// E3p -> Multop T E3p .
 #define FR_E3p_1(x) F_Multop(x)
 
 // E3p -> .
@@ -43,7 +214,7 @@
 // T -> F Tp  .
 #define FR_T_1(x) F_F(x)
 
-// T -> unop T .
+// T -> Unop T .
 #define FR_T_2(x) F_Unop(x)
 
 // Tp -> X Tp .
@@ -121,6 +292,27 @@
 // TT -> new AfterNew .
 #define FR_TT_8(x) x == TOK_NEW
 
+// AfterNew -> int FilledBrackets .
+#define FR_AfterNew_1(x) x == TOK_INT 
+
+// AfterNew -> boolean FilledBrackets .
+#define FR_AfterNew_2(x) x == TOK_BOOLEAN
+
+// AfterNew -> id AfterNewId .
+#define FR_AfterNew_3(x) x == TOK_ID
+
+// AfterNewId -> lbracket E rbracket FilledBrackets .
+#define FR_AfterNewId_1(x) x == '['
+
+// AfterNewId -> ( T3 ) .
+#define FR_AfterNewId_2(x) x == '('
+
+// FilledBrackets -> lbracket E rbracket FilledBrackets .
+#define FR_FilledBrackets_1(x) x == '['
+
+// FilledBrackets -> .
+#define FR_FilledBrackets_2(x) x == EPS 
+
 // R -> lbrace El rbrace .
 #define FR_R_1(x) x == '{'
 
@@ -184,59 +376,17 @@
 // Unop -> excl .
 #define FR_Unop_2(x) x == '!'
 
-// Goal -> MainClass ClassDeclarations .
-#define FR_GOAL(x) F_MAIN(x)
 
-// MainClass -> class id lbrace void main ( string lbracket rbracket id ) lbrace Blockstatements rbrace rbrace .
-#define FR_MAIN(x) x == TOK_CLASS
 
-// Blockstatements -> BlockStatement Blockstatements .
-#define FR_BLK_STMTS_1(x) F_BLK_STMT(x)
 
-// Blockstatements -> .
-#define FR_BLK_STMTS_2(x) x == EPS
 
-// BlockStatement -> id AfterId semicolon .
-#define FR_BLK_STMT_1(x) x == TOK_ID
 
-// BlockStatement -> NonclassVarDec semicolon .
-#define FR_BLK_STMT_2(x) F_NONCLASS_VAR_DEC(x)
 
-// BlockStatement -> StmtWithoutId .
-#define FR_BLK_STMT_3(x) F_StmtWithoutId(x)
 
-// ClassDeclarations -> ClassDeclaration ClassDeclarations .
-#define FR_CLASS_DCRLTS_1(x) F_CLASS_DCRLT(x)
 
-// ClassDeclarations -> .
-#define FR_CLASS_DCRLTS_2(x) x == EPS
 
-// ClassDeclaration -> class id Extends ClassBody .
-#define FR_CLASS_DCRLT(x) x == TOK_CLASS
 
-// Extends -> extends id .
-#define FR_EXTNDS_1(x) x == TOK_EXTENDS
 
-// Extends -> .
-#define FR_EXTNDS_2(x) x == EPS
-
-// ClassBody -> lbrace ClassContent rbrace .
-#define FR_CLASS_BODY(x) x == '{'
-
-// ClassContent -> ClassComponent ClassContent .
-#define FR_CLASS_CONTENT_1(x) F_CLASS_COMPONENT(x)
-
-// ClassContent -> .
-#define FR_CLASS_CONTENT_2(x) x == EPS
-
-// ClassComponent -> Type id RestDec .
-#define FR_CLASS_COMPONENT(x) F_TYPE(x)
-
-// RestDec -> Eq semicolon .
-#define FR_REST_DEC_1(x) F_Eq(x)
-
-// RestDec -> ( ParamsOpt ) lbrace Blockstatements rbrace .
-#define FR_REST_DEC_2(x) x == '('
 
 // VarDec -> NonclassVarDec .
 #define FR_VAR_DEC(x) F_NONCLASS_VAR_DEC(x)
@@ -244,107 +394,12 @@
 // VarDec ->  VarObjDec .
 #define FR_VAR_DEC1(x) F_VAR_OBJ_DEC(x)
 
-// NonclassVarDec -> NonclassType id Eq .
-#define FR_NONCLASS_VAR_DEC(x) F_NON_CLASS_TYPE(x)
 
-// VarObjDec -> id id semicolon .
-#define FR_VAR_OBJ_DEC(x) x == TOK_ID
 
-// ParamsOpt -> Params .
-#define FR_PARAMS_OPT_1(x) F_PARAMS(x)
 
-// ParamsOpt1 -> .
-#define FR_PARAMS_OPT_2(x) x == EPS
-
-// Params -> Param ParamsRest .
-#define FR_PARAMS(x) F_PARAM(x)
-
-// ParamsRest -> comma Params .
-#define FR_PARAMS_REST_1(x) x == ','
-
-// ParamsRest -> .
-#define FR_PARAMS_REST_2(x) x == EPS
-
-// Param -> Type id .
-#define FR_PARAM(x) F_TYPE(x)
-
-// Type1 -> lbracket rbracket Type1 .
-#define FR_TYPE1_1(x) x == '['
-
-// Type1 -> .
-#define FR_TYPE1_2(x) x == EPS
-
-// NonclassType -> boolean Type1 .
-#define FR_NON_CLASS_TYPE_1(x) x == TOK_BOOLEAN
-
-// NonclassType -> int Type1 .
-#define FR_NON_CLASS_TYPE_2(x) x == TOK_INT
-
-// NonclassType -> void .
-#define FR_NON_CLASS_TYPE_3(x) x == TOK_VOID
 
 // IdType -> id Type1 .
 #define FR_ID_TYPE(x) x == TOK_ID
-
-// Type -> NonclassType .
-#define FR_TYPE_1(x) F_NON_CLASS_TYPE(x)
-
-// Type -> id .
-#define FR_TYPE_2(x) x == TOK_ID
-
-// Stmt -> id AfterIdExceptId semicolon .
-#define FR_Stmt_1(x) x == TOK_ID 
-
-// Stmt -> StmtWithoutId .
-#define FR_Stmt_2(x) F_StmtWithoutId(x) 
-
-// StmtWithoutId -> lbrace Blockstatements rbrace .
-#define FR_StmtWithoutId_1(x) x == '{'
-
-// StmtWithoutId -> while ( E ) Stmt .
- #define FR_StmtWithoutId_2(x) x == TOK_WHILE
-
-// StmtWithoutId -> system dot out dot println ( E ) semicolon .
-#define FR_StmtWithoutId_3(x) x == TOK_SYSOUT
-
-// StmtWithoutId -> continue semicolon .
-#define FR_StmtWithoutId_4(x) x == TOK_CONTINUE
-
-// StmtWithoutId -> break semicolon .
-#define FR_StmtWithoutId_5(x) x == TOK_BREAK
-
-// StmtWithoutId -> return E semicolon .
-#define FR_StmtWithoutId_6(x) x == TOK_RETURN 
-
-// StmtWithoutId -> semicolon .
-#define FR_StmtWithoutId_7(x) x == ';'
-
-// AfterIdExceptId -> Dot Eq .
-#define FR_AfterIdExceptId_1(x) F_Dot(x) 
-
-// AfterIdExceptId -> Bracket Eq .
-#define FR_AfterIdExceptId_2(x) F_Bracket(x)
-
-// Dot -> dot id ( ParamsOpt ) DotR .
-#define FR_Dot(x) x == '.'
-
-// DotR -> dot id ( ParamsOpt ) DotR .
-#define FR_DotR_1(x) x == '.'
-
-// DotR -> lbracket E rbracket DotR .
-#define FR_DotR_2(x) x == '['
-
-// DotR -> .
-#define FR_DotR_3(x) x == EPS
-
-// Bracket -> lbracket BracketR .
-#define FR_Bracket(x) x == '['
-
-// BracketR -> E rbracket DotR .
-#define FR_BracketR_1(x) F_E(x)
-
-// BracketR -> rbracket BracketEmpty id .
-#define FR_BracketR_2(x) x == ']'
 
 // BracketEmpty -> lbracket rbracket BracketEmpty .
 #define FR_BracketEmpty_1(x) x == '['
@@ -352,25 +407,6 @@
 // BracketEmpty -> .
 #define FR_BracketEmpty_2(x) x == EPS
 
-// ArrAssignment -> id  RemainingArrAssignment .
-#define FR_ARR_ASSGMT(x) x == TOK_ID
 
-// RemainingArrAssignment -> lbracket E rbracket equal E .
-#define FR_RMNG_ARR_ASSGMT(x) x == '{'
-
-// RemainingArrAssignment -> equal E .
-#define FR_RMNG_ARR_ASSGMT1(x) x == TOK_EQ
-
-// AfterId -> id Eq . 
-#define FR_AFTER_ID_1(x) x == TOK_ID 
-
-// AfterId -> AfterIdExceptId
-#define FR_AFTER_ID_2(x) F_AfterIdExceptId(x)
-
-// Eq -> eq E .
-#define FR_Eq_1(x) x == '='
-
-// Eq -> .
-#define FR_Eq_2(x) x == EPS
 
 #endif

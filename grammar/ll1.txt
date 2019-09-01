@@ -9,7 +9,7 @@ Eq -> eq E | .
 NonclassVarDec -> NonclassType id Eq .
 Type1 -> lbracket rbracket Type1 | .
 NonclassType -> boolean Type1 | int Type1 | void .
-Type -> NonclassType | id .
+Type -> NonclassType | id Type1 .
 
 Stmt -> id AfterIdExceptId semicolon | StmtWithoutId .
 StmtWithoutId -> lbrace Blockstatements rbrace |  while ( E ) Stmt | system dot out dot println ( E ) semicolon  | continue semicolon | break semicolon | return E semicolon | if ( E ) Stmt OptElse | semicolon .
@@ -50,7 +50,7 @@ E3 -> T E3p .
 E3p -> Multop T E3p | .
 
 T -> F Tp | Unop T .
-Tp-> X Tp | .
+Tp -> X Tp | .
 T2 -> comma E | .                   
 T3 -> E T4 | .
 T4 -> comma E T4 | .
