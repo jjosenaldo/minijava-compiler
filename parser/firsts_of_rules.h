@@ -124,6 +124,12 @@
 // BracketR -> rbracket BracketEmpty id .
 #define FR_BracketR_2(x) x == ']'
 
+// BracketEmpty -> lbracket rbracket BracketEmpty .
+#define FR_BracketEmpty_1(x) x == '['
+
+// BracketEmpty -> .
+#define FR_BracketEmpty_2(x) x == EPS
+
 // ClassDeclarations -> ClassDeclaration ClassDeclarations .
 #define FR_CLASS_DCRLTS_1(x) F_CLASS_DCRLT(x)
 
@@ -375,38 +381,5 @@
 
 // Unop -> excl .
 #define FR_Unop_2(x) x == '!'
-
-
-
-
-
-
-
-
-
-
-
-
-
-// VarDec -> NonclassVarDec .
-#define FR_VAR_DEC(x) F_NONCLASS_VAR_DEC(x)
-
-// VarDec ->  VarObjDec .
-#define FR_VAR_DEC1(x) F_VAR_OBJ_DEC(x)
-
-
-
-
-
-// IdType -> id Type1 .
-#define FR_ID_TYPE(x) x == TOK_ID
-
-// BracketEmpty -> lbracket rbracket BracketEmpty .
-#define FR_BracketEmpty_1(x) x == '['
-
-// BracketEmpty -> .
-#define FR_BracketEmpty_2(x) x == EPS
-
-
 
 #endif
