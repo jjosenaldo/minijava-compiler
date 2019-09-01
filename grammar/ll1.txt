@@ -1,0 +1,68 @@
+Goal -> MainClass ClassDeclarations .
+MainClass -> class id lbrace void main ( string lbracket rbracket id ) lbrace Blockstatements rbrace rbrace .
+
+Blockstatements -> BlockStatement Blockstatements | .
+BlockStatement -> id AfterId | NonclassVarDec | StmtWithoutId .
+AfterId -> id Eq | AfterIdExceptId . 
+
+Eq -> eq E | .
+NonclassVarDec -> NonclassType id Eq .
+Type1 -> lbracket rbracket Type1 | .
+NonclassType -> boolean Type1 | int Type1 | void .
+Type -> NonclassType | id .
+
+Stmt -> id AfterIdExceptId | StmtWithoutId .
+StmtWithoutId -> lbrace Blockstatements rbrace |  while ( E ) Stmt | system dot out dot println ( E ) semicolon  | continue semicolon | break semicolon | return E semicolon | semicolon .
+
+AfterIdExceptId -> Dot Eq | Bracket Eq .
+Dot -> dot id ( ) DotR .
+DotR -> dot id ( ) DotR | lbracket E rbracket DotR | .
+Bracket -> lbracket BracketR .
+BracketR -> E rbracket DotR | rbracket BracketEmpty id .
+BracketEmpty -> lbracket rbracket BracketEmpty | .
+
+
+ClassDeclarations -> ClassDeclaration ClassDeclarations  | .
+ClassDeclaration -> class id Extends ClassBody .
+Extends -> extends id | .
+ClassBody -> lbrace ClassContent rbrace .
+ClassContent -> ClassComponent ClassContent | .
+
+ClassComponent -> Type id RestDec .
+
+RestDec -> semicolon | ( ParamsOpt ) lbrace Blockstatements rbrace .
+
+ParamsOpt -> Params | .
+Params -> Param ParamsRest .
+ParamsRest -> comma Params | .
+Param -> Type id .
+
+
+E -> E1 Ep .
+Ep -> Relop E1 | .
+E1 -> E2 E1p .
+E1p -> Boolop E2 E1p | .
+E2 -> E3 E2p .
+E2p -> Addop E3 E2p | .
+E3 -> T E3p .
+E3p -> Multop T E3p | .
+
+T -> F Tp | Unop T .
+Tp-> X Tp | .
+T2 -> comma E | .                   
+T3 -> E T4 | .
+T4 -> comma E T4 | .
+X -> dot Xp | lbracket E rbracket .
+Xp -> length P | substring ( E T2 ) | id ( T3 ) .
+P -> ( ) | .
+F -> TT | R .
+TT -> litint | true | false | id | litstr | this | null .
+R -> lbrace El rbrace | ( E ) .
+El -> E Elp | .
+Elp -> comma E Elp | .
+
+Relop -> less | lesseq | greatereq | greater | isequal | isdiff .
+Boolop -> and | or .
+Addop -> plus | minus .
+Multop -> times | div | mod .
+Unop -> minus | excl .
