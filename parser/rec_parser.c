@@ -81,7 +81,7 @@ void MainClass() {
 // Blockstatements -> BlockStatement Blockstatements | .
 void BlockStmts(){
 	printf("BlockStmts { ");
-	if(FR_BLK_STMT_1(lookahead.id)){
+	if(FR_BLK_STMTS_1(lookahead.id)){
 		BlockStmt();
 		printf(", ");
 		BlockStmts();
