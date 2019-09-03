@@ -94,7 +94,7 @@ int             { return TOK_INT; }
 true            { return TOK_TRUE; }
 false           { return TOK_FALSE; }
 boolean         { return TOK_BOOLEAN; }
-system\.out\.println { return TOK_SYSOUT; }
+System\.out\.println { return TOK_SYSOUT; }
 
 break           { return TOK_BREAK; }
 class           { return TOK_CLASS; }

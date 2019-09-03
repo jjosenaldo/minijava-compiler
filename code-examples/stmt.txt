@@ -1,3 +1,8 @@
-while ( true ) { 
-    int a = 1 ;
+{
+    // Let's test some statements!
+
+    // IF
+    if(a == 3){
+        System.out.println("it works!");
+    }
 }

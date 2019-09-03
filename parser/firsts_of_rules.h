@@ -73,7 +73,7 @@
 // StmtWithoutId -> while ( E ) Stmt .
  #define FR_StmtWithoutId_2(x) x == TOK_WHILE
 
-// StmtWithoutId -> system dot out dot println ( E ) semicolon .
+// StmtWithoutId -> systemoutprintln ( E ) semicolon .
 #define FR_StmtWithoutId_3(x) x == TOK_SYSOUT
 
 // StmtWithoutId -> continue semicolon .

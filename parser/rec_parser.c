@@ -196,7 +196,7 @@ void Stmt() {
 	printf(" }");
 }
 
-// StmtWithoutId -> lbrace Blockstatements rbrace |  while ( E ) Stmt | system dot out dot println ( E ) semicolon  | continue semicolon | break semicolon | return E semicolon | if ( E ) Stmt OptElse | semicolon .
+// StmtWithoutId -> lbrace Blockstatements rbrace |  while ( E ) Stmt | systemoutprintln ( E ) semicolon  | continue semicolon | break semicolon | return E semicolon | if ( E ) Stmt OptElse | semicolon .
 void StmtWithoutId(){
 	printf("StmtWithoutId {");
 	if(FR_StmtWithoutId_1(lookahead.id)){
