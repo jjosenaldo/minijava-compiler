@@ -2,9 +2,9 @@
 #define TOKEN_H
 
 static const char TOK_LIT_INT = '1';
+static const char TOK_SUBSTRING = 'a';
 static const char TOK_PUBLIC = 'b';
 static const char TOK_BREAK = 'B';
-static const char TOK_BOOLEAN = 'o';
 static const char TOK_CONTINUE = 'C';
 static const char TOK_CLASS = 'c';
 static const char TOK_ID = 'd';
@@ -22,6 +22,7 @@ static const char TOK_MAIN = 'm';
 static const char TOK_NEW = 'n';
 static const char TOK_NULL = 'N';
 static const char TOK_SYSOUT = 'o';
+static const char TOK_BOOLEAN = 'O';
 static const char TOK_PRINT = 'p';
 static const char TOK_EQ = 'q';
 static const char TOK_RETURN = 'r';
@@ -36,7 +37,6 @@ static const char TOK_EXTENDS = 'x';
 static const char TOK_AND = '&';
 static const char TOK_OR = '|';
 static const char EPS = '@';
-static const char TOK_SUBSTRING = 'a';
 
 
 struct token{
