@@ -33,8 +33,8 @@
 // id lbrace while system continue break return if semicolon
 #define F_STMT(x) x == TOK_ID || x == '{' || x == TOK_WHILE || x == TOK_SYSOUT || x == TOK_CONTINUE || x == TOK_BREAK || x == TOK_RETURN || x == TOK_IF || x == ';'
 
-// dot lbracket
-#define F_AfterIdExceptId(x) x == '.' || x == '['
+// eq dot lbracket
+#define F_AfterIdExceptId(x) x == '=' || x == '.' || x == '['
 
 // dot
 #define F_Dot(x) x == '.'
@@ -161,7 +161,7 @@
 // minus excl litint true false id litstr this null new lbrace (
 #define F_El(x) F_E(x)
 
-// minus excl litint true false id litstr this null lbrace (
+// minus excl litint true false id litstr this null new lbrace (
 #define F_E(x) x == '-' || x == '!' || x == TOK_LIT_INT || x == TOK_TRUE || x == TOK_FALSE || x == TOK_ID || x == TOK_LIT_STR || x == TOK_THIS || x == TOK_NULL || x == TOK_NEW || x == '{' || x == '('
 
 // comma

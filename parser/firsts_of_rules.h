@@ -103,6 +103,9 @@
 // AfterIdExceptId -> Bracket Eq .
 #define FR_AfterIdExceptId_2(x) F_Bracket(x)
 
+// AfterIdExceptId -> eq E .
+#define FR_AfterIdExceptId_3(x) x == '='
+
 // Dot -> dot id ( ParamsOpt ) DotR .
 #define FR_Dot(x) x == '.'
 

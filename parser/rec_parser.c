@@ -24,7 +24,7 @@ void error(char* nonterminal) {
 
 void parse(){
 	lookahead = getNextToken();
-    E();
+    Stmt();
     match(TOK_EOF);
     printf("\n");
 }
@@ -248,7 +248,7 @@ void OptElse(){
 	printf("}");
 }
 
-// AfterIdExceptId -> Dot Eq | Bracket Eq .
+// AfterIdExceptId -> Dot Eq | Bracket Eq  eq E . 
 void AfterIdExceptId(){
 	printf("AfterIdExceptId {");
 	if(FR_AfterIdExceptId_1(lookahead.id)){
@@ -257,6 +257,9 @@ void AfterIdExceptId(){
 	} else if (FR_AfterIdExceptId_2(lookahead.id)){
 		Bracket();
 		Eq();
+	} else if(FR_AfterIdExceptId_3(lookahead.id)){
+		match('=');
+		E();
 	} else error("AfterIdExceptId");
 	printf("}");
 }
