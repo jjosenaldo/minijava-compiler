@@ -4,5 +4,10 @@
     // IF
     if(a == 3){
         System.out.println("it works!");
+
+        // now an empty block because... why not :P
+        {
+
+        }
     }
 }
