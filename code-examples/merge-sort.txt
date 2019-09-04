@@ -24,7 +24,7 @@ class MergeSort{
         int j = 0;
         int k = 0;
 
-        while (i < left && j < right) {
+        while ((i < left) && (j < right)) {
             if (l[i] <= r[j]) {
                 a[k] = l[i];
                 i = i+1;

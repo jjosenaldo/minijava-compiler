@@ -520,13 +520,13 @@ void E() {
 	printf(" }");
 }
 
-// Ep -> Relop E1 | .
 void Ep() {
 	printf("Ep { ");
 	if(FR_Ep_1(lookahead.id)) {
 		Relop();
 		printf(", ");
 		E1();
+		Ep();
 	}
 	else printf("\u03B5") /* Epsilon */;
 	printf(" }");

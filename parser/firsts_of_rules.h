@@ -204,7 +204,6 @@
 // E -> E1 Ep .
 #define FR_E(x) F_E1(x)
 
-// Ep -> Relop E1 .
 #define FR_Ep_1(x) F_Relop(x)
 
 // Ep -> .
