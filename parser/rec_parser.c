@@ -24,7 +24,7 @@ void error(char* nonterminal) {
 
 void parse(){
 	lookahead = getNextToken();
-    BlockStmts();
+    Goal();
     match(TOK_EOF);
     printf("\n");
 }

@@ -1,7 +1,7 @@
 // Adaptado de: https://www.baeldung.com/java-merge-sort
 
 class Main{
-    public static void main(String[] args){
+    void main(String[] args){
         MergeSort sorter = new MergeSort();
         int[] v = {1,5,3,6,3,845,23,56};
         sorter.sort(v);
@@ -15,11 +15,11 @@ class Main{
 }
 
 class MergeSort{
-    public void sort(int[] arr){
-        mergeSort(arr, arr.length);
+    void sort(int[] arr){
+        this.mergeSort(arr, arr.length);
     }
 
-    public void merge(int[] a, int[] l, int[] r, int left, int right) {
+    void merge(int[] a, int[] l, int[] r, int left, int right) {
         int i = 0;
         int j = 0;
         int k = 0;
@@ -47,7 +47,7 @@ class MergeSort{
         }
     }
 
-    public void mergeSort(int[] a, int n) {
+    void mergeSort(int[] a, int n) {
         if (n < 2) {
             return;
         }
