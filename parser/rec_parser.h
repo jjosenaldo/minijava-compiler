@@ -44,6 +44,7 @@ void FilledBrackets();
 void AfterNewId();
 void AfterThisInStmt();
 void OptAfterIdExceptId();
+void OptExp();
 void Eq();
 void E();
 void Ep();

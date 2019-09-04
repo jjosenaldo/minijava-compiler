@@ -67,6 +67,10 @@
 // Stmt -> StmtWithoutId .
 #define FR_Stmt_2(x) F_StmtWithoutId(x) 
 
+#define FR_OptExp_1(x) FR_E(x)
+
+#define FR_OptExp_2(x) x == EPS
+
 // StmtWithoutId -> lbrace Blockstatements rbrace .
 #define FR_StmtWithoutId_1(x) x == '{'
 

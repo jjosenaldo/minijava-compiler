@@ -33,6 +33,8 @@
 // id lbrace while systemoutprintln continue break return if semicolon this
 #define F_STMT(x) x == TOK_ID || x == '{' || x == TOK_WHILE || x == TOK_SYSOUT || x == TOK_CONTINUE || x == TOK_BREAK || x == TOK_RETURN || x == TOK_IF || x == ';' || x == TOK_THIS
 
+#define F_OptExp(x) F_E();
+
 // ( eq dot lbracket
 #define F_AfterThisInStmt(x) x == '(' || x == '=' || x == '.' || x == '['
 

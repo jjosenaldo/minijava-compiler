@@ -80,6 +80,8 @@ S_FINAL                   \"
 \+              { return '+'; }
 \-              { return '-'; }
 \*              { return '*'; }
+"/"             { return '/'; }
+"%"             { return '%'; }
 \=\=            { return TOK_EQ; }
 \!              { return TOK_DIFF; }
 \=              { return '='; }

@@ -196,7 +196,6 @@ void Stmt() {
 	printf(" }");
 }
 
-// StmtWithoutId -> lbrace Blockstatements rbrace |  while ( E ) Stmt | systemoutprintln ( E ) semicolon  | continue semicolon | break semicolon | return E semicolon | if ( E ) Stmt OptElse | semicolon | this dot id AfterThisInStmt .
 void StmtWithoutId(){
 	printf("StmtWithoutId {");
 	if(FR_StmtWithoutId_1(lookahead.id)){
@@ -223,7 +222,7 @@ void StmtWithoutId(){
 		match(';');
 	} else if(FR_StmtWithoutId_6(lookahead.id)){
 		match(TOK_RETURN);
-		E();
+		OptExp();
 		match(';');
 	} else if(FR_StmtWithoutId_7(lookahead.id)){
 		match(TOK_IF);
@@ -242,6 +241,14 @@ void StmtWithoutId(){
 	} else error("StmtWithoutId");
 	printf("}");
 	//this dot id AfterIdExceptId
+}
+
+void OptExp(){
+	printf("OptExp { ");
+	if(FR_OptExp_1(lookahead.id)){
+		E();
+	} else printf("\u03B5") /* Epsilon */;
+	printf("}");
 }
 
 // OptElse -> else Stmt | .
@@ -596,6 +603,7 @@ void E3() {
 // E3p -> Multop T E3p | .
 void E3p() {
 	printf("E3p { ");
+	printf("id being matched: %c ",lookahead.id);
 	if(FR_E3p_1(lookahead.id)) {
 		Multop();
 		printf(", ");
