@@ -45,6 +45,8 @@ void AfterNewId();
 void AfterThisInStmt();
 void OptAfterIdExceptId();
 void OptExp();
+void AfterThisInExp();
+void RestThisInExp();
 void Eq();
 void E();
 void Ep();

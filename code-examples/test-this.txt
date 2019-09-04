@@ -1,0 +1,9 @@
+class Test{
+	void main(String[] args){
+		this.a = 1;
+		this.a = this.b;
+		this.a[1] = 1;
+		this.a[1].a()[1];
+		this.a[1].a() = a;
+	}
+}

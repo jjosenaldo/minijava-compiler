@@ -22,6 +22,10 @@ void error(char* nonterminal) {
 	exit(EXIT_FAILURE);
 }
 
+void printeps(){
+	printf("\u03B5");
+}
+
 void parse(){
 	lookahead = getNextToken();
     Goal();
@@ -614,7 +618,6 @@ void E3p() {
 	printf(" }");
 }
 
-// T -> F Tp | Unop T .
 void T() {
 	printf("T { ");
 	if(FR_T_1(lookahead.id)) {
@@ -626,6 +629,10 @@ void T() {
 		Unop();
 		printf(", ");
 		T();
+	} else if(FR_T_3(lookahead.id)) {
+		match(TOK_THIS);
+		printf(", ");
+		AfterThisInExp();
 	}
 	else error("T");
 	printf(" }");
@@ -755,7 +762,6 @@ void F() {
 	printf(" }");
 }
 
-// TT -> litint | true | false | id | litstr  | null | new AfterNew .
 void TT() {
 	printf("TT { ");
 	if(FR_TT_1(lookahead.id))
@@ -775,6 +781,27 @@ void TT() {
 		AfterNew();
 	} else error("TT");
 	printf(" }");
+}
+
+void AfterThisInExp(){
+	printf("AfterThisInExp {");
+	if(FR_AfterThisInExp_1(lookahead.id)){
+		match('.');
+		match(TOK_ID);
+		RestThisInExp();
+	} else printeps();
+	printf("}");
+}
+
+void RestThisInExp(){
+	printf("RestThisInExp {");
+	if(FR_RestThisInExp_1(lookahead.id)){
+		match('(');
+		T3();
+		match(')');
+		Tp();
+	} else printeps();
+	printf("}");
 }
 
 // AfterNew -> int FilledBrackets | boolean FilledBrackets | id AfterNewId .
