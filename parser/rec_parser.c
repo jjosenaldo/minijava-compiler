@@ -603,7 +603,6 @@ void E3() {
 // E3p -> Multop T E3p | .
 void E3p() {
 	printf("E3p { ");
-	printf("id being matched: %c ",lookahead.id);
 	if(FR_E3p_1(lookahead.id)) {
 		Multop();
 		printf(", ");
@@ -789,7 +788,7 @@ void AfterNew(){
 	} else if(FR_AfterNew_2(lookahead.id)){
 		match(TOK_BOOLEAN);
 		FilledBrackets();
-	} if(FR_AfterNew_3(lookahead.id)){
+	} else if(FR_AfterNew_3(lookahead.id)){
 		match(TOK_ID);
 		AfterNewId();
 	} else error("AfterNew");
