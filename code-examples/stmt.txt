@@ -10,4 +10,29 @@
 
         }
     }
+
+    // what about those nasty whiles
+    while(true){
+    	// yay
+    	;
+    	System.out.println("dont mind me");
+    	break;
+    }
+
+    return 1+1==2;
+
+    /*
+    	now let's analyze the commands that must start with an id
+    */
+    a=1;
+    //arrays!!
+    Dog[][][] matrixOfDogs_1;
+    Cat[] cats = new Cats[5+1];
+    a.getIds()[1] = 2;
+    a[1].getIds() = 1;
+    a[1].getIds().set(1,2,3,23,9).set().set()[1][1]=1;
+
+    // UNWANTED OPERATIONS
+    a.getIds() = 1;
+    a[1];
 }

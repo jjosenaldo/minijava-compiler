@@ -264,28 +264,28 @@ void AfterIdExceptId(){
 	printf("}");
 }
 
-// Dot -> dot id ( ParamsOpt ) DotR .
+// Dot -> dot id ( T3 ) DotR .
 void Dot(){
 	printf("Dot {");
 	if(FR_Dot(lookahead.id)){
 		match('.');
 		match(TOK_ID);
 		match('(');
-		ParamsOpt();
+		T3();
 		match(')');
 		DotR();
 	} else error("Dot");
 	printf("}");
 }
 
-// DotR -> dot id ( ParamsOpt ) DotR | lbracket E rbracket DotR | .
+// DotR -> dot id ( T3 ) DotR | lbracket E rbracket DotR | .
 void DotR(){
 	printf("DotR {");
 	if(FR_DotR_1(lookahead.id)){
 		match('.');
 		match(TOK_ID);
 		match('(');
-		ParamsOpt();
+		T3();
 		match(')');
 		DotR();
 	} else if(FR_DotR_2(lookahead.id)){
@@ -300,7 +300,7 @@ void DotR(){
 // Bracket -> lbracket BracketR .
 void Bracket(){
 	printf("Bracket {");
-	if(FR_Dot(lookahead.id)){
+	if(FR_Bracket(lookahead.id)){
 		match('[');
 		BracketR();
 	} else error("Bracket");
@@ -315,7 +315,6 @@ void BracketR(){
 		match(']');
 		DotR();
 	} else if(FR_BracketR_2(lookahead.id)){
-		E();
 		match(']');
 		BracketEmpty();
 		match(TOK_ID);

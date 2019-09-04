@@ -17,8 +17,8 @@ StmtWithoutId -> lbrace Blockstatements rbrace |  while ( E ) Stmt | systemoutpr
 OptElse -> else Stmt | .
 
 AfterIdExceptId -> Dot Eq | Bracket Eq | eq E .
-Dot -> dot id ( ParamsOpt ) DotR .
-DotR -> dot id ( ParamsOpt ) DotR | lbracket E rbracket DotR | .
+Dot -> dot id ( T3 ) DotR .
+DotR -> dot id ( T3 ) DotR | lbracket E rbracket DotR | .
 Bracket -> lbracket BracketR .
 BracketR -> E rbracket DotR | rbracket BracketEmpty id .
 BracketEmpty -> lbracket rbracket BracketEmpty | .
