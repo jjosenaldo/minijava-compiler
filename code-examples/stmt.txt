@@ -1,3 +1,5 @@
+// The main non-terminal for this file must be the BlockStmts() function!
+
 {
     // Let's test some statements!
 
@@ -35,4 +37,16 @@
     // UNWANTED OPERATIONS
     a.getIds() = 1;
     a[1];
+    int a = a;
+    int d;
+    boolean a = 1;
+    //String b = "";
+    a a = new a(turn_around, turn_around, look_around, {zeb});
+
+    while(a) a = 1;
+    // this is *correctly* reported wrong: while(a) int a = 1;
+}
+
+{
+	// yay, many blocks!
 }
