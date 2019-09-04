@@ -196,7 +196,7 @@ void Stmt() {
 	printf(" }");
 }
 
-// StmtWithoutId -> lbrace Blockstatements rbrace |  while ( E ) Stmt | systemoutprintln ( E ) semicolon  | continue semicolon | break semicolon | return E semicolon | if ( E ) Stmt OptElse | semicolon .
+// StmtWithoutId -> lbrace Blockstatements rbrace |  while ( E ) Stmt | systemoutprintln ( E ) semicolon  | continue semicolon | break semicolon | return E semicolon | if ( E ) Stmt OptElse | semicolon | this dot id AfterThisInStmt .
 void StmtWithoutId(){
 	printf("StmtWithoutId {");
 	if(FR_StmtWithoutId_1(lookahead.id)){
@@ -234,8 +234,14 @@ void StmtWithoutId(){
 		OptElse();
 	} else if(FR_StmtWithoutId_8(lookahead.id)){
 		match(';');
+	} else if(FR_StmtWithoutId_9(lookahead.id)){
+		match(TOK_THIS);
+		match('.');
+		match(TOK_ID);
+		AfterThisInStmt();
 	} else error("StmtWithoutId");
 	printf("}");
+	//this dot id AfterIdExceptId
 }
 
 // OptElse -> else Stmt | .
@@ -244,6 +250,29 @@ void OptElse(){
 	if(FR_OptElse_1(lookahead.id)){
 		match(TOK_ELSE);
 		Stmt();
+	} else printf("\u03B5") /* Epsilon */;
+	printf("}");
+}
+
+// AfterThisInStmt -> AfterIdExceptId | ( T3 ) OptAfterIdExceptId .
+void AfterThisInStmt(){
+	printf("AfterThisInStmt { ");
+	if(FR_AfterThisInStmt_1(lookahead.id)){
+		AfterIdExceptId();
+	} else if(FR_AfterThisInStmt_2(lookahead.id)){
+		match('(');
+		T3();
+		match(')');
+		OptAfterIdExceptId();
+	} else error("AfterThisInStmt");
+	printf("}");
+}
+
+// OptAfterIdExceptId -> AfterIdExceptId | .
+void OptAfterIdExceptId(){
+	printf("OptAfterIdExceptId {");
+	if(FR_OptAfterIdExceptId_1(lookahead.id)){
+		AfterIdExceptId();
 	} else printf("\u03B5") /* Epsilon */;
 	printf("}");
 }

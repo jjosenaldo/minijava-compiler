@@ -66,9 +66,9 @@ class MergeSort{
             i = i+1;
         }
     
-        mergeSort(l, mid);
-        mergeSort(r, n - mid);
+        this.mergeSort(l, mid);
+        this.mergeSort(r, n - mid);
     
-        merge(a, l, r, mid, n - mid);
+        this.merge(a, l, r, mid, n - mid);
     }
 }

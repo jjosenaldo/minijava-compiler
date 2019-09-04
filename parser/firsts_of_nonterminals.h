@@ -9,8 +9,8 @@
 // class
 #define F_Main(x) x == TOK_CLASS 
 
-//  id lbrace while systemoutprintln continue break return if semicolon boolean int void
-#define F_BLK_STMT(x) x == TOK_ID || x == '{' || x == TOK_WHILE || x == TOK_SYSOUT || x == TOK_CONTINUE || x == TOK_BREAK || x == TOK_RETURN || x == TOK_IF || x == ';' || x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID
+//  id lbrace while systemoutprintln continue break return if semicolon this boolean int void
+#define F_BLK_STMT(x) x == TOK_ID || x == '{' || x == TOK_WHILE || x == TOK_SYSOUT || x == TOK_CONTINUE || x == TOK_BREAK || x == TOK_RETURN || x == TOK_IF || x == ';' || x == TOK_THIS || x == TOK_BOOLEAN || x == TOK_INT || x == TOK_VOID
 
 // id dot lbracket
 #define F_AFTER_ID(x) x == TOK_ID || x == '.' || x == '['
@@ -24,14 +24,20 @@
 // lbracket
 #define F_TYPE1(x) x == '['
 
-// lbrace while systemoutprintln continue break return if semicolon
-#define F_StmtWithoutId(x) x == '{' || x == TOK_WHILE || x == TOK_SYSOUT || x == TOK_CONTINUE || x == TOK_BREAK || x == TOK_RETURN || x  == TOK_IF || x == ';'
+// lbrace while systemoutprintln continue break return if semicolon this
+#define F_StmtWithoutId(x) x == '{' || x == TOK_WHILE || x == TOK_SYSOUT || x == TOK_CONTINUE || x == TOK_BREAK || x == TOK_RETURN || x  == TOK_IF || x == ';' || x == TOK_THIS
 
 // else
 #define F_OptElse(x) x == TOK_ELSE
 
-// id lbrace while systemoutprintln continue break return if semicolon
-#define F_STMT(x) x == TOK_ID || x == '{' || x == TOK_WHILE || x == TOK_SYSOUT || x == TOK_CONTINUE || x == TOK_BREAK || x == TOK_RETURN || x == TOK_IF || x == ';'
+// id lbrace while systemoutprintln continue break return if semicolon this
+#define F_STMT(x) x == TOK_ID || x == '{' || x == TOK_WHILE || x == TOK_SYSOUT || x == TOK_CONTINUE || x == TOK_BREAK || x == TOK_RETURN || x == TOK_IF || x == ';' || x == TOK_THIS
+
+// ( eq dot lbracket
+#define F_AfterThisInStmt(x) x == '(' || x == '=' || x == '.' || x == '['
+
+// 	eq dot lbracket
+#define F_OptAfterIdExceptId(x) x == '=' || x == '.' || x == '['
 
 // eq dot lbracket
 #define F_AfterIdExceptId(x) x == '=' || x == '.' || x == '['
@@ -75,7 +81,7 @@
 // eq
 #define F_Eq(x) x == '='
 
-//  id lbrace while systemoutprintln continue break return if semicolon boolean int void
+//  id lbrace while systemoutprintln continue break return if semicolon this boolean int void
 #define F_BLK_STMTS(x) F_BLK_STMT(x)
 
 // id boolean int void

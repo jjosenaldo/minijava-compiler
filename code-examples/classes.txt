@@ -14,8 +14,13 @@ class Animal{
 }
 
 class Cat extends Animal{
-	int paws;
+	int paws = 4;
+	int weight;
 	void meow(){
 		
+	}
+
+	void cut(){
+		this.paws = 3;
 	}
 }

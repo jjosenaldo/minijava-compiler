@@ -16,15 +16,15 @@ class Main{
 
 class QuickSort{
     void sort(int[] arr){
-        quickSort(arr, 0, arr.length-1);
+        this.quickSort(arr, 0, arr.length-1);
     }
 
     void quickSort(int[] arr, int begin, int end) {
         if (begin < end) {
-            int pivot = partition(arr, begin, end);
+            int pivot = this.partition(arr, begin, end);
     
-            quickSort(arr, begin, pivot-1);
-            quickSort(arr, pivot+1, end);
+            this.quickSort(arr, begin, pivot-1);
+            this.quickSort(arr, pivot+1, end);
         }
     }
 

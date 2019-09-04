@@ -91,11 +91,28 @@
 // StmtWithoutId -> semicolon .
 #define FR_StmtWithoutId_8(x) x == ';'
 
+// StmtWithoutId -> this dot id AfterIdExceptId .
+#define FR_StmtWithoutId_9(x) x == TOK_THIS
+
 // OptElse -> else Stmt .
 #define FR_OptElse_1(x) x == TOK_ELSE 
 
 // OptElse -> .
 #define FR_OptElse_2(x) x == EPS 
+
+// AfterThisInStmt -> AfterIdExceptId
+#define FR_AfterThisInStmt_1(x) F_AfterIdExceptId(x) 
+
+// AfterThisInStmt -> ( T3 ) OptAfterIdExceptId
+#define FR_AfterThisInStmt_2(x) x == '('
+
+// OptAfterIdExceptId -> AfterIdExceptId .
+#define FR_OptAfterIdExceptId_1(x) FR_AfterIdExceptId(x)
+
+// OptAfterIdExceptId -> .
+#define FR_OptAfterIdExceptId_2(x) x == EPS
+
+#define FR_AfterIdExceptId(x) FR_AfterIdExceptId_1(x) || FR_AfterIdExceptId_2(x) || FR_AfterIdExceptId_3(x)
 
 // AfterIdExceptId -> Dot Eq .
 #define FR_AfterIdExceptId_1(x) F_Dot(x) 

@@ -12,9 +12,11 @@ NonclassType -> boolean Type1 | int Type1 | void .
 Type -> NonclassType | id Type1 .
 
 Stmt -> id AfterIdExceptId semicolon | StmtWithoutId .
-StmtWithoutId -> lbrace Blockstatements rbrace |  while ( E ) Stmt | systemoutprintln ( E ) semicolon  | continue semicolon | break semicolon | return E semicolon | if ( E ) Stmt OptElse | semicolon .
-
+StmtWithoutId -> lbrace Blockstatements rbrace |  while ( E ) Stmt | systemoutprintln ( E ) semicolon  | continue semicolon | break semicolon | return E semicolon | if ( E ) Stmt OptElse | semicolon | this dot id AfterThisInStmt .
 OptElse -> else Stmt | .
+
+AfterThisInStmt -> AfterIdExceptId | ( T3 ) OptAfterIdExceptId .
+OptAfterIdExceptId -> AfterIdExceptId | .
 
 AfterIdExceptId -> Dot Eq | Bracket Eq | eq E .
 Dot -> dot id ( T3 ) DotR .
