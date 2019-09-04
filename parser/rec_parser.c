@@ -755,7 +755,7 @@ void F() {
 	printf(" }");
 }
 
-// TT -> litint | true | false | id | litstr | this | null | new AfterNew .
+// TT -> litint | true | false | id | litstr  | null | new AfterNew .
 void TT() {
 	printf("TT { ");
 	if(FR_TT_1(lookahead.id))
@@ -769,10 +769,8 @@ void TT() {
 	else if(FR_TT_5(lookahead.id))
 		match(TOK_LIT_STR);
 	else if(FR_TT_6(lookahead.id))
-		match(TOK_THIS);
-	else if(FR_TT_7(lookahead.id))
 		match(TOK_NULL);
-	else if(FR_TT_8(lookahead.id)){
+	else if(FR_TT_7(lookahead.id)){
 		match(TOK_NEW);
 		AfterNew();
 	} else error("TT");

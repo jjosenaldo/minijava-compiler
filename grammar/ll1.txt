@@ -53,7 +53,7 @@ E2p -> Addop E3 E2p | .
 E3 -> T E3p .
 E3p -> Multop T E3p | .
 
-T -> F Tp | Unop T .
+T -> F Tp | Unop T | this AfterThisInExp .
 Tp -> X Tp | .
 T2 -> comma E | .                   
 T3 -> E T4 | .
@@ -62,7 +62,11 @@ X -> dot Xp | lbracket E rbracket .
 Xp -> length P | substring ( E T2 ) | id ( T3 ) .
 P -> ( ) | .
 F -> TT | R .
-TT -> litint | true | false | id | litstr | this | null | new AfterNew .
+TT -> litint | true | false | id | litstr | null | new AfterNew .
+
+AfterThisInExp -> dot id RestThisInExp | .
+RestThisInExp -> ( T3 ) Tp | .
+
 AfterNew -> int FilledBrackets | boolean FilledBrackets | id AfterNewId .
 AfterNewId -> lbracket E rbracket FilledBrackets | ( T3 ) . 
 FilledBrackets -> lbracket E rbracket FilledBrackets | .
