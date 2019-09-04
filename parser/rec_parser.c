@@ -4,11 +4,11 @@
 #include <stdio.h>
 #include <stdlib.h> // exit()
 
-void match(char tok_id){
-	if (lookahead.id == tok_id){
+void match(char tok_id) {
+	if (lookahead.id == tok_id) {
 		printf("%s", lookahead.lexem);
 		lookahead = getNextToken();
-	} else{
+	} else {
 		if(lookahead.id == TOK_EOF)
 		printf("\n\nSYNTAX ERROR: the token %c couldn't be matched with the end of file!\n", tok_id);
 		else
@@ -22,11 +22,11 @@ void error(char* nonterminal) {
 	exit(EXIT_FAILURE);
 }
 
-void printeps(){
+void printEPS() {
 	printf("\u03B5");
 }
 
-void parse(){
+void parse() {
 	lookahead = getNextToken();
     Goal();
     match(TOK_EOF);
@@ -36,7 +36,7 @@ void parse(){
 // Goal -> MainClass ClassDeclarations .
 void Goal() {
 	printf("Goal { ");
-	if(FR_Goal(lookahead.id)){
+	if(FR_Goal(lookahead.id)) {
 		MainClass();
 		printf(", ");
 		ClassDeclarations();
@@ -47,7 +47,7 @@ void Goal() {
 // MainClass -> class id lbrace void main ( string lbracket rbracket id ) lbrace Blockstatements rbrace rbrace .
 void MainClass() {
 	printf("MainClass { ");
-	if(FR_Main(lookahead.id)){
+	if(FR_Main(lookahead.id)) {
 		match(TOK_CLASS);
 		printf(", ");
 		match(TOK_ID);
@@ -78,31 +78,32 @@ void MainClass() {
 		printf(", ");
 		match('}');
 	} else error("MainClass");
-	
 	printf(" }");
 }
 
 // Blockstatements -> BlockStatement Blockstatements | .
-void BlockStmts(){
+void BlockStmts() {
 	printf("BlockStmts { ");
-	if(FR_BLK_STMTS_1(lookahead.id)){
+	if(FR_BLK_STMTS_1(lookahead.id)) {
 		BlockStmt();
 		printf(", ");
 		BlockStmts();
-	}
-	else printf("\u03B5") /* Epsilon */;
+	} else printEPS();
 	printf(" }");
 }
 
 // BlockStatement -> id AfterId semicolon | NonclassVarDec semicolon | StmtWithoutId .
-void BlockStmt(){
+void BlockStmt() {
 	printf("BlockStmt { ");
-	if(FR_BLK_STMT_1(lookahead.id)){
+	if(FR_BLK_STMT_1(lookahead.id)) {
 		match(TOK_ID);
+		printf(", ");
 		AfterId();
+		printf(", ");
 		match(';');
 	} else if (FR_BLK_STMT_2(lookahead.id)) {
 		NonClassVarDec();
+		printf(", ");
 		match(';');
 	} else if (FR_BLK_STMT_3(lookahead.id)) {
 		StmtWithoutId();
@@ -111,40 +112,44 @@ void BlockStmt(){
 }
 
 // AfterId -> id Eq | AfterIdExceptId . 
-void AfterId(){
-	printf("AfterId {");
-	if(FR_AFTER_ID_1(lookahead.id)){
+void AfterId() {
+	printf("AfterId { ");
+	if(FR_AFTER_ID_1(lookahead.id)) {
 		match(TOK_ID);
+		printf(", ");
 		Eq();
-	} else if(FR_AFTER_ID_2(lookahead.id)){
+	} else if(FR_AFTER_ID_2(lookahead.id)) {
 		AfterIdExceptId();
 	} else error("AfterId");
-	printf("}");
+	printf(" }");
 }
 
 // Eq -> eq E | .
-void Eq(){
-	printf("Eq {");
-	if(FR_Eq_1(lookahead.id)){
+void Eq() {
+	printf("Eq { ");
+	if(FR_Eq_1(lookahead.id)) {
 		match('=');
+		printf(", ");
 		E();
-	} else printf("\u03B5") /* Epsilon */;
-	printf("}");
+	} else printEPS();
+	printf(" }");
 }
 
 // NonclassVarDec -> NonclassType id Eq .
-void NonClassVarDec(){
-	printf("NonclassVarDec {");
-	if(FR_NONCLASS_VAR_DEC(lookahead.id)){
+void NonClassVarDec() {
+	printf("NonclassVarDec { ");
+	if(FR_NONCLASS_VAR_DEC(lookahead.id)) {
 		NonClassType();
+		printf(", ");
 		match(TOK_ID);
+		printf(", ");
 		Eq();
 	} else error("NonClassVarDec");
-	printf("}");
+	printf(" }");
 }
 
 // Type1 -> lbracket rbracket Type1 | .
-void Type1(){
+void Type1() {
 	printf("Type1 { ");
 	if(FR_TYPE1_1(lookahead.id)) {
 		match('[');
@@ -152,13 +157,12 @@ void Type1(){
 		match(']');
 		printf(", ");
 		Type1();
-	}
-	else printf("\u03B5") /* Epsilon */;
+	} else printEPS();
 	printf(" }");
 }
 
 // NonclassType -> boolean Type1 | int Type1 | void .
-void NonClassType(){
+void NonClassType() {
 	printf("NonClassType { ");
 	if(FR_NON_CLASS_TYPE_1(lookahead.id)) {
 		match(TOK_BOOLEAN);
@@ -181,196 +185,258 @@ void Type() {
 		NonClassType();
 	} else if (FR_TYPE_2(lookahead.id)) {
 		match(TOK_ID);
+		printf(", ");
 		Type1();
-	}
-	else error("Type");
+	} else error("Type");
 	printf(" }");
 }
 
 // Stmt -> id AfterIdExceptId semicolon | StmtWithoutId .
 void Stmt() {
 	printf("Stmt { ");
-	if(FR_Stmt_1(lookahead.id)){
+	if(FR_Stmt_1(lookahead.id)) {
 		match(TOK_ID);
+		printf(", ");
 		AfterIdExceptId();
+		printf(", ");
 		match(';');
-	} else if(FR_Stmt_2(lookahead.id)){
+	} else if(FR_Stmt_2(lookahead.id)) {
 		StmtWithoutId();
 	} else error("Stmt");
 	printf(" }");
 }
 
-void StmtWithoutId(){
-	printf("StmtWithoutId {");
-	if(FR_StmtWithoutId_1(lookahead.id)){
+/* StmtWithoutId -> lbrace Blockstatements rbrace 
+                  | while ( E ) Stmt
+                  | systemoutprintln ( E ) semicolon
+                  | continue semicolon
+                  | break semicolon 
+                  | return OptExp semicolon
+                  | if ( E ) Stmt OptElse
+                  | semicolon
+                  | this dot id AfterThisInStmt .
+ */
+void StmtWithoutId() {
+	printf("StmtWithoutId { ");
+	if(FR_StmtWithoutId_1(lookahead.id)) {
 		match('{');
+		printf(", ");
 		BlockStmts();
+		printf(", ");
 		match('}');
-	} else if(FR_StmtWithoutId_2(lookahead.id)){
+	} else if(FR_StmtWithoutId_2(lookahead.id)) {
 		match(TOK_WHILE);
+        printf(", ");
 		match('(');
+        printf(", ");
 		E();
+        printf(", ");
 		match(')');
+        printf(", ");
 		Stmt();
-	} else if(FR_StmtWithoutId_3(lookahead.id)){
+	} else if(FR_StmtWithoutId_3(lookahead.id)) {
 		match(TOK_SYSOUT);
+        printf(", ");
 		match('(');
+        printf(", ");
 		E();
+        printf(", ");
 		match(')');
+        printf(", ");
 		match(';');
-	} else if(FR_StmtWithoutId_4(lookahead.id)){
+	} else if(FR_StmtWithoutId_4(lookahead.id)) {
 		match(TOK_CONTINUE);
+        printf(", ");
 		match(';');
-	} else if(FR_StmtWithoutId_5(lookahead.id)){
+	} else if(FR_StmtWithoutId_5(lookahead.id)) {
 		match(TOK_BREAK);
+        printf(", ");
 		match(';');
-	} else if(FR_StmtWithoutId_6(lookahead.id)){
+	} else if(FR_StmtWithoutId_6(lookahead.id)) {
 		match(TOK_RETURN);
+        printf(", ");
 		OptExp();
+        printf(", ");
 		match(';');
-	} else if(FR_StmtWithoutId_7(lookahead.id)){
+	} else if(FR_StmtWithoutId_7(lookahead.id)) {
 		match(TOK_IF);
+        printf(", ");
 		match('(');
+        printf(", ");
 		E();
+        printf(", ");
 		match(')');
+        printf(", ");
 		Stmt();
+        printf(", ");
 		OptElse();
-	} else if(FR_StmtWithoutId_8(lookahead.id)){
+	} else if(FR_StmtWithoutId_8(lookahead.id)) {
 		match(';');
-	} else if(FR_StmtWithoutId_9(lookahead.id)){
+	} else if(FR_StmtWithoutId_9(lookahead.id)) {
 		match(TOK_THIS);
+        printf(", ");
 		match('.');
+        printf(", ");
 		match(TOK_ID);
+        printf(", ");
 		AfterThisInStmt();
 	} else error("StmtWithoutId");
-	printf("}");
-	//this dot id AfterIdExceptId
+	printf(" }");
 }
 
-void OptExp(){
+// OptExp -> E | .
+void OptExp() {
 	printf("OptExp { ");
-	if(FR_OptExp_1(lookahead.id)){
+	if(FR_OptExp_1(lookahead.id)) {
 		E();
-	} else printf("\u03B5") /* Epsilon */;
-	printf("}");
+	} else printEPS();
+	printf(" }");
 }
 
 // OptElse -> else Stmt | .
-void OptElse(){
-	printf("OptElse {");
-	if(FR_OptElse_1(lookahead.id)){
+void OptElse() {
+	printf("OptElse { ");
+	if(FR_OptElse_1(lookahead.id)) {
 		match(TOK_ELSE);
+        printf(", ");
 		Stmt();
-	} else printf("\u03B5") /* Epsilon */;
-	printf("}");
+	} else printEPS();
+	printf(" }");
 }
 
 // AfterThisInStmt -> AfterIdExceptId | ( T3 ) OptAfterIdExceptId .
-void AfterThisInStmt(){
+void AfterThisInStmt() {
 	printf("AfterThisInStmt { ");
-	if(FR_AfterThisInStmt_1(lookahead.id)){
+	if(FR_AfterThisInStmt_1(lookahead.id)) {
 		AfterIdExceptId();
-	} else if(FR_AfterThisInStmt_2(lookahead.id)){
+	} else if(FR_AfterThisInStmt_2(lookahead.id)) {
 		match('(');
+        printf(", ");
 		T3();
+        printf(", ");
 		match(')');
+        printf(", ");
 		OptAfterIdExceptId();
 	} else error("AfterThisInStmt");
-	printf("}");
+	printf(" }");
 }
 
 // OptAfterIdExceptId -> AfterIdExceptId | .
-void OptAfterIdExceptId(){
-	printf("OptAfterIdExceptId {");
-	if(FR_OptAfterIdExceptId_1(lookahead.id)){
+void OptAfterIdExceptId() {
+	printf("OptAfterIdExceptId { ");
+	if(FR_OptAfterIdExceptId_1(lookahead.id)) {
 		AfterIdExceptId();
-	} else printf("\u03B5") /* Epsilon */;
-	printf("}");
+	} else printEPS();
+	printf(" }");
 }
 
-// AfterIdExceptId -> Dot Eq | Bracket Eq  eq E . 
-void AfterIdExceptId(){
-	printf("AfterIdExceptId {");
-	if(FR_AfterIdExceptId_1(lookahead.id)){
+// AfterIdExceptId -> Dot Eq | Bracket Eq | eq E .
+void AfterIdExceptId() {
+	printf("AfterIdExceptId { ");
+	if(FR_AfterIdExceptId_1(lookahead.id)) {
 		Dot();
+        printf(", ");
 		Eq();
-	} else if (FR_AfterIdExceptId_2(lookahead.id)){
+	} else if (FR_AfterIdExceptId_2(lookahead.id)) {
 		Bracket();
+        printf(", ");
 		Eq();
-	} else if(FR_AfterIdExceptId_3(lookahead.id)){
+	} else if(FR_AfterIdExceptId_3(lookahead.id)) {
 		match('=');
+        printf(", ");
 		E();
 	} else error("AfterIdExceptId");
-	printf("}");
+	printf(" }");
 }
 
 // Dot -> dot id ( T3 ) DotR .
-void Dot(){
-	printf("Dot {");
-	if(FR_Dot(lookahead.id)){
+void Dot() {
+	printf("Dot { ");
+	if(FR_Dot(lookahead.id)) {
 		match('.');
+        printf(", ");
 		match(TOK_ID);
+        printf(", ");
 		match('(');
+        printf(", ");
 		T3();
+        printf(", ");
 		match(')');
+        printf(", ");
 		DotR();
 	} else error("Dot");
-	printf("}");
+	printf(" }");
 }
 
 // DotR -> dot id ( T3 ) DotR | lbracket E rbracket DotR | .
-void DotR(){
-	printf("DotR {");
-	if(FR_DotR_1(lookahead.id)){
+void DotR() {
+	printf("DotR { ");
+	if(FR_DotR_1(lookahead.id)) {
 		match('.');
+        printf(", ");
 		match(TOK_ID);
+        printf(", ");
 		match('(');
+        printf(", ");
 		T3();
+        printf(", ");
 		match(')');
+        printf(", ");
 		DotR();
-	} else if(FR_DotR_2(lookahead.id)){
+        printf(", ");
+	} else if(FR_DotR_2(lookahead.id)) {
 		match('[');
+        printf(", ");
 		E();
+        printf(", ");
 		match(']');
+        printf(", ");
 		DotR();
-	} else printf("\u03B5") /* Epsilon */;
-	printf("}");
+	} else printEPS();
+	printf(" }");
 }
 
 // Bracket -> lbracket BracketR .
-void Bracket(){
-	printf("Bracket {");
-	if(FR_Bracket(lookahead.id)){
+void Bracket() {
+	printf("Bracket { ");
+	if(FR_Bracket(lookahead.id)) {
 		match('[');
+        printf(", ");
 		BracketR();
 	} else error("Bracket");
-	printf("}");
+	printf(" }");
 }
 
 // BracketR -> E rbracket DotR | rbracket BracketEmpty id .
-void BracketR(){
-	printf("BracketR {");
-	if(FR_BracketR_1(lookahead.id)){
+void BracketR() {
+	printf("BracketR { ");
+	if(FR_BracketR_1(lookahead.id)) {
 		E();
+        printf(", ");
 		match(']');
+        printf(", ");
 		DotR();
-	} else if(FR_BracketR_2(lookahead.id)){
+	} else if(FR_BracketR_2(lookahead.id)) {
 		match(']');
+        printf(", ");
 		BracketEmpty();
+        printf(", ");
 		match(TOK_ID);
 	} else error("BracketR");
-	printf("}");
+	printf(" }");
 }
 
 // BracketEmpty -> lbracket rbracket BracketEmpty | .
-void BracketEmpty(){
-	printf("BracketEmpty {");
-	if(FR_BracketEmpty_1(lookahead.id)){
+void BracketEmpty() {
+	printf("BracketEmpty { ");
+	if(FR_BracketEmpty_1(lookahead.id)) {
 		match('[');
+        printf(", ");
 		match(']');
+        printf(", ");
 		BracketEmpty();
-	} else printf("\u03B5") /* Epsilon */;
-	printf("}");
+	} else printEPS();
+	printf(" }");
 }
 
 // ClassDeclarations -> ClassDeclaration ClassDeclarations  | .
@@ -378,17 +444,16 @@ void ClassDeclarations() {
 	printf("ClassDeclarations { ");
 	if(FR_CLASS_DCRLTS_1(lookahead.id)) {
 		ClassDeclaration();
-		printf(", ");
+        printf(", ");
 		ClassDeclarations();
-	}
-	else printf("\u03B5") /* Epsilon */;
+	} else printEPS();
 	printf(" }");
 }
 
 // ClassDeclaration -> class id Extends ClassBody .
 void ClassDeclaration() {
 	printf("ClassDeclaration { ");
-	if(FR_CLASS_DCRLT(lookahead.id)){
+	if(FR_CLASS_DCRLT(lookahead.id)) {
 		match(TOK_CLASS);
 		printf(", ");
 		match(TOK_ID);
@@ -397,7 +462,6 @@ void ClassDeclaration() {
 		printf(", ");
 		ClassBody();	
 	} else error("ClassDeclaration");
-	
 	printf(" }");
 }
 
@@ -408,14 +472,13 @@ void Extends() {
 		match(TOK_EXTENDS);
 		printf(", ");
 		match(TOK_ID);
-	}
-	else printf("\u03B5") /* Epsilon */;
+	} else printEPS();
 	printf(" }");
 }
 
 // ClassBody -> lbrace ClassContent rbrace .
-void ClassBody(){
-	if(FR_CLASS_BODY(lookahead.id)){
+void ClassBody() {
+	if(FR_CLASS_BODY(lookahead.id)) {
 		printf("ClassBody { ");
 		match('{');
 		printf(", ");
@@ -423,33 +486,30 @@ void ClassBody(){
 		printf(", ");
 		match('}');	
 	} else error("ClassBody");
-	
 	printf(" }");
 }
 
 // ClassContent -> ClassComponent ClassContent | .
-void ClassContent(){
+void ClassContent() {
 	printf("ClassContent { ");
-	if(FR_CLASS_CONTENT_1(lookahead.id)){
+	if(FR_CLASS_CONTENT_1(lookahead.id)) {
 		ClassComponent();
 		printf(", ");
 		ClassContent();
-	}
-	else printf("\u03B5") /* Epsilon */;
+	} else printEPS();
 	printf(" }");
 }
 
 // ClassComponent -> Type id RestDec .
-void ClassComponent(){
+void ClassComponent() {
 	printf("ClassComponent { ");
-	if(FR_CLASS_COMPONENT(lookahead.id)){
+	if(FR_CLASS_COMPONENT(lookahead.id)) {
 		Type();
 		printf(", ");
 		match(TOK_ID);
 		printf(", ");
 		RestDec();	
 	} else error("ClassComponent");
-	
 	printf(" }");
 }
 
@@ -458,6 +518,7 @@ void RestDec() {
 	printf("RestDec { ");
 	if(FR_REST_DEC_1(lookahead.id)) {
 		Eq();
+        printf(", ");
 		match(';');
 	} else if (FR_REST_DEC_2(lookahead.id)) {
 		match('(');
@@ -476,54 +537,51 @@ void RestDec() {
 }
 
 // ParamsOpt -> Params | .
-void ParamsOpt(){
+void ParamsOpt() {
 	printf("ParamsOpt { ");
 	if(FR_PARAMS_OPT_1(lookahead.id)) {
 		Params();
-	}
-	else printf("\u03B5") /* Epsilon */;
+	} else printEPS();
 	printf(" }");
 }
 
 // Params -> Param ParamsRest .
-void Params(){
+void Params() {
 	printf("Params { ");
-	if(FR_PARAMS(lookahead.id)){
+	if(FR_PARAMS(lookahead.id)) {
 		Param();
 		printf(", ");
 		ParamsRest();
-		printf(" }");
 	} else error("Params");
+    printf(" }");
 }
 
 // ParamsRest -> comma Params | .
-void ParamsRest(){
+void ParamsRest() {
 	printf("ParamsRest { ");
 	if(FR_PARAMS_REST_1(lookahead.id)) {
 		match(',');
 		printf(", ");
 		Params();
-	}
-	else printf("\u03B5") /* Epsilon */;
+	} else printEPS();
 	printf(" }");
 }
 
 // Param -> Type id .
 void Param() {
 	printf("Param { ");
-	if(FR_PARAM(lookahead.id)){
+	if(FR_PARAM(lookahead.id)) {
 		Type();
 		printf(", ");
 		match(TOK_ID);
 	} else error("Param");
-	
 	printf(" }");
 }
 
 // E -> E1 Ep .
 void E() {
-	printf("E {");
-	if(FR_E(lookahead.id)){
+	printf("E { ");
+	if(FR_E(lookahead.id)) {
 		E1();
 		printf(", ");
 		Ep();
@@ -531,22 +589,23 @@ void E() {
 	printf(" }");
 }
 
+// Ep -> Relop E1 Ep | .
 void Ep() {
 	printf("Ep { ");
 	if(FR_Ep_1(lookahead.id)) {
 		Relop();
 		printf(", ");
 		E1();
+        printf(", ");
 		Ep();
-	}
-	else printf("\u03B5") /* Epsilon */;
+	} else printEPS();
 	printf(" }");
 }
 
 // E1 -> E2 E1p .
 void E1() {
 	printf("E1 { ");
-	if(FR_E1(lookahead.id)){
+	if(FR_E1(lookahead.id)) {
 		E2();
 		printf(", ");
 		E1p();
@@ -563,15 +622,14 @@ void E1p() {
 		E2();
 		printf(", ");
 		E1p();
-	}
-	else printf("\u03B5") /* Epsilon */;
+	} else printEPS();
 	printf(" }");
 }
 
 // E2 -> E3 E2p .
 void E2() {
 	printf("E2 { ");
-	if(FR_E2(lookahead.id)){
+	if(FR_E2(lookahead.id)) {
 		E3();
 		printf(", ");
 		E2p();
@@ -588,15 +646,14 @@ void E2p() {
 		E3();
 		printf(", ");
 		E2p();
-	}
-	else printf("\u03B5") /* Epsilon */;
+	} else printEPS();
 	printf(" }");
 }
 
 // E3 -> T E3p .
 void E3() {
 	printf("E3 { ");
-	if(FR_E3(lookahead.id)){
+	if(FR_E3(lookahead.id)) {
 		T();
 		printf(", ");
 		E3p();
@@ -613,19 +670,18 @@ void E3p() {
 		T();
 		printf(", ");
 		E3p();
-	}
-	else printf("\u03B5") /* Epsilon */;
+	} else printEPS();
 	printf(" }");
 }
 
+// T -> F Tp | Unop T | this AfterThisInExp .
 void T() {
 	printf("T { ");
 	if(FR_T_1(lookahead.id)) {
 		F();
 		printf(", ");
 		Tp();
-	}
-	else if(FR_T_2(lookahead.id)) {
+	} else if(FR_T_2(lookahead.id)) {
 		Unop();
 		printf(", ");
 		T();
@@ -633,8 +689,7 @@ void T() {
 		match(TOK_THIS);
 		printf(", ");
 		AfterThisInExp();
-	}
-	else error("T");
+	} else error("T");
 	printf(" }");
 }
 
@@ -645,8 +700,7 @@ void Tp() {
 		X();
 		printf(", ");
 		Tp();
-	}
-	else printf("\u03B5") /* Epsilon */;
+	} else printEPS();
 	printf(" }");
 }
 
@@ -657,8 +711,7 @@ void T2() {
 		match(',');
 		printf(", ");
 		E();
-	}
-	else printf("\u03B5") /* Epsilon */;
+	} else printEPS();
 	printf(" }");
 }
 
@@ -669,8 +722,7 @@ void T3() {
 		E();
 		printf(", ");
 		T4();
-	}
-	else printf("\u03B5") /* Epsilon */;
+	} else printEPS();
 	printf(" }");
 }
 
@@ -683,8 +735,7 @@ void T4() {
 		E();
 		printf(", ");
 		T4();
-	}
-	else printf("\u03B5") /* Epsilon */;
+	} else printEPS();
 	printf(" }");
 }
 
@@ -695,15 +746,13 @@ void X() {
 		match('.');
 		printf(", ");
 		Xp();
-	}
-	else if(FR_X_2(lookahead.id)) {
+	} else if(FR_X_2(lookahead.id)) {
 		match('[');
 		printf(", ");
 		E();
 		printf(", ");
 		match(']');
-	}
-	else error("X");
+	} else error("X");
 	printf(" }");
 }
 
@@ -714,8 +763,7 @@ void Xp() {
 		match(TOK_LENGTH);
 		printf(", ");
 		P();
-	}
-	else if(FR_Xp_2(lookahead.id)) {
+	} else if(FR_Xp_2(lookahead.id)) {
 		match(TOK_SUBSTRING);
 		printf(", ");
 		match('(');
@@ -725,8 +773,7 @@ void Xp() {
 		T2();
 		printf(", ");
 		match(')');
-	}
-	else if(FR_Xp_3(lookahead.id)) {
+	} else if(FR_Xp_3(lookahead.id)) {
 		match(TOK_ID);
 		printf(", ");
 		match('(');
@@ -745,23 +792,22 @@ void P() {
 		match('(');
 		printf(", ");
 		match(')');
-	} else printf("\u03B5") /* Epsilon */;
+	} else printEPS();
 	printf(" }");
 }
 
 // F -> TT | R .
 void F() {
 	printf("F { ");
-	if(FR_F_1(lookahead.id)) {
+	if(FR_F_1(lookahead.id))
 		TT();
-	}
-	else if(FR_F_2(lookahead.id)) {
+    else if(FR_F_2(lookahead.id))
 		R();
-	}
 	else error("F");
 	printf(" }");
 }
 
+// TT -> litint | true | false | id | litstr | null | new AfterNew .
 void TT() {
 	printf("TT { ");
 	if(FR_TT_1(lookahead.id))
@@ -776,76 +822,95 @@ void TT() {
 		match(TOK_LIT_STR);
 	else if(FR_TT_6(lookahead.id))
 		match(TOK_NULL);
-	else if(FR_TT_7(lookahead.id)){
+	else if(FR_TT_7(lookahead.id)) {
 		match(TOK_NEW);
+        printf(", ");
 		AfterNew();
 	} else error("TT");
 	printf(" }");
 }
 
-void AfterThisInExp(){
-	printf("AfterThisInExp {");
-	if(FR_AfterThisInExp_1(lookahead.id)){
+// AfterThisInExp -> dot id RestThisInExp | .
+void AfterThisInExp() {
+	printf("AfterThisInExp { ");
+	if(FR_AfterThisInExp_1(lookahead.id)) {
 		match('.');
+        printf(", ");
 		match(TOK_ID);
+        printf(", ");
 		RestThisInExp();
-	} else printeps();
-	printf("}");
+	} else printEPS();
+	printf(" }");
 }
 
-void RestThisInExp(){
-	printf("RestThisInExp {");
-	if(FR_RestThisInExp_1(lookahead.id)){
+// RestThisInExp -> ( T3 ) Tp | .
+void RestThisInExp() {
+	printf("RestThisInExp { ");
+	if(FR_RestThisInExp_1(lookahead.id)) {
 		match('(');
+        printf(", ");
 		T3();
+        printf(", ");
 		match(')');
+        printf(", ");
 		Tp();
-	} else printeps();
-	printf("}");
+	} else printEPS();
+	printf(" }");
 }
 
 // AfterNew -> int FilledBrackets | boolean FilledBrackets | id AfterNewId .
-void AfterNew(){
-	printf("AfterNew {");
-	if(FR_AfterNew_1(lookahead.id)){
+void AfterNew() {
+	printf("AfterNew { ");
+	if(FR_AfterNew_1(lookahead.id)) {
 		match(TOK_INT);
+        printf(", ");
 		FilledBrackets();
-	} else if(FR_AfterNew_2(lookahead.id)){
+	} else if(FR_AfterNew_2(lookahead.id)) {
 		match(TOK_BOOLEAN);
+        printf(", ");
 		FilledBrackets();
-	} else if(FR_AfterNew_3(lookahead.id)){
+	} else if(FR_AfterNew_3(lookahead.id)) {
 		match(TOK_ID);
+        printf(", ");
 		AfterNewId();
 	} else error("AfterNew");
-	printf("}");
+	printf(" }");
 }
 
 // AfterNewId -> lbracket E rbracket FilledBrackets | ( T3 ) . 
-void AfterNewId(){
-	printf("AfterNewId {");
-	if(FR_AfterNewId_1(lookahead.id)){
+void AfterNewId() {
+	printf("AfterNewId { ");
+	if(FR_AfterNewId_1(lookahead.id)) {
 		match('[');
+        printf(", ");
 		E();
+        printf(", ");
 		match(']');
+        printf(", ");
 		FilledBrackets();
-	} else if(FR_AfterNewId_2(lookahead.id)){
+	} else if(FR_AfterNewId_2(lookahead.id)) {
 		match('(');
+        printf(", ");
 		T3();
+        printf(", ");
 		match(')');
 	} else error("AfterNewId");
-	printf("}");	
+	printf(" }");
 }
 
 // FilledBrackets -> lbracket E rbracket FilledBrackets | .
-void FilledBrackets(){
-	printf("FilledBrackets {");
-	if(FR_FilledBrackets_1(lookahead.id)){
+void FilledBrackets() {
+	printf("FilledBrackets { ");
+	if(FR_FilledBrackets_1(lookahead.id)) {
 		match('[');
+        printf(", ");
 		E();
+        printf(", ");
 		match(']');
+        printf(", ");
 		FilledBrackets();
-	} else printf("\u03B5") /* Epsilon */;
-	printf("}");
+	} else printEPS();
+	printf(" }");
 }
 
 // R -> lbrace El rbrace | ( E ) .
@@ -857,15 +922,13 @@ void R() {
 		El();
 		printf(", ");
 		match('}');
-	}
-	else if(FR_R_2(lookahead.id)) {
+	} else if(FR_R_2(lookahead.id)) {
 		match('(');
 		printf(", ");
 		E();
 		printf(", ");
 		match(')');
-	}
-	else error("R");
+	} else error("R");
 	printf(" }");
 }
 
@@ -876,7 +939,7 @@ void El() {
 		E();
 		printf(", ");
 		Elp();
-	} else printf("\u03B5") /* Epsilon */;
+	} else printEPS();
 	printf(" }");
 }
 
@@ -889,12 +952,13 @@ void Elp() {
 		E();
 		printf(", ");
 		Elp();
-	} else printf("\u03B5") /* Epsilon */;
+	} else printEPS();
 	printf(" }");
 }
 
 // Relop -> less | lesseq | greatereq | greater | isequal | isdiff .
 void Relop() {
+    printf("Relop { ");
 	if(FR_Relop_1(lookahead.id))
 		match('<');
 	else if(FR_Relop_2(lookahead.id))
@@ -909,30 +973,36 @@ void Relop() {
 		match(TOK_DIFF);
 	else
 		error("Relop");
+    printf(" }");
 }
 
 // Boolop -> and | or .
 void Boolop() {
+    printf("Boolop { ");
 	if(FR_Boolop_1(lookahead.id))
 		match(TOK_AND);
 	else if(FR_Boolop_2(lookahead.id))
 		match(TOK_OR);
 	else
 		error("Boolop");
+    printf(" }");
 }
 
 // Addop -> plus | minus .
 void Addop() {
+    printf("Addop { ");
 	if(FR_Addop_1(lookahead.id))
 		match('+');
 	else if(FR_Addop_2(lookahead.id))
 		match('-');
 	else
 		error("Addop");
+    printf(" }");
 }
 
 // Multop -> times | div | mod .
 void Multop() {
+    printf("Multop { ");
 	if(FR_Multop_1(lookahead.id))
 		match('*');
 	else if(FR_Multop_2(lookahead.id))
@@ -941,14 +1011,17 @@ void Multop() {
 		match('%');
 	else
 		error("Multop");
+    printf(" }");
 }
 
 // Unop -> minus | excl .
 void Unop() {
+    printf("Unop { ");
 	if(FR_Unop_1(lookahead.id))
 		match('-');
 	else if(FR_Unop_2(lookahead.id))
 		match('!');
 	else
 		error("Unop");
+    printf(" }");
 }
