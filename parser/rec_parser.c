@@ -6,19 +6,20 @@
 
 void match(char tok_id) {
 	if (lookahead.id == tok_id) {
-		printf("%s", lookahead.lexem);
+		if(lookahead.id != TOK_EOF)
+			printf("\"%s\"", lookahead.lexem);
 		lookahead = getNextToken();
 	} else {
 		if(lookahead.id == TOK_EOF)
-		printf("\n\nSYNTAX ERROR: the token %c couldn't be matched with the end of file!\n", tok_id);
+			printf("\n\nSYNTAX ERROR: the token '%c' couldn't be matched with the end of file!\n", tok_id);
 		else
-			printf("\n\nSYNTAX ERROR: the token %c couldn't be matched with the input symbol %s!\n", tok_id, lookahead.lexem);
+			printf("\n\nSYNTAX ERROR: the token '%c' couldn't be matched with the input symbol \"%s\"!\n", tok_id, lookahead.lexem);
 		exit(EXIT_FAILURE);
 	}
 }
 
 void error(char* nonterminal) {
-	printf("\n\nSYNTAX ERROR: the non-terminal %s couldn't be matched with the input symbol %s of id %c!\n", nonterminal, lookahead.lexem, lookahead.id);
+	printf("\n\nSYNTAX ERROR: the non-terminal <%s> couldn't be matched with the input symbol \"%s\" of id '%c'!\n", nonterminal, lookahead.lexem, lookahead.id);
 	exit(EXIT_FAILURE);
 }
 
