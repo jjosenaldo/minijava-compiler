@@ -161,7 +161,7 @@
 #define FR_CLASS_COMPONENT(x) F_TYPE(x)
 
 // RestDec -> Eq semicolon .
-#define FR_REST_DEC_1(x) F_Eq(x)
+#define FR_REST_DEC_1(x) F_Eq(x) || x == ';'
 
 // RestDec -> ( ParamsOpt ) lbrace Blockstatements rbrace .
 #define FR_REST_DEC_2(x) x == '('

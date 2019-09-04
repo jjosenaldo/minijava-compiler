@@ -1,0 +1,21 @@
+class MainClass{
+	void main(String[] args){
+		System.out.println("hello world!");
+		Cat cat = new Cat();
+		boolean a = cat.eat();
+		cat.meow();
+	}
+}
+
+class Animal{
+	int eat(){
+		return 5;
+	}
+}
+
+class Cat extends Animal{
+	int paws;
+	void meow(){
+		
+	}
+}
