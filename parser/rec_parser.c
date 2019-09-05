@@ -27,7 +27,7 @@ void printEPS() {
 	printf("\u03B5");
 }
 
-void parse() {
+void rec_parse() {
 	lookahead = getNextToken();
     Goal();
     match(TOK_EOF);

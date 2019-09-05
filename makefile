@@ -23,6 +23,7 @@ $(BIN)/main.out: obj $(MAIN)
 obj: $(OBJ)/lexer.o \
 	$(OBJ)/rec_parser.o \
 	$(OBJ)/stack.o \
+	$(OBJ)/stack_parser.o \
 
 # Compile Lexer
 $(OBJ)/lexer.o: $(LEXER_PATH)/lexer.l
@@ -30,6 +31,10 @@ $(OBJ)/lexer.o: $(LEXER_PATH)/lexer.l
 	$(GCC) $(FLAGS) $(INC) -c $(OBJ)/lex.yy.c -o $(OBJ)/lexer.o
 	rm $(OBJ)/lex.yy.c
 	
+# Compile nonrecursive descent parser
+$(OBJ)/stack_parser.o: $(PARSER_PATH)/stack_parser.c $(PARSER_PATH)/stack_parser.h
+	$(GCC) $(FLAGS) -c $(PARSER_PATH)/stack_parser.c -o $(OBJ)/stack_parser.o $(INC)
+
 # Compile Recursive Descendent Parser
 $(OBJ)/rec_parser.o: $(PARSER_PATH)/rec_parser.c $(PARSER_PATH)/rec_parser.h
 	$(GCC) $(FLAGS) -c $(PARSER_PATH)/rec_parser.c -o $(OBJ)/rec_parser.o $(INC)

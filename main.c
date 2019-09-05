@@ -1,8 +1,6 @@
-#include <stdio.h>
-#include "pred_sets.h"
-#include "rec_parser.h"
+#include "stack_parser.h"
 
 int main(){
-    parse();
+    stack_parse();
     return 0;
 }
