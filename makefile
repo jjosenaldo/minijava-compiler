@@ -9,7 +9,7 @@ MAIN = ./main.c
 # Commands
 #FLAGS = -Wall
 LEX := lex
-INC := -I $(LEXER_PATH) -I $(PARSER_PATH)
+INC := -I $(LEXER_PATH) -I $(PARSER_PATH) -I $(STACK_PATH)
 GCC := gcc
 
 # Compile program (no recompiling if files haven't changed)
