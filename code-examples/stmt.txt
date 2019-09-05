@@ -1,0 +1,52 @@
+// The main non-terminal for this file must be the BlockStmts() function!
+
+{
+    // Let's test some statements!
+
+    // IF
+    if(a == 3){
+        System.out.println("it works!");
+
+        // now an empty block because... why not :P
+        {
+
+        }
+    }
+
+    // what about those nasty whiles
+    while(true){
+    	// yay
+    	;
+    	System.out.println("dont mind me");
+    	break;
+    }
+
+    return 1+1==2;
+
+    /*
+    	now let's analyze the commands that must start with an id
+    */
+    a=1;
+    //arrays!!
+    Dog[][][] matrixOfDogs_1;
+    Cat[] cats = new Cats[5+1];
+    a.getIds()[1] = 2;
+    a[1].getIds() = 1;
+    a[1].getIds().set(1,2,3,23,9).set().set()[1][1]=1;
+
+    // UNWANTED OPERATIONS
+    a.getIds() = 1;
+    a[1];
+    int a = a;
+    int d;
+    boolean a = 1;
+    //String b = "";
+    a a = new a(turn_around, turn_around, look_around, {zeb});
+
+    while(a) a = 1;
+    // this is *correctly* reported wrong: while(a) int a = 1;
+}
+
+{
+	// yay, many blocks!
+}

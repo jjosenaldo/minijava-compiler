@@ -1,7 +1,7 @@
 // Adaptado de: https://www.baeldung.com/java-quicksort
 
 class Main{
-    public static void main(String[] args){
+    void main(String[] args){
         QuickSort sorter = new QuickSort();
         int[] v = {1,5,3,6,3,845,23,56};
         sorter.quickSort(v);
@@ -15,20 +15,20 @@ class Main{
 }
 
 class QuickSort{
-    public void sort(int arr[]){
-        quickSort(arr, 0, arr.length-1);
+    void sort(int[] arr){
+        this.quickSort(arr, 0, arr.length-1);
     }
 
-    public void quickSort(int arr[], int begin, int end) {
+    void quickSort(int[] arr, int begin, int end) {
         if (begin < end) {
-            int pivot = partition(arr, begin, end);
+            int pivot = this.partition(arr, begin, end);
     
-            quickSort(arr, begin, pivot-1);
-            quickSort(arr, pivot+1, end);
+            this.quickSort(arr, begin, pivot-1);
+            this.quickSort(arr, pivot+1, end);
         }
     }
 
-    public int partition(int arr[], int begin, int end) {
+    int partition(int[] arr, int begin, int end) {
         int pivot = arr[end];
         int i = begin;
         int j = begin;

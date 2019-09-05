@@ -1,7 +1,7 @@
 // Adaptado de: https://github.com/sqmedeiros/pegparser/blob/master/test/java18/test/yes/SortMain.java
 
 class Main{
-    public static void main(String[] args){
+    void main(String[] args){
         BubbleSort sorter = new BubbleSort();
         int[] v = {1,5,3,6,3,845,23,56};
         sorter.sort(v);
@@ -15,7 +15,7 @@ class Main{
 }
 
 class BubbleSort {
-    public void sort(int[] vetor) {
+    void sort(int[] vetor) {
         boolean troca = true;
         int aux;
         while (troca) {

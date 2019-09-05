@@ -41,7 +41,7 @@ S_FINAL                   \"
 [ \n\t\r]+        { /* spaces, tabs and newlines */ }
 
 {C_START}({C_NOT_WORRYING}*{C_WORRYING}+{C_NOT_WOR_NOR_FINAL})*{C_NOT_WORRYING}*{C_WORRYING}+{C_FINAL} { /* multiline comment */ }
-{S_START}({S_WORRYING}{S_NOT_WOR_NOR_FINAL}|{S_NOT_WORRYING})*{S_FINAL} { 
+{S_START}({S_WORRYING}{S_NOT_WOR_NOR_FINAL}|{S_NOT_WORRYING})*{S_FINAL} {
     char aux[yyleng];
     int pointer = 1;
     int writing = 0;
@@ -71,7 +71,7 @@ S_FINAL                   \"
     aux[writing++] = '\0';
     strcpy (yytext,aux);
     yyleng = writing;
-    return TOK_STRING; }
+    return TOK_LIT_STR; }
 
 
 
@@ -80,15 +80,27 @@ S_FINAL                   \"
 \+              { return '+'; }
 \-              { return '-'; }
 \*              { return '*'; }
+"/"             { return '/'; }
+"%"             { return '%'; }
+\=\=            { return TOK_EQ; }
+\!              { return TOK_DIFF; }
 \=              { return '='; }
+\<\=            { return TOK_LESS_EQ; }
+\>\=            { return TOK_GREAT_EQ; }
 \&\&            { return TOK_AND; }
+\|\|            { return TOK_OR; }
 \<              { return '<'; }
+\>              { return '>'; }
 String          { return TOK_STRING; }
 int             { return TOK_INT; }
 true            { return TOK_TRUE; }
 false           { return TOK_FALSE; }
+boolean         { return TOK_BOOLEAN; }
+System\.out\.println { return TOK_SYSOUT; }
 
+break           { return TOK_BREAK; }
 class           { return TOK_CLASS; }
+continue        { return TOK_CONTINUE; }
 public          { return TOK_PUBLIC; }
 static          { return TOK_STATIC; }
 void            { return TOK_VOID; }
@@ -101,6 +113,7 @@ while           { return TOK_WHILE; }
 length          { return TOK_LENGTH; }
 this            { return TOK_THIS; }
 new             { return TOK_NEW; }
+null            { return TOK_NULL; }
 \{              { return '{'; }
 \}              { return '}'; }
 \(              { return '('; }
@@ -110,7 +123,7 @@ new             { return TOK_NEW; }
 \;              { return ';'; }
 \,              { return ','; }
 \.              { return '.'; }
-\!              { return '!'; }
+'!'              { return '!'; }
 
 {letter}({digit}|{letter}|"_")*    { return TOK_ID; }
 <<EOF>>         { return TOK_EOF; }

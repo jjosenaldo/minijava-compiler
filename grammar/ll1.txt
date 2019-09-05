@@ -1,0 +1,82 @@
+Goal -> MainClass ClassDeclarations .
+MainClass -> class id lbrace void main ( string lbracket rbracket id ) lbrace Blockstatements rbrace rbrace .
+
+Blockstatements -> BlockStatement Blockstatements | .
+BlockStatement -> id AfterId semicolon | NonclassVarDec semicolon | StmtWithoutId .
+AfterId -> id Eq | AfterIdExceptId . 
+
+Eq -> eq E | .
+NonclassVarDec -> NonclassType id Eq .
+Type1 -> lbracket rbracket Type1 | .
+NonclassType -> boolean Type1 | int Type1 | void .
+Type -> NonclassType | id Type1 .
+
+Stmt -> id AfterIdExceptId semicolon | StmtWithoutId .
+StmtWithoutId -> lbrace Blockstatements rbrace |  while ( E ) Stmt | systemoutprintln ( E ) semicolon  | continue semicolon | break semicolon | return OptExp semicolon | if ( E ) Stmt OptElse | semicolon | this dot id AfterThisInStmt .
+
+OptElse -> else Stmt | .
+OptExp -> E | .
+
+AfterThisInStmt -> AfterIdExceptId | ( T3 ) OptAfterIdExceptId .
+OptAfterIdExceptId -> AfterIdExceptId | .
+
+AfterIdExceptId -> Dot Eq | Bracket Eq | eq E .
+Dot -> dot id ( T3 ) DotR .
+DotR -> dot id ( T3 ) DotR | lbracket E rbracket DotR | .
+Bracket -> lbracket BracketR .
+BracketR -> E rbracket DotR | rbracket BracketEmpty id .
+BracketEmpty -> lbracket rbracket BracketEmpty | .
+
+
+ClassDeclarations -> ClassDeclaration ClassDeclarations  | .
+ClassDeclaration -> class id Extends ClassBody .
+Extends -> extends id | .
+ClassBody -> lbrace ClassContent rbrace .
+ClassContent -> ClassComponent ClassContent | .
+
+ClassComponent -> Type id RestDec .
+
+RestDec -> Eq semicolon | ( ParamsOpt ) lbrace Blockstatements rbrace .
+
+ParamsOpt -> Params | .
+Params -> Param ParamsRest .
+ParamsRest -> comma Params | .
+Param -> Type id .
+
+
+E -> E1 Ep .
+Ep -> Relop E1 Ep | .
+E1 -> E2 E1p .
+E1p -> Boolop E2 E1p | .
+E2 -> E3 E2p .
+E2p -> Addop E3 E2p | .
+E3 -> T E3p .
+E3p -> Multop T E3p | .
+
+T -> F Tp | Unop T | this AfterThisInExp .
+Tp -> X Tp | .
+T2 -> comma E | .                   
+T3 -> E T4 | .
+T4 -> comma E T4 | .
+X -> dot Xp | lbracket E rbracket .
+Xp -> length P | substring ( E T2 ) | id ( T3 ) .
+P -> ( ) | .
+F -> TT | R .
+TT -> litint | true | false | id | litstr | null | new AfterNew .
+
+AfterThisInExp -> dot id RestThisInExp | .
+RestThisInExp -> ( T3 ) Tp | .
+
+AfterNew -> int FilledBrackets | boolean FilledBrackets | id AfterNewId .
+AfterNewId -> lbracket E rbracket FilledBrackets | ( T3 ) . 
+FilledBrackets -> lbracket E rbracket FilledBrackets | .
+
+R -> lbrace El rbrace | ( E ) .
+El -> E Elp | .
+Elp -> comma E Elp | .
+
+Relop -> less | lesseq | greatereq | greater | isequal | isdiff .
+Boolop -> and | or .
+Addop -> plus | minus .
+Multop -> times | div | mod .
+Unop -> minus | excl .
