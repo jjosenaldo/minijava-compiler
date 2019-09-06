@@ -69,6 +69,47 @@ static const int TERM_Unop = 28;
 static const int TERM_E2 = 29;
 static const int TERM_E1p = 30;
 
+static const int TERM_Goal = 31;
+static const int TERM_MainClass = 32;
+static const int TERM_Blockstatements = 33;
+static const int TERM_Blockstatement = 34;
+static const int TERM_AfterId = 35;
+static const int TERM_Eq = 36;
+static const int TERM_NonclassVarDec = 37;
+static const int TERM_Type1 = 38;
+static const int TERM_Blockstatements = 39;
+static const int TERM_NonclassType = 40;
+static const int TERM_Type = 41;
+static const int TERM_Stmt = 42;
+static const int TERM_StmtWithoutId = 43;
+static const int TERM_OptElse = 44;
+static const int TERM_OptExp = 45;
+static const int TERM_AfterThisInStmt = 46;
+static const int TERM_OptAfterIdExceptId = 47;
+static const int TERM_Dot = 48;
+static const int TERM_DotR = 49;
+static const int TERM_Bracket = 50;
+static const int TERM_BracketR = 51;
+static const int TERM_BracketEmpty = 52;
+static const int TERM_ClassDeclarations = 53;
+static const int TERM_ClassDeclaration = 54;
+static const int TERM_Extends = 55;
+static const int TERM_ClassBody = 56;
+static const int TERM_ClassContent = 57;
+static const int TERM_ClassComponent = 58;
+static const int TERM_RestDec= 59;
+static const int TERM_ParamsOpt = 60;
+static const int TERM_Params = 61;
+static const int TERM_ParamsRest = 62;
+static const int TERM_Param = 63;
+
+
+
+
+
+
+
+
 struct token{
     char id;
     char* lexem;
