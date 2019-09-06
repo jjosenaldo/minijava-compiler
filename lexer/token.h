@@ -86,29 +86,23 @@ static const int TERM_OptElse = 44;
 static const int TERM_OptExp = 45;
 static const int TERM_AfterThisInStmt = 46;
 static const int TERM_OptAfterIdExceptId = 47;
-static const int TERM_Dot = 48;
-static const int TERM_DotR = 49;
-static const int TERM_Bracket = 50;
-static const int TERM_BracketR = 51;
-static const int TERM_BracketEmpty = 52;
-static const int TERM_ClassDeclarations = 53;
-static const int TERM_ClassDeclaration = 54;
-static const int TERM_Extends = 55;
-static const int TERM_ClassBody = 56;
-static const int TERM_ClassContent = 57;
-static const int TERM_ClassComponent = 58;
-static const int TERM_RestDec= 59;
-static const int TERM_ParamsOpt = 60;
-static const int TERM_Params = 61;
-static const int TERM_ParamsRest = 62;
-static const int TERM_Param = 63;
-
-
-
-
-
-
-
+static const int TERM_AfterIdExceptId = 48;
+static const int TERM_Dot = 49;
+static const int TERM_DotR = 50;
+static const int TERM_Bracket = 51;
+static const int TERM_BracketR = 52;
+static const int TERM_BracketEmpty = 53;
+static const int TERM_ClassDeclarations = 54;
+static const int TERM_ClassDeclaration = 55;
+static const int TERM_Extends = 56;
+static const int TERM_ClassBody = 57;
+static const int TERM_ClassContent = 58;
+static const int TERM_ClassComponent = 59;
+static const int TERM_RestDec= 60;
+static const int TERM_ParamsOpt = 61;
+static const int TERM_Params = 62;
+static const int TERM_ParamsRest = 63;
+static const int TERM_Param = 64;
 
 struct token{
     char id;
