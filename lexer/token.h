@@ -77,7 +77,6 @@ static const int TERM_AfterId = 35;
 static const int TERM_Eq = 36;
 static const int TERM_NonclassVarDec = 37;
 static const int TERM_Type1 = 38;
-static const int TERM_Blockstatements = 39;
 static const int TERM_NonclassType = 40;
 static const int TERM_Type = 41;
 static const int TERM_Stmt = 42;
