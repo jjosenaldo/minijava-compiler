@@ -15,5 +15,6 @@ void pop(Stack** stack);
 StackData top(Stack** stack);
 Stack* newStack(char data);
 int isEmpty(Stack **stack);
+void print(Stack** stack);
 
 #endif

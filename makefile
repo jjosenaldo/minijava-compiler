@@ -4,12 +4,13 @@ OBJ = ./obj
 LEXER_PATH = ./lexer
 PARSER_PATH = ./parser
 STACK_PATH = ./model
+GRAMMAR_PATH = ./grammar
 MAIN = ./main.c
 
 # Commands
 #FLAGS = -Wall
 LEX := lex
-INC := -I $(LEXER_PATH) -I $(PARSER_PATH) -I $(STACK_PATH)
+INC := -I $(LEXER_PATH) -I $(PARSER_PATH) -I $(STACK_PATH) -I $(GRAMMAR_PATH)
 GCC := gcc
 
 # Compile program (no recompiling if files haven't changed)
@@ -24,12 +25,17 @@ obj: $(OBJ)/lexer.o \
 	$(OBJ)/rec_parser.o \
 	$(OBJ)/stack.o \
 	$(OBJ)/stack_parser.o \
+	$(OBJ)/grammar.o \
 
 # Compile Lexer
 $(OBJ)/lexer.o: $(LEXER_PATH)/lexer.l
 	$(LEX) -o $(OBJ)/lex.yy.c $(LEXER_PATH)/lexer.l
 	$(GCC) $(FLAGS) $(INC) -c $(OBJ)/lex.yy.c -o $(OBJ)/lexer.o
 	rm $(OBJ)/lex.yy.c
+
+# compile grammar
+$(OBJ)/grammar.o: $(GRAMMAR_PATH)/grammar.c $(GRAMMAR_PATH)/grammar.h
+	$(GCC) $(FLAGS) -c $(GRAMMAR_PATH)/grammar.c -o $(OBJ)/grammar.o $(INC)
 	
 # Compile nonrecursive descent parser
 $(OBJ)/stack_parser.o: $(PARSER_PATH)/stack_parser.c $(PARSER_PATH)/stack_parser.h
@@ -41,7 +47,7 @@ $(OBJ)/rec_parser.o: $(PARSER_PATH)/rec_parser.c $(PARSER_PATH)/rec_parser.h
 
 # Compile Stack
 $(OBJ)/stack.o: $(STACK_PATH)/stack.c $(STACK_PATH)/stack.h
-	$(GCC) $(FLAGS) -c $(STACK_PATH)/stack.c -o $(OBJ)/stack.o -I $(STACK_PATH)
+	$(GCC) $(FLAGS) -c $(STACK_PATH)/stack.c -o $(OBJ)/stack.o $(INC)
 
 # Clean project
 clean:
