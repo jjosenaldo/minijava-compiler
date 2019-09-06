@@ -984,7 +984,6 @@ int add_rule_to_stack(char X, Stack** stack, struct token lookahead){
 		if(lid == '}' || lid == '{' || lid == TOK_ID || lid == TOK_BOOLEAN || lid == TOK_INT || lid == TOK_THIS || lid == ';' || lid == TOK_ELSE || lid == TOK_IF || lid == TOK_RETURN || lid == TOK_BREAK || lid == TOK_CONTINUE || lid == TOK_SYSOUT || lid == TOK_WHILE || lid == TOK_VOID) {
 			printf("OptAfterIdExceptId -> .\n");
 			pop(stack);
-			push(stack, symbol_id("AfterIdExceptId"));
 			return 1;
 		}
 		return 0;
