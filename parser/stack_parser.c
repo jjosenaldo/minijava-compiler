@@ -210,7 +210,7 @@ int add_rule_to_stack(char X, Stack** stack, struct token lookahead){
 			printf("T -> this AfterThisInExp .\n");
 			pop(stack);
 			push(stack, symbol_id("AfterThisInExp"));
-			push(stack, symbol_id("this"));
+			push(stack, TOK_THIS);
 			return 1;
 		}
 		return 0;
@@ -1344,11 +1344,5 @@ char symbol_id(char* X){
 	if(strcmp(X,"Params")==0) return TERM_Params;
 	if(strcmp(X,"ParamsRest")==0) return TERM_ParamsRest;
 	if(strcmp(X,"Param")==0) return TERM_Param;
-
-
-
-
-
-
 	printf("ERROR AT symbol_id WITH SYMBOL %s\n", X);
 }
