@@ -9,6 +9,8 @@ void stack_parse(){
 	// empty stack
 	Stack* stack = NULL; 
 
+	push(&stack, TOK_EOF);
+
 	// current grammar symbol
 	char X = symbol_id("E"); 
 	push(&stack, X);
@@ -116,7 +118,7 @@ int add_rule_to_stack(char X, Stack** stack, struct token lookahead){
 	}
 	if(X == TERM_E1p){
 		if(lid == TOK_OR || lid == TOK_AND){
-			printf("E1p -> Boolop E2 E1p .");
+			printf("E1p -> Boolop E2 E1p .\n");
 			pop(stack);
 			push(stack, symbol_id("E1p"));
 			push(stack, symbol_id("E2"));
@@ -127,7 +129,7 @@ int add_rule_to_stack(char X, Stack** stack, struct token lookahead){
 		 || lid == ',' || lid == ')' || lid == '}' || lid == '{' || lid == ']' || lid == TOK_ID || lid == TOK_BOOLEAN
 		  || lid == TOK_INT || lid == TOK_THIS || lid == ';' || lid == TOK_ELSE || lid == TOK_IF || lid == TOK_RETURN
 		   || lid == TOK_BREAK || lid == TOK_CONTINUE || lid == TOK_SYSOUT || lid == TOK_WHILE || lid == TOK_VOID ){
-			printf("E1p -> .");
+			printf("E1p -> .\n");
 			pop(stack);
 			return 1;
 		}
@@ -154,7 +156,7 @@ int add_rule_to_stack(char X, Stack** stack, struct token lookahead){
 			return 1;
 		}
 		if(lid == TOK_AND || lid == TOK_DIFF || lid == TOK_EQ || lid == '>' || lid == TOK_GREAT_EQ || lid == TOK_LESS_EQ || lid == '<' || lid == ',' || lid == ')' || lid == '}' || lid == '{' || lid == ']' || lid == TOK_ID || lid == TOK_BOOLEAN || lid == TOK_INT || lid == TOK_THIS || lid == ';' || lid == TOK_ELSE || lid == TOK_IF || lid == TOK_RETURN || lid == TOK_BREAK || lid == TOK_CONTINUE || lid == TOK_SYSOUT || lid == TOK_WHILE || lid == TOK_VOID){
-			printf("E2p -> .");
+			printf("E2p -> .\n");
 			pop(stack);
 			return 1;
 		}
@@ -290,6 +292,360 @@ int add_rule_to_stack(char X, Stack** stack, struct token lookahead){
 		}
 		return 0;
 	}
+	if(X == TERM_Xp){
+		if(lid == TOK_ID){
+			printf("Xp -> id ( T3 ) .\n");
+			pop(stack);
+			push(stack, ')');
+			push(stack, symbol_id("T3"));
+			push(stack, '(');
+			push(stack, TOK_ID);
+			return 1;
+		}
+		if(lid == TOK_SUBSTRING){
+			printf("Xp -> substring ( E T2 ) .\n");
+			pop(stack);
+			push(stack, ')');
+			push(stack, symbol_id("T2"));
+			push(stack, symbol_id("E"));
+			push(stack, '(');
+			push(stack, TOK_SUBSTRING);
+			return 1;	
+		}
+		if(lid == TOK_LENGTH){
+			printf("Xp -> length P .\n");
+			pop(stack);
+			push(stack, TOK_LENGTH);
+			push(stack, symbol_id("P"));
+			return 1;		
+		}
+		return 0;
+	}
+	if(X == TERM_P){
+		if(lid == '-' || lid == '%' || lid == '/' || lid == '*' || lid == '+' || lid == TOK_OR || lid == TOK_AND || lid == TOK_DIFF || lid == TOK_EQ || lid == '>' || lid == TOK_GREAT_EQ || lid == TOK_LESS_EQ || lid == '<' || lid == ',' || lid == ')' || lid == '}' || lid == '{' || lid == ']' || lid == '[' || lid == TOK_ID || lid == TOK_BOOLEAN || lid == TOK_INT || lid == '.' || lid == TOK_THIS || lid == ';' || lid == TOK_ELSE || lid == TOK_IF || lid == TOK_RETURN || lid == TOK_BREAK || lid == TOK_CONTINUE || lid == TOK_SYSOUT || lid == TOK_WHILE || lid == TOK_VOID){
+			printf("P -> .\n");
+			pop(stack);
+			return 1;
+		}
+		if(lid == '('){
+			printf("P -> ( ) .\n");
+			pop(stack);
+			push(stack, ')');
+			push(stack, '(');
+			return 1;
+		}
+		return 0;
+	}
+	if(X == TERM_F){
+		if(lid == '(' || lid == '{'){
+			printf("F -> R .\n");
+			pop(stack);
+			push(stack, symbol_id("R"));
+			return 1;
+		}
+		if(lid == TOK_ID || lid == TOK_NEW || lid == TOK_NULL || lid == TOK_LIT_STR || lid == TOK_FALSE || lid == TOK_TRUE || lid == TOK_LIT_INT){
+			printf("F -> TT .\n");
+			pop(stack);
+			push(stack, symbol_id("TT"));
+			return 1;	
+		}
+		return 0;
+	}
+	if(X == TERM_TT){
+		if(lid == TOK_ID){
+			printf("TT -> id .\n");
+			pop(stack);
+			push(stack, TOK_ID);
+			return 1;
+		}
+		if(lid == TOK_NEW){
+			printf("TT -> new AfterNew .\n");
+			pop(stack);
+			push(stack, symbol_id("AfterNew"));
+			push(stack, TOK_NEW);
+			return 1;	
+		}
+		if(lid == TOK_NULL){
+			printf("TT -> null .\n");
+			pop(stack);
+			push(stack, TOK_NULL);
+			return 1;
+		}
+		if(lid == TOK_LIT_STR){
+			printf("TT -> litstr .\n");
+			pop(stack);
+			push(stack, TOK_LIT_STR);
+			return 1;
+		}
+		if(lid == TOK_FALSE){
+			printf("TT -> false .\n");
+			pop(stack);
+			push(stack, TOK_FALSE);
+			return 1;
+		}
+		if(lid == TOK_TRUE){
+			printf("TT -> true .\n");
+			pop(stack);
+			push(stack, TOK_TRUE);
+			return 1;
+		}
+		if(lid == TOK_LIT_INT){
+			printf("TT -> litint .\n");
+			pop(stack);
+			push(stack, TOK_LIT_INT);
+			return 1;
+		}
+		return 0;
+	}
+	if(X == TERM_AfterThisInExp){
+		if(lid == '-' || lid == '%' || lid == '/' || lid == '*' || lid == '+' || lid == TOK_OR || lid == TOK_AND || lid == TOK_DIFF || lid == TOK_EQ || lid == '>' || lid == TOK_GREAT_EQ || lid == TOK_LESS_EQ || lid == '<' || lid == ',' || lid == ')' || lid == '}' || lid == '{' || lid == ']' || lid == TOK_ID || lid == TOK_BOOLEAN || lid == TOK_INT || lid == TOK_THIS || lid == ';' || lid == TOK_ELSE || lid == TOK_IF || lid == TOK_RETURN || lid == TOK_BREAK || lid == TOK_CONTINUE || lid == TOK_SYSOUT || lid == TOK_WHILE || lid == TOK_VOID){
+			printf("AfterThisInExp -> .\n");
+			pop(stack);
+			return 1;	
+		}
+		if(lid == '.'){
+			printf("AfterThisInExp -> dot id RestThisInExp .\n");
+			pop(stack);
+			push(stack, symbol_id("RestThisInExp"));
+			push(stack, TOK_ID);
+			push(stack, '.');
+			return 1;
+		}
+		return 0;
+	}
+	if(X == TERM_RestThisInExp){
+		if(lid == '-' || lid == '%' || lid == '/' || lid == '*' || lid == '+' || lid == TOK_OR || lid == TOK_AND || lid == TOK_DIFF || lid == TOK_EQ || lid == '>' || lid == TOK_GREAT_EQ || lid == TOK_LESS_EQ || lid == '<' || lid == ',' || lid == ')' || lid == '}' || lid == '{' || lid == ']' || lid == TOK_ID || lid == TOK_BOOLEAN || lid == TOK_INT || lid == TOK_THIS || lid == ';' || lid == TOK_ELSE || lid == TOK_IF || lid == TOK_RETURN || lid == TOK_BREAK || lid == TOK_CONTINUE || lid == TOK_SYSOUT || lid == TOK_WHILE || lid == TOK_VOID){
+			printf("RestThisInExp -> .\n");
+			pop(stack);
+			return 1;	
+		}
+		if(lid == '('){
+			printf("RestThisInExp -> ( T3 ) Tp .\n");
+			pop(stack);
+			push(stack, symbol_id("Tp"));
+			push(stack, ')');
+			push(stack, symbol_id("T3"));
+			push(stack, '(');
+			return 1;
+		}
+		return 0;
+	}
+	if(X == TERM_AfterNew){
+		if(lid == TOK_ID){
+			printf("AfterNew -> id AfterNewId .\n");
+			pop(stack);
+			push(stack, symbol_id("AfterNewId"));
+			push(stack, TOK_ID);
+			return 1;
+		}
+		if(lid == TOK_BOOLEAN){
+			printf("AfterNew -> boolean FilledBrackets .\n");
+			pop(stack);
+			push(stack, symbol_id("FilledBrackets"));
+			push(stack, TOK_BOOLEAN);
+			return 1;
+		}
+		if(lid == TOK_INT){
+			printf("AfterNew -> int FilledBrackets .\n");
+			pop(stack);
+			push(stack, symbol_id("FilledBrackets"));
+			push(stack, TOK_INT);
+			return 1;
+		}
+		return 0;
+	}
+	if(X == TERM_AfterNewId){
+		if(lid == '('){
+			printf("AfterNewId -> ( T3 ) .\n");
+			pop(stack);
+			push(stack, ')');
+			push(stack, symbol_id("T3"));
+			push(stack, '(');
+			return 1;
+		}
+		if(lid == '{'){
+			printf("AfterNewId -> lbracket E rbracket FilledBrackets .\n");
+			pop(stack);
+			push(stack, symbol_id("FilledBrackets"));
+			push(stack, ']');
+			push(stack, symbol_id("E"));
+			push(stack, '[');
+			return 1;
+		}
+		return 0;
+	}
+	if(X == TERM_FilledBrackets){
+		if(lid == '-' || lid == '%' || lid == '/' || lid == '*' || lid == '+' || lid == TOK_OR || lid == TOK_AND || lid == TOK_DIFF || lid == TOK_EQ || lid == '>' || lid == TOK_GREAT_EQ || lid == TOK_LESS_EQ || lid == '<' || lid == ',' || lid == ')' || lid == '}' || lid == '{' || lid == ']' || lid == TOK_ID || lid == TOK_BOOLEAN || lid == TOK_INT || lid == '.' || lid == TOK_THIS || lid == ';' || lid == TOK_ELSE || lid == TOK_IF || lid == TOK_RETURN || lid == TOK_BREAK || lid == TOK_CONTINUE || lid == TOK_SYSOUT || lid == TOK_WHILE || lid == TOK_VOID){
+			printf("RestFilledBracketsThisInExp -> .\n");
+			pop(stack);
+			return 1;
+		}
+		if(lid == '['){
+			printf("FilledBrackets -> lbracket E rbracket .\n");
+			pop(stack);
+			push(stack, ']');
+			push(stack, symbol_id("E"));
+			push(stack, '[');
+			return 1;
+		}
+		return 0;
+	}
+	if(X == TERM_R){
+		if(lid == '('){
+			printf("R -> ( E ) .\n");
+			pop(stack);
+			push(stack, ')');
+			push(stack, symbol_id("E"));
+			push(stack, '(');
+			return 1;	
+		}
+		if(lid == '{'){
+			printf("R -> { E } .\n");
+			pop(stack);
+			push(stack, '}');
+			push(stack, symbol_id("E"));
+			push(stack, '{');
+			return 1;	
+		}
+		return 0;
+	}
+	if(X == TERM_El){
+		if(lid == '!' || lid == '-' || lid == '(' || lid == '{' || lid == TOK_ID || lid == TOK_THIS || lid == TOK_NEW || lid == TOK_NULL || lid == TOK_LIT_STR || lid == TOK_FALSE || lid == TOK_TRUE || lid == TOK_LIT_INT){
+			printf("El -> E Elp .\n");
+			pop(stack);
+			push(stack, symbol_id("Elp"));
+			push(stack, symbol_id("E"));
+			return 1;	
+		}
+		if(lid == '}'){
+			printf("El -> .\n");
+			pop(stack);
+			return 1;
+		}
+		return 0;
+	}
+	if(X == TERM_Elp){
+		if(lid == ','){
+			printf("Elp -> comma E Elp .\n");
+			pop(stack);
+			push(stack, symbol_id("Elp"));
+			push(stack, symbol_id("E"));
+			push(stack, ',');
+			return 1;	
+		}
+		if(lid == '}'){
+			printf("Elp -> .\n");
+			pop(stack);
+			return 1;
+		}
+		return 0;
+	}
+	if(X == TERM_Relop){
+		if(lid == TOK_DIFF){
+			printf("Relop -> isdiff .\n");
+			pop(stack);
+			push(stack, TOK_DIFF);
+			return 1;
+		}
+		if(lid == TOK_EQ){
+			printf("Relop -> iseq .\n");
+			pop(stack);
+			push(stack, TOK_EQ);
+			return 1;
+		}
+		if(lid == '>'){
+			printf("Relop -> greater .\n");
+			pop(stack);
+			push(stack, '>');
+			return 1;
+		}
+		if(lid == TOK_GREAT_EQ){
+			printf("Relop -> greatereq .\n");
+			pop(stack);
+			push(stack, TOK_GREAT_EQ);
+			return 1;
+		}
+		if(lid == TOK_LESS_EQ){
+			printf("Relop -> lesseq .\n");
+			pop(stack);
+			push(stack, TOK_LESS_EQ);
+			return 1;
+		}
+		if(lid == '<'){
+			printf("Relop -> less .\n");
+			pop(stack);
+			push(stack, '<');
+			return 1;
+		}
+		return 0;
+	}
+	if(X == TERM_Boolop){
+		if(lid == TOK_OR){
+			printf("Boolop -> or .\n");
+			pop(stack);
+			push(stack, TOK_OR);
+			return 1;
+		}
+		if(lid == TOK_AND){
+			printf("Boolop -> and .\n");
+			pop(stack);
+			push(stack, TOK_AND);
+			return 1;
+		}
+		return 0;
+	}
+	if(X == TERM_Addop){
+		if(lid == '-'){
+			printf("Addop -> minus .\n");
+			pop(stack);
+			push(stack, '-');
+			return 1;
+		}
+		if(lid == '+'){
+			printf("Addop -> plus .\n");
+			pop(stack);
+			push(stack, '+');
+			return 1;
+		}
+		return 0;
+	}
+	if(X == TERM_Multop){
+		if(lid == '%'){
+			printf("Multop -> mod .\n");
+			pop(stack);
+			push(stack, '%');
+			return 1;
+		}
+		if(lid == '/'){
+			printf("Multop -> div .\n");
+			pop(stack);
+			push(stack, '/');
+			return 1;
+		}
+		if(lid == '*'){
+			printf("Multop -> times .\n");
+			pop(stack);
+			push(stack, '*');
+			return 1;
+		}
+		return 0;
+	}
+	if(X == TERM_Unop){
+		if(lid == '-'){
+			printf("Unop -> minus .\n");
+			pop(stack);
+			push(stack, '-');
+			return 1;
+		}
+		if(lid == '!'){
+			printf("Unop -> excl .\n");
+			pop(stack);
+			push(stack, '!');
+			return 1;
+		}
+		return 0;
+	}
+
 }
 
 void stackparse_error(char X, struct token lookahead){
