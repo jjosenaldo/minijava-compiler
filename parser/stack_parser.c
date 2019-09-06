@@ -18,6 +18,7 @@ void stack_parse(){
 	while(X != TOK_EOF){
 		print(&stack);
 		if(X == lookahead.id){
+			printf("match: %s\n", lookahead.lexem);
 			pop(&stack);
 			lookahead = getNextToken();
 		} else if(is_terminal(X)){
@@ -682,7 +683,7 @@ int add_rule_to_stack(char X, Stack** stack, struct token lookahead){
 	}
 
 	if(X == TERM_Blockstatements){
-		if(lid == '{' || lid == '}' || lid == TOK_ID || lid == TOK_BOOLEAN || lid ==  TOK_INT || lid == ';' || lid == TOK_IF || lid == TOK_RETURN || lid == TOK_BREAK || lid == TOK_CONTINUE || lid == TOK_SYSOUT || lid == TOK_WHILE || lid == TOK_VOID){
+		if(lid == '{'  || lid == TOK_ID || lid == TOK_BOOLEAN || lid ==  TOK_INT || lid == TOK_THIS || lid == ';' || lid == TOK_IF || lid == TOK_RETURN || lid == TOK_BREAK || lid == TOK_CONTINUE || lid == TOK_SYSOUT || lid == TOK_WHILE || lid == TOK_VOID){
 			printf("Blockstatements -> BlockStatement Blockstatements .\n");
 			pop(stack);
 			push(stack, symbol_id("Blockstatements"));
@@ -1006,9 +1007,9 @@ int add_rule_to_stack(char X, Stack** stack, struct token lookahead){
 			return 1;
 		}
 		if(lid == '=') {
-			printf("AfterIdExceptId -> eq Eq .\n");
+			printf("AfterIdExceptId -> eq E .\n");
 			pop(stack);
-			push(stack, symbol_id("Eq"));
+			push(stack, symbol_id("E"));
 			push(stack, '=');
 			return 1;
 		}
@@ -1213,7 +1214,7 @@ int add_rule_to_stack(char X, Stack** stack, struct token lookahead){
 	}
 
 	if(X == TERM_ParamsOpt){
-		if(lid == TOK_ID|| lid == TOK_BOOLEAN || lid == TOK_INT || TOK_VOID) {
+		if(lid == TOK_ID|| lid == TOK_BOOLEAN || lid == TOK_INT || lid == TOK_VOID) {
 			printf("ParamsOpt -> Params .\n");
 			pop(stack);
 			push(stack, symbol_id("Params"));
@@ -1228,7 +1229,7 @@ int add_rule_to_stack(char X, Stack** stack, struct token lookahead){
 	}
 
 	if(X == TERM_Params){
-		if(lid == TOK_ID|| lid == TOK_BOOLEAN || lid == TOK_INT || TOK_VOID) {
+		if(lid == TOK_ID|| lid == TOK_BOOLEAN || lid == TOK_INT || lid == TOK_VOID) {
 			printf("Params -> Param ParamsRest .\n");
 			pop(stack);
 			push(stack, symbol_id("ParamsRest"));
@@ -1255,7 +1256,7 @@ int add_rule_to_stack(char X, Stack** stack, struct token lookahead){
 	}
 
 	if(X == TERM_Param){
-		if(lid == TOK_ID|| lid == TOK_BOOLEAN || lid == TOK_INT || TOK_VOID) {
+		if(lid == TOK_ID|| lid == TOK_BOOLEAN || lid == TOK_INT || lid == TOK_VOID) {
 			printf("Param -> Type id .\n");
 			pop(stack);
 			push(stack, TOK_ID);
