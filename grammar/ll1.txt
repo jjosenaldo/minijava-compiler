@@ -27,7 +27,7 @@ StmtWithoutId -> break semicolon .
 StmtWithoutId -> return OptExp semicolon .
 StmtWithoutId -> if ( E ) Stmt OptElse .
 StmtWithoutId -> semicolon .
-StmtWithoutId -> this dot id AfterThisInStmt .
+StmtWithoutId -> this dot id AfterThisInStmt semicolon .
 OptElse -> else Stmt | .
 OptExp -> E .
 OptExp -> .
