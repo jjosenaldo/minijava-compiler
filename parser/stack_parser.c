@@ -16,9 +16,9 @@ void stack_parse(){
 	push(&stack, X);
 
 	while(X != TOK_EOF){
-		print(&stack);
+		//print(&stack);
 		if(X == lookahead.id){
-			printf("match: %s\n", lookahead.lexem);
+			//printf("match: %s\n", lookahead.lexem);
 			pop(&stack);
 			lookahead = getNextToken();
 		} else if(is_terminal(X)){
