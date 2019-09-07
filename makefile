@@ -14,13 +14,16 @@ INC := -I $(LEXER_PATH) -I $(PARSER_PATH) -I $(STACK_PATH) -I $(GRAMMAR_PATH)
 GCC := gcc
 
 # Compile program (no recompiling if files haven't changed)
-all: $(BIN)/main.out
+#all: $(BIN)/main.out
 
 rec_parser: obj $(MAIN)
 	$(GCC) $(FLAGS) $(INC) $(OBJ)/*.o main.c -o $(BIN)/main.out -D REC_PARSER
 
 stack_parser: obj $(MAIN)
 	$(GCC) $(FLAGS) $(INC) $(OBJ)/*.o main.c -o $(BIN)/main.out -D STACK_PARSER
+
+lex:
+	$(GCC) $(FLAGS) $(INC) $(OBJ)/*.o main.c -o $(BIN)/main.out -D LEX
 
 # Force program compilation
 $(BIN)/main.out: obj $(MAIN)

@@ -5,6 +5,8 @@
 #include "stack.h"
 #include <string.h>
 
+static const char DELIMITER = '@';
+
 void stack_parse();
 
 int is_terminal(char X);
