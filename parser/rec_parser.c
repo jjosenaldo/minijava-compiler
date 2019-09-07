@@ -215,7 +215,7 @@ void Stmt() {
                   | return OptExp semicolon
                   | if ( E ) Stmt OptElse
                   | semicolon
-                  | this dot id AfterThisInStmt .
+                  | this dot id AfterThisInStmt semicolon .
  */
 void StmtWithoutId() {
 	printf("StmtWithoutId { ");
@@ -281,6 +281,8 @@ void StmtWithoutId() {
 		match(TOK_ID);
         printf(", ");
 		AfterThisInStmt();
+		printf(", ");
+		match(';');
 	} else error("StmtWithoutId");
 	printf(" }");
 }
