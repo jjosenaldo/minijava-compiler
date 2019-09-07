@@ -16,6 +16,12 @@ GCC := gcc
 # Compile program (no recompiling if files haven't changed)
 all: $(BIN)/main.out
 
+rec_parser: obj $(MAIN)
+	$(GCC) $(FLAGS) $(INC) $(OBJ)/*.o main.c -o $(BIN)/main.out -D REC_PARSER
+
+stack_parser: obj $(MAIN)
+	$(GCC) $(FLAGS) $(INC) $(OBJ)/*.o main.c -o $(BIN)/main.out -D STACK_PARSER
+
 # Force program compilation
 $(BIN)/main.out: obj $(MAIN)
 	$(GCC) $(FLAGS) $(INC) $(OBJ)/*.o main.c -o $(BIN)/main.out

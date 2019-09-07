@@ -3,6 +3,10 @@
 #include <stdio.h>
 
 int main(){
+#ifdef REC_PARSER
+	rec_parse();
+#elif STACK_PARSER
     stack_parse();
+#endif
     return 0;
 }
