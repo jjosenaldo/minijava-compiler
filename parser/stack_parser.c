@@ -25,7 +25,10 @@ void stack_parse(){
 		//print(&stack);
 		if(X == lookahead.id){
 			//printf("match: %s\n", lookahead.lexem);
-			printf("%s ", lookahead.lexem);
+			if(lookahead.id == '{' || lookahead.id == '}')
+				printf("'%s' ", lookahead.lexem);
+			else 
+				printf("%s ", lookahead.lexem);
 			pop(&stack);
 			lookahead = getNextToken();
 		} else if(is_terminal(X)){
