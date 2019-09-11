@@ -83,7 +83,7 @@ S_FINAL                   \"
 "/"             { return '/'; }
 "%"             { return '%'; }
 \=\=            { return TOK_EQ; }
-\!              { return TOK_DIFF; }
+\!\=            { return TOK_DIFF; }
 \=              { return '='; }
 \<\=            { return TOK_LESS_EQ; }
 \>\=            { return TOK_GREAT_EQ; }
@@ -123,7 +123,7 @@ null            { return TOK_NULL; }
 \;              { return ';'; }
 \,              { return ','; }
 \.              { return '.'; }
-'!'              { return '!'; }
+\!              { return '!'; }
 
 {letter}({digit}|{letter}|"_")*    { return TOK_ID; }
 <<EOF>>         { return TOK_EOF; }
@@ -133,7 +133,10 @@ null            { return TOK_NULL; }
 
 struct token getNextToken(){
     tokRead.id = yylex();
-    tokRead.lexem = yytext;
+    if(tokRead.id == TOK_EOF)
+        tokRead.lexem = "$";
+    else 
+        tokRead.lexem = yytext;
     tokRead.lexemLen = yyleng;
     tokRead.row = yylineno;
     tokRead.col = prev_column;

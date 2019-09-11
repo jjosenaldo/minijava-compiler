@@ -1,7 +1,7 @@
 #ifndef REC_PARSER_H
 #define REC_PARSER_H
 
-void parse();
+void rec_parse();
 
 struct token lookahead;
 void error();

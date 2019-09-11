@@ -27,7 +27,7 @@ void printEPS() {
 	printf("\u03B5");
 }
 
-void parse() {
+void rec_parse() {
 	lookahead = getNextToken();
     Goal();
     match(TOK_EOF);
@@ -215,7 +215,7 @@ void Stmt() {
                   | return OptExp semicolon
                   | if ( E ) Stmt OptElse
                   | semicolon
-                  | this dot id AfterThisInStmt .
+                  | this dot id AfterThisInStmt semicolon .
  */
 void StmtWithoutId() {
 	printf("StmtWithoutId { ");
@@ -281,6 +281,8 @@ void StmtWithoutId() {
 		match(TOK_ID);
         printf(", ");
 		AfterThisInStmt();
+		printf(", ");
+		match(';');
 	} else error("StmtWithoutId");
 	printf(" }");
 }

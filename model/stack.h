@@ -3,17 +3,18 @@
 #include <stdlib.h>
 
 struct Stack {
-	int data;
+	char data;
 	struct Stack* next;
 };
 
 typedef struct Stack Stack;
-typedef int StackData;
+typedef char StackData;
 
 void push(Stack** stack, StackData value);
 void pop(Stack** stack);
 StackData top(Stack** stack);
-Stack* newStack(int data);
+Stack* newStack(char data);
 int isEmpty(Stack **stack);
+void print(Stack** stack);
 
 #endif
