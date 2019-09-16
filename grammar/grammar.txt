@@ -46,6 +46,17 @@ hStatementi ::=
 | “break” “;”
 | “return” hExpressioni “;”
 
+Type -> Type lbrack rbrack
+Type -> boolean
+Type -> int
+Type -> void
+Type -> id
+
+type : type '[' ']'
+     | TOK_BOOL
+     | TOK_INT
+     | TOK_VOID
+     | TOK_ID
 
 expr : expr '>' expr
      | expr '<' expr
