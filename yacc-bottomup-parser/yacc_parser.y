@@ -1,5 +1,5 @@
 %{
-	#include "../lexer/token.h"
+	#include "token.h"
 	#include <stdio.h>
 %}
 
@@ -10,10 +10,13 @@
 
 line : expr '\n'	 { printf("%d\n", $1); }
 expr : expr '+' expr { $$ = $1 + $3; }
-	 | TOK_LIT_INT
+	 | TOK_LIT_INT	 { printf("lex read a digit\n");}
 
 %%
 
-void yyerror (char const *s) {
+#include "../obj/lex_for_yacc.yy.c"
+
+int yyerror (char const *s) {
   fprintf (stderr, "%s\n", s);
+  return 0;
 }

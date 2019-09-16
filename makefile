@@ -41,7 +41,7 @@ obj: $(OBJ)/lexer.o \
 	$(OBJ)/stack.o \
 	$(OBJ)/stack_parser.o \
 	$(OBJ)/grammar.o \
-	$(OBJ)/yacc_parser.o
+	$(OBJ)/yacc.o
 
 # Compile Lexer
 $(OBJ)/lexer.o: $(LEXER_PATH)/lexer.l
