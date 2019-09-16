@@ -77,7 +77,8 @@ extern int yydebug;
     TOK_EOF = 287,
     TOK_ERROR = 288,
     TOK_LIT_STR = 289,
-    UMINUS = 290
+    TOK_BOOL = 290,
+    UMINUS = 291
   };
 #endif
 /* Tokens.  */
@@ -113,7 +114,8 @@ extern int yydebug;
 #define TOK_EOF 287
 #define TOK_ERROR 288
 #define TOK_LIT_STR 289
-#define UMINUS 290
+#define TOK_BOOL 290
+#define UMINUS 291
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED

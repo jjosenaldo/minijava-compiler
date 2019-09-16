@@ -124,7 +124,6 @@ null            { return TOK_NULL; }
 \!              { return '!'; }
 
 {letter}({digit}|{letter}|"_")*    { return TOK_ID; }
-<<EOF>>         { return TOK_EOF; }
 .               { return TOK_ERROR; }
 
 %%
