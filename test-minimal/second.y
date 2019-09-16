@@ -1,29 +1,65 @@
 %{
 #include <ctype.h>
 #include <stdio.h>
+int yylex();
+int yyerror();
 %}
 
-%token TOK_LIT_INT TOK_EQ TOK_DIFF TOK_LESS_EQ TOK_GREAT_EQ TOK_AND TOK_OR TOK_STRING TOK_INT TOK_TRUE TOK_FALSE TOK_BOOLEAN TOK_BREAK TOK_CLASS TOK_CONTINUE TOK_PUBLIC TOK_STATIC TOK_VOID TOK_MAIN TOK_EXTENDS TOK_RETURN TOK_IF TOK_ELSE TOK_WHILE TOK_LENGTH TOK_THIS TOK_NEW TOK_NULL TOK_ID TOK_EOF TOK_ERROR TOK_LIT_STR
+%token TOK_LIT_INT TOK_EQ TOK_DIFF TOK_LESS_EQ TOK_GREAT_EQ TOK_AND TOK_OR TOK_STRING TOK_INT TOK_TRUE TOK_FALSE TOK_BOOLEAN TOK_BREAK TOK_CLASS TOK_CONTINUE TOK_PUBLIC TOK_STATIC TOK_VOID TOK_MAIN TOK_EXTENDS TOK_RETURN TOK_IF TOK_ELSE TOK_WHILE TOK_LENGTH TOK_THIS TOK_NEW TOK_NULL TOK_ID TOK_EOF TOK_ERROR TOK_LIT_STR TOK_BOOL
 
-%left '+' '-'
-%left '*' '/'
+%left '+' '-' '*' '/' '%'
 %right UMINUS
 
 %%
 
-lines : lines expr '\n'	{printf("%d\n", $2); }
-	  | lines '\n'
-	  | /* empty */
-	  ;
+init : expr  
+     ;
 
-expr  : expr '+' expr	{$$ = $1 + $3; }
-	  |	expr '-' expr	{$$ = $1 - $3; } 
-	  |	expr '*' expr	{$$ = $1 * $3; } 
-	  |	expr '/' expr	{$$ = $1 / $3; } 
-	  | '(' expr ')'    {$$ = $2; }
-	  | '-' expr %prec UMINUS { $$ = - $2; }
-	  | TOK_LIT_INT {  }
-	  ;
+expr : expr '>' expr
+     | expr '<' expr
+     | expr TOK_GREAT_EQ expr
+     | expr TOK_LESS_EQ expr
+     | expr TOK_EQ expr
+     | expr TOK_DIFF expr
+     | expr TOK_OR expr
+     | expr TOK_AND expr
+     | expr '-' expr
+     | expr '+' expr
+     | expr '/' expr
+     | expr '*' expr
+     | expr '%' expr
+     | expr '[' expr ']'
+     | '{' expr_list '}'
+     | expr '.' TOK_ID '(' expr_list ')'
+     | TOK_LIT_INT
+     | TOK_LIT_STR
+     | TOK_TRUE
+     | TOK_FALSE
+     | TOK_THIS '.' TOK_ID
+     | TOK_THIS
+     | TOK_ID
+     | TOK_NULL
+     | TOK_NEW type filledbracks
+     | TOK_NEW type '(' expr_list ')'
+     | '-' expr
+     | '!' expr
+     | '(' expr ')'
+     ; 
+
+expr_list : expr ',' expr_list
+         | 
+         ;
+
+filledbracks : '[' expr ']' filledbracks
+             | 
+             ; 
+
+type : type '[' ']'
+     | TOK_BOOL
+     | TOK_INT
+     | TOK_VOID
+     | TOK_ID
+     ;
 
 %%
 
