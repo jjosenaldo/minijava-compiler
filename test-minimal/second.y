@@ -9,24 +9,23 @@ int yyerror();
 
 %left '+' '-' '*' '/' '%'
 %right UMINUS
-
 %%
 
-init : expr  
+init : expr 
      ;
 
-expr : expr '>' expr
+expr : expr '>' expr 
      | expr '<' expr
      | expr TOK_GREAT_EQ expr
      | expr TOK_LESS_EQ expr
-     | expr TOK_EQ expr
+     | expr TOK_EQ expr {}
      | expr TOK_DIFF expr
      | expr TOK_OR expr
      | expr TOK_AND expr
-     | expr '-' expr
-     | expr '+' expr
+     | expr '+' expr {return 32;}
+     | expr '-' expr {return 64;}
      | expr '/' expr
-     | expr '*' expr
+     | expr '*' expr 
      | expr '%' expr
      | expr '[' expr ']'
      | '{' expr_list '}'
@@ -41,9 +40,9 @@ expr : expr '>' expr
      | TOK_NULL
      | TOK_NEW type filledbracks
      | TOK_NEW type '(' expr_list ')'
-     | '-' expr
+     | '-' expr 
      | '!' expr
-     | '(' expr ')'
+     | '(' expr ')' 
      ; 
 
 expr_list : expr ',' expr_list
@@ -64,3 +63,9 @@ type : type '[' ']'
 %%
 
 #include "lex.yy.c"
+
+void main(){
+     printf("%d\n",yyparse());
+     printf("%d\n",yyparse());
+     printf("%d\n",yyparse());
+}

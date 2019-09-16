@@ -567,7 +567,7 @@ static const yytype_uint8 yydefact[] =
       35,    29,     0,     0,     0,    30,     1,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,    23,     0,    33,    27,    33,    17,    31,     7,
-       8,     6,     5,    10,     9,    12,    11,    14,    13,    15,
+       8,     6,     5,    10,     9,    11,    12,    14,    13,    15,
        3,     4,     0,     0,    36,     0,     0,    32,    16,    33,
       35,    28,     0,     0,    34,    18
 };
@@ -1350,14 +1350,26 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-        case 2:
-#line 15 "second.y" /* yacc.c:1646  */
-    {printf("cabouuu\n");}
+        case 7:
+#line 22 "second.y" /* yacc.c:1646  */
+    {}
 #line 1357 "y.tab.c" /* yacc.c:1646  */
     break;
 
+  case 11:
+#line 26 "second.y" /* yacc.c:1646  */
+    {return 32;}
+#line 1363 "y.tab.c" /* yacc.c:1646  */
+    break;
 
-#line 1361 "y.tab.c" /* yacc.c:1646  */
+  case 12:
+#line 27 "second.y" /* yacc.c:1646  */
+    {return 64;}
+#line 1369 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+
+#line 1373 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1589,3 +1601,9 @@ yyreturn:
 
 
 #include "lex.yy.c"
+
+void main(){
+     printf("%d\n",yyparse());
+     printf("%d\n",yyparse());
+     printf("%d\n",yyparse());
+}
