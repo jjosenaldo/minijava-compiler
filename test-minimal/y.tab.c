@@ -69,7 +69,35 @@
 int yylex();
 int yyerror();
 
-#line 73 "y.tab.c" /* yacc.c:339  */
+/*
+
+| Operator         | Precedence | Associativity
+| PAR_OP           |     0      | ?
+| ARRAY_OP         |     0      | ?
+| LIST_OP          |     0      | ?
+| CALL_OP          |     0      | ?
+| ATT_ACCESS_OP    |     0      | ?
+| NEW_ARRAY_OP     |     0      | ?
+| NEW_OBJ_OP       |     0      | ?
+| -(unary)         |     1      | ?
+| !(unary)         |     1      | ?
+| *                |     2      | left
+| /                |     2      | left
+| %                |     2      | left
+| +                |     3      | left
+| -                |     3      | left
+| &&               |     4      | left
+| ||               |     4      | left
+| <=               |     5      | left
+| <                |     5      | left
+| >=               |     5      | left
+| >                |     5      | left
+| ==               |     5      | left
+| !=               |     5      | left
+*/
+
+
+#line 101 "y.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -192,7 +220,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 196 "y.tab.c" /* yacc.c:358  */
+#line 224 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -493,11 +521,11 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    15,    15,    18,    19,    20,    21,    22,    23,    24,
-      25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
-      35,    36,    37,    38,    39,    40,    41,    42,    43,    44,
-      45,    46,    49,    50,    53,    54,    57,    58,    59,    60,
-      61
+       0,    42,    42,    45,    46,    47,    48,    49,    50,    51,
+      52,    53,    54,    55,    56,    57,    58,    59,    60,    61,
+      62,    63,    64,    65,    66,    67,    68,    69,    70,    71,
+      72,    73,    76,    77,    80,    81,    84,    85,    86,    87,
+      88
 };
 #endif
 
@@ -1351,25 +1379,25 @@ yyreduce:
   switch (yyn)
     {
         case 7:
-#line 22 "second.y" /* yacc.c:1646  */
+#line 49 "second.y" /* yacc.c:1646  */
     {}
-#line 1357 "y.tab.c" /* yacc.c:1646  */
+#line 1385 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 26 "second.y" /* yacc.c:1646  */
+#line 53 "second.y" /* yacc.c:1646  */
     {return 32;}
-#line 1363 "y.tab.c" /* yacc.c:1646  */
+#line 1391 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 27 "second.y" /* yacc.c:1646  */
+#line 54 "second.y" /* yacc.c:1646  */
     {return 64;}
-#line 1369 "y.tab.c" /* yacc.c:1646  */
+#line 1397 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1373 "y.tab.c" /* yacc.c:1646  */
+#line 1401 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1597,7 +1625,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 64 "second.y" /* yacc.c:1906  */
+#line 91 "second.y" /* yacc.c:1906  */
 
 
 #include "lex.yy.c"

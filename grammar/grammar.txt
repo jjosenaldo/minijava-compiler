@@ -1,62 +1,63 @@
-Goal -> MainClass ClassDeclarations .
-MainClass -> class id lbrack void id lpar string lbrack rbrack id rpar lbrack BlockStatements rbrack rbrack .
-ClassDeclarations -> ClassDeclaration ClassDeclarations .
-ClassDeclarations -> .
-ClassDeclaration -> class id ExtendsOpt lbrack ClassMembers rbrack .
-ExtendsOpt -> extends id .
-ExtendsOpt -> .
-ClassMembers -> VarDeclaration ClassMembers .
-ClassMembers -> MethodDeclaration ClassMembers .
-ClassMembers -> .
-VarDeclaration -> Type id semicolon .
-MethodDeclaration -> Type id lpar Params rpar lbrack BlockStatements rbrack .
-Params -> Param ParamsRest .
-Params -> .
-ParamsRest -> comma Param ParamsRest .
-ParamsRest -> .
-Param -> Type id .
-BlockStatements -> VarDeclaration BlockStatements .
-BlockStatements -> Statement BlockStatements .
-BlockStatements -> .
-Type -> Type lbrack rbrack
-Type -> boolean
-Type -> int
-Type -> void
-Type -> id
+goal : mainclass classdecs
+     ;
 
-Statement -> lbrack BlockStatements rbrack
-Statement -> if lpar Expression rpar Statement ElseOpt
-Statement -> while lpar Expression rpar Statement
-Statement -> LValue eq Expression semicolon
-Statement ->
+mainclass : TOK_CLASS TOK_ID '{' TOK_VOID TOK_ID '(' TOK_ID '[' ']' TOK_ID ')' '{' blockstmts '}' '}'
+          ;
 
-ElseOpt -> else Statement .
-ElseOpt -> .
-Expression
+classdecs : classdec classdecs
+          |
+          ;
 
-hStatementi ::=
-“{” hBlockStatementsi “}”
-| “if” “(” hExpressioni “)” hStatementi [ “else” hStatementi ]
-| “while” “(” hExpressioni “)” hStatementi
-| “System” “.” “out” “.” “println” “(” hExpressioni “)” “;”
+classdec : TOK_CLASS TOK_ID extendsopt '{' classmembers '}'
+         ;
 
-| Identifier “=” hExpressioni “;”
-| Identifier “[” hExpressioni “]” “=” hExpressioni “;”
-| “continue” “;”
-| “break” “;”
-| “return” hExpressioni “;”
+classmembers : vardec classmembers
+             | methoddec classmembers
+             |
+             ;
 
-Type -> Type lbrack rbrack
-Type -> boolean
-Type -> int
-Type -> void
-Type -> id
+vardec : type TOK_ID ';'
+       ;
+
+methoddec : type TOK_ID '(' params ')' '{' blockstmts '}'
+          ;
+
+params : param paramsrest
+       |
+       ;
+
+paramsrest : ';' param paramsrest
+           |
+           ;
+param : type TOK_ID
+      ;
+
+extendsopt : extends TOK_ID
+           |
+           ;
+
+
+blockstmts : vardec blockstmts
+           | stmt blockstmts
+           | 
+           ;
 
 type : type '[' ']'
      | TOK_BOOL
      | TOK_INT
      | TOK_VOID
      | TOK_ID
+
+stat : '{' blockstmts '}'
+     | TOK_IF '(' expr ')' stmt TOK_ELSE stmt
+     | TOK_IF '(' expr ')' stmt 
+     | TOK_WHILE '(' expr ')' stmt
+     | expr '=' expr ';'
+     | TOK_CONTINUE ';'
+     | TOK_BREAK ';'
+     | TOK_RETURN expr ';'
+     | TOK_RETURN ';'
+     ;
 
 expr : expr '>' expr
      | expr '<' expr
@@ -66,7 +67,6 @@ expr : expr '>' expr
      | expr '!=' expr
      | expr '||' expr
      | expr '&&' expr
-     | expr '-' expr
      | expr '+' expr
      | expr '-' expr
      | expr '/' expr
@@ -85,7 +85,6 @@ expr : expr '>' expr
      | TOK_NULL
      | TOK_NEW type filledbracks
      | TOK_NEW type '(' exprlist ')'
-     | '+' expr
      | '-' expr
      | '!' expr
      | '(' expr ')'
