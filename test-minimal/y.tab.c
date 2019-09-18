@@ -1350,14 +1350,8 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-        case 2:
-#line 15 "second.y" /* yacc.c:1646  */
-    {printf("cabouuu\n");}
-#line 1357 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-
-#line 1361 "y.tab.c" /* yacc.c:1646  */
+      
+#line 1355 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
