@@ -78,7 +78,12 @@ extern int yydebug;
     TOK_ERROR = 288,
     TOK_LIT_STR = 289,
     TOK_BOOL = 290,
-    UMINUS = 291
+    PREC_5 = 291,
+    PREC_4 = 292,
+    PREC_3 = 293,
+    PREC_2 = 294,
+    PREC_1 = 295,
+    PREC_0 = 296
   };
 #endif
 /* Tokens.  */
@@ -115,7 +120,12 @@ extern int yydebug;
 #define TOK_ERROR 288
 #define TOK_LIT_STR 289
 #define TOK_BOOL 290
-#define UMINUS 291
+#define PREC_5 291
+#define PREC_4 292
+#define PREC_3 293
+#define PREC_2 294
+#define PREC_1 295
+#define PREC_0 296
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
