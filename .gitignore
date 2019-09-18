@@ -1,7 +1,7 @@
 # Lex and yacc generated files
-lex.yy.c
-y.tab.c 
-y.tab.h
+test-minimal/lex.yy.c
+test-minimal/y.tab.c
+test-minimal/y.tab.h
 
 # Prerequisites
 *.d
