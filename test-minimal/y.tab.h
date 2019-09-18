@@ -71,13 +71,14 @@ extern int yydebug;
     ERROR = 281,
     LIT_STR = 282,
     BOOL = 283,
-    PREC_1 = 284,
+    PREC_UNARY_OP = 284,
     AND = 285,
     OR = 286,
     EQ = 287,
     DIFF = 288,
     LESS_EQ = 289,
-    GREAT_EQ = 290
+    GREAT_EQ = 290,
+    PREC_NEW_MATRIX = 291
   };
 #endif
 /* Tokens.  */
@@ -107,13 +108,14 @@ extern int yydebug;
 #define ERROR 281
 #define LIT_STR 282
 #define BOOL 283
-#define PREC_1 284
+#define PREC_UNARY_OP 284
 #define AND 285
 #define OR 286
 #define EQ 287
 #define DIFF 288
 #define LESS_EQ 289
 #define GREAT_EQ 290
+#define PREC_NEW_MATRIX 291
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED

@@ -35,12 +35,12 @@ int yyerror();
 
 %token LIT_INT STRING INT TRUE FALSE BOOLEAN BREAK CLASS CONTINUE PUBLIC STATIC VOID MAIN EXTENDS RETURN IF ELSE WHILE LENGTH THIS NEW TOK_NULL ID ERROR LIT_STR BOOL
 
-%nonassoc PREC_1
+%nonassoc PREC_UNARY_OP
 %left '+' '-'
 %left '*' '/' '%'
 %nonassoc AND OR
 %nonassoc '<' '>' EQ DIFF LESS_EQ GREAT_EQ
-
+%nonassoc PREC_NEW_MATRIX
 %%
 
 init : expr 
@@ -70,10 +70,10 @@ expr : expr '>' expr
      | THIS                         
      | ID                           
      | TOK_NULL                         
-     | NEW type filledbracks        
+     | NEW type filledbracks %prec PREC_NEW_MATRIX        
      | NEW type '(' expr_list ')'   
-     | '-' expr %prec PREC_1                        
-     | '!' expr %prec PREC_1                         
+     | '-' expr %prec PREC_UNARY_OP                        
+     | '!' expr %prec PREC_UNARY_OP                         
      | '(' expr ')'                     
      ; 
 
