@@ -78,7 +78,8 @@ extern int yydebug;
     DIFF = 288,
     LESS_EQ = 289,
     GREAT_EQ = 290,
-    PREC_NEW_MATRIX = 291
+    PREC_NEW_MATRIX = 291,
+    PREC_ELSELESS_IF = 292
   };
 #endif
 /* Tokens.  */
@@ -116,6 +117,7 @@ extern int yydebug;
 #define LESS_EQ 289
 #define GREAT_EQ 290
 #define PREC_NEW_MATRIX 291
+#define PREC_ELSELESS_IF 292
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED

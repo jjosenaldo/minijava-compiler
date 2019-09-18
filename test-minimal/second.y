@@ -40,10 +40,77 @@ int yyerror();
 %left '*' '/' '%'
 %nonassoc AND OR
 %nonassoc '<' '>' EQ DIFF LESS_EQ GREAT_EQ
+
 %nonassoc PREC_NEW_MATRIX
+
+
+%nonassoc PREC_ELSELESS_IF
+%nonassoc ELSE
+
+
+
 %%
 
-init : expr 
+goal : mainclass classdecs
+     ;
+
+mainclass : CLASS ID '{' VOID ID '(' ID '[' ']' ID ')' '{' blockstmts '}' '}'
+          ;
+
+classdecs : classdec classdecs
+          |
+          ;
+
+classdec : CLASS ID extendsopt '{' classmembers '}'
+         ;
+
+classmembers : vardec classmembers
+             | methoddec classmembers
+             |
+             ;
+
+vardec : type ID ';'
+       ;
+
+methoddec : type ID '(' params ')' '{' blockstmts '}'
+          ;
+
+params : param paramsrest
+       |
+       ;
+
+paramsrest : ';' param paramsrest
+           |
+           ;
+
+param : type ID
+      ;
+
+extendsopt : EXTENDS ID
+           |
+           ;
+
+
+blockstmts : vardec blockstmts
+           | stmt blockstmts
+           | 
+           ;
+
+type : type '[' ']'
+     | BOOL
+     | INT
+     | VOID
+     | ID
+
+stmt : '{' blockstmts '}'
+     | IF '(' expr ')' stmt %prec PREC_ELSELESS_IF
+     | IF '(' expr ')' stmt ELSE stmt
+     | WHILE '(' expr ')' stmt
+     | expr '=' expr ';'
+     | CONTINUE ';'
+     | BREAK ';'
+     | RETURN expr ';'
+     | RETURN ';'
      ;
 
 expr : expr '>' expr                    
@@ -84,13 +151,6 @@ expr_list : expr ',' expr_list
 filledbracks : '[' expr ']' filledbracks
              | 
              ; 
-
-type : type '[' ']'
-     | BOOL
-     | INT
-     | VOID
-     | ID
-     ;
 
 %%
 
