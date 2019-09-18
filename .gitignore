@@ -1,5 +1,7 @@
-# Lex-generated files
+# Lex and yacc generated files
 lex.yy.c
+y.tab.c 
+y.tab.h
 
 # Prerequisites
 *.d
