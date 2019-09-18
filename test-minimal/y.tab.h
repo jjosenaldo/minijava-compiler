@@ -45,87 +45,75 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    TOK_LIT_INT = 258,
-    TOK_EQ = 259,
-    TOK_DIFF = 260,
-    TOK_LESS_EQ = 261,
-    TOK_GREAT_EQ = 262,
-    TOK_AND = 263,
-    TOK_OR = 264,
-    TOK_STRING = 265,
-    TOK_INT = 266,
-    TOK_TRUE = 267,
-    TOK_FALSE = 268,
-    TOK_BOOLEAN = 269,
-    TOK_BREAK = 270,
-    TOK_CLASS = 271,
-    TOK_CONTINUE = 272,
-    TOK_PUBLIC = 273,
-    TOK_STATIC = 274,
-    TOK_VOID = 275,
-    TOK_MAIN = 276,
-    TOK_EXTENDS = 277,
-    TOK_RETURN = 278,
-    TOK_IF = 279,
-    TOK_ELSE = 280,
-    TOK_WHILE = 281,
-    TOK_LENGTH = 282,
-    TOK_THIS = 283,
-    TOK_NEW = 284,
-    TOK_NULL = 285,
-    TOK_ID = 286,
-    TOK_EOF = 287,
-    TOK_ERROR = 288,
-    TOK_LIT_STR = 289,
-    TOK_BOOL = 290,
-    PREC_5 = 291,
-    PREC_4 = 292,
-    PREC_3 = 293,
-    PREC_2 = 294,
-    PREC_1 = 295,
-    PREC_0 = 296
+    LIT_INT = 258,
+    STRING = 259,
+    INT = 260,
+    TRUE = 261,
+    FALSE = 262,
+    BOOLEAN = 263,
+    BREAK = 264,
+    CLASS = 265,
+    CONTINUE = 266,
+    PUBLIC = 267,
+    STATIC = 268,
+    VOID = 269,
+    MAIN = 270,
+    EXTENDS = 271,
+    RETURN = 272,
+    IF = 273,
+    ELSE = 274,
+    WHILE = 275,
+    LENGTH = 276,
+    THIS = 277,
+    NEW = 278,
+    TOK_NULL = 279,
+    ID = 280,
+    ERROR = 281,
+    LIT_STR = 282,
+    BOOL = 283,
+    PREC_1 = 284,
+    AND = 285,
+    OR = 286,
+    EQ = 287,
+    DIFF = 288,
+    LESS_EQ = 289,
+    GREAT_EQ = 290
   };
 #endif
 /* Tokens.  */
-#define TOK_LIT_INT 258
-#define TOK_EQ 259
-#define TOK_DIFF 260
-#define TOK_LESS_EQ 261
-#define TOK_GREAT_EQ 262
-#define TOK_AND 263
-#define TOK_OR 264
-#define TOK_STRING 265
-#define TOK_INT 266
-#define TOK_TRUE 267
-#define TOK_FALSE 268
-#define TOK_BOOLEAN 269
-#define TOK_BREAK 270
-#define TOK_CLASS 271
-#define TOK_CONTINUE 272
-#define TOK_PUBLIC 273
-#define TOK_STATIC 274
-#define TOK_VOID 275
-#define TOK_MAIN 276
-#define TOK_EXTENDS 277
-#define TOK_RETURN 278
-#define TOK_IF 279
-#define TOK_ELSE 280
-#define TOK_WHILE 281
-#define TOK_LENGTH 282
-#define TOK_THIS 283
-#define TOK_NEW 284
-#define TOK_NULL 285
-#define TOK_ID 286
-#define TOK_EOF 287
-#define TOK_ERROR 288
-#define TOK_LIT_STR 289
-#define TOK_BOOL 290
-#define PREC_5 291
-#define PREC_4 292
-#define PREC_3 293
-#define PREC_2 294
-#define PREC_1 295
-#define PREC_0 296
+#define LIT_INT 258
+#define STRING 259
+#define INT 260
+#define TRUE 261
+#define FALSE 262
+#define BOOLEAN 263
+#define BREAK 264
+#define CLASS 265
+#define CONTINUE 266
+#define PUBLIC 267
+#define STATIC 268
+#define VOID 269
+#define MAIN 270
+#define EXTENDS 271
+#define RETURN 272
+#define IF 273
+#define ELSE 274
+#define WHILE 275
+#define LENGTH 276
+#define THIS 277
+#define NEW 278
+#define TOK_NULL 279
+#define ID 280
+#define ERROR 281
+#define LIT_STR 282
+#define BOOL 283
+#define PREC_1 284
+#define AND 285
+#define OR 286
+#define EQ 287
+#define DIFF 288
+#define LESS_EQ 289
+#define GREAT_EQ 290
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED

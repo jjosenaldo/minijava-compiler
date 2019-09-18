@@ -70,47 +70,47 @@ S_FINAL                   \"
     aux[writing++] = '\0';
     strcpy (yytext,aux);
     yyleng = writing;
-    return TOK_LIT_STR; }
+    return LIT_STR; }
 
 
 
 
-{digit}+        { return TOK_LIT_INT; }
+{digit}+        { return LIT_INT; }
 \+              { return '+'; }
 \-              { return '-'; }
 \*              { return '*'; }
 "/"             { return '/'; }
 "%"             { return '%'; }
-\=\=            { return TOK_EQ; }
-\!\=            { return TOK_DIFF; }
+\=\=            { return EQ; }
+\!\=            { return DIFF; }
 \=              { return '='; }
-\<\=            { return TOK_LESS_EQ; }
-\>\=            { return TOK_GREAT_EQ; }
-\&\&            { return TOK_AND; }
-\|\|            { return TOK_OR; }
+\<\=            { return LESS_EQ; }
+\>\=            { return GREAT_EQ; }
+\&\&            { return AND; }
+\|\|            { return OR; }
 \<              { return '<'; }
 \>              { return '>'; }
-String          { return TOK_STRING; }
-int             { return TOK_INT; }
-true            { return TOK_TRUE; }
-false           { return TOK_FALSE; }
-boolean         { return TOK_BOOLEAN; }
+String          { return STRING; }
+int             { return INT; }
+true            { return TRUE; }
+false           { return FALSE; }
+boolean         { return BOOLEAN; }
 
-break           { return TOK_BREAK; }
-class           { return TOK_CLASS; }
-continue        { return TOK_CONTINUE; }
-public          { return TOK_PUBLIC; }
-static          { return TOK_STATIC; }
-void            { return TOK_VOID; }
-main            { return TOK_MAIN; }
-extends         { return TOK_EXTENDS; }
-return          { return TOK_RETURN; }
-if              { return TOK_IF; }
-else            { return TOK_ELSE; }
-while           { return TOK_WHILE; }
-length          { return TOK_LENGTH; }
-this            { return TOK_THIS; }
-new             { return TOK_NEW; }
+break           { return BREAK; }
+class           { return CLASS; }
+continue        { return CONTINUE; }
+public          { return PUBLIC; }
+static          { return STATIC; }
+void            { return VOID; }
+main            { return MAIN; }
+extends         { return EXTENDS; }
+return          { return RETURN; }
+if              { return IF; }
+else            { return ELSE; }
+while           { return WHILE; }
+length          { return LENGTH; }
+this            { return THIS; }
+new             { return NEW; }
 null            { return TOK_NULL; }
 \{              { return '{'; }
 \}              { return '}'; }
@@ -123,7 +123,7 @@ null            { return TOK_NULL; }
 \.              { return '.'; }
 \!              { return '!'; }
 
-{letter}({digit}|{letter}|"_")*    { return TOK_ID; }
-.               { return TOK_ERROR; }
+{letter}({digit}|{letter}|"_")*    { return ID; }
+.               { return ERROR; }
 
 %%

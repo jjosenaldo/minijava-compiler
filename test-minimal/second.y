@@ -33,49 +33,48 @@ int yyerror();
 
 %}
 
-%token TOK_LIT_INT TOK_EQ TOK_DIFF TOK_LESS_EQ TOK_GREAT_EQ TOK_AND TOK_OR TOK_STRING TOK_INT TOK_TRUE TOK_FALSE TOK_BOOLEAN TOK_BREAK TOK_CLASS TOK_CONTINUE TOK_PUBLIC TOK_STATIC TOK_VOID TOK_MAIN TOK_EXTENDS TOK_RETURN TOK_IF TOK_ELSE TOK_WHILE TOK_LENGTH TOK_THIS TOK_NEW TOK_NULL TOK_ID TOK_EOF TOK_ERROR TOK_LIT_STR TOK_BOOL
+%token LIT_INT STRING INT TRUE FALSE BOOLEAN BREAK CLASS CONTINUE PUBLIC STATIC VOID MAIN EXTENDS RETURN IF ELSE WHILE LENGTH THIS NEW TOK_NULL ID ERROR LIT_STR BOOL
 
-%nonassoc PREC_5
-%nonassoc PREC_4
-%left PREC_3
-%left PREC_2
 %nonassoc PREC_1
-%nonassoc PREC_0
+%left '+' '-'
+%left '*' '/' '%'
+%nonassoc AND OR
+%nonassoc '<' '>' EQ DIFF LESS_EQ GREAT_EQ
 
 %%
 
 init : expr 
      ;
 
-expr : expr '>' expr                     %prec PREC_5
-     | expr '<' expr                     %prec PREC_5 
-     | expr TOK_GREAT_EQ expr            %prec PREC_5
-     | expr TOK_LESS_EQ expr             %prec PREC_5
-     | expr TOK_EQ expr                  %prec PREC_5
-     | expr TOK_DIFF expr                %prec PREC_5
-     | expr TOK_OR expr                  %prec PREC_4
-     | expr TOK_AND expr                 %prec PREC_4
-     | expr '+' expr                     %prec PREC_3
-     | expr '-' expr                     %prec PREC_3
-     | expr '/' expr                     %prec PREC_2
-     | expr '*' expr                     %prec PREC_2
-     | expr '%' expr                     %prec PREC_2
-     | expr '[' expr ']'                 %prec PREC_0
-     | '{' expr_list '}'                 %prec PREC_0
-     | expr '.' TOK_ID '(' expr_list ')' %prec PREC_0
-     | TOK_LIT_INT                       %prec PREC_0
-     | TOK_LIT_STR                       %prec PREC_0
-     | TOK_TRUE                          %prec PREC_0
-     | TOK_FALSE                         %prec PREC_0
-     | TOK_THIS '.' TOK_ID               %prec PREC_0
-     | TOK_THIS                          %prec PREC_0
-     | TOK_ID                            %prec PREC_0
-     | TOK_NULL                          %prec PREC_0
-     | TOK_NEW type filledbracks         %prec PREC_0
-     | TOK_NEW type '(' expr_list ')'    %prec PREC_0
-     | '-' expr                          %prec PREC_1
-     | '!' expr                          %prec PREC_1
-     | '(' expr ')'                      %prec PREC_0
+expr : expr '>' expr                    
+     | expr '<' expr                    
+     | expr GREAT_EQ expr           
+     | expr LESS_EQ expr            
+     | expr EQ expr                 
+     | expr DIFF expr               
+     | expr OR expr                 
+     | expr AND expr                
+     | expr '+' expr                    
+     | expr '-' expr                    
+     | expr '/' expr                    
+     | expr '*' expr                    
+     | expr '%' expr                    
+     | expr '[' expr ']'                
+     | '{' expr_list '}'                
+     | expr '.' ID '(' expr_list ')'
+     | LIT_INT                      
+     | LIT_STR                      
+     | TRUE                         
+     | FALSE                        
+     | THIS '.' ID              
+     | THIS                         
+     | ID                           
+     | TOK_NULL                         
+     | NEW type filledbracks        
+     | NEW type '(' expr_list ')'   
+     | '-' expr %prec PREC_1                        
+     | '!' expr %prec PREC_1                         
+     | '(' expr ')'                     
      ; 
 
 expr_list : expr ',' expr_list
@@ -87,10 +86,10 @@ filledbracks : '[' expr ']' filledbracks
              ; 
 
 type : type '[' ']'
-     | TOK_BOOL
-     | TOK_INT
-     | TOK_VOID
-     | TOK_ID
+     | BOOL
+     | INT
+     | VOID
+     | ID
      ;
 
 %%
