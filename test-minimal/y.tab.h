@@ -46,78 +46,72 @@ extern int yydebug;
   enum yytokentype
   {
     LIT_INT = 258,
-    STRING = 259,
-    INT = 260,
-    TRUE = 261,
-    FALSE = 262,
-    BOOLEAN = 263,
-    BREAK = 264,
-    CLASS = 265,
-    CONTINUE = 266,
-    PUBLIC = 267,
-    STATIC = 268,
-    VOID = 269,
-    MAIN = 270,
-    EXTENDS = 271,
-    RETURN = 272,
-    IF = 273,
-    ELSE = 274,
-    WHILE = 275,
-    LENGTH = 276,
-    THIS = 277,
-    NEW = 278,
-    TOK_NULL = 279,
-    ID = 280,
-    ERROR = 281,
-    LIT_STR = 282,
-    BOOL = 283,
-    PREC_UNARY_OP = 284,
-    AND = 285,
-    OR = 286,
-    EQ = 287,
-    DIFF = 288,
-    LESS_EQ = 289,
-    GREAT_EQ = 290,
-    PREC_NEW_MATRIX = 291,
-    PREC_ELSELESS_IF = 292
+    INT = 259,
+    TRUE = 260,
+    FALSE = 261,
+    BOOLEAN = 262,
+    BREAK = 263,
+    CLASS = 264,
+    CONTINUE = 265,
+    VOID = 266,
+    EXTENDS = 267,
+    RETURN = 268,
+    IF = 269,
+    ELSE = 270,
+    WHILE = 271,
+    THIS = 272,
+    NEW = 273,
+    TOK_NULL = 274,
+    ID = 275,
+    ERROR = 276,
+    LIT_STR = 277,
+    ARR = 278,
+    PREC_UNARY_OP = 279,
+    AND = 280,
+    OR = 281,
+    EQ = 282,
+    DIFF = 283,
+    LESS_EQ = 284,
+    GREAT_EQ = 285,
+    PREC_NEW_MATRIX = 286,
+    PREC_THIS_WITHOUT_DOT = 287,
+    PREC_THIS_WITH_DOT = 288,
+    PREC_ELSELESS_IF = 289
   };
 #endif
 /* Tokens.  */
 #define LIT_INT 258
-#define STRING 259
-#define INT 260
-#define TRUE 261
-#define FALSE 262
-#define BOOLEAN 263
-#define BREAK 264
-#define CLASS 265
-#define CONTINUE 266
-#define PUBLIC 267
-#define STATIC 268
-#define VOID 269
-#define MAIN 270
-#define EXTENDS 271
-#define RETURN 272
-#define IF 273
-#define ELSE 274
-#define WHILE 275
-#define LENGTH 276
-#define THIS 277
-#define NEW 278
-#define TOK_NULL 279
-#define ID 280
-#define ERROR 281
-#define LIT_STR 282
-#define BOOL 283
-#define PREC_UNARY_OP 284
-#define AND 285
-#define OR 286
-#define EQ 287
-#define DIFF 288
-#define LESS_EQ 289
-#define GREAT_EQ 290
-#define PREC_NEW_MATRIX 291
-#define PREC_ELSELESS_IF 292
+#define INT 259
+#define TRUE 260
+#define FALSE 261
+#define BOOLEAN 262
+#define BREAK 263
+#define CLASS 264
+#define CONTINUE 265
+#define VOID 266
+#define EXTENDS 267
+#define RETURN 268
+#define IF 269
+#define ELSE 270
+#define WHILE 271
+#define THIS 272
+#define NEW 273
+#define TOK_NULL 274
+#define ID 275
+#define ERROR 276
+#define LIT_STR 277
+#define ARR 278
+#define PREC_UNARY_OP 279
+#define AND 280
+#define OR 281
+#define EQ 282
+#define DIFF 283
+#define LESS_EQ 284
+#define GREAT_EQ 285
+#define PREC_NEW_MATRIX 286
+#define PREC_THIS_WITHOUT_DOT 287
+#define PREC_THIS_WITH_DOT 288
+#define PREC_ELSELESS_IF 289
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED

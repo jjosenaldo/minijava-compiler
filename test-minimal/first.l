@@ -19,6 +19,7 @@ int prev_column;
 %}
 
 digit                   [0-9]
+brackets               \[[\n \t]*\]
 letter                  [a-zA-Z]
 C_START                   "/*"
 C_WORRYING                "*"
@@ -90,7 +91,7 @@ S_FINAL                   \"
 \|\|            { return OR; }
 \<              { return '<'; }
 \>              { return '>'; }
-String          { return STRING; }
+{brackets}      { return ARR; }            
 int             { return INT; }
 true            { return TRUE; }
 false           { return FALSE; }
@@ -99,16 +100,12 @@ boolean         { return BOOLEAN; }
 break           { return BREAK; }
 class           { return CLASS; }
 continue        { return CONTINUE; }
-public          { return PUBLIC; }
-static          { return STATIC; }
 void            { return VOID; }
-main            { return MAIN; }
 extends         { return EXTENDS; }
 return          { return RETURN; }
 if              { return IF; }
 else            { return ELSE; }
 while           { return WHILE; }
-length          { return LENGTH; }
 this            { return THIS; }
 new             { return NEW; }
 null            { return TOK_NULL; }
@@ -124,6 +121,6 @@ null            { return TOK_NULL; }
 \!              { return '!'; }
 
 {letter}({digit}|{letter}|"_")*    { return ID; }
-.               { return ERROR; }
+.               { yyerror("invalid character"); }
 
 %%

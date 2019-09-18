@@ -2,7 +2,7 @@
 #include <ctype.h>
 #include <stdio.h>
 int yylex();
-int yyerror();
+void yyerror(char* s);
 
 /*
 
@@ -33,7 +33,7 @@ int yyerror();
 
 %}
 
-%token LIT_INT STRING INT TRUE FALSE BOOLEAN BREAK CLASS CONTINUE PUBLIC STATIC VOID MAIN EXTENDS RETURN IF ELSE WHILE LENGTH THIS NEW TOK_NULL ID ERROR LIT_STR BOOL
+%token LIT_INT INT TRUE FALSE BOOLEAN BREAK CLASS CONTINUE VOID EXTENDS RETURN IF ELSE WHILE THIS NEW TOK_NULL ID ERROR LIT_STR ARR
 
 %nonassoc PREC_UNARY_OP
 %left '+' '-'
@@ -43,6 +43,9 @@ int yyerror();
 
 %nonassoc PREC_NEW_MATRIX
 
+
+%nonassoc PREC_THIS_WITHOUT_DOT
+%nonassoc PREC_THIS_WITH_DOT
 
 %nonassoc PREC_ELSELESS_IF
 %nonassoc ELSE
@@ -54,7 +57,7 @@ int yyerror();
 goal : mainclass classdecs
      ;
 
-mainclass : CLASS ID '{' VOID ID '(' ID '[' ']' ID ')' '{' blockstmts '}' '}'
+mainclass : CLASS ID '{' VOID ID '(' ID ARR ID ')' '{' blockstmts '}' '}'
           ;
 
 classdecs : classdec classdecs
@@ -70,6 +73,7 @@ classmembers : vardec classmembers
              ;
 
 vardec : type ID ';'
+       | type ID '=' expr ';'
        ;
 
 methoddec : type ID '(' params ')' '{' blockstmts '}'
@@ -96,8 +100,8 @@ blockstmts : vardec blockstmts
            | 
            ;
 
-type : type '[' ']'
-     | BOOL
+type : type ARR
+     | BOOLEAN
      | INT
      | VOID
      | ID
@@ -111,7 +115,11 @@ stmt : '{' blockstmts '}'
      | BREAK ';'
      | RETURN expr ';'
      | RETURN ';'
+     | methodcall ';'
      ;
+
+methodcall : expr '.' ID '(' exprlistopt ')' 
+           ;
 
 expr : expr '>' expr                    
      | expr '<' expr                    
@@ -127,26 +135,31 @@ expr : expr '>' expr
      | expr '*' expr                    
      | expr '%' expr                    
      | expr '[' expr ']'                
-     | '{' expr_list '}'                
-     | expr '.' ID '(' expr_list ')'
+     | '{' exprlist '}'                
+     | methodcall
      | LIT_INT                      
      | LIT_STR                      
      | TRUE                         
      | FALSE                        
-     | THIS '.' ID              
-     | THIS                         
+     | THIS '.' ID %prec PREC_THIS_WITH_DOT          
+     | THIS %prec PREC_THIS_WITHOUT_DOT                         
      | ID                           
      | TOK_NULL                         
      | NEW type filledbracks %prec PREC_NEW_MATRIX        
-     | NEW type '(' expr_list ')'   
+     | NEW type '(' exprlistopt ')'   
      | '-' expr %prec PREC_UNARY_OP                        
      | '!' expr %prec PREC_UNARY_OP                         
      | '(' expr ')'                     
      ; 
 
-expr_list : expr ',' expr_list
-         | 
+exprlist : expr ',' exprlist
+         | expr
          ;
+
+exprlistopt : exprlist 
+            | 
+            ;
+
 
 filledbracks : '[' expr ']' filledbracks
              | 
@@ -155,3 +168,7 @@ filledbracks : '[' expr ']' filledbracks
 %%
 
 #include "lex.yy.c"
+
+void yyerror(char* s){
+  fprintf(stderr, "line: %d: %s\n", yylineno, s);
+}
