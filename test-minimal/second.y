@@ -205,33 +205,169 @@ expr : expr '>' expr          {
                                 addChildToParent(&parent, child2);
                                 addChildToParent(&parent, $3);
                                 $$ = parent;
-                                printTree(parent);
                                }                   
-     | expr '<' expr                    
-     | expr GREAT_EQ expr           
-     | expr LESS_EQ expr            
-     | expr EQ expr                 
-     | expr DIFF expr               
-     | expr OR expr                 
-     | expr AND expr                
-     | expr '+' expr                    
-     | expr '-' expr                    
-     | expr '/' expr                    
-     | expr '*' expr                    
-     | expr '%' expr                    
-     | object filledbracks 
-     | LIT_INT               {
-                                Node* parent = createNode("LIT_INT");
+     
+     | expr '<' expr           {
+                                Node* parent = createNode("expr");
+                                Node* child2 = createNode("<"); 
+                                addChildToParent(&parent, $1);
+                                addChildToParent(&parent, child2);
+                                addChildToParent(&parent, $3);
                                 $$ = parent;
+                               }   
 
-                              }                      
-     | LIT_STR                      
-     | TRUE                         
-     | FALSE                        
-     | TOK_NULL                         
-     | object
-     | '-' expr %prec PREC_UNARY_OP                        
-     | '!' expr %prec PREC_UNARY_OP                                              
+     | expr GREAT_EQ expr      {
+                                Node* parent = createNode("expr");
+                                Node* child2 = createNode(">="); 
+                                addChildToParent(&parent, $1);
+                                addChildToParent(&parent, child2);
+                                addChildToParent(&parent, $3);
+                                $$ = parent;
+                               } 
+
+     | expr LESS_EQ expr       {
+                                Node* parent = createNode("expr");
+                                Node* child2 = createNode("<="); 
+                                addChildToParent(&parent, $1);
+                                addChildToParent(&parent, child2);
+                                addChildToParent(&parent, $3);
+                                $$ = parent;
+                               } 
+
+     | expr EQ expr            {
+                                Node* parent = createNode("expr");
+                                Node* child2 = createNode("=="); 
+                                addChildToParent(&parent, $1);
+                                addChildToParent(&parent, child2);
+                                addChildToParent(&parent, $3);
+                                $$ = parent;
+                               }  
+
+     | expr DIFF expr          {
+                                Node* parent = createNode("expr");
+                                Node* child2 = createNode("!="); 
+                                addChildToParent(&parent, $1);
+                                addChildToParent(&parent, child2);
+                                addChildToParent(&parent, $3);
+                                $$ = parent;
+                               }  
+
+     | expr OR expr            {
+                                Node* parent = createNode("expr");
+                                Node* child2 = createNode("||"); 
+                                addChildToParent(&parent, $1);
+                                addChildToParent(&parent, child2);
+                                addChildToParent(&parent, $3);
+                                $$ = parent;
+                               } 
+
+     | expr AND expr           {
+                                Node* parent = createNode("expr");
+                                Node* child2 = createNode("&&"); 
+                                addChildToParent(&parent, $1);
+                                addChildToParent(&parent, child2);
+                                addChildToParent(&parent, $3);
+                                $$ = parent;
+                               }      
+
+     | expr '+' expr           {
+                                Node* parent = createNode("expr");
+                                Node* child2 = createNode("+"); 
+                                addChildToParent(&parent, $1);
+                                addChildToParent(&parent, child2);
+                                addChildToParent(&parent, $3);
+                                $$ = parent;
+                               }
+
+     | expr '-' expr           {
+                                Node* parent = createNode("expr");
+                                Node* child2 = createNode("-"); 
+                                addChildToParent(&parent, $1);
+                                addChildToParent(&parent, child2);
+                                addChildToParent(&parent, $3);
+                                $$ = parent;
+                               }
+
+     | expr '/' expr           {
+                                Node* parent = createNode("expr");
+                                Node* child2 = createNode("/"); 
+                                addChildToParent(&parent, $1);
+                                addChildToParent(&parent, child2);
+                                addChildToParent(&parent, $3);
+                                $$ = parent;
+                               } 
+
+     | expr '*' expr           {
+                                Node* parent = createNode("expr");
+                                Node* child2 = createNode("*"); 
+                                addChildToParent(&parent, $1);
+                                addChildToParent(&parent, child2);
+                                addChildToParent(&parent, $3);
+                                $$ = parent;
+                               }      
+
+     | expr '%' expr           {
+                                Node* parent = createNode("expr");
+                                Node* child2 = createNode("%"); 
+                                addChildToParent(&parent, $1);
+                                addChildToParent(&parent, child2);
+                                addChildToParent(&parent, $3);
+                                $$ = parent;
+                               }   
+
+     | object filledbracks     {
+                                Node* parent = createNode("expr");
+                                addChildToParent(&parent, $1);
+                                addChildToParent(&parent, $2);
+                                $$ = parent;
+                               } 
+
+     | LIT_INT                {
+                                 Node* parent = createNode("LIT_INT");
+                                 $$ = parent;
+                              }
+
+     | LIT_STR                {
+                                 Node* parent = createNode("LIT_STR");
+                                 $$ = parent;
+                              }
+
+     | TRUE                   {
+                                 Node* parent = createNode("TRUE");
+                                 $$ = parent;
+                              }      
+
+     | FALSE                  {
+                                 Node* parent = createNode("FALSE");
+                                 $$ = parent;
+                              }      
+
+     | TOK_NULL               {
+                                 Node* parent = createNode("NULL");
+                                 $$ = parent;
+                              }
+
+     | object                 {
+                                 Node* parent = createNode("expr");
+                                 addChildToParent(&parent, $1);
+                                 $$ = parent;
+                              }
+
+     | '-' expr %prec PREC_UNARY_OP   {
+                                        Node* parent = createNode("expr");
+                                        Node* child1 = createNode("-");
+                                        addChildToParent(&parent, child1);
+                                        addChildToParent(&parent, $2);
+                                        $$ = parent;
+                                      }
+
+     | '!' expr %prec PREC_UNARY_OP   {
+                                        Node* parent = createNode("expr");
+                                        Node* child1 = createNode("!");
+                                        addChildToParent(&parent, child1);
+                                        addChildToParent(&parent, $2);
+                                        $$ = parent;
+                                      }                                           
      ; 
 
 type : type ARR {

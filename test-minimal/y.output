@@ -1,155 +1,120 @@
 Terminais sem uso na gramática
 
+   BREAK
+   CLASS
+   CONTINUE
+   EXTENDS
+   RETURN
+   IF
+   ELSE
+   WHILE
    ERROR
    FILLED_BRACK
+   PREC_ELSELESS_IF
 
 
 Gramática
 
     0 $accept: goal $end
 
-    1 goal: mainclass classdecs
+    1 goal: expr
 
-    2 mainclass: CLASS ID '{' VOID ID '(' ID ARR ID ')' '{' blockstmts '}' '}'
+    2 expr: expr '>' expr
+    3     | expr '<' expr
+    4     | expr GREAT_EQ expr
+    5     | expr LESS_EQ expr
+    6     | expr EQ expr
+    7     | expr DIFF expr
+    8     | expr OR expr
+    9     | expr AND expr
+   10     | expr '+' expr
+   11     | expr '-' expr
+   12     | expr '/' expr
+   13     | expr '*' expr
+   14     | expr '%' expr
+   15     | object filledbracks
+   16     | LIT_INT
+   17     | LIT_STR
+   18     | TRUE
+   19     | FALSE
+   20     | TOK_NULL
+   21     | object
+   22     | '-' expr
+   23     | '!' expr
 
-    3 classdecs: classdec classdecs
-    4          | %empty
+   24 type: type ARR
+   25     | BOOLEAN
+   26     | INT
+   27     | VOID
+   28     | ID
 
-    5 classdec: CLASS ID extendsopt '{' classmembers '}'
+   29 object: NEW type
+   30       | NEW ID '(' exprlistopt ')'
+   31       | ID
+   32       | THIS_DOT ID
+   33       | THIS
+   34       | expr '.' ID '(' exprlistopt ')'
+   35       | '(' expr ')'
+   36       | '{' exprlist '}'
 
-    6 classmembers: vardec classmembers
-    7             | methoddec classmembers
-    8             | %empty
+   37 exprlist: expr ',' exprlist
+   38         | expr
 
-    9 vardec: type ID ';'
-   10       | type ID '=' expr ';'
+   39 exprlistopt: exprlist
+   40            | %empty
 
-   11 methoddec: type ID '(' params ')' '{' blockstmts '}'
-
-   12 params: param paramsrest
-   13       | %empty
-
-   14 paramsrest: ';' param paramsrest
-   15           | %empty
-
-   16 param: type ID
-
-   17 extendsopt: EXTENDS ID
-   18           | %empty
-
-   19 blockstmts: vardec blockstmts
-   20           | stmt blockstmts
-   21           | %empty
-
-   22 stmt: '{' blockstmts '}'
-   23     | IF '(' expr ')' stmt
-   24     | IF '(' expr ')' stmt ELSE stmt
-   25     | WHILE '(' expr ')' stmt
-   26     | expr '=' expr ';'
-   27     | CONTINUE ';'
-   28     | BREAK ';'
-   29     | RETURN expr ';'
-   30     | RETURN ';'
-   31     | expr '.' ID '(' exprlistopt ')' ';'
-
-   32 expr: expr '>' expr
-   33     | expr '<' expr
-   34     | expr GREAT_EQ expr
-   35     | expr LESS_EQ expr
-   36     | expr EQ expr
-   37     | expr DIFF expr
-   38     | expr OR expr
-   39     | expr AND expr
-   40     | expr '+' expr
-   41     | expr '-' expr
-   42     | expr '/' expr
-   43     | expr '*' expr
-   44     | expr '%' expr
-   45     | object filledbracks
-   46     | LIT_INT
-   47     | LIT_STR
-   48     | TRUE
-   49     | FALSE
-   50     | TOK_NULL
-   51     | object
-   52     | '-' expr
-   53     | '!' expr
-
-   54 type: type ARR
-   55     | BOOLEAN
-   56     | INT
-   57     | VOID
-   58     | ID
-
-   59 object: NEW type
-   60       | NEW ID '(' exprlistopt ')'
-   61       | ID
-   62       | THIS_DOT ID
-   63       | THIS
-   64       | expr '.' ID '(' exprlistopt ')'
-   65       | '(' expr ')'
-   66       | '{' exprlist '}'
-
-   67 exprlist: expr ',' exprlist
-   68         | expr
-
-   69 exprlistopt: exprlist
-   70            | %empty
-
-   71 filledbracks: filledbracks '[' expr ']'
-   72             | '[' expr ']'
+   41 filledbracks: filledbracks '[' expr ']'
+   42             | '[' expr ']'
 
 
 Terminais, com as regras onde eles aparecem
 
 $end (0) 0
-'!' (33) 53
-'%' (37) 44
-'(' (40) 2 11 23 24 25 31 60 64 65
-')' (41) 2 11 23 24 25 31 60 64 65
-'*' (42) 43
-'+' (43) 40
-',' (44) 67
-'-' (45) 41 52
-'.' (46) 31 64
-'/' (47) 42
-';' (59) 9 10 14 26 27 28 29 30 31
-'<' (60) 33
-'=' (61) 10 26
-'>' (62) 32
-'[' (91) 71 72
-']' (93) 71 72
-'{' (123) 2 5 11 22 66
-'}' (125) 2 5 11 22 66
+'!' (33) 23
+'%' (37) 14
+'(' (40) 30 34 35
+')' (41) 30 34 35
+'*' (42) 13
+'+' (43) 10
+',' (44) 37
+'-' (45) 11 22
+'.' (46) 34
+'/' (47) 12
+'<' (60) 3
+'>' (62) 2
+'[' (91) 41 42
+']' (93) 41 42
+'{' (123) 36
+'}' (125) 36
 error (256)
-LIT_INT (258) 46
-INT (259) 56
-TRUE (260) 48
-FALSE (261) 49
-BOOLEAN (262) 55
-BREAK (263) 28
-CLASS (264) 2 5
-CONTINUE (265) 27
-VOID (266) 2 57
-EXTENDS (267) 17
-RETURN (268) 29 30
-IF (269) 23 24
-ELSE (270) 24
-WHILE (271) 25
-THIS (272) 63
-TOK_NULL (273) 50
-NEW (274) 59 60
-ID (275) 2 5 9 10 11 16 17 31 58 60 61 62 64
+LIT_INT (258) 16
+INT (259) 26
+TRUE (260) 18
+FALSE (261) 19
+BOOLEAN (262) 25
+BREAK (263)
+CLASS (264)
+CONTINUE (265)
+VOID (266) 27
+EXTENDS (267)
+RETURN (268)
+IF (269)
+ELSE (270)
+WHILE (271)
+THIS (272) 33
+TOK_NULL (273) 20
+NEW (274) 29 30
+ID (275) 28 30 31 32 34
 ERROR (276)
-LIT_STR (277) 47
-ARR (278) 2 54
-THIS_DOT (279) 62
-EQ (280) 36
-DIFF (281) 37
-LESS_EQ (282) 35
-GREAT_EQ (283) 34
-AND (284) 39
-OR (285) 38
+LIT_STR (277) 17
+ARR (278) 24
+THIS_DOT (279) 32
+EQ (280) 6
+DIFF (281) 7
+LESS_EQ (282) 5
+GREAT_EQ (283) 4
+AND (284) 9
+OR (285) 8
 PREC_UNARY_OP (286)
 FILLED_BRACK (287)
 PREC_ELSELESS_IF (288)
@@ -157,2614 +122,1393 @@ PREC_ELSELESS_IF (288)
 
 Não terminais com as regras onde eles aparecem
 
-$accept (52)
+$accept (50)
     à esquerda: 0
-goal (53)
+goal (51)
     à esquerda: 1, à direita: 0
-mainclass (54)
-    à esquerda: 2, à direita: 1
-classdecs (55)
-    à esquerda: 3 4, à direita: 1 3
-classdec (56)
-    à esquerda: 5, à direita: 3
-classmembers (57)
-    à esquerda: 6 7 8, à direita: 5 6 7
-vardec (58)
-    à esquerda: 9 10, à direita: 6 19
-methoddec (59)
-    à esquerda: 11, à direita: 7
-params (60)
-    à esquerda: 12 13, à direita: 11
-paramsrest (61)
-    à esquerda: 14 15, à direita: 12 14
-param (62)
-    à esquerda: 16, à direita: 12 14
-extendsopt (63)
-    à esquerda: 17 18, à direita: 5
-blockstmts (64)
-    à esquerda: 19 20 21, à direita: 2 11 19 20 22
-stmt (65)
-    à esquerda: 22 23 24 25 26 27 28 29 30 31, à direita: 20 23 24
-    25
-expr (66)
-    à esquerda: 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48
-    49 50 51 52 53, à direita: 10 23 24 25 26 29 31 32 33 34 35 36
-    37 38 39 40 41 42 43 44 52 53 64 65 67 68 71 72
-type (67)
-    à esquerda: 54 55 56 57 58, à direita: 9 10 11 16 54 59
-object (68)
-    à esquerda: 59 60 61 62 63 64 65 66, à direita: 45 51
-exprlist (69)
-    à esquerda: 67 68, à direita: 66 67 69
-exprlistopt (70)
-    à esquerda: 69 70, à direita: 31 60 64
-filledbracks (71)
-    à esquerda: 71 72, à direita: 45 71
+expr (52)
+    à esquerda: 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21
+    22 23, à direita: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 22 23 34 35
+    37 38 41 42
+type (53)
+    à esquerda: 24 25 26 27 28, à direita: 24 29
+object (54)
+    à esquerda: 29 30 31 32 33 34 35 36, à direita: 15 21
+exprlist (55)
+    à esquerda: 37 38, à direita: 36 37 39
+exprlistopt (56)
+    à esquerda: 39 40, à direita: 30 34
+filledbracks (57)
+    à esquerda: 41 42, à direita: 15 41
 
 
 Estado 0
 
     0 $accept: . goal $end
 
-    CLASS  deslocar, e ir ao estado 1
+    LIT_INT   deslocar, e ir ao estado 1
+    TRUE      deslocar, e ir ao estado 2
+    FALSE     deslocar, e ir ao estado 3
+    THIS      deslocar, e ir ao estado 4
+    TOK_NULL  deslocar, e ir ao estado 5
+    NEW       deslocar, e ir ao estado 6
+    ID        deslocar, e ir ao estado 7
+    LIT_STR   deslocar, e ir ao estado 8
+    THIS_DOT  deslocar, e ir ao estado 9
+    '-'       deslocar, e ir ao estado 10
+    '!'       deslocar, e ir ao estado 11
+    '('       deslocar, e ir ao estado 12
+    '{'       deslocar, e ir ao estado 13
 
-    goal       ir ao estado 2
-    mainclass  ir ao estado 3
+    goal    ir ao estado 14
+    expr    ir ao estado 15
+    object  ir ao estado 16
 
 
 Estado 1
 
-    2 mainclass: CLASS . ID '{' VOID ID '(' ID ARR ID ')' '{' blockstmts '}' '}'
+   16 expr: LIT_INT .
 
-    ID  deslocar, e ir ao estado 4
+    $padrão  reduzir usando a regra 16 (expr)
 
 
 Estado 2
 
-    0 $accept: goal . $end
+   18 expr: TRUE .
 
-    $end  deslocar, e ir ao estado 5
+    $padrão  reduzir usando a regra 18 (expr)
 
 
 Estado 3
 
-    1 goal: mainclass . classdecs
+   19 expr: FALSE .
 
-    CLASS  deslocar, e ir ao estado 6
-
-    $padrão  reduzir usando a regra 4 (classdecs)
-
-    classdecs  ir ao estado 7
-    classdec   ir ao estado 8
+    $padrão  reduzir usando a regra 19 (expr)
 
 
 Estado 4
 
-    2 mainclass: CLASS ID . '{' VOID ID '(' ID ARR ID ')' '{' blockstmts '}' '}'
+   33 object: THIS .
 
-    '{'  deslocar, e ir ao estado 9
+    $padrão  reduzir usando a regra 33 (object)
 
 
 Estado 5
+
+   20 expr: TOK_NULL .
+
+    $padrão  reduzir usando a regra 20 (expr)
+
+
+Estado 6
+
+   29 object: NEW . type
+   30       | NEW . ID '(' exprlistopt ')'
+
+    INT      deslocar, e ir ao estado 17
+    BOOLEAN  deslocar, e ir ao estado 18
+    VOID     deslocar, e ir ao estado 19
+    ID       deslocar, e ir ao estado 20
+
+    type  ir ao estado 21
+
+
+Estado 7
+
+   31 object: ID .
+
+    $padrão  reduzir usando a regra 31 (object)
+
+
+Estado 8
+
+   17 expr: LIT_STR .
+
+    $padrão  reduzir usando a regra 17 (expr)
+
+
+Estado 9
+
+   32 object: THIS_DOT . ID
+
+    ID  deslocar, e ir ao estado 22
+
+
+Estado 10
+
+   22 expr: '-' . expr
+
+    LIT_INT   deslocar, e ir ao estado 1
+    TRUE      deslocar, e ir ao estado 2
+    FALSE     deslocar, e ir ao estado 3
+    THIS      deslocar, e ir ao estado 4
+    TOK_NULL  deslocar, e ir ao estado 5
+    NEW       deslocar, e ir ao estado 6
+    ID        deslocar, e ir ao estado 7
+    LIT_STR   deslocar, e ir ao estado 8
+    THIS_DOT  deslocar, e ir ao estado 9
+    '-'       deslocar, e ir ao estado 10
+    '!'       deslocar, e ir ao estado 11
+    '('       deslocar, e ir ao estado 12
+    '{'       deslocar, e ir ao estado 13
+
+    expr    ir ao estado 23
+    object  ir ao estado 16
+
+
+Estado 11
+
+   23 expr: '!' . expr
+
+    LIT_INT   deslocar, e ir ao estado 1
+    TRUE      deslocar, e ir ao estado 2
+    FALSE     deslocar, e ir ao estado 3
+    THIS      deslocar, e ir ao estado 4
+    TOK_NULL  deslocar, e ir ao estado 5
+    NEW       deslocar, e ir ao estado 6
+    ID        deslocar, e ir ao estado 7
+    LIT_STR   deslocar, e ir ao estado 8
+    THIS_DOT  deslocar, e ir ao estado 9
+    '-'       deslocar, e ir ao estado 10
+    '!'       deslocar, e ir ao estado 11
+    '('       deslocar, e ir ao estado 12
+    '{'       deslocar, e ir ao estado 13
+
+    expr    ir ao estado 24
+    object  ir ao estado 16
+
+
+Estado 12
+
+   35 object: '(' . expr ')'
+
+    LIT_INT   deslocar, e ir ao estado 1
+    TRUE      deslocar, e ir ao estado 2
+    FALSE     deslocar, e ir ao estado 3
+    THIS      deslocar, e ir ao estado 4
+    TOK_NULL  deslocar, e ir ao estado 5
+    NEW       deslocar, e ir ao estado 6
+    ID        deslocar, e ir ao estado 7
+    LIT_STR   deslocar, e ir ao estado 8
+    THIS_DOT  deslocar, e ir ao estado 9
+    '-'       deslocar, e ir ao estado 10
+    '!'       deslocar, e ir ao estado 11
+    '('       deslocar, e ir ao estado 12
+    '{'       deslocar, e ir ao estado 13
+
+    expr    ir ao estado 25
+    object  ir ao estado 16
+
+
+Estado 13
+
+   36 object: '{' . exprlist '}'
+
+    LIT_INT   deslocar, e ir ao estado 1
+    TRUE      deslocar, e ir ao estado 2
+    FALSE     deslocar, e ir ao estado 3
+    THIS      deslocar, e ir ao estado 4
+    TOK_NULL  deslocar, e ir ao estado 5
+    NEW       deslocar, e ir ao estado 6
+    ID        deslocar, e ir ao estado 7
+    LIT_STR   deslocar, e ir ao estado 8
+    THIS_DOT  deslocar, e ir ao estado 9
+    '-'       deslocar, e ir ao estado 10
+    '!'       deslocar, e ir ao estado 11
+    '('       deslocar, e ir ao estado 12
+    '{'       deslocar, e ir ao estado 13
+
+    expr      ir ao estado 26
+    object    ir ao estado 16
+    exprlist  ir ao estado 27
+
+
+Estado 14
+
+    0 $accept: goal . $end
+
+    $end  deslocar, e ir ao estado 28
+
+
+Estado 15
+
+    1 goal: expr .
+    2 expr: expr . '>' expr
+    3     | expr . '<' expr
+    4     | expr . GREAT_EQ expr
+    5     | expr . LESS_EQ expr
+    6     | expr . EQ expr
+    7     | expr . DIFF expr
+    8     | expr . OR expr
+    9     | expr . AND expr
+   10     | expr . '+' expr
+   11     | expr . '-' expr
+   12     | expr . '/' expr
+   13     | expr . '*' expr
+   14     | expr . '%' expr
+   34 object: expr . '.' ID '(' exprlistopt ')'
+
+    '.'       deslocar, e ir ao estado 29
+    '<'       deslocar, e ir ao estado 30
+    '>'       deslocar, e ir ao estado 31
+    EQ        deslocar, e ir ao estado 32
+    DIFF      deslocar, e ir ao estado 33
+    LESS_EQ   deslocar, e ir ao estado 34
+    GREAT_EQ  deslocar, e ir ao estado 35
+    AND       deslocar, e ir ao estado 36
+    OR        deslocar, e ir ao estado 37
+    '+'       deslocar, e ir ao estado 38
+    '-'       deslocar, e ir ao estado 39
+    '*'       deslocar, e ir ao estado 40
+    '/'       deslocar, e ir ao estado 41
+    '%'       deslocar, e ir ao estado 42
+
+    $padrão  reduzir usando a regra 1 (goal)
+
+
+Estado 16
+
+   15 expr: object . filledbracks
+   21     | object .
+
+    '['  deslocar, e ir ao estado 43
+
+    $padrão  reduzir usando a regra 21 (expr)
+
+    filledbracks  ir ao estado 44
+
+
+Estado 17
+
+   26 type: INT .
+
+    $padrão  reduzir usando a regra 26 (type)
+
+
+Estado 18
+
+   25 type: BOOLEAN .
+
+    $padrão  reduzir usando a regra 25 (type)
+
+
+Estado 19
+
+   27 type: VOID .
+
+    $padrão  reduzir usando a regra 27 (type)
+
+
+Estado 20
+
+   28 type: ID .
+   30 object: NEW ID . '(' exprlistopt ')'
+
+    '('  deslocar, e ir ao estado 45
+
+    $padrão  reduzir usando a regra 28 (type)
+
+
+Estado 21
+
+   24 type: type . ARR
+   29 object: NEW type .
+
+    ARR  deslocar, e ir ao estado 46
+
+    $padrão  reduzir usando a regra 29 (object)
+
+
+Estado 22
+
+   32 object: THIS_DOT ID .
+
+    $padrão  reduzir usando a regra 32 (object)
+
+
+Estado 23
+
+    2 expr: expr . '>' expr
+    3     | expr . '<' expr
+    4     | expr . GREAT_EQ expr
+    5     | expr . LESS_EQ expr
+    6     | expr . EQ expr
+    7     | expr . DIFF expr
+    8     | expr . OR expr
+    9     | expr . AND expr
+   10     | expr . '+' expr
+   11     | expr . '-' expr
+   12     | expr . '/' expr
+   13     | expr . '*' expr
+   14     | expr . '%' expr
+   22     | '-' expr .
+   34 object: expr . '.' ID '(' exprlistopt ')'
+
+    $padrão  reduzir usando a regra 22 (expr)
+
+
+Estado 24
+
+    2 expr: expr . '>' expr
+    3     | expr . '<' expr
+    4     | expr . GREAT_EQ expr
+    5     | expr . LESS_EQ expr
+    6     | expr . EQ expr
+    7     | expr . DIFF expr
+    8     | expr . OR expr
+    9     | expr . AND expr
+   10     | expr . '+' expr
+   11     | expr . '-' expr
+   12     | expr . '/' expr
+   13     | expr . '*' expr
+   14     | expr . '%' expr
+   23     | '!' expr .
+   34 object: expr . '.' ID '(' exprlistopt ')'
+
+    $padrão  reduzir usando a regra 23 (expr)
+
+
+Estado 25
+
+    2 expr: expr . '>' expr
+    3     | expr . '<' expr
+    4     | expr . GREAT_EQ expr
+    5     | expr . LESS_EQ expr
+    6     | expr . EQ expr
+    7     | expr . DIFF expr
+    8     | expr . OR expr
+    9     | expr . AND expr
+   10     | expr . '+' expr
+   11     | expr . '-' expr
+   12     | expr . '/' expr
+   13     | expr . '*' expr
+   14     | expr . '%' expr
+   34 object: expr . '.' ID '(' exprlistopt ')'
+   35       | '(' expr . ')'
+
+    '.'       deslocar, e ir ao estado 29
+    '<'       deslocar, e ir ao estado 30
+    '>'       deslocar, e ir ao estado 31
+    EQ        deslocar, e ir ao estado 32
+    DIFF      deslocar, e ir ao estado 33
+    LESS_EQ   deslocar, e ir ao estado 34
+    GREAT_EQ  deslocar, e ir ao estado 35
+    AND       deslocar, e ir ao estado 36
+    OR        deslocar, e ir ao estado 37
+    '+'       deslocar, e ir ao estado 38
+    '-'       deslocar, e ir ao estado 39
+    '*'       deslocar, e ir ao estado 40
+    '/'       deslocar, e ir ao estado 41
+    '%'       deslocar, e ir ao estado 42
+    ')'       deslocar, e ir ao estado 47
+
+
+Estado 26
+
+    2 expr: expr . '>' expr
+    3     | expr . '<' expr
+    4     | expr . GREAT_EQ expr
+    5     | expr . LESS_EQ expr
+    6     | expr . EQ expr
+    7     | expr . DIFF expr
+    8     | expr . OR expr
+    9     | expr . AND expr
+   10     | expr . '+' expr
+   11     | expr . '-' expr
+   12     | expr . '/' expr
+   13     | expr . '*' expr
+   14     | expr . '%' expr
+   34 object: expr . '.' ID '(' exprlistopt ')'
+   37 exprlist: expr . ',' exprlist
+   38         | expr .
+
+    '.'       deslocar, e ir ao estado 29
+    '<'       deslocar, e ir ao estado 30
+    '>'       deslocar, e ir ao estado 31
+    EQ        deslocar, e ir ao estado 32
+    DIFF      deslocar, e ir ao estado 33
+    LESS_EQ   deslocar, e ir ao estado 34
+    GREAT_EQ  deslocar, e ir ao estado 35
+    AND       deslocar, e ir ao estado 36
+    OR        deslocar, e ir ao estado 37
+    '+'       deslocar, e ir ao estado 38
+    '-'       deslocar, e ir ao estado 39
+    '*'       deslocar, e ir ao estado 40
+    '/'       deslocar, e ir ao estado 41
+    '%'       deslocar, e ir ao estado 42
+    ','       deslocar, e ir ao estado 48
+
+    $padrão  reduzir usando a regra 38 (exprlist)
+
+
+Estado 27
+
+   36 object: '{' exprlist . '}'
+
+    '}'  deslocar, e ir ao estado 49
+
+
+Estado 28
 
     0 $accept: goal $end .
 
     $padrão  aceitar
 
 
-Estado 6
-
-    5 classdec: CLASS . ID extendsopt '{' classmembers '}'
-
-    ID  deslocar, e ir ao estado 10
-
-
-Estado 7
-
-    1 goal: mainclass classdecs .
-
-    $padrão  reduzir usando a regra 1 (goal)
-
-
-Estado 8
-
-    3 classdecs: classdec . classdecs
-
-    CLASS  deslocar, e ir ao estado 6
-
-    $padrão  reduzir usando a regra 4 (classdecs)
-
-    classdecs  ir ao estado 11
-    classdec   ir ao estado 8
-
-
-Estado 9
-
-    2 mainclass: CLASS ID '{' . VOID ID '(' ID ARR ID ')' '{' blockstmts '}' '}'
-
-    VOID  deslocar, e ir ao estado 12
-
-
-Estado 10
-
-    5 classdec: CLASS ID . extendsopt '{' classmembers '}'
-
-    EXTENDS  deslocar, e ir ao estado 13
-
-    $padrão  reduzir usando a regra 18 (extendsopt)
-
-    extendsopt  ir ao estado 14
-
-
-Estado 11
-
-    3 classdecs: classdec classdecs .
-
-    $padrão  reduzir usando a regra 3 (classdecs)
-
-
-Estado 12
-
-    2 mainclass: CLASS ID '{' VOID . ID '(' ID ARR ID ')' '{' blockstmts '}' '}'
-
-    ID  deslocar, e ir ao estado 15
-
-
-Estado 13
-
-   17 extendsopt: EXTENDS . ID
-
-    ID  deslocar, e ir ao estado 16
-
-
-Estado 14
-
-    5 classdec: CLASS ID extendsopt . '{' classmembers '}'
-
-    '{'  deslocar, e ir ao estado 17
-
-
-Estado 15
-
-    2 mainclass: CLASS ID '{' VOID ID . '(' ID ARR ID ')' '{' blockstmts '}' '}'
-
-    '('  deslocar, e ir ao estado 18
-
-
-Estado 16
-
-   17 extendsopt: EXTENDS ID .
-
-    $padrão  reduzir usando a regra 17 (extendsopt)
-
-
-Estado 17
-
-    5 classdec: CLASS ID extendsopt '{' . classmembers '}'
-
-    INT      deslocar, e ir ao estado 19
-    BOOLEAN  deslocar, e ir ao estado 20
-    VOID     deslocar, e ir ao estado 21
-    ID       deslocar, e ir ao estado 22
-
-    $padrão  reduzir usando a regra 8 (classmembers)
-
-    classmembers  ir ao estado 23
-    vardec        ir ao estado 24
-    methoddec     ir ao estado 25
-    type          ir ao estado 26
-
-
-Estado 18
-
-    2 mainclass: CLASS ID '{' VOID ID '(' . ID ARR ID ')' '{' blockstmts '}' '}'
-
-    ID  deslocar, e ir ao estado 27
-
-
-Estado 19
-
-   56 type: INT .
-
-    $padrão  reduzir usando a regra 56 (type)
-
-
-Estado 20
-
-   55 type: BOOLEAN .
-
-    $padrão  reduzir usando a regra 55 (type)
-
-
-Estado 21
-
-   57 type: VOID .
-
-    $padrão  reduzir usando a regra 57 (type)
-
-
-Estado 22
-
-   58 type: ID .
-
-    $padrão  reduzir usando a regra 58 (type)
-
-
-Estado 23
-
-    5 classdec: CLASS ID extendsopt '{' classmembers . '}'
-
-    '}'  deslocar, e ir ao estado 28
-
-
-Estado 24
-
-    6 classmembers: vardec . classmembers
-
-    INT      deslocar, e ir ao estado 19
-    BOOLEAN  deslocar, e ir ao estado 20
-    VOID     deslocar, e ir ao estado 21
-    ID       deslocar, e ir ao estado 22
-
-    $padrão  reduzir usando a regra 8 (classmembers)
-
-    classmembers  ir ao estado 29
-    vardec        ir ao estado 24
-    methoddec     ir ao estado 25
-    type          ir ao estado 26
-
-
-Estado 25
-
-    7 classmembers: methoddec . classmembers
-
-    INT      deslocar, e ir ao estado 19
-    BOOLEAN  deslocar, e ir ao estado 20
-    VOID     deslocar, e ir ao estado 21
-    ID       deslocar, e ir ao estado 22
-
-    $padrão  reduzir usando a regra 8 (classmembers)
-
-    classmembers  ir ao estado 30
-    vardec        ir ao estado 24
-    methoddec     ir ao estado 25
-    type          ir ao estado 26
-
-
-Estado 26
-
-    9 vardec: type . ID ';'
-   10       | type . ID '=' expr ';'
-   11 methoddec: type . ID '(' params ')' '{' blockstmts '}'
-   54 type: type . ARR
-
-    ID   deslocar, e ir ao estado 31
-    ARR  deslocar, e ir ao estado 32
-
-
-Estado 27
-
-    2 mainclass: CLASS ID '{' VOID ID '(' ID . ARR ID ')' '{' blockstmts '}' '}'
-
-    ARR  deslocar, e ir ao estado 33
-
-
-Estado 28
-
-    5 classdec: CLASS ID extendsopt '{' classmembers '}' .
-
-    $padrão  reduzir usando a regra 5 (classdec)
-
-
 Estado 29
 
-    6 classmembers: vardec classmembers .
+   34 object: expr '.' . ID '(' exprlistopt ')'
 
-    $padrão  reduzir usando a regra 6 (classmembers)
+    ID  deslocar, e ir ao estado 50
 
 
 Estado 30
 
-    7 classmembers: methoddec classmembers .
+    3 expr: expr '<' . expr
 
-    $padrão  reduzir usando a regra 7 (classmembers)
+    LIT_INT   deslocar, e ir ao estado 1
+    TRUE      deslocar, e ir ao estado 2
+    FALSE     deslocar, e ir ao estado 3
+    THIS      deslocar, e ir ao estado 4
+    TOK_NULL  deslocar, e ir ao estado 5
+    NEW       deslocar, e ir ao estado 6
+    ID        deslocar, e ir ao estado 7
+    LIT_STR   deslocar, e ir ao estado 8
+    THIS_DOT  deslocar, e ir ao estado 9
+    '-'       deslocar, e ir ao estado 10
+    '!'       deslocar, e ir ao estado 11
+    '('       deslocar, e ir ao estado 12
+    '{'       deslocar, e ir ao estado 13
+
+    expr    ir ao estado 51
+    object  ir ao estado 16
 
 
 Estado 31
 
-    9 vardec: type ID . ';'
-   10       | type ID . '=' expr ';'
-   11 methoddec: type ID . '(' params ')' '{' blockstmts '}'
+    2 expr: expr '>' . expr
 
-    '('  deslocar, e ir ao estado 34
-    ';'  deslocar, e ir ao estado 35
-    '='  deslocar, e ir ao estado 36
+    LIT_INT   deslocar, e ir ao estado 1
+    TRUE      deslocar, e ir ao estado 2
+    FALSE     deslocar, e ir ao estado 3
+    THIS      deslocar, e ir ao estado 4
+    TOK_NULL  deslocar, e ir ao estado 5
+    NEW       deslocar, e ir ao estado 6
+    ID        deslocar, e ir ao estado 7
+    LIT_STR   deslocar, e ir ao estado 8
+    THIS_DOT  deslocar, e ir ao estado 9
+    '-'       deslocar, e ir ao estado 10
+    '!'       deslocar, e ir ao estado 11
+    '('       deslocar, e ir ao estado 12
+    '{'       deslocar, e ir ao estado 13
+
+    expr    ir ao estado 52
+    object  ir ao estado 16
 
 
 Estado 32
 
-   54 type: type ARR .
+    6 expr: expr EQ . expr
 
-    $padrão  reduzir usando a regra 54 (type)
+    LIT_INT   deslocar, e ir ao estado 1
+    TRUE      deslocar, e ir ao estado 2
+    FALSE     deslocar, e ir ao estado 3
+    THIS      deslocar, e ir ao estado 4
+    TOK_NULL  deslocar, e ir ao estado 5
+    NEW       deslocar, e ir ao estado 6
+    ID        deslocar, e ir ao estado 7
+    LIT_STR   deslocar, e ir ao estado 8
+    THIS_DOT  deslocar, e ir ao estado 9
+    '-'       deslocar, e ir ao estado 10
+    '!'       deslocar, e ir ao estado 11
+    '('       deslocar, e ir ao estado 12
+    '{'       deslocar, e ir ao estado 13
+
+    expr    ir ao estado 53
+    object  ir ao estado 16
 
 
 Estado 33
 
-    2 mainclass: CLASS ID '{' VOID ID '(' ID ARR . ID ')' '{' blockstmts '}' '}'
+    7 expr: expr DIFF . expr
 
-    ID  deslocar, e ir ao estado 37
+    LIT_INT   deslocar, e ir ao estado 1
+    TRUE      deslocar, e ir ao estado 2
+    FALSE     deslocar, e ir ao estado 3
+    THIS      deslocar, e ir ao estado 4
+    TOK_NULL  deslocar, e ir ao estado 5
+    NEW       deslocar, e ir ao estado 6
+    ID        deslocar, e ir ao estado 7
+    LIT_STR   deslocar, e ir ao estado 8
+    THIS_DOT  deslocar, e ir ao estado 9
+    '-'       deslocar, e ir ao estado 10
+    '!'       deslocar, e ir ao estado 11
+    '('       deslocar, e ir ao estado 12
+    '{'       deslocar, e ir ao estado 13
+
+    expr    ir ao estado 54
+    object  ir ao estado 16
 
 
 Estado 34
 
-   11 methoddec: type ID '(' . params ')' '{' blockstmts '}'
+    5 expr: expr LESS_EQ . expr
 
-    INT      deslocar, e ir ao estado 19
-    BOOLEAN  deslocar, e ir ao estado 20
-    VOID     deslocar, e ir ao estado 21
-    ID       deslocar, e ir ao estado 22
+    LIT_INT   deslocar, e ir ao estado 1
+    TRUE      deslocar, e ir ao estado 2
+    FALSE     deslocar, e ir ao estado 3
+    THIS      deslocar, e ir ao estado 4
+    TOK_NULL  deslocar, e ir ao estado 5
+    NEW       deslocar, e ir ao estado 6
+    ID        deslocar, e ir ao estado 7
+    LIT_STR   deslocar, e ir ao estado 8
+    THIS_DOT  deslocar, e ir ao estado 9
+    '-'       deslocar, e ir ao estado 10
+    '!'       deslocar, e ir ao estado 11
+    '('       deslocar, e ir ao estado 12
+    '{'       deslocar, e ir ao estado 13
 
-    $padrão  reduzir usando a regra 13 (params)
-
-    params  ir ao estado 38
-    param   ir ao estado 39
-    type    ir ao estado 40
+    expr    ir ao estado 55
+    object  ir ao estado 16
 
 
 Estado 35
 
-    9 vardec: type ID ';' .
+    4 expr: expr GREAT_EQ . expr
 
-    $padrão  reduzir usando a regra 9 (vardec)
+    LIT_INT   deslocar, e ir ao estado 1
+    TRUE      deslocar, e ir ao estado 2
+    FALSE     deslocar, e ir ao estado 3
+    THIS      deslocar, e ir ao estado 4
+    TOK_NULL  deslocar, e ir ao estado 5
+    NEW       deslocar, e ir ao estado 6
+    ID        deslocar, e ir ao estado 7
+    LIT_STR   deslocar, e ir ao estado 8
+    THIS_DOT  deslocar, e ir ao estado 9
+    '-'       deslocar, e ir ao estado 10
+    '!'       deslocar, e ir ao estado 11
+    '('       deslocar, e ir ao estado 12
+    '{'       deslocar, e ir ao estado 13
+
+    expr    ir ao estado 56
+    object  ir ao estado 16
 
 
 Estado 36
 
-   10 vardec: type ID '=' . expr ';'
+    9 expr: expr AND . expr
 
-    LIT_INT   deslocar, e ir ao estado 41
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 47
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 51
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
+    LIT_INT   deslocar, e ir ao estado 1
+    TRUE      deslocar, e ir ao estado 2
+    FALSE     deslocar, e ir ao estado 3
+    THIS      deslocar, e ir ao estado 4
+    TOK_NULL  deslocar, e ir ao estado 5
+    NEW       deslocar, e ir ao estado 6
+    ID        deslocar, e ir ao estado 7
+    LIT_STR   deslocar, e ir ao estado 8
+    THIS_DOT  deslocar, e ir ao estado 9
+    '-'       deslocar, e ir ao estado 10
+    '!'       deslocar, e ir ao estado 11
+    '('       deslocar, e ir ao estado 12
+    '{'       deslocar, e ir ao estado 13
 
-    expr    ir ao estado 54
-    object  ir ao estado 55
+    expr    ir ao estado 57
+    object  ir ao estado 16
 
 
 Estado 37
 
-    2 mainclass: CLASS ID '{' VOID ID '(' ID ARR ID . ')' '{' blockstmts '}' '}'
+    8 expr: expr OR . expr
 
-    ')'  deslocar, e ir ao estado 56
+    LIT_INT   deslocar, e ir ao estado 1
+    TRUE      deslocar, e ir ao estado 2
+    FALSE     deslocar, e ir ao estado 3
+    THIS      deslocar, e ir ao estado 4
+    TOK_NULL  deslocar, e ir ao estado 5
+    NEW       deslocar, e ir ao estado 6
+    ID        deslocar, e ir ao estado 7
+    LIT_STR   deslocar, e ir ao estado 8
+    THIS_DOT  deslocar, e ir ao estado 9
+    '-'       deslocar, e ir ao estado 10
+    '!'       deslocar, e ir ao estado 11
+    '('       deslocar, e ir ao estado 12
+    '{'       deslocar, e ir ao estado 13
+
+    expr    ir ao estado 58
+    object  ir ao estado 16
 
 
 Estado 38
 
-   11 methoddec: type ID '(' params . ')' '{' blockstmts '}'
+   10 expr: expr '+' . expr
 
-    ')'  deslocar, e ir ao estado 57
+    LIT_INT   deslocar, e ir ao estado 1
+    TRUE      deslocar, e ir ao estado 2
+    FALSE     deslocar, e ir ao estado 3
+    THIS      deslocar, e ir ao estado 4
+    TOK_NULL  deslocar, e ir ao estado 5
+    NEW       deslocar, e ir ao estado 6
+    ID        deslocar, e ir ao estado 7
+    LIT_STR   deslocar, e ir ao estado 8
+    THIS_DOT  deslocar, e ir ao estado 9
+    '-'       deslocar, e ir ao estado 10
+    '!'       deslocar, e ir ao estado 11
+    '('       deslocar, e ir ao estado 12
+    '{'       deslocar, e ir ao estado 13
+
+    expr    ir ao estado 59
+    object  ir ao estado 16
 
 
 Estado 39
 
-   12 params: param . paramsrest
+   11 expr: expr '-' . expr
 
-    ';'  deslocar, e ir ao estado 58
+    LIT_INT   deslocar, e ir ao estado 1
+    TRUE      deslocar, e ir ao estado 2
+    FALSE     deslocar, e ir ao estado 3
+    THIS      deslocar, e ir ao estado 4
+    TOK_NULL  deslocar, e ir ao estado 5
+    NEW       deslocar, e ir ao estado 6
+    ID        deslocar, e ir ao estado 7
+    LIT_STR   deslocar, e ir ao estado 8
+    THIS_DOT  deslocar, e ir ao estado 9
+    '-'       deslocar, e ir ao estado 10
+    '!'       deslocar, e ir ao estado 11
+    '('       deslocar, e ir ao estado 12
+    '{'       deslocar, e ir ao estado 13
 
-    $padrão  reduzir usando a regra 15 (paramsrest)
-
-    paramsrest  ir ao estado 59
+    expr    ir ao estado 60
+    object  ir ao estado 16
 
 
 Estado 40
 
-   16 param: type . ID
-   54 type: type . ARR
+   13 expr: expr '*' . expr
 
-    ID   deslocar, e ir ao estado 60
-    ARR  deslocar, e ir ao estado 32
+    LIT_INT   deslocar, e ir ao estado 1
+    TRUE      deslocar, e ir ao estado 2
+    FALSE     deslocar, e ir ao estado 3
+    THIS      deslocar, e ir ao estado 4
+    TOK_NULL  deslocar, e ir ao estado 5
+    NEW       deslocar, e ir ao estado 6
+    ID        deslocar, e ir ao estado 7
+    LIT_STR   deslocar, e ir ao estado 8
+    THIS_DOT  deslocar, e ir ao estado 9
+    '-'       deslocar, e ir ao estado 10
+    '!'       deslocar, e ir ao estado 11
+    '('       deslocar, e ir ao estado 12
+    '{'       deslocar, e ir ao estado 13
+
+    expr    ir ao estado 61
+    object  ir ao estado 16
 
 
 Estado 41
 
-   46 expr: LIT_INT .
+   12 expr: expr '/' . expr
 
-    $padrão  reduzir usando a regra 46 (expr)
+    LIT_INT   deslocar, e ir ao estado 1
+    TRUE      deslocar, e ir ao estado 2
+    FALSE     deslocar, e ir ao estado 3
+    THIS      deslocar, e ir ao estado 4
+    TOK_NULL  deslocar, e ir ao estado 5
+    NEW       deslocar, e ir ao estado 6
+    ID        deslocar, e ir ao estado 7
+    LIT_STR   deslocar, e ir ao estado 8
+    THIS_DOT  deslocar, e ir ao estado 9
+    '-'       deslocar, e ir ao estado 10
+    '!'       deslocar, e ir ao estado 11
+    '('       deslocar, e ir ao estado 12
+    '{'       deslocar, e ir ao estado 13
+
+    expr    ir ao estado 62
+    object  ir ao estado 16
 
 
 Estado 42
 
-   48 expr: TRUE .
+   14 expr: expr '%' . expr
 
-    $padrão  reduzir usando a regra 48 (expr)
+    LIT_INT   deslocar, e ir ao estado 1
+    TRUE      deslocar, e ir ao estado 2
+    FALSE     deslocar, e ir ao estado 3
+    THIS      deslocar, e ir ao estado 4
+    TOK_NULL  deslocar, e ir ao estado 5
+    NEW       deslocar, e ir ao estado 6
+    ID        deslocar, e ir ao estado 7
+    LIT_STR   deslocar, e ir ao estado 8
+    THIS_DOT  deslocar, e ir ao estado 9
+    '-'       deslocar, e ir ao estado 10
+    '!'       deslocar, e ir ao estado 11
+    '('       deslocar, e ir ao estado 12
+    '{'       deslocar, e ir ao estado 13
+
+    expr    ir ao estado 63
+    object  ir ao estado 16
 
 
 Estado 43
 
-   49 expr: FALSE .
+   42 filledbracks: '[' . expr ']'
 
-    $padrão  reduzir usando a regra 49 (expr)
+    LIT_INT   deslocar, e ir ao estado 1
+    TRUE      deslocar, e ir ao estado 2
+    FALSE     deslocar, e ir ao estado 3
+    THIS      deslocar, e ir ao estado 4
+    TOK_NULL  deslocar, e ir ao estado 5
+    NEW       deslocar, e ir ao estado 6
+    ID        deslocar, e ir ao estado 7
+    LIT_STR   deslocar, e ir ao estado 8
+    THIS_DOT  deslocar, e ir ao estado 9
+    '-'       deslocar, e ir ao estado 10
+    '!'       deslocar, e ir ao estado 11
+    '('       deslocar, e ir ao estado 12
+    '{'       deslocar, e ir ao estado 13
+
+    expr    ir ao estado 64
+    object  ir ao estado 16
 
 
 Estado 44
 
-   63 object: THIS .
+   15 expr: object filledbracks .
+   41 filledbracks: filledbracks . '[' expr ']'
 
-    $padrão  reduzir usando a regra 63 (object)
+    '['  deslocar, e ir ao estado 65
+
+    $padrão  reduzir usando a regra 15 (expr)
 
 
 Estado 45
 
-   50 expr: TOK_NULL .
+   30 object: NEW ID '(' . exprlistopt ')'
 
-    $padrão  reduzir usando a regra 50 (expr)
+    LIT_INT   deslocar, e ir ao estado 1
+    TRUE      deslocar, e ir ao estado 2
+    FALSE     deslocar, e ir ao estado 3
+    THIS      deslocar, e ir ao estado 4
+    TOK_NULL  deslocar, e ir ao estado 5
+    NEW       deslocar, e ir ao estado 6
+    ID        deslocar, e ir ao estado 7
+    LIT_STR   deslocar, e ir ao estado 8
+    THIS_DOT  deslocar, e ir ao estado 9
+    '-'       deslocar, e ir ao estado 10
+    '!'       deslocar, e ir ao estado 11
+    '('       deslocar, e ir ao estado 12
+    '{'       deslocar, e ir ao estado 13
+
+    $padrão  reduzir usando a regra 40 (exprlistopt)
+
+    expr         ir ao estado 26
+    object       ir ao estado 16
+    exprlist     ir ao estado 66
+    exprlistopt  ir ao estado 67
 
 
 Estado 46
 
-   59 object: NEW . type
-   60       | NEW . ID '(' exprlistopt ')'
+   24 type: type ARR .
 
-    INT      deslocar, e ir ao estado 19
-    BOOLEAN  deslocar, e ir ao estado 20
-    VOID     deslocar, e ir ao estado 21
-    ID       deslocar, e ir ao estado 61
-
-    type  ir ao estado 62
+    $padrão  reduzir usando a regra 24 (type)
 
 
 Estado 47
 
-   61 object: ID .
+   35 object: '(' expr ')' .
 
-    $padrão  reduzir usando a regra 61 (object)
+    $padrão  reduzir usando a regra 35 (object)
 
 
 Estado 48
 
-   47 expr: LIT_STR .
+   37 exprlist: expr ',' . exprlist
 
-    $padrão  reduzir usando a regra 47 (expr)
+    LIT_INT   deslocar, e ir ao estado 1
+    TRUE      deslocar, e ir ao estado 2
+    FALSE     deslocar, e ir ao estado 3
+    THIS      deslocar, e ir ao estado 4
+    TOK_NULL  deslocar, e ir ao estado 5
+    NEW       deslocar, e ir ao estado 6
+    ID        deslocar, e ir ao estado 7
+    LIT_STR   deslocar, e ir ao estado 8
+    THIS_DOT  deslocar, e ir ao estado 9
+    '-'       deslocar, e ir ao estado 10
+    '!'       deslocar, e ir ao estado 11
+    '('       deslocar, e ir ao estado 12
+    '{'       deslocar, e ir ao estado 13
+
+    expr      ir ao estado 26
+    object    ir ao estado 16
+    exprlist  ir ao estado 68
 
 
 Estado 49
 
-   62 object: THIS_DOT . ID
+   36 object: '{' exprlist '}' .
 
-    ID  deslocar, e ir ao estado 63
+    $padrão  reduzir usando a regra 36 (object)
 
 
 Estado 50
 
-   52 expr: '-' . expr
+   34 object: expr '.' ID . '(' exprlistopt ')'
 
-    LIT_INT   deslocar, e ir ao estado 41
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 47
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 51
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
-
-    expr    ir ao estado 64
-    object  ir ao estado 55
+    '('  deslocar, e ir ao estado 69
 
 
 Estado 51
 
-   66 object: '{' . exprlist '}'
+    2 expr: expr . '>' expr
+    3     | expr . '<' expr
+    3     | expr '<' expr .
+    4     | expr . GREAT_EQ expr
+    5     | expr . LESS_EQ expr
+    6     | expr . EQ expr
+    7     | expr . DIFF expr
+    8     | expr . OR expr
+    9     | expr . AND expr
+   10     | expr . '+' expr
+   11     | expr . '-' expr
+   12     | expr . '/' expr
+   13     | expr . '*' expr
+   14     | expr . '%' expr
+   34 object: expr . '.' ID '(' exprlistopt ')'
 
-    LIT_INT   deslocar, e ir ao estado 41
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 47
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 51
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
+    AND  deslocar, e ir ao estado 36
+    OR   deslocar, e ir ao estado 37
+    '+'  deslocar, e ir ao estado 38
+    '-'  deslocar, e ir ao estado 39
+    '*'  deslocar, e ir ao estado 40
+    '/'  deslocar, e ir ao estado 41
+    '%'  deslocar, e ir ao estado 42
 
-    expr      ir ao estado 65
-    object    ir ao estado 55
-    exprlist  ir ao estado 66
+    '<'       erro (não associativo)
+    '>'       erro (não associativo)
+    EQ        erro (não associativo)
+    DIFF      erro (não associativo)
+    LESS_EQ   erro (não associativo)
+    GREAT_EQ  erro (não associativo)
+
+    $padrão  reduzir usando a regra 3 (expr)
 
 
 Estado 52
 
-   65 object: '(' . expr ')'
+    2 expr: expr . '>' expr
+    2     | expr '>' expr .
+    3     | expr . '<' expr
+    4     | expr . GREAT_EQ expr
+    5     | expr . LESS_EQ expr
+    6     | expr . EQ expr
+    7     | expr . DIFF expr
+    8     | expr . OR expr
+    9     | expr . AND expr
+   10     | expr . '+' expr
+   11     | expr . '-' expr
+   12     | expr . '/' expr
+   13     | expr . '*' expr
+   14     | expr . '%' expr
+   34 object: expr . '.' ID '(' exprlistopt ')'
 
-    LIT_INT   deslocar, e ir ao estado 41
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 47
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 51
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
+    AND  deslocar, e ir ao estado 36
+    OR   deslocar, e ir ao estado 37
+    '+'  deslocar, e ir ao estado 38
+    '-'  deslocar, e ir ao estado 39
+    '*'  deslocar, e ir ao estado 40
+    '/'  deslocar, e ir ao estado 41
+    '%'  deslocar, e ir ao estado 42
 
-    expr    ir ao estado 67
-    object  ir ao estado 55
+    '<'       erro (não associativo)
+    '>'       erro (não associativo)
+    EQ        erro (não associativo)
+    DIFF      erro (não associativo)
+    LESS_EQ   erro (não associativo)
+    GREAT_EQ  erro (não associativo)
+
+    $padrão  reduzir usando a regra 2 (expr)
 
 
 Estado 53
 
-   53 expr: '!' . expr
+    2 expr: expr . '>' expr
+    3     | expr . '<' expr
+    4     | expr . GREAT_EQ expr
+    5     | expr . LESS_EQ expr
+    6     | expr . EQ expr
+    6     | expr EQ expr .
+    7     | expr . DIFF expr
+    8     | expr . OR expr
+    9     | expr . AND expr
+   10     | expr . '+' expr
+   11     | expr . '-' expr
+   12     | expr . '/' expr
+   13     | expr . '*' expr
+   14     | expr . '%' expr
+   34 object: expr . '.' ID '(' exprlistopt ')'
 
-    LIT_INT   deslocar, e ir ao estado 41
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 47
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 51
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
+    AND  deslocar, e ir ao estado 36
+    OR   deslocar, e ir ao estado 37
+    '+'  deslocar, e ir ao estado 38
+    '-'  deslocar, e ir ao estado 39
+    '*'  deslocar, e ir ao estado 40
+    '/'  deslocar, e ir ao estado 41
+    '%'  deslocar, e ir ao estado 42
 
-    expr    ir ao estado 68
-    object  ir ao estado 55
+    '<'       erro (não associativo)
+    '>'       erro (não associativo)
+    EQ        erro (não associativo)
+    DIFF      erro (não associativo)
+    LESS_EQ   erro (não associativo)
+    GREAT_EQ  erro (não associativo)
+
+    $padrão  reduzir usando a regra 6 (expr)
 
 
 Estado 54
 
-   10 vardec: type ID '=' expr . ';'
-   32 expr: expr . '>' expr
-   33     | expr . '<' expr
-   34     | expr . GREAT_EQ expr
-   35     | expr . LESS_EQ expr
-   36     | expr . EQ expr
-   37     | expr . DIFF expr
-   38     | expr . OR expr
-   39     | expr . AND expr
-   40     | expr . '+' expr
-   41     | expr . '-' expr
-   42     | expr . '/' expr
-   43     | expr . '*' expr
-   44     | expr . '%' expr
-   64 object: expr . '.' ID '(' exprlistopt ')'
+    2 expr: expr . '>' expr
+    3     | expr . '<' expr
+    4     | expr . GREAT_EQ expr
+    5     | expr . LESS_EQ expr
+    6     | expr . EQ expr
+    7     | expr . DIFF expr
+    7     | expr DIFF expr .
+    8     | expr . OR expr
+    9     | expr . AND expr
+   10     | expr . '+' expr
+   11     | expr . '-' expr
+   12     | expr . '/' expr
+   13     | expr . '*' expr
+   14     | expr . '%' expr
+   34 object: expr . '.' ID '(' exprlistopt ')'
 
-    '.'       deslocar, e ir ao estado 69
-    '<'       deslocar, e ir ao estado 70
-    '>'       deslocar, e ir ao estado 71
-    EQ        deslocar, e ir ao estado 72
-    DIFF      deslocar, e ir ao estado 73
-    LESS_EQ   deslocar, e ir ao estado 74
-    GREAT_EQ  deslocar, e ir ao estado 75
-    AND       deslocar, e ir ao estado 76
-    OR        deslocar, e ir ao estado 77
-    '+'       deslocar, e ir ao estado 78
-    '-'       deslocar, e ir ao estado 79
-    '*'       deslocar, e ir ao estado 80
-    '/'       deslocar, e ir ao estado 81
-    '%'       deslocar, e ir ao estado 82
-    ';'       deslocar, e ir ao estado 83
+    AND  deslocar, e ir ao estado 36
+    OR   deslocar, e ir ao estado 37
+    '+'  deslocar, e ir ao estado 38
+    '-'  deslocar, e ir ao estado 39
+    '*'  deslocar, e ir ao estado 40
+    '/'  deslocar, e ir ao estado 41
+    '%'  deslocar, e ir ao estado 42
+
+    '<'       erro (não associativo)
+    '>'       erro (não associativo)
+    EQ        erro (não associativo)
+    DIFF      erro (não associativo)
+    LESS_EQ   erro (não associativo)
+    GREAT_EQ  erro (não associativo)
+
+    $padrão  reduzir usando a regra 7 (expr)
 
 
 Estado 55
 
-   45 expr: object . filledbracks
-   51     | object .
+    2 expr: expr . '>' expr
+    3     | expr . '<' expr
+    4     | expr . GREAT_EQ expr
+    5     | expr . LESS_EQ expr
+    5     | expr LESS_EQ expr .
+    6     | expr . EQ expr
+    7     | expr . DIFF expr
+    8     | expr . OR expr
+    9     | expr . AND expr
+   10     | expr . '+' expr
+   11     | expr . '-' expr
+   12     | expr . '/' expr
+   13     | expr . '*' expr
+   14     | expr . '%' expr
+   34 object: expr . '.' ID '(' exprlistopt ')'
 
-    '['  deslocar, e ir ao estado 84
+    AND  deslocar, e ir ao estado 36
+    OR   deslocar, e ir ao estado 37
+    '+'  deslocar, e ir ao estado 38
+    '-'  deslocar, e ir ao estado 39
+    '*'  deslocar, e ir ao estado 40
+    '/'  deslocar, e ir ao estado 41
+    '%'  deslocar, e ir ao estado 42
 
-    $padrão  reduzir usando a regra 51 (expr)
+    '<'       erro (não associativo)
+    '>'       erro (não associativo)
+    EQ        erro (não associativo)
+    DIFF      erro (não associativo)
+    LESS_EQ   erro (não associativo)
+    GREAT_EQ  erro (não associativo)
 
-    filledbracks  ir ao estado 85
+    $padrão  reduzir usando a regra 5 (expr)
 
 
 Estado 56
 
-    2 mainclass: CLASS ID '{' VOID ID '(' ID ARR ID ')' . '{' blockstmts '}' '}'
+    2 expr: expr . '>' expr
+    3     | expr . '<' expr
+    4     | expr . GREAT_EQ expr
+    4     | expr GREAT_EQ expr .
+    5     | expr . LESS_EQ expr
+    6     | expr . EQ expr
+    7     | expr . DIFF expr
+    8     | expr . OR expr
+    9     | expr . AND expr
+   10     | expr . '+' expr
+   11     | expr . '-' expr
+   12     | expr . '/' expr
+   13     | expr . '*' expr
+   14     | expr . '%' expr
+   34 object: expr . '.' ID '(' exprlistopt ')'
 
-    '{'  deslocar, e ir ao estado 86
+    AND  deslocar, e ir ao estado 36
+    OR   deslocar, e ir ao estado 37
+    '+'  deslocar, e ir ao estado 38
+    '-'  deslocar, e ir ao estado 39
+    '*'  deslocar, e ir ao estado 40
+    '/'  deslocar, e ir ao estado 41
+    '%'  deslocar, e ir ao estado 42
+
+    '<'       erro (não associativo)
+    '>'       erro (não associativo)
+    EQ        erro (não associativo)
+    DIFF      erro (não associativo)
+    LESS_EQ   erro (não associativo)
+    GREAT_EQ  erro (não associativo)
+
+    $padrão  reduzir usando a regra 4 (expr)
 
 
 Estado 57
 
-   11 methoddec: type ID '(' params ')' . '{' blockstmts '}'
+    2 expr: expr . '>' expr
+    3     | expr . '<' expr
+    4     | expr . GREAT_EQ expr
+    5     | expr . LESS_EQ expr
+    6     | expr . EQ expr
+    7     | expr . DIFF expr
+    8     | expr . OR expr
+    9     | expr . AND expr
+    9     | expr AND expr .
+   10     | expr . '+' expr
+   11     | expr . '-' expr
+   12     | expr . '/' expr
+   13     | expr . '*' expr
+   14     | expr . '%' expr
+   34 object: expr . '.' ID '(' exprlistopt ')'
 
-    '{'  deslocar, e ir ao estado 87
+    '+'  deslocar, e ir ao estado 38
+    '-'  deslocar, e ir ao estado 39
+    '*'  deslocar, e ir ao estado 40
+    '/'  deslocar, e ir ao estado 41
+    '%'  deslocar, e ir ao estado 42
+
+    $padrão  reduzir usando a regra 9 (expr)
 
 
 Estado 58
 
-   14 paramsrest: ';' . param paramsrest
+    2 expr: expr . '>' expr
+    3     | expr . '<' expr
+    4     | expr . GREAT_EQ expr
+    5     | expr . LESS_EQ expr
+    6     | expr . EQ expr
+    7     | expr . DIFF expr
+    8     | expr . OR expr
+    8     | expr OR expr .
+    9     | expr . AND expr
+   10     | expr . '+' expr
+   11     | expr . '-' expr
+   12     | expr . '/' expr
+   13     | expr . '*' expr
+   14     | expr . '%' expr
+   34 object: expr . '.' ID '(' exprlistopt ')'
 
-    INT      deslocar, e ir ao estado 19
-    BOOLEAN  deslocar, e ir ao estado 20
-    VOID     deslocar, e ir ao estado 21
-    ID       deslocar, e ir ao estado 22
+    '+'  deslocar, e ir ao estado 38
+    '-'  deslocar, e ir ao estado 39
+    '*'  deslocar, e ir ao estado 40
+    '/'  deslocar, e ir ao estado 41
+    '%'  deslocar, e ir ao estado 42
 
-    param  ir ao estado 88
-    type   ir ao estado 40
+    $padrão  reduzir usando a regra 8 (expr)
 
 
 Estado 59
 
-   12 params: param paramsrest .
+    2 expr: expr . '>' expr
+    3     | expr . '<' expr
+    4     | expr . GREAT_EQ expr
+    5     | expr . LESS_EQ expr
+    6     | expr . EQ expr
+    7     | expr . DIFF expr
+    8     | expr . OR expr
+    9     | expr . AND expr
+   10     | expr . '+' expr
+   10     | expr '+' expr .
+   11     | expr . '-' expr
+   12     | expr . '/' expr
+   13     | expr . '*' expr
+   14     | expr . '%' expr
+   34 object: expr . '.' ID '(' exprlistopt ')'
 
-    $padrão  reduzir usando a regra 12 (params)
+    '*'  deslocar, e ir ao estado 40
+    '/'  deslocar, e ir ao estado 41
+    '%'  deslocar, e ir ao estado 42
+
+    $padrão  reduzir usando a regra 10 (expr)
 
 
 Estado 60
 
-   16 param: type ID .
+    2 expr: expr . '>' expr
+    3     | expr . '<' expr
+    4     | expr . GREAT_EQ expr
+    5     | expr . LESS_EQ expr
+    6     | expr . EQ expr
+    7     | expr . DIFF expr
+    8     | expr . OR expr
+    9     | expr . AND expr
+   10     | expr . '+' expr
+   11     | expr . '-' expr
+   11     | expr '-' expr .
+   12     | expr . '/' expr
+   13     | expr . '*' expr
+   14     | expr . '%' expr
+   34 object: expr . '.' ID '(' exprlistopt ')'
 
-    $padrão  reduzir usando a regra 16 (param)
+    '*'  deslocar, e ir ao estado 40
+    '/'  deslocar, e ir ao estado 41
+    '%'  deslocar, e ir ao estado 42
+
+    $padrão  reduzir usando a regra 11 (expr)
 
 
 Estado 61
 
-   58 type: ID .
-   60 object: NEW ID . '(' exprlistopt ')'
+    2 expr: expr . '>' expr
+    3     | expr . '<' expr
+    4     | expr . GREAT_EQ expr
+    5     | expr . LESS_EQ expr
+    6     | expr . EQ expr
+    7     | expr . DIFF expr
+    8     | expr . OR expr
+    9     | expr . AND expr
+   10     | expr . '+' expr
+   11     | expr . '-' expr
+   12     | expr . '/' expr
+   13     | expr . '*' expr
+   13     | expr '*' expr .
+   14     | expr . '%' expr
+   34 object: expr . '.' ID '(' exprlistopt ')'
 
-    '('  deslocar, e ir ao estado 89
-
-    $padrão  reduzir usando a regra 58 (type)
+    $padrão  reduzir usando a regra 13 (expr)
 
 
 Estado 62
 
-   54 type: type . ARR
-   59 object: NEW type .
+    2 expr: expr . '>' expr
+    3     | expr . '<' expr
+    4     | expr . GREAT_EQ expr
+    5     | expr . LESS_EQ expr
+    6     | expr . EQ expr
+    7     | expr . DIFF expr
+    8     | expr . OR expr
+    9     | expr . AND expr
+   10     | expr . '+' expr
+   11     | expr . '-' expr
+   12     | expr . '/' expr
+   12     | expr '/' expr .
+   13     | expr . '*' expr
+   14     | expr . '%' expr
+   34 object: expr . '.' ID '(' exprlistopt ')'
 
-    ARR  deslocar, e ir ao estado 32
-
-    $padrão  reduzir usando a regra 59 (object)
+    $padrão  reduzir usando a regra 12 (expr)
 
 
 Estado 63
 
-   62 object: THIS_DOT ID .
+    2 expr: expr . '>' expr
+    3     | expr . '<' expr
+    4     | expr . GREAT_EQ expr
+    5     | expr . LESS_EQ expr
+    6     | expr . EQ expr
+    7     | expr . DIFF expr
+    8     | expr . OR expr
+    9     | expr . AND expr
+   10     | expr . '+' expr
+   11     | expr . '-' expr
+   12     | expr . '/' expr
+   13     | expr . '*' expr
+   14     | expr . '%' expr
+   14     | expr '%' expr .
+   34 object: expr . '.' ID '(' exprlistopt ')'
 
-    $padrão  reduzir usando a regra 62 (object)
+    $padrão  reduzir usando a regra 14 (expr)
 
 
 Estado 64
 
-   32 expr: expr . '>' expr
-   33     | expr . '<' expr
-   34     | expr . GREAT_EQ expr
-   35     | expr . LESS_EQ expr
-   36     | expr . EQ expr
-   37     | expr . DIFF expr
-   38     | expr . OR expr
-   39     | expr . AND expr
-   40     | expr . '+' expr
-   41     | expr . '-' expr
-   42     | expr . '/' expr
-   43     | expr . '*' expr
-   44     | expr . '%' expr
-   52     | '-' expr .
-   64 object: expr . '.' ID '(' exprlistopt ')'
+    2 expr: expr . '>' expr
+    3     | expr . '<' expr
+    4     | expr . GREAT_EQ expr
+    5     | expr . LESS_EQ expr
+    6     | expr . EQ expr
+    7     | expr . DIFF expr
+    8     | expr . OR expr
+    9     | expr . AND expr
+   10     | expr . '+' expr
+   11     | expr . '-' expr
+   12     | expr . '/' expr
+   13     | expr . '*' expr
+   14     | expr . '%' expr
+   34 object: expr . '.' ID '(' exprlistopt ')'
+   42 filledbracks: '[' expr . ']'
 
-    $padrão  reduzir usando a regra 52 (expr)
+    '.'       deslocar, e ir ao estado 29
+    '<'       deslocar, e ir ao estado 30
+    '>'       deslocar, e ir ao estado 31
+    EQ        deslocar, e ir ao estado 32
+    DIFF      deslocar, e ir ao estado 33
+    LESS_EQ   deslocar, e ir ao estado 34
+    GREAT_EQ  deslocar, e ir ao estado 35
+    AND       deslocar, e ir ao estado 36
+    OR        deslocar, e ir ao estado 37
+    '+'       deslocar, e ir ao estado 38
+    '-'       deslocar, e ir ao estado 39
+    '*'       deslocar, e ir ao estado 40
+    '/'       deslocar, e ir ao estado 41
+    '%'       deslocar, e ir ao estado 42
+    ']'       deslocar, e ir ao estado 70
 
 
 Estado 65
 
-   32 expr: expr . '>' expr
-   33     | expr . '<' expr
-   34     | expr . GREAT_EQ expr
-   35     | expr . LESS_EQ expr
-   36     | expr . EQ expr
-   37     | expr . DIFF expr
-   38     | expr . OR expr
-   39     | expr . AND expr
-   40     | expr . '+' expr
-   41     | expr . '-' expr
-   42     | expr . '/' expr
-   43     | expr . '*' expr
-   44     | expr . '%' expr
-   64 object: expr . '.' ID '(' exprlistopt ')'
-   67 exprlist: expr . ',' exprlist
-   68         | expr .
+   41 filledbracks: filledbracks '[' . expr ']'
 
-    '.'       deslocar, e ir ao estado 69
-    '<'       deslocar, e ir ao estado 70
-    '>'       deslocar, e ir ao estado 71
-    EQ        deslocar, e ir ao estado 72
-    DIFF      deslocar, e ir ao estado 73
-    LESS_EQ   deslocar, e ir ao estado 74
-    GREAT_EQ  deslocar, e ir ao estado 75
-    AND       deslocar, e ir ao estado 76
-    OR        deslocar, e ir ao estado 77
-    '+'       deslocar, e ir ao estado 78
-    '-'       deslocar, e ir ao estado 79
-    '*'       deslocar, e ir ao estado 80
-    '/'       deslocar, e ir ao estado 81
-    '%'       deslocar, e ir ao estado 82
-    ','       deslocar, e ir ao estado 90
+    LIT_INT   deslocar, e ir ao estado 1
+    TRUE      deslocar, e ir ao estado 2
+    FALSE     deslocar, e ir ao estado 3
+    THIS      deslocar, e ir ao estado 4
+    TOK_NULL  deslocar, e ir ao estado 5
+    NEW       deslocar, e ir ao estado 6
+    ID        deslocar, e ir ao estado 7
+    LIT_STR   deslocar, e ir ao estado 8
+    THIS_DOT  deslocar, e ir ao estado 9
+    '-'       deslocar, e ir ao estado 10
+    '!'       deslocar, e ir ao estado 11
+    '('       deslocar, e ir ao estado 12
+    '{'       deslocar, e ir ao estado 13
 
-    $padrão  reduzir usando a regra 68 (exprlist)
+    expr    ir ao estado 71
+    object  ir ao estado 16
 
 
 Estado 66
 
-   66 object: '{' exprlist . '}'
+   39 exprlistopt: exprlist .
 
-    '}'  deslocar, e ir ao estado 91
+    $padrão  reduzir usando a regra 39 (exprlistopt)
 
 
 Estado 67
 
-   32 expr: expr . '>' expr
-   33     | expr . '<' expr
-   34     | expr . GREAT_EQ expr
-   35     | expr . LESS_EQ expr
-   36     | expr . EQ expr
-   37     | expr . DIFF expr
-   38     | expr . OR expr
-   39     | expr . AND expr
-   40     | expr . '+' expr
-   41     | expr . '-' expr
-   42     | expr . '/' expr
-   43     | expr . '*' expr
-   44     | expr . '%' expr
-   64 object: expr . '.' ID '(' exprlistopt ')'
-   65       | '(' expr . ')'
+   30 object: NEW ID '(' exprlistopt . ')'
 
-    '.'       deslocar, e ir ao estado 69
-    '<'       deslocar, e ir ao estado 70
-    '>'       deslocar, e ir ao estado 71
-    EQ        deslocar, e ir ao estado 72
-    DIFF      deslocar, e ir ao estado 73
-    LESS_EQ   deslocar, e ir ao estado 74
-    GREAT_EQ  deslocar, e ir ao estado 75
-    AND       deslocar, e ir ao estado 76
-    OR        deslocar, e ir ao estado 77
-    '+'       deslocar, e ir ao estado 78
-    '-'       deslocar, e ir ao estado 79
-    '*'       deslocar, e ir ao estado 80
-    '/'       deslocar, e ir ao estado 81
-    '%'       deslocar, e ir ao estado 82
-    ')'       deslocar, e ir ao estado 92
+    ')'  deslocar, e ir ao estado 72
 
 
 Estado 68
 
-   32 expr: expr . '>' expr
-   33     | expr . '<' expr
-   34     | expr . GREAT_EQ expr
-   35     | expr . LESS_EQ expr
-   36     | expr . EQ expr
-   37     | expr . DIFF expr
-   38     | expr . OR expr
-   39     | expr . AND expr
-   40     | expr . '+' expr
-   41     | expr . '-' expr
-   42     | expr . '/' expr
-   43     | expr . '*' expr
-   44     | expr . '%' expr
-   53     | '!' expr .
-   64 object: expr . '.' ID '(' exprlistopt ')'
+   37 exprlist: expr ',' exprlist .
 
-    $padrão  reduzir usando a regra 53 (expr)
+    $padrão  reduzir usando a regra 37 (exprlist)
 
 
 Estado 69
 
-   64 object: expr '.' . ID '(' exprlistopt ')'
+   34 object: expr '.' ID '(' . exprlistopt ')'
 
-    ID  deslocar, e ir ao estado 93
+    LIT_INT   deslocar, e ir ao estado 1
+    TRUE      deslocar, e ir ao estado 2
+    FALSE     deslocar, e ir ao estado 3
+    THIS      deslocar, e ir ao estado 4
+    TOK_NULL  deslocar, e ir ao estado 5
+    NEW       deslocar, e ir ao estado 6
+    ID        deslocar, e ir ao estado 7
+    LIT_STR   deslocar, e ir ao estado 8
+    THIS_DOT  deslocar, e ir ao estado 9
+    '-'       deslocar, e ir ao estado 10
+    '!'       deslocar, e ir ao estado 11
+    '('       deslocar, e ir ao estado 12
+    '{'       deslocar, e ir ao estado 13
+
+    $padrão  reduzir usando a regra 40 (exprlistopt)
+
+    expr         ir ao estado 26
+    object       ir ao estado 16
+    exprlist     ir ao estado 66
+    exprlistopt  ir ao estado 73
 
 
 Estado 70
 
-   33 expr: expr '<' . expr
+   42 filledbracks: '[' expr ']' .
 
-    LIT_INT   deslocar, e ir ao estado 41
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 47
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 51
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
-
-    expr    ir ao estado 94
-    object  ir ao estado 55
+    $padrão  reduzir usando a regra 42 (filledbracks)
 
 
 Estado 71
 
-   32 expr: expr '>' . expr
+    2 expr: expr . '>' expr
+    3     | expr . '<' expr
+    4     | expr . GREAT_EQ expr
+    5     | expr . LESS_EQ expr
+    6     | expr . EQ expr
+    7     | expr . DIFF expr
+    8     | expr . OR expr
+    9     | expr . AND expr
+   10     | expr . '+' expr
+   11     | expr . '-' expr
+   12     | expr . '/' expr
+   13     | expr . '*' expr
+   14     | expr . '%' expr
+   34 object: expr . '.' ID '(' exprlistopt ')'
+   41 filledbracks: filledbracks '[' expr . ']'
 
-    LIT_INT   deslocar, e ir ao estado 41
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 47
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 51
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
-
-    expr    ir ao estado 95
-    object  ir ao estado 55
+    '.'       deslocar, e ir ao estado 29
+    '<'       deslocar, e ir ao estado 30
+    '>'       deslocar, e ir ao estado 31
+    EQ        deslocar, e ir ao estado 32
+    DIFF      deslocar, e ir ao estado 33
+    LESS_EQ   deslocar, e ir ao estado 34
+    GREAT_EQ  deslocar, e ir ao estado 35
+    AND       deslocar, e ir ao estado 36
+    OR        deslocar, e ir ao estado 37
+    '+'       deslocar, e ir ao estado 38
+    '-'       deslocar, e ir ao estado 39
+    '*'       deslocar, e ir ao estado 40
+    '/'       deslocar, e ir ao estado 41
+    '%'       deslocar, e ir ao estado 42
+    ']'       deslocar, e ir ao estado 74
 
 
 Estado 72
 
-   36 expr: expr EQ . expr
+   30 object: NEW ID '(' exprlistopt ')' .
 
-    LIT_INT   deslocar, e ir ao estado 41
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 47
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 51
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
-
-    expr    ir ao estado 96
-    object  ir ao estado 55
+    $padrão  reduzir usando a regra 30 (object)
 
 
 Estado 73
 
-   37 expr: expr DIFF . expr
+   34 object: expr '.' ID '(' exprlistopt . ')'
 
-    LIT_INT   deslocar, e ir ao estado 41
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 47
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 51
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
-
-    expr    ir ao estado 97
-    object  ir ao estado 55
+    ')'  deslocar, e ir ao estado 75
 
 
 Estado 74
 
-   35 expr: expr LESS_EQ . expr
+   41 filledbracks: filledbracks '[' expr ']' .
 
-    LIT_INT   deslocar, e ir ao estado 41
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 47
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 51
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
-
-    expr    ir ao estado 98
-    object  ir ao estado 55
+    $padrão  reduzir usando a regra 41 (filledbracks)
 
 
 Estado 75
 
-   34 expr: expr GREAT_EQ . expr
+   34 object: expr '.' ID '(' exprlistopt ')' .
 
-    LIT_INT   deslocar, e ir ao estado 41
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 47
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 51
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
-
-    expr    ir ao estado 99
-    object  ir ao estado 55
-
-
-Estado 76
-
-   39 expr: expr AND . expr
-
-    LIT_INT   deslocar, e ir ao estado 41
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 47
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 51
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
-
-    expr    ir ao estado 100
-    object  ir ao estado 55
-
-
-Estado 77
-
-   38 expr: expr OR . expr
-
-    LIT_INT   deslocar, e ir ao estado 41
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 47
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 51
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
-
-    expr    ir ao estado 101
-    object  ir ao estado 55
-
-
-Estado 78
-
-   40 expr: expr '+' . expr
-
-    LIT_INT   deslocar, e ir ao estado 41
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 47
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 51
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
-
-    expr    ir ao estado 102
-    object  ir ao estado 55
-
-
-Estado 79
-
-   41 expr: expr '-' . expr
-
-    LIT_INT   deslocar, e ir ao estado 41
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 47
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 51
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
-
-    expr    ir ao estado 103
-    object  ir ao estado 55
-
-
-Estado 80
-
-   43 expr: expr '*' . expr
-
-    LIT_INT   deslocar, e ir ao estado 41
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 47
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 51
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
-
-    expr    ir ao estado 104
-    object  ir ao estado 55
-
-
-Estado 81
-
-   42 expr: expr '/' . expr
-
-    LIT_INT   deslocar, e ir ao estado 41
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 47
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 51
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
-
-    expr    ir ao estado 105
-    object  ir ao estado 55
-
-
-Estado 82
-
-   44 expr: expr '%' . expr
-
-    LIT_INT   deslocar, e ir ao estado 41
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 47
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 51
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
-
-    expr    ir ao estado 106
-    object  ir ao estado 55
-
-
-Estado 83
-
-   10 vardec: type ID '=' expr ';' .
-
-    $padrão  reduzir usando a regra 10 (vardec)
-
-
-Estado 84
-
-   72 filledbracks: '[' . expr ']'
-
-    LIT_INT   deslocar, e ir ao estado 41
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 47
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 51
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
-
-    expr    ir ao estado 107
-    object  ir ao estado 55
-
-
-Estado 85
-
-   45 expr: object filledbracks .
-   71 filledbracks: filledbracks . '[' expr ']'
-
-    '['  deslocar, e ir ao estado 108
-
-    $padrão  reduzir usando a regra 45 (expr)
-
-
-Estado 86
-
-    2 mainclass: CLASS ID '{' VOID ID '(' ID ARR ID ')' '{' . blockstmts '}' '}'
-
-    LIT_INT   deslocar, e ir ao estado 41
-    INT       deslocar, e ir ao estado 19
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    BOOLEAN   deslocar, e ir ao estado 20
-    BREAK     deslocar, e ir ao estado 109
-    CONTINUE  deslocar, e ir ao estado 110
-    VOID      deslocar, e ir ao estado 21
-    RETURN    deslocar, e ir ao estado 111
-    IF        deslocar, e ir ao estado 112
-    WHILE     deslocar, e ir ao estado 113
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 114
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 115
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
-
-    $padrão  reduzir usando a regra 21 (blockstmts)
-
-    vardec      ir ao estado 116
-    blockstmts  ir ao estado 117
-    stmt        ir ao estado 118
-    expr        ir ao estado 119
-    type        ir ao estado 120
-    object      ir ao estado 55
-
-
-Estado 87
-
-   11 methoddec: type ID '(' params ')' '{' . blockstmts '}'
-
-    LIT_INT   deslocar, e ir ao estado 41
-    INT       deslocar, e ir ao estado 19
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    BOOLEAN   deslocar, e ir ao estado 20
-    BREAK     deslocar, e ir ao estado 109
-    CONTINUE  deslocar, e ir ao estado 110
-    VOID      deslocar, e ir ao estado 21
-    RETURN    deslocar, e ir ao estado 111
-    IF        deslocar, e ir ao estado 112
-    WHILE     deslocar, e ir ao estado 113
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 114
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 115
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
-
-    $padrão  reduzir usando a regra 21 (blockstmts)
-
-    vardec      ir ao estado 116
-    blockstmts  ir ao estado 121
-    stmt        ir ao estado 118
-    expr        ir ao estado 119
-    type        ir ao estado 120
-    object      ir ao estado 55
-
-
-Estado 88
-
-   14 paramsrest: ';' param . paramsrest
-
-    ';'  deslocar, e ir ao estado 58
-
-    $padrão  reduzir usando a regra 15 (paramsrest)
-
-    paramsrest  ir ao estado 122
-
-
-Estado 89
-
-   60 object: NEW ID '(' . exprlistopt ')'
-
-    LIT_INT   deslocar, e ir ao estado 41
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 47
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 51
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
-
-    $padrão  reduzir usando a regra 70 (exprlistopt)
-
-    expr         ir ao estado 65
-    object       ir ao estado 55
-    exprlist     ir ao estado 123
-    exprlistopt  ir ao estado 124
-
-
-Estado 90
-
-   67 exprlist: expr ',' . exprlist
-
-    LIT_INT   deslocar, e ir ao estado 41
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 47
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 51
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
-
-    expr      ir ao estado 65
-    object    ir ao estado 55
-    exprlist  ir ao estado 125
-
-
-Estado 91
-
-   66 object: '{' exprlist '}' .
-
-    $padrão  reduzir usando a regra 66 (object)
-
-
-Estado 92
-
-   65 object: '(' expr ')' .
-
-    $padrão  reduzir usando a regra 65 (object)
-
-
-Estado 93
-
-   64 object: expr '.' ID . '(' exprlistopt ')'
-
-    '('  deslocar, e ir ao estado 126
-
-
-Estado 94
-
-   32 expr: expr . '>' expr
-   33     | expr . '<' expr
-   33     | expr '<' expr .
-   34     | expr . GREAT_EQ expr
-   35     | expr . LESS_EQ expr
-   36     | expr . EQ expr
-   37     | expr . DIFF expr
-   38     | expr . OR expr
-   39     | expr . AND expr
-   40     | expr . '+' expr
-   41     | expr . '-' expr
-   42     | expr . '/' expr
-   43     | expr . '*' expr
-   44     | expr . '%' expr
-   64 object: expr . '.' ID '(' exprlistopt ')'
-
-    AND  deslocar, e ir ao estado 76
-    OR   deslocar, e ir ao estado 77
-    '+'  deslocar, e ir ao estado 78
-    '-'  deslocar, e ir ao estado 79
-    '*'  deslocar, e ir ao estado 80
-    '/'  deslocar, e ir ao estado 81
-    '%'  deslocar, e ir ao estado 82
-
-    '<'       erro (não associativo)
-    '>'       erro (não associativo)
-    EQ        erro (não associativo)
-    DIFF      erro (não associativo)
-    LESS_EQ   erro (não associativo)
-    GREAT_EQ  erro (não associativo)
-
-    $padrão  reduzir usando a regra 33 (expr)
-
-
-Estado 95
-
-   32 expr: expr . '>' expr
-   32     | expr '>' expr .
-   33     | expr . '<' expr
-   34     | expr . GREAT_EQ expr
-   35     | expr . LESS_EQ expr
-   36     | expr . EQ expr
-   37     | expr . DIFF expr
-   38     | expr . OR expr
-   39     | expr . AND expr
-   40     | expr . '+' expr
-   41     | expr . '-' expr
-   42     | expr . '/' expr
-   43     | expr . '*' expr
-   44     | expr . '%' expr
-   64 object: expr . '.' ID '(' exprlistopt ')'
-
-    AND  deslocar, e ir ao estado 76
-    OR   deslocar, e ir ao estado 77
-    '+'  deslocar, e ir ao estado 78
-    '-'  deslocar, e ir ao estado 79
-    '*'  deslocar, e ir ao estado 80
-    '/'  deslocar, e ir ao estado 81
-    '%'  deslocar, e ir ao estado 82
-
-    '<'       erro (não associativo)
-    '>'       erro (não associativo)
-    EQ        erro (não associativo)
-    DIFF      erro (não associativo)
-    LESS_EQ   erro (não associativo)
-    GREAT_EQ  erro (não associativo)
-
-    $padrão  reduzir usando a regra 32 (expr)
-
-
-Estado 96
-
-   32 expr: expr . '>' expr
-   33     | expr . '<' expr
-   34     | expr . GREAT_EQ expr
-   35     | expr . LESS_EQ expr
-   36     | expr . EQ expr
-   36     | expr EQ expr .
-   37     | expr . DIFF expr
-   38     | expr . OR expr
-   39     | expr . AND expr
-   40     | expr . '+' expr
-   41     | expr . '-' expr
-   42     | expr . '/' expr
-   43     | expr . '*' expr
-   44     | expr . '%' expr
-   64 object: expr . '.' ID '(' exprlistopt ')'
-
-    AND  deslocar, e ir ao estado 76
-    OR   deslocar, e ir ao estado 77
-    '+'  deslocar, e ir ao estado 78
-    '-'  deslocar, e ir ao estado 79
-    '*'  deslocar, e ir ao estado 80
-    '/'  deslocar, e ir ao estado 81
-    '%'  deslocar, e ir ao estado 82
-
-    '<'       erro (não associativo)
-    '>'       erro (não associativo)
-    EQ        erro (não associativo)
-    DIFF      erro (não associativo)
-    LESS_EQ   erro (não associativo)
-    GREAT_EQ  erro (não associativo)
-
-    $padrão  reduzir usando a regra 36 (expr)
-
-
-Estado 97
-
-   32 expr: expr . '>' expr
-   33     | expr . '<' expr
-   34     | expr . GREAT_EQ expr
-   35     | expr . LESS_EQ expr
-   36     | expr . EQ expr
-   37     | expr . DIFF expr
-   37     | expr DIFF expr .
-   38     | expr . OR expr
-   39     | expr . AND expr
-   40     | expr . '+' expr
-   41     | expr . '-' expr
-   42     | expr . '/' expr
-   43     | expr . '*' expr
-   44     | expr . '%' expr
-   64 object: expr . '.' ID '(' exprlistopt ')'
-
-    AND  deslocar, e ir ao estado 76
-    OR   deslocar, e ir ao estado 77
-    '+'  deslocar, e ir ao estado 78
-    '-'  deslocar, e ir ao estado 79
-    '*'  deslocar, e ir ao estado 80
-    '/'  deslocar, e ir ao estado 81
-    '%'  deslocar, e ir ao estado 82
-
-    '<'       erro (não associativo)
-    '>'       erro (não associativo)
-    EQ        erro (não associativo)
-    DIFF      erro (não associativo)
-    LESS_EQ   erro (não associativo)
-    GREAT_EQ  erro (não associativo)
-
-    $padrão  reduzir usando a regra 37 (expr)
-
-
-Estado 98
-
-   32 expr: expr . '>' expr
-   33     | expr . '<' expr
-   34     | expr . GREAT_EQ expr
-   35     | expr . LESS_EQ expr
-   35     | expr LESS_EQ expr .
-   36     | expr . EQ expr
-   37     | expr . DIFF expr
-   38     | expr . OR expr
-   39     | expr . AND expr
-   40     | expr . '+' expr
-   41     | expr . '-' expr
-   42     | expr . '/' expr
-   43     | expr . '*' expr
-   44     | expr . '%' expr
-   64 object: expr . '.' ID '(' exprlistopt ')'
-
-    AND  deslocar, e ir ao estado 76
-    OR   deslocar, e ir ao estado 77
-    '+'  deslocar, e ir ao estado 78
-    '-'  deslocar, e ir ao estado 79
-    '*'  deslocar, e ir ao estado 80
-    '/'  deslocar, e ir ao estado 81
-    '%'  deslocar, e ir ao estado 82
-
-    '<'       erro (não associativo)
-    '>'       erro (não associativo)
-    EQ        erro (não associativo)
-    DIFF      erro (não associativo)
-    LESS_EQ   erro (não associativo)
-    GREAT_EQ  erro (não associativo)
-
-    $padrão  reduzir usando a regra 35 (expr)
-
-
-Estado 99
-
-   32 expr: expr . '>' expr
-   33     | expr . '<' expr
-   34     | expr . GREAT_EQ expr
-   34     | expr GREAT_EQ expr .
-   35     | expr . LESS_EQ expr
-   36     | expr . EQ expr
-   37     | expr . DIFF expr
-   38     | expr . OR expr
-   39     | expr . AND expr
-   40     | expr . '+' expr
-   41     | expr . '-' expr
-   42     | expr . '/' expr
-   43     | expr . '*' expr
-   44     | expr . '%' expr
-   64 object: expr . '.' ID '(' exprlistopt ')'
-
-    AND  deslocar, e ir ao estado 76
-    OR   deslocar, e ir ao estado 77
-    '+'  deslocar, e ir ao estado 78
-    '-'  deslocar, e ir ao estado 79
-    '*'  deslocar, e ir ao estado 80
-    '/'  deslocar, e ir ao estado 81
-    '%'  deslocar, e ir ao estado 82
-
-    '<'       erro (não associativo)
-    '>'       erro (não associativo)
-    EQ        erro (não associativo)
-    DIFF      erro (não associativo)
-    LESS_EQ   erro (não associativo)
-    GREAT_EQ  erro (não associativo)
-
-    $padrão  reduzir usando a regra 34 (expr)
-
-
-Estado 100
-
-   32 expr: expr . '>' expr
-   33     | expr . '<' expr
-   34     | expr . GREAT_EQ expr
-   35     | expr . LESS_EQ expr
-   36     | expr . EQ expr
-   37     | expr . DIFF expr
-   38     | expr . OR expr
-   39     | expr . AND expr
-   39     | expr AND expr .
-   40     | expr . '+' expr
-   41     | expr . '-' expr
-   42     | expr . '/' expr
-   43     | expr . '*' expr
-   44     | expr . '%' expr
-   64 object: expr . '.' ID '(' exprlistopt ')'
-
-    '+'  deslocar, e ir ao estado 78
-    '-'  deslocar, e ir ao estado 79
-    '*'  deslocar, e ir ao estado 80
-    '/'  deslocar, e ir ao estado 81
-    '%'  deslocar, e ir ao estado 82
-
-    $padrão  reduzir usando a regra 39 (expr)
-
-
-Estado 101
-
-   32 expr: expr . '>' expr
-   33     | expr . '<' expr
-   34     | expr . GREAT_EQ expr
-   35     | expr . LESS_EQ expr
-   36     | expr . EQ expr
-   37     | expr . DIFF expr
-   38     | expr . OR expr
-   38     | expr OR expr .
-   39     | expr . AND expr
-   40     | expr . '+' expr
-   41     | expr . '-' expr
-   42     | expr . '/' expr
-   43     | expr . '*' expr
-   44     | expr . '%' expr
-   64 object: expr . '.' ID '(' exprlistopt ')'
-
-    '+'  deslocar, e ir ao estado 78
-    '-'  deslocar, e ir ao estado 79
-    '*'  deslocar, e ir ao estado 80
-    '/'  deslocar, e ir ao estado 81
-    '%'  deslocar, e ir ao estado 82
-
-    $padrão  reduzir usando a regra 38 (expr)
-
-
-Estado 102
-
-   32 expr: expr . '>' expr
-   33     | expr . '<' expr
-   34     | expr . GREAT_EQ expr
-   35     | expr . LESS_EQ expr
-   36     | expr . EQ expr
-   37     | expr . DIFF expr
-   38     | expr . OR expr
-   39     | expr . AND expr
-   40     | expr . '+' expr
-   40     | expr '+' expr .
-   41     | expr . '-' expr
-   42     | expr . '/' expr
-   43     | expr . '*' expr
-   44     | expr . '%' expr
-   64 object: expr . '.' ID '(' exprlistopt ')'
-
-    '*'  deslocar, e ir ao estado 80
-    '/'  deslocar, e ir ao estado 81
-    '%'  deslocar, e ir ao estado 82
-
-    $padrão  reduzir usando a regra 40 (expr)
-
-
-Estado 103
-
-   32 expr: expr . '>' expr
-   33     | expr . '<' expr
-   34     | expr . GREAT_EQ expr
-   35     | expr . LESS_EQ expr
-   36     | expr . EQ expr
-   37     | expr . DIFF expr
-   38     | expr . OR expr
-   39     | expr . AND expr
-   40     | expr . '+' expr
-   41     | expr . '-' expr
-   41     | expr '-' expr .
-   42     | expr . '/' expr
-   43     | expr . '*' expr
-   44     | expr . '%' expr
-   64 object: expr . '.' ID '(' exprlistopt ')'
-
-    '*'  deslocar, e ir ao estado 80
-    '/'  deslocar, e ir ao estado 81
-    '%'  deslocar, e ir ao estado 82
-
-    $padrão  reduzir usando a regra 41 (expr)
-
-
-Estado 104
-
-   32 expr: expr . '>' expr
-   33     | expr . '<' expr
-   34     | expr . GREAT_EQ expr
-   35     | expr . LESS_EQ expr
-   36     | expr . EQ expr
-   37     | expr . DIFF expr
-   38     | expr . OR expr
-   39     | expr . AND expr
-   40     | expr . '+' expr
-   41     | expr . '-' expr
-   42     | expr . '/' expr
-   43     | expr . '*' expr
-   43     | expr '*' expr .
-   44     | expr . '%' expr
-   64 object: expr . '.' ID '(' exprlistopt ')'
-
-    $padrão  reduzir usando a regra 43 (expr)
-
-
-Estado 105
-
-   32 expr: expr . '>' expr
-   33     | expr . '<' expr
-   34     | expr . GREAT_EQ expr
-   35     | expr . LESS_EQ expr
-   36     | expr . EQ expr
-   37     | expr . DIFF expr
-   38     | expr . OR expr
-   39     | expr . AND expr
-   40     | expr . '+' expr
-   41     | expr . '-' expr
-   42     | expr . '/' expr
-   42     | expr '/' expr .
-   43     | expr . '*' expr
-   44     | expr . '%' expr
-   64 object: expr . '.' ID '(' exprlistopt ')'
-
-    $padrão  reduzir usando a regra 42 (expr)
-
-
-Estado 106
-
-   32 expr: expr . '>' expr
-   33     | expr . '<' expr
-   34     | expr . GREAT_EQ expr
-   35     | expr . LESS_EQ expr
-   36     | expr . EQ expr
-   37     | expr . DIFF expr
-   38     | expr . OR expr
-   39     | expr . AND expr
-   40     | expr . '+' expr
-   41     | expr . '-' expr
-   42     | expr . '/' expr
-   43     | expr . '*' expr
-   44     | expr . '%' expr
-   44     | expr '%' expr .
-   64 object: expr . '.' ID '(' exprlistopt ')'
-
-    $padrão  reduzir usando a regra 44 (expr)
-
-
-Estado 107
-
-   32 expr: expr . '>' expr
-   33     | expr . '<' expr
-   34     | expr . GREAT_EQ expr
-   35     | expr . LESS_EQ expr
-   36     | expr . EQ expr
-   37     | expr . DIFF expr
-   38     | expr . OR expr
-   39     | expr . AND expr
-   40     | expr . '+' expr
-   41     | expr . '-' expr
-   42     | expr . '/' expr
-   43     | expr . '*' expr
-   44     | expr . '%' expr
-   64 object: expr . '.' ID '(' exprlistopt ')'
-   72 filledbracks: '[' expr . ']'
-
-    '.'       deslocar, e ir ao estado 69
-    '<'       deslocar, e ir ao estado 70
-    '>'       deslocar, e ir ao estado 71
-    EQ        deslocar, e ir ao estado 72
-    DIFF      deslocar, e ir ao estado 73
-    LESS_EQ   deslocar, e ir ao estado 74
-    GREAT_EQ  deslocar, e ir ao estado 75
-    AND       deslocar, e ir ao estado 76
-    OR        deslocar, e ir ao estado 77
-    '+'       deslocar, e ir ao estado 78
-    '-'       deslocar, e ir ao estado 79
-    '*'       deslocar, e ir ao estado 80
-    '/'       deslocar, e ir ao estado 81
-    '%'       deslocar, e ir ao estado 82
-    ']'       deslocar, e ir ao estado 127
-
-
-Estado 108
-
-   71 filledbracks: filledbracks '[' . expr ']'
-
-    LIT_INT   deslocar, e ir ao estado 41
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 47
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 51
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
-
-    expr    ir ao estado 128
-    object  ir ao estado 55
-
-
-Estado 109
-
-   28 stmt: BREAK . ';'
-
-    ';'  deslocar, e ir ao estado 129
-
-
-Estado 110
-
-   27 stmt: CONTINUE . ';'
-
-    ';'  deslocar, e ir ao estado 130
-
-
-Estado 111
-
-   29 stmt: RETURN . expr ';'
-   30     | RETURN . ';'
-
-    LIT_INT   deslocar, e ir ao estado 41
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 47
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 51
-    '('       deslocar, e ir ao estado 52
-    ';'       deslocar, e ir ao estado 131
-    '!'       deslocar, e ir ao estado 53
-
-    expr    ir ao estado 132
-    object  ir ao estado 55
-
-
-Estado 112
-
-   23 stmt: IF . '(' expr ')' stmt
-   24     | IF . '(' expr ')' stmt ELSE stmt
-
-    '('  deslocar, e ir ao estado 133
-
-
-Estado 113
-
-   25 stmt: WHILE . '(' expr ')' stmt
-
-    '('  deslocar, e ir ao estado 134
-
-
-Estado 114
-
-   58 type: ID .
-   61 object: ID .
-
-    ID        reduzir usando a regra 58 (type)
-    ARR       reduzir usando a regra 58 (type)
-    $padrão  reduzir usando a regra 61 (object)
-
-
-Estado 115
-
-   22 stmt: '{' . blockstmts '}'
-   66 object: '{' . exprlist '}'
-
-    LIT_INT   deslocar, e ir ao estado 41
-    INT       deslocar, e ir ao estado 19
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    BOOLEAN   deslocar, e ir ao estado 20
-    BREAK     deslocar, e ir ao estado 109
-    CONTINUE  deslocar, e ir ao estado 110
-    VOID      deslocar, e ir ao estado 21
-    RETURN    deslocar, e ir ao estado 111
-    IF        deslocar, e ir ao estado 112
-    WHILE     deslocar, e ir ao estado 113
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 114
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 115
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
-
-    $padrão  reduzir usando a regra 21 (blockstmts)
-
-    vardec      ir ao estado 116
-    blockstmts  ir ao estado 135
-    stmt        ir ao estado 118
-    expr        ir ao estado 136
-    type        ir ao estado 120
-    object      ir ao estado 55
-    exprlist    ir ao estado 66
-
-
-Estado 116
-
-   19 blockstmts: vardec . blockstmts
-
-    LIT_INT   deslocar, e ir ao estado 41
-    INT       deslocar, e ir ao estado 19
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    BOOLEAN   deslocar, e ir ao estado 20
-    BREAK     deslocar, e ir ao estado 109
-    CONTINUE  deslocar, e ir ao estado 110
-    VOID      deslocar, e ir ao estado 21
-    RETURN    deslocar, e ir ao estado 111
-    IF        deslocar, e ir ao estado 112
-    WHILE     deslocar, e ir ao estado 113
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 114
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 115
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
-
-    $padrão  reduzir usando a regra 21 (blockstmts)
-
-    vardec      ir ao estado 116
-    blockstmts  ir ao estado 137
-    stmt        ir ao estado 118
-    expr        ir ao estado 119
-    type        ir ao estado 120
-    object      ir ao estado 55
-
-
-Estado 117
-
-    2 mainclass: CLASS ID '{' VOID ID '(' ID ARR ID ')' '{' blockstmts . '}' '}'
-
-    '}'  deslocar, e ir ao estado 138
-
-
-Estado 118
-
-   20 blockstmts: stmt . blockstmts
-
-    LIT_INT   deslocar, e ir ao estado 41
-    INT       deslocar, e ir ao estado 19
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    BOOLEAN   deslocar, e ir ao estado 20
-    BREAK     deslocar, e ir ao estado 109
-    CONTINUE  deslocar, e ir ao estado 110
-    VOID      deslocar, e ir ao estado 21
-    RETURN    deslocar, e ir ao estado 111
-    IF        deslocar, e ir ao estado 112
-    WHILE     deslocar, e ir ao estado 113
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 114
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 115
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
-
-    $padrão  reduzir usando a regra 21 (blockstmts)
-
-    vardec      ir ao estado 116
-    blockstmts  ir ao estado 139
-    stmt        ir ao estado 118
-    expr        ir ao estado 119
-    type        ir ao estado 120
-    object      ir ao estado 55
-
-
-Estado 119
-
-   26 stmt: expr . '=' expr ';'
-   31     | expr . '.' ID '(' exprlistopt ')' ';'
-   32 expr: expr . '>' expr
-   33     | expr . '<' expr
-   34     | expr . GREAT_EQ expr
-   35     | expr . LESS_EQ expr
-   36     | expr . EQ expr
-   37     | expr . DIFF expr
-   38     | expr . OR expr
-   39     | expr . AND expr
-   40     | expr . '+' expr
-   41     | expr . '-' expr
-   42     | expr . '/' expr
-   43     | expr . '*' expr
-   44     | expr . '%' expr
-   64 object: expr . '.' ID '(' exprlistopt ')'
-
-    '.'       deslocar, e ir ao estado 140
-    '<'       deslocar, e ir ao estado 70
-    '>'       deslocar, e ir ao estado 71
-    EQ        deslocar, e ir ao estado 72
-    DIFF      deslocar, e ir ao estado 73
-    LESS_EQ   deslocar, e ir ao estado 74
-    GREAT_EQ  deslocar, e ir ao estado 75
-    AND       deslocar, e ir ao estado 76
-    OR        deslocar, e ir ao estado 77
-    '+'       deslocar, e ir ao estado 78
-    '-'       deslocar, e ir ao estado 79
-    '*'       deslocar, e ir ao estado 80
-    '/'       deslocar, e ir ao estado 81
-    '%'       deslocar, e ir ao estado 82
-    '='       deslocar, e ir ao estado 141
-
-
-Estado 120
-
-    9 vardec: type . ID ';'
-   10       | type . ID '=' expr ';'
-   54 type: type . ARR
-
-    ID   deslocar, e ir ao estado 142
-    ARR  deslocar, e ir ao estado 32
-
-
-Estado 121
-
-   11 methoddec: type ID '(' params ')' '{' blockstmts . '}'
-
-    '}'  deslocar, e ir ao estado 143
-
-
-Estado 122
-
-   14 paramsrest: ';' param paramsrest .
-
-    $padrão  reduzir usando a regra 14 (paramsrest)
-
-
-Estado 123
-
-   69 exprlistopt: exprlist .
-
-    $padrão  reduzir usando a regra 69 (exprlistopt)
-
-
-Estado 124
-
-   60 object: NEW ID '(' exprlistopt . ')'
-
-    ')'  deslocar, e ir ao estado 144
-
-
-Estado 125
-
-   67 exprlist: expr ',' exprlist .
-
-    $padrão  reduzir usando a regra 67 (exprlist)
-
-
-Estado 126
-
-   64 object: expr '.' ID '(' . exprlistopt ')'
-
-    LIT_INT   deslocar, e ir ao estado 41
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 47
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 51
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
-
-    $padrão  reduzir usando a regra 70 (exprlistopt)
-
-    expr         ir ao estado 65
-    object       ir ao estado 55
-    exprlist     ir ao estado 123
-    exprlistopt  ir ao estado 145
-
-
-Estado 127
-
-   72 filledbracks: '[' expr ']' .
-
-    $padrão  reduzir usando a regra 72 (filledbracks)
-
-
-Estado 128
-
-   32 expr: expr . '>' expr
-   33     | expr . '<' expr
-   34     | expr . GREAT_EQ expr
-   35     | expr . LESS_EQ expr
-   36     | expr . EQ expr
-   37     | expr . DIFF expr
-   38     | expr . OR expr
-   39     | expr . AND expr
-   40     | expr . '+' expr
-   41     | expr . '-' expr
-   42     | expr . '/' expr
-   43     | expr . '*' expr
-   44     | expr . '%' expr
-   64 object: expr . '.' ID '(' exprlistopt ')'
-   71 filledbracks: filledbracks '[' expr . ']'
-
-    '.'       deslocar, e ir ao estado 69
-    '<'       deslocar, e ir ao estado 70
-    '>'       deslocar, e ir ao estado 71
-    EQ        deslocar, e ir ao estado 72
-    DIFF      deslocar, e ir ao estado 73
-    LESS_EQ   deslocar, e ir ao estado 74
-    GREAT_EQ  deslocar, e ir ao estado 75
-    AND       deslocar, e ir ao estado 76
-    OR        deslocar, e ir ao estado 77
-    '+'       deslocar, e ir ao estado 78
-    '-'       deslocar, e ir ao estado 79
-    '*'       deslocar, e ir ao estado 80
-    '/'       deslocar, e ir ao estado 81
-    '%'       deslocar, e ir ao estado 82
-    ']'       deslocar, e ir ao estado 146
-
-
-Estado 129
-
-   28 stmt: BREAK ';' .
-
-    $padrão  reduzir usando a regra 28 (stmt)
-
-
-Estado 130
-
-   27 stmt: CONTINUE ';' .
-
-    $padrão  reduzir usando a regra 27 (stmt)
-
-
-Estado 131
-
-   30 stmt: RETURN ';' .
-
-    $padrão  reduzir usando a regra 30 (stmt)
-
-
-Estado 132
-
-   29 stmt: RETURN expr . ';'
-   32 expr: expr . '>' expr
-   33     | expr . '<' expr
-   34     | expr . GREAT_EQ expr
-   35     | expr . LESS_EQ expr
-   36     | expr . EQ expr
-   37     | expr . DIFF expr
-   38     | expr . OR expr
-   39     | expr . AND expr
-   40     | expr . '+' expr
-   41     | expr . '-' expr
-   42     | expr . '/' expr
-   43     | expr . '*' expr
-   44     | expr . '%' expr
-   64 object: expr . '.' ID '(' exprlistopt ')'
-
-    '.'       deslocar, e ir ao estado 69
-    '<'       deslocar, e ir ao estado 70
-    '>'       deslocar, e ir ao estado 71
-    EQ        deslocar, e ir ao estado 72
-    DIFF      deslocar, e ir ao estado 73
-    LESS_EQ   deslocar, e ir ao estado 74
-    GREAT_EQ  deslocar, e ir ao estado 75
-    AND       deslocar, e ir ao estado 76
-    OR        deslocar, e ir ao estado 77
-    '+'       deslocar, e ir ao estado 78
-    '-'       deslocar, e ir ao estado 79
-    '*'       deslocar, e ir ao estado 80
-    '/'       deslocar, e ir ao estado 81
-    '%'       deslocar, e ir ao estado 82
-    ';'       deslocar, e ir ao estado 147
-
-
-Estado 133
-
-   23 stmt: IF '(' . expr ')' stmt
-   24     | IF '(' . expr ')' stmt ELSE stmt
-
-    LIT_INT   deslocar, e ir ao estado 41
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 47
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 51
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
-
-    expr    ir ao estado 148
-    object  ir ao estado 55
-
-
-Estado 134
-
-   25 stmt: WHILE '(' . expr ')' stmt
-
-    LIT_INT   deslocar, e ir ao estado 41
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 47
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 51
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
-
-    expr    ir ao estado 149
-    object  ir ao estado 55
-
-
-Estado 135
-
-   22 stmt: '{' blockstmts . '}'
-
-    '}'  deslocar, e ir ao estado 150
-
-
-Estado 136
-
-   26 stmt: expr . '=' expr ';'
-   31     | expr . '.' ID '(' exprlistopt ')' ';'
-   32 expr: expr . '>' expr
-   33     | expr . '<' expr
-   34     | expr . GREAT_EQ expr
-   35     | expr . LESS_EQ expr
-   36     | expr . EQ expr
-   37     | expr . DIFF expr
-   38     | expr . OR expr
-   39     | expr . AND expr
-   40     | expr . '+' expr
-   41     | expr . '-' expr
-   42     | expr . '/' expr
-   43     | expr . '*' expr
-   44     | expr . '%' expr
-   64 object: expr . '.' ID '(' exprlistopt ')'
-   67 exprlist: expr . ',' exprlist
-   68         | expr .
-
-    '.'       deslocar, e ir ao estado 140
-    '<'       deslocar, e ir ao estado 70
-    '>'       deslocar, e ir ao estado 71
-    EQ        deslocar, e ir ao estado 72
-    DIFF      deslocar, e ir ao estado 73
-    LESS_EQ   deslocar, e ir ao estado 74
-    GREAT_EQ  deslocar, e ir ao estado 75
-    AND       deslocar, e ir ao estado 76
-    OR        deslocar, e ir ao estado 77
-    '+'       deslocar, e ir ao estado 78
-    '-'       deslocar, e ir ao estado 79
-    '*'       deslocar, e ir ao estado 80
-    '/'       deslocar, e ir ao estado 81
-    '%'       deslocar, e ir ao estado 82
-    '='       deslocar, e ir ao estado 141
-    ','       deslocar, e ir ao estado 90
-
-    $padrão  reduzir usando a regra 68 (exprlist)
-
-
-Estado 137
-
-   19 blockstmts: vardec blockstmts .
-
-    $padrão  reduzir usando a regra 19 (blockstmts)
-
-
-Estado 138
-
-    2 mainclass: CLASS ID '{' VOID ID '(' ID ARR ID ')' '{' blockstmts '}' . '}'
-
-    '}'  deslocar, e ir ao estado 151
-
-
-Estado 139
-
-   20 blockstmts: stmt blockstmts .
-
-    $padrão  reduzir usando a regra 20 (blockstmts)
-
-
-Estado 140
-
-   31 stmt: expr '.' . ID '(' exprlistopt ')' ';'
-   64 object: expr '.' . ID '(' exprlistopt ')'
-
-    ID  deslocar, e ir ao estado 152
-
-
-Estado 141
-
-   26 stmt: expr '=' . expr ';'
-
-    LIT_INT   deslocar, e ir ao estado 41
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 47
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 51
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
-
-    expr    ir ao estado 153
-    object  ir ao estado 55
-
-
-Estado 142
-
-    9 vardec: type ID . ';'
-   10       | type ID . '=' expr ';'
-
-    ';'  deslocar, e ir ao estado 35
-    '='  deslocar, e ir ao estado 36
-
-
-Estado 143
-
-   11 methoddec: type ID '(' params ')' '{' blockstmts '}' .
-
-    $padrão  reduzir usando a regra 11 (methoddec)
-
-
-Estado 144
-
-   60 object: NEW ID '(' exprlistopt ')' .
-
-    $padrão  reduzir usando a regra 60 (object)
-
-
-Estado 145
-
-   64 object: expr '.' ID '(' exprlistopt . ')'
-
-    ')'  deslocar, e ir ao estado 154
-
-
-Estado 146
-
-   71 filledbracks: filledbracks '[' expr ']' .
-
-    $padrão  reduzir usando a regra 71 (filledbracks)
-
-
-Estado 147
-
-   29 stmt: RETURN expr ';' .
-
-    $padrão  reduzir usando a regra 29 (stmt)
-
-
-Estado 148
-
-   23 stmt: IF '(' expr . ')' stmt
-   24     | IF '(' expr . ')' stmt ELSE stmt
-   32 expr: expr . '>' expr
-   33     | expr . '<' expr
-   34     | expr . GREAT_EQ expr
-   35     | expr . LESS_EQ expr
-   36     | expr . EQ expr
-   37     | expr . DIFF expr
-   38     | expr . OR expr
-   39     | expr . AND expr
-   40     | expr . '+' expr
-   41     | expr . '-' expr
-   42     | expr . '/' expr
-   43     | expr . '*' expr
-   44     | expr . '%' expr
-   64 object: expr . '.' ID '(' exprlistopt ')'
-
-    '.'       deslocar, e ir ao estado 69
-    '<'       deslocar, e ir ao estado 70
-    '>'       deslocar, e ir ao estado 71
-    EQ        deslocar, e ir ao estado 72
-    DIFF      deslocar, e ir ao estado 73
-    LESS_EQ   deslocar, e ir ao estado 74
-    GREAT_EQ  deslocar, e ir ao estado 75
-    AND       deslocar, e ir ao estado 76
-    OR        deslocar, e ir ao estado 77
-    '+'       deslocar, e ir ao estado 78
-    '-'       deslocar, e ir ao estado 79
-    '*'       deslocar, e ir ao estado 80
-    '/'       deslocar, e ir ao estado 81
-    '%'       deslocar, e ir ao estado 82
-    ')'       deslocar, e ir ao estado 155
-
-
-Estado 149
-
-   25 stmt: WHILE '(' expr . ')' stmt
-   32 expr: expr . '>' expr
-   33     | expr . '<' expr
-   34     | expr . GREAT_EQ expr
-   35     | expr . LESS_EQ expr
-   36     | expr . EQ expr
-   37     | expr . DIFF expr
-   38     | expr . OR expr
-   39     | expr . AND expr
-   40     | expr . '+' expr
-   41     | expr . '-' expr
-   42     | expr . '/' expr
-   43     | expr . '*' expr
-   44     | expr . '%' expr
-   64 object: expr . '.' ID '(' exprlistopt ')'
-
-    '.'       deslocar, e ir ao estado 69
-    '<'       deslocar, e ir ao estado 70
-    '>'       deslocar, e ir ao estado 71
-    EQ        deslocar, e ir ao estado 72
-    DIFF      deslocar, e ir ao estado 73
-    LESS_EQ   deslocar, e ir ao estado 74
-    GREAT_EQ  deslocar, e ir ao estado 75
-    AND       deslocar, e ir ao estado 76
-    OR        deslocar, e ir ao estado 77
-    '+'       deslocar, e ir ao estado 78
-    '-'       deslocar, e ir ao estado 79
-    '*'       deslocar, e ir ao estado 80
-    '/'       deslocar, e ir ao estado 81
-    '%'       deslocar, e ir ao estado 82
-    ')'       deslocar, e ir ao estado 156
-
-
-Estado 150
-
-   22 stmt: '{' blockstmts '}' .
-
-    $padrão  reduzir usando a regra 22 (stmt)
-
-
-Estado 151
-
-    2 mainclass: CLASS ID '{' VOID ID '(' ID ARR ID ')' '{' blockstmts '}' '}' .
-
-    $padrão  reduzir usando a regra 2 (mainclass)
-
-
-Estado 152
-
-   31 stmt: expr '.' ID . '(' exprlistopt ')' ';'
-   64 object: expr '.' ID . '(' exprlistopt ')'
-
-    '('  deslocar, e ir ao estado 157
-
-
-Estado 153
-
-   26 stmt: expr '=' expr . ';'
-   32 expr: expr . '>' expr
-   33     | expr . '<' expr
-   34     | expr . GREAT_EQ expr
-   35     | expr . LESS_EQ expr
-   36     | expr . EQ expr
-   37     | expr . DIFF expr
-   38     | expr . OR expr
-   39     | expr . AND expr
-   40     | expr . '+' expr
-   41     | expr . '-' expr
-   42     | expr . '/' expr
-   43     | expr . '*' expr
-   44     | expr . '%' expr
-   64 object: expr . '.' ID '(' exprlistopt ')'
-
-    '.'       deslocar, e ir ao estado 69
-    '<'       deslocar, e ir ao estado 70
-    '>'       deslocar, e ir ao estado 71
-    EQ        deslocar, e ir ao estado 72
-    DIFF      deslocar, e ir ao estado 73
-    LESS_EQ   deslocar, e ir ao estado 74
-    GREAT_EQ  deslocar, e ir ao estado 75
-    AND       deslocar, e ir ao estado 76
-    OR        deslocar, e ir ao estado 77
-    '+'       deslocar, e ir ao estado 78
-    '-'       deslocar, e ir ao estado 79
-    '*'       deslocar, e ir ao estado 80
-    '/'       deslocar, e ir ao estado 81
-    '%'       deslocar, e ir ao estado 82
-    ';'       deslocar, e ir ao estado 158
-
-
-Estado 154
-
-   64 object: expr '.' ID '(' exprlistopt ')' .
-
-    $padrão  reduzir usando a regra 64 (object)
-
-
-Estado 155
-
-   23 stmt: IF '(' expr ')' . stmt
-   24     | IF '(' expr ')' . stmt ELSE stmt
-
-    LIT_INT   deslocar, e ir ao estado 41
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    BREAK     deslocar, e ir ao estado 109
-    CONTINUE  deslocar, e ir ao estado 110
-    RETURN    deslocar, e ir ao estado 111
-    IF        deslocar, e ir ao estado 112
-    WHILE     deslocar, e ir ao estado 113
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 47
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 115
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
-
-    stmt    ir ao estado 159
-    expr    ir ao estado 119
-    object  ir ao estado 55
-
-
-Estado 156
-
-   25 stmt: WHILE '(' expr ')' . stmt
-
-    LIT_INT   deslocar, e ir ao estado 41
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    BREAK     deslocar, e ir ao estado 109
-    CONTINUE  deslocar, e ir ao estado 110
-    RETURN    deslocar, e ir ao estado 111
-    IF        deslocar, e ir ao estado 112
-    WHILE     deslocar, e ir ao estado 113
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 47
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 115
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
-
-    stmt    ir ao estado 160
-    expr    ir ao estado 119
-    object  ir ao estado 55
-
-
-Estado 157
-
-   31 stmt: expr '.' ID '(' . exprlistopt ')' ';'
-   64 object: expr '.' ID '(' . exprlistopt ')'
-
-    LIT_INT   deslocar, e ir ao estado 41
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 47
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 51
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
-
-    $padrão  reduzir usando a regra 70 (exprlistopt)
-
-    expr         ir ao estado 65
-    object       ir ao estado 55
-    exprlist     ir ao estado 123
-    exprlistopt  ir ao estado 161
-
-
-Estado 158
-
-   26 stmt: expr '=' expr ';' .
-
-    $padrão  reduzir usando a regra 26 (stmt)
-
-
-Estado 159
-
-   23 stmt: IF '(' expr ')' stmt .
-   24     | IF '(' expr ')' stmt . ELSE stmt
-
-    ELSE  deslocar, e ir ao estado 162
-
-    $padrão  reduzir usando a regra 23 (stmt)
-
-
-Estado 160
-
-   25 stmt: WHILE '(' expr ')' stmt .
-
-    $padrão  reduzir usando a regra 25 (stmt)
-
-
-Estado 161
-
-   31 stmt: expr '.' ID '(' exprlistopt . ')' ';'
-   64 object: expr '.' ID '(' exprlistopt . ')'
-
-    ')'  deslocar, e ir ao estado 163
-
-
-Estado 162
-
-   24 stmt: IF '(' expr ')' stmt ELSE . stmt
-
-    LIT_INT   deslocar, e ir ao estado 41
-    TRUE      deslocar, e ir ao estado 42
-    FALSE     deslocar, e ir ao estado 43
-    BREAK     deslocar, e ir ao estado 109
-    CONTINUE  deslocar, e ir ao estado 110
-    RETURN    deslocar, e ir ao estado 111
-    IF        deslocar, e ir ao estado 112
-    WHILE     deslocar, e ir ao estado 113
-    THIS      deslocar, e ir ao estado 44
-    TOK_NULL  deslocar, e ir ao estado 45
-    NEW       deslocar, e ir ao estado 46
-    ID        deslocar, e ir ao estado 47
-    LIT_STR   deslocar, e ir ao estado 48
-    THIS_DOT  deslocar, e ir ao estado 49
-    '-'       deslocar, e ir ao estado 50
-    '{'       deslocar, e ir ao estado 115
-    '('       deslocar, e ir ao estado 52
-    '!'       deslocar, e ir ao estado 53
-
-    stmt    ir ao estado 164
-    expr    ir ao estado 119
-    object  ir ao estado 55
-
-
-Estado 163
-
-   31 stmt: expr '.' ID '(' exprlistopt ')' . ';'
-   64 object: expr '.' ID '(' exprlistopt ')' .
-
-    ';'  deslocar, e ir ao estado 165
-
-    $padrão  reduzir usando a regra 64 (object)
-
-
-Estado 164
-
-   24 stmt: IF '(' expr ')' stmt ELSE stmt .
-
-    $padrão  reduzir usando a regra 24 (stmt)
-
-
-Estado 165
-
-   31 stmt: expr '.' ID '(' exprlistopt ')' ';' .
-
-    $padrão  reduzir usando a regra 31 (stmt)
+    $padrão  reduzir usando a regra 34 (object)
