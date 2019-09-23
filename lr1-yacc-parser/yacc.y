@@ -349,6 +349,15 @@ stmt : '{' blockstmts '}'                             {
                                                         addChildToParent(&parent, createNode(";"));
                                                         $$ = parent;
                                                       }
+     | THIS_DOT ID '(' exprlistopt ')'  ';'           {
+                                                        Node* parent = createNode("stmt");
+                                                        addChildToParent(&parent, createNode("this ."));
+                                                        addChildToParent(&parent, createNode("ID"));
+                                                        addChildToParent(&parent, createNode("("));
+                                                        addChildToParent(&parent, $4);
+                                                        addChildToParent(&parent, createNode(")"));
+                                                        addChildToParent(&parent, createNode(";"));
+                                                      }
      ;
 
 expr : expr '>' expr          {

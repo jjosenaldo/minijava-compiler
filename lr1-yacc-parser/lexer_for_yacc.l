@@ -106,7 +106,7 @@ return          { return RETURN; }
 if              { return IF; }
 else            { return ELSE; }
 while           { return WHILE; }
-this\.          { return THIS_DOT; }
+this[\n \t]*\.  { return THIS_DOT; }
 this            { return THIS; }
 new             { return NEW; }
 null            { return TOK_NULL; }
