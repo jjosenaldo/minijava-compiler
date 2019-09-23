@@ -41,45 +41,45 @@ Gramática
    20           | stmt blockstmts
    21           | %empty
 
-   22 type: type ARR
-   23     | BOOLEAN
-   24     | INT
-   25     | VOID
-   26     | ID
+   22 stmt: '{' blockstmts '}'
+   23     | IF '(' expr ')' stmt
+   24     | IF '(' expr ')' stmt ELSE stmt
+   25     | WHILE '(' expr ')' stmt
+   26     | expr '=' expr ';'
+   27     | CONTINUE ';'
+   28     | BREAK ';'
+   29     | RETURN expr ';'
+   30     | RETURN ';'
+   31     | expr '.' ID '(' exprlistopt ')' ';'
 
-   27 stmt: '{' blockstmts '}'
-   28     | IF '(' expr ')' stmt
-   29     | IF '(' expr ')' stmt ELSE stmt
-   30     | WHILE '(' expr ')' stmt
-   31     | expr '=' expr ';'
-   32     | CONTINUE ';'
-   33     | BREAK ';'
-   34     | RETURN expr ';'
-   35     | RETURN ';'
-   36     | expr '.' ID '(' exprlistopt ')' ';'
+   32 expr: expr '>' expr
+   33     | expr '<' expr
+   34     | expr GREAT_EQ expr
+   35     | expr LESS_EQ expr
+   36     | expr EQ expr
+   37     | expr DIFF expr
+   38     | expr OR expr
+   39     | expr AND expr
+   40     | expr '+' expr
+   41     | expr '-' expr
+   42     | expr '/' expr
+   43     | expr '*' expr
+   44     | expr '%' expr
+   45     | object filledbracks
+   46     | LIT_INT
+   47     | LIT_STR
+   48     | TRUE
+   49     | FALSE
+   50     | TOK_NULL
+   51     | object
+   52     | '-' expr
+   53     | '!' expr
 
-   37 expr: expr '>' expr
-   38     | expr '<' expr
-   39     | expr GREAT_EQ expr
-   40     | expr LESS_EQ expr
-   41     | expr EQ expr
-   42     | expr DIFF expr
-   43     | expr OR expr
-   44     | expr AND expr
-   45     | expr '+' expr
-   46     | expr '-' expr
-   47     | expr '/' expr
-   48     | expr '*' expr
-   49     | expr '%' expr
-   50     | object filledbracks
-   51     | LIT_INT
-   52     | LIT_STR
-   53     | TRUE
-   54     | FALSE
-   55     | TOK_NULL
-   56     | object
-   57     | '-' expr
-   58     | '!' expr
+   54 type: type ARR
+   55     | BOOLEAN
+   56     | INT
+   57     | VOID
+   58     | ID
 
    59 object: NEW type
    60       | NEW ID '(' exprlistopt ')'
@@ -103,53 +103,53 @@ Gramática
 Terminais, com as regras onde eles aparecem
 
 $end (0) 0
-'!' (33) 58
-'%' (37) 49
-'(' (40) 2 11 28 29 30 36 60 64 65
-')' (41) 2 11 28 29 30 36 60 64 65
-'*' (42) 48
-'+' (43) 45
+'!' (33) 53
+'%' (37) 44
+'(' (40) 2 11 23 24 25 31 60 64 65
+')' (41) 2 11 23 24 25 31 60 64 65
+'*' (42) 43
+'+' (43) 40
 ',' (44) 67
-'-' (45) 46 57
-'.' (46) 36 64
-'/' (47) 47
-';' (59) 9 10 14 31 32 33 34 35 36
-'<' (60) 38
-'=' (61) 10 31
-'>' (62) 37
+'-' (45) 41 52
+'.' (46) 31 64
+'/' (47) 42
+';' (59) 9 10 14 26 27 28 29 30 31
+'<' (60) 33
+'=' (61) 10 26
+'>' (62) 32
 '[' (91) 71 72
 ']' (93) 71 72
-'{' (123) 2 5 11 27 66
-'}' (125) 2 5 11 27 66
+'{' (123) 2 5 11 22 66
+'}' (125) 2 5 11 22 66
 error (256)
-LIT_INT (258) 51
-INT (259) 24
-TRUE (260) 53
-FALSE (261) 54
-BOOLEAN (262) 23
-BREAK (263) 33
+LIT_INT (258) 46
+INT (259) 56
+TRUE (260) 48
+FALSE (261) 49
+BOOLEAN (262) 55
+BREAK (263) 28
 CLASS (264) 2 5
-CONTINUE (265) 32
-VOID (266) 2 25
+CONTINUE (265) 27
+VOID (266) 2 57
 EXTENDS (267) 17
-RETURN (268) 34 35
-IF (269) 28 29
-ELSE (270) 29
-WHILE (271) 30
+RETURN (268) 29 30
+IF (269) 23 24
+ELSE (270) 24
+WHILE (271) 25
 THIS (272) 63
-TOK_NULL (273) 55
+TOK_NULL (273) 50
 NEW (274) 59 60
-ID (275) 2 5 9 10 11 16 17 26 36 60 61 62 64
+ID (275) 2 5 9 10 11 16 17 31 58 60 61 62 64
 ERROR (276)
-LIT_STR (277) 52
-ARR (278) 2 22
+LIT_STR (277) 47
+ARR (278) 2 54
 THIS_DOT (279) 62
-EQ (280) 41
-DIFF (281) 42
-LESS_EQ (282) 40
-GREAT_EQ (283) 39
-AND (284) 44
-OR (285) 43
+EQ (280) 36
+DIFF (281) 37
+LESS_EQ (282) 35
+GREAT_EQ (283) 34
+AND (284) 39
+OR (285) 38
 PREC_UNARY_OP (286)
 FILLED_BRACK (287)
 PREC_ELSELESS_IF (288)
@@ -182,24 +182,24 @@ param (62)
 extendsopt (63)
     à esquerda: 17 18, à direita: 5
 blockstmts (64)
-    à esquerda: 19 20 21, à direita: 2 11 19 20 27
-type (65)
-    à esquerda: 22 23 24 25 26, à direita: 9 10 11 16 22 59
-stmt (66)
-    à esquerda: 27 28 29 30 31 32 33 34 35 36, à direita: 20 28 29
-    30
-expr (67)
-    à esquerda: 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53
-    54 55 56 57 58, à direita: 10 28 29 30 31 34 36 37 38 39 40 41
-    42 43 44 45 46 47 48 49 57 58 64 65 67 68 71 72
+    à esquerda: 19 20 21, à direita: 2 11 19 20 22
+stmt (65)
+    à esquerda: 22 23 24 25 26 27 28 29 30 31, à direita: 20 23 24
+    25
+expr (66)
+    à esquerda: 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48
+    49 50 51 52 53, à direita: 10 23 24 25 26 29 31 32 33 34 35 36
+    37 38 39 40 41 42 43 44 52 53 64 65 67 68 71 72
+type (67)
+    à esquerda: 54 55 56 57 58, à direita: 9 10 11 16 54 59
 object (68)
-    à esquerda: 59 60 61 62 63 64 65 66, à direita: 50 56
+    à esquerda: 59 60 61 62 63 64 65 66, à direita: 45 51
 exprlist (69)
     à esquerda: 67 68, à direita: 66 67 69
 exprlistopt (70)
-    à esquerda: 69 70, à direita: 36 60 64
+    à esquerda: 69 70, à direita: 31 60 64
 filledbracks (71)
-    à esquerda: 71 72, à direita: 50 71
+    à esquerda: 71 72, à direita: 45 71
 
 
 Estado 0
@@ -364,30 +364,30 @@ Estado 18
 
 Estado 19
 
-   24 type: INT .
+   56 type: INT .
 
-    $padrão  reduzir usando a regra 24 (type)
+    $padrão  reduzir usando a regra 56 (type)
 
 
 Estado 20
 
-   23 type: BOOLEAN .
+   55 type: BOOLEAN .
 
-    $padrão  reduzir usando a regra 23 (type)
+    $padrão  reduzir usando a regra 55 (type)
 
 
 Estado 21
 
-   25 type: VOID .
+   57 type: VOID .
 
-    $padrão  reduzir usando a regra 25 (type)
+    $padrão  reduzir usando a regra 57 (type)
 
 
 Estado 22
 
-   26 type: ID .
+   58 type: ID .
 
-    $padrão  reduzir usando a regra 26 (type)
+    $padrão  reduzir usando a regra 58 (type)
 
 
 Estado 23
@@ -436,7 +436,7 @@ Estado 26
     9 vardec: type . ID ';'
    10       | type . ID '=' expr ';'
    11 methoddec: type . ID '(' params ')' '{' blockstmts '}'
-   22 type: type . ARR
+   54 type: type . ARR
 
     ID   deslocar, e ir ao estado 31
     ARR  deslocar, e ir ao estado 32
@@ -483,9 +483,9 @@ Estado 31
 
 Estado 32
 
-   22 type: type ARR .
+   54 type: type ARR .
 
-    $padrão  reduzir usando a regra 22 (type)
+    $padrão  reduzir usando a regra 54 (type)
 
 
 Estado 33
@@ -568,7 +568,7 @@ Estado 39
 Estado 40
 
    16 param: type . ID
-   22 type: type . ARR
+   54 type: type . ARR
 
     ID   deslocar, e ir ao estado 60
     ARR  deslocar, e ir ao estado 32
@@ -576,23 +576,23 @@ Estado 40
 
 Estado 41
 
-   51 expr: LIT_INT .
+   46 expr: LIT_INT .
 
-    $padrão  reduzir usando a regra 51 (expr)
+    $padrão  reduzir usando a regra 46 (expr)
 
 
 Estado 42
 
-   53 expr: TRUE .
+   48 expr: TRUE .
 
-    $padrão  reduzir usando a regra 53 (expr)
+    $padrão  reduzir usando a regra 48 (expr)
 
 
 Estado 43
 
-   54 expr: FALSE .
+   49 expr: FALSE .
 
-    $padrão  reduzir usando a regra 54 (expr)
+    $padrão  reduzir usando a regra 49 (expr)
 
 
 Estado 44
@@ -604,9 +604,9 @@ Estado 44
 
 Estado 45
 
-   55 expr: TOK_NULL .
+   50 expr: TOK_NULL .
 
-    $padrão  reduzir usando a regra 55 (expr)
+    $padrão  reduzir usando a regra 50 (expr)
 
 
 Estado 46
@@ -631,9 +631,9 @@ Estado 47
 
 Estado 48
 
-   52 expr: LIT_STR .
+   47 expr: LIT_STR .
 
-    $padrão  reduzir usando a regra 52 (expr)
+    $padrão  reduzir usando a regra 47 (expr)
 
 
 Estado 49
@@ -645,7 +645,7 @@ Estado 49
 
 Estado 50
 
-   57 expr: '-' . expr
+   52 expr: '-' . expr
 
     LIT_INT   deslocar, e ir ao estado 41
     TRUE      deslocar, e ir ao estado 42
@@ -712,7 +712,7 @@ Estado 52
 
 Estado 53
 
-   58 expr: '!' . expr
+   53 expr: '!' . expr
 
     LIT_INT   deslocar, e ir ao estado 41
     TRUE      deslocar, e ir ao estado 42
@@ -735,19 +735,19 @@ Estado 53
 Estado 54
 
    10 vardec: type ID '=' expr . ';'
-   37 expr: expr . '>' expr
-   38     | expr . '<' expr
-   39     | expr . GREAT_EQ expr
-   40     | expr . LESS_EQ expr
-   41     | expr . EQ expr
-   42     | expr . DIFF expr
-   43     | expr . OR expr
-   44     | expr . AND expr
-   45     | expr . '+' expr
-   46     | expr . '-' expr
-   47     | expr . '/' expr
-   48     | expr . '*' expr
-   49     | expr . '%' expr
+   32 expr: expr . '>' expr
+   33     | expr . '<' expr
+   34     | expr . GREAT_EQ expr
+   35     | expr . LESS_EQ expr
+   36     | expr . EQ expr
+   37     | expr . DIFF expr
+   38     | expr . OR expr
+   39     | expr . AND expr
+   40     | expr . '+' expr
+   41     | expr . '-' expr
+   42     | expr . '/' expr
+   43     | expr . '*' expr
+   44     | expr . '%' expr
    64 object: expr . '.' ID '(' exprlistopt ')'
 
     '.'       deslocar, e ir ao estado 69
@@ -769,12 +769,12 @@ Estado 54
 
 Estado 55
 
-   50 expr: object . filledbracks
-   56     | object .
+   45 expr: object . filledbracks
+   51     | object .
 
     '['  deslocar, e ir ao estado 84
 
-    $padrão  reduzir usando a regra 56 (expr)
+    $padrão  reduzir usando a regra 51 (expr)
 
     filledbracks  ir ao estado 85
 
@@ -822,17 +822,17 @@ Estado 60
 
 Estado 61
 
-   26 type: ID .
+   58 type: ID .
    60 object: NEW ID . '(' exprlistopt ')'
 
     '('  deslocar, e ir ao estado 89
 
-    $padrão  reduzir usando a regra 26 (type)
+    $padrão  reduzir usando a regra 58 (type)
 
 
 Estado 62
 
-   22 type: type . ARR
+   54 type: type . ARR
    59 object: NEW type .
 
     ARR  deslocar, e ir ao estado 32
@@ -849,40 +849,40 @@ Estado 63
 
 Estado 64
 
-   37 expr: expr . '>' expr
-   38     | expr . '<' expr
-   39     | expr . GREAT_EQ expr
-   40     | expr . LESS_EQ expr
-   41     | expr . EQ expr
-   42     | expr . DIFF expr
-   43     | expr . OR expr
-   44     | expr . AND expr
-   45     | expr . '+' expr
-   46     | expr . '-' expr
-   47     | expr . '/' expr
-   48     | expr . '*' expr
-   49     | expr . '%' expr
-   57     | '-' expr .
+   32 expr: expr . '>' expr
+   33     | expr . '<' expr
+   34     | expr . GREAT_EQ expr
+   35     | expr . LESS_EQ expr
+   36     | expr . EQ expr
+   37     | expr . DIFF expr
+   38     | expr . OR expr
+   39     | expr . AND expr
+   40     | expr . '+' expr
+   41     | expr . '-' expr
+   42     | expr . '/' expr
+   43     | expr . '*' expr
+   44     | expr . '%' expr
+   52     | '-' expr .
    64 object: expr . '.' ID '(' exprlistopt ')'
 
-    $padrão  reduzir usando a regra 57 (expr)
+    $padrão  reduzir usando a regra 52 (expr)
 
 
 Estado 65
 
-   37 expr: expr . '>' expr
-   38     | expr . '<' expr
-   39     | expr . GREAT_EQ expr
-   40     | expr . LESS_EQ expr
-   41     | expr . EQ expr
-   42     | expr . DIFF expr
-   43     | expr . OR expr
-   44     | expr . AND expr
-   45     | expr . '+' expr
-   46     | expr . '-' expr
-   47     | expr . '/' expr
-   48     | expr . '*' expr
-   49     | expr . '%' expr
+   32 expr: expr . '>' expr
+   33     | expr . '<' expr
+   34     | expr . GREAT_EQ expr
+   35     | expr . LESS_EQ expr
+   36     | expr . EQ expr
+   37     | expr . DIFF expr
+   38     | expr . OR expr
+   39     | expr . AND expr
+   40     | expr . '+' expr
+   41     | expr . '-' expr
+   42     | expr . '/' expr
+   43     | expr . '*' expr
+   44     | expr . '%' expr
    64 object: expr . '.' ID '(' exprlistopt ')'
    67 exprlist: expr . ',' exprlist
    68         | expr .
@@ -915,19 +915,19 @@ Estado 66
 
 Estado 67
 
-   37 expr: expr . '>' expr
-   38     | expr . '<' expr
-   39     | expr . GREAT_EQ expr
-   40     | expr . LESS_EQ expr
-   41     | expr . EQ expr
-   42     | expr . DIFF expr
-   43     | expr . OR expr
-   44     | expr . AND expr
-   45     | expr . '+' expr
-   46     | expr . '-' expr
-   47     | expr . '/' expr
-   48     | expr . '*' expr
-   49     | expr . '%' expr
+   32 expr: expr . '>' expr
+   33     | expr . '<' expr
+   34     | expr . GREAT_EQ expr
+   35     | expr . LESS_EQ expr
+   36     | expr . EQ expr
+   37     | expr . DIFF expr
+   38     | expr . OR expr
+   39     | expr . AND expr
+   40     | expr . '+' expr
+   41     | expr . '-' expr
+   42     | expr . '/' expr
+   43     | expr . '*' expr
+   44     | expr . '%' expr
    64 object: expr . '.' ID '(' exprlistopt ')'
    65       | '(' expr . ')'
 
@@ -950,23 +950,23 @@ Estado 67
 
 Estado 68
 
-   37 expr: expr . '>' expr
-   38     | expr . '<' expr
-   39     | expr . GREAT_EQ expr
-   40     | expr . LESS_EQ expr
-   41     | expr . EQ expr
-   42     | expr . DIFF expr
-   43     | expr . OR expr
-   44     | expr . AND expr
-   45     | expr . '+' expr
-   46     | expr . '-' expr
-   47     | expr . '/' expr
-   48     | expr . '*' expr
-   49     | expr . '%' expr
-   58     | '!' expr .
+   32 expr: expr . '>' expr
+   33     | expr . '<' expr
+   34     | expr . GREAT_EQ expr
+   35     | expr . LESS_EQ expr
+   36     | expr . EQ expr
+   37     | expr . DIFF expr
+   38     | expr . OR expr
+   39     | expr . AND expr
+   40     | expr . '+' expr
+   41     | expr . '-' expr
+   42     | expr . '/' expr
+   43     | expr . '*' expr
+   44     | expr . '%' expr
+   53     | '!' expr .
    64 object: expr . '.' ID '(' exprlistopt ')'
 
-    $padrão  reduzir usando a regra 58 (expr)
+    $padrão  reduzir usando a regra 53 (expr)
 
 
 Estado 69
@@ -978,7 +978,7 @@ Estado 69
 
 Estado 70
 
-   38 expr: expr '<' . expr
+   33 expr: expr '<' . expr
 
     LIT_INT   deslocar, e ir ao estado 41
     TRUE      deslocar, e ir ao estado 42
@@ -1000,7 +1000,7 @@ Estado 70
 
 Estado 71
 
-   37 expr: expr '>' . expr
+   32 expr: expr '>' . expr
 
     LIT_INT   deslocar, e ir ao estado 41
     TRUE      deslocar, e ir ao estado 42
@@ -1022,7 +1022,7 @@ Estado 71
 
 Estado 72
 
-   41 expr: expr EQ . expr
+   36 expr: expr EQ . expr
 
     LIT_INT   deslocar, e ir ao estado 41
     TRUE      deslocar, e ir ao estado 42
@@ -1044,7 +1044,7 @@ Estado 72
 
 Estado 73
 
-   42 expr: expr DIFF . expr
+   37 expr: expr DIFF . expr
 
     LIT_INT   deslocar, e ir ao estado 41
     TRUE      deslocar, e ir ao estado 42
@@ -1066,7 +1066,7 @@ Estado 73
 
 Estado 74
 
-   40 expr: expr LESS_EQ . expr
+   35 expr: expr LESS_EQ . expr
 
     LIT_INT   deslocar, e ir ao estado 41
     TRUE      deslocar, e ir ao estado 42
@@ -1088,7 +1088,7 @@ Estado 74
 
 Estado 75
 
-   39 expr: expr GREAT_EQ . expr
+   34 expr: expr GREAT_EQ . expr
 
     LIT_INT   deslocar, e ir ao estado 41
     TRUE      deslocar, e ir ao estado 42
@@ -1110,7 +1110,7 @@ Estado 75
 
 Estado 76
 
-   44 expr: expr AND . expr
+   39 expr: expr AND . expr
 
     LIT_INT   deslocar, e ir ao estado 41
     TRUE      deslocar, e ir ao estado 42
@@ -1132,7 +1132,7 @@ Estado 76
 
 Estado 77
 
-   43 expr: expr OR . expr
+   38 expr: expr OR . expr
 
     LIT_INT   deslocar, e ir ao estado 41
     TRUE      deslocar, e ir ao estado 42
@@ -1154,7 +1154,7 @@ Estado 77
 
 Estado 78
 
-   45 expr: expr '+' . expr
+   40 expr: expr '+' . expr
 
     LIT_INT   deslocar, e ir ao estado 41
     TRUE      deslocar, e ir ao estado 42
@@ -1176,7 +1176,7 @@ Estado 78
 
 Estado 79
 
-   46 expr: expr '-' . expr
+   41 expr: expr '-' . expr
 
     LIT_INT   deslocar, e ir ao estado 41
     TRUE      deslocar, e ir ao estado 42
@@ -1198,7 +1198,7 @@ Estado 79
 
 Estado 80
 
-   48 expr: expr '*' . expr
+   43 expr: expr '*' . expr
 
     LIT_INT   deslocar, e ir ao estado 41
     TRUE      deslocar, e ir ao estado 42
@@ -1220,7 +1220,7 @@ Estado 80
 
 Estado 81
 
-   47 expr: expr '/' . expr
+   42 expr: expr '/' . expr
 
     LIT_INT   deslocar, e ir ao estado 41
     TRUE      deslocar, e ir ao estado 42
@@ -1242,7 +1242,7 @@ Estado 81
 
 Estado 82
 
-   49 expr: expr '%' . expr
+   44 expr: expr '%' . expr
 
     LIT_INT   deslocar, e ir ao estado 41
     TRUE      deslocar, e ir ao estado 42
@@ -1293,12 +1293,12 @@ Estado 84
 
 Estado 85
 
-   50 expr: object filledbracks .
+   45 expr: object filledbracks .
    71 filledbracks: filledbracks . '[' expr ']'
 
     '['  deslocar, e ir ao estado 108
 
-    $padrão  reduzir usando a regra 50 (expr)
+    $padrão  reduzir usando a regra 45 (expr)
 
 
 Estado 86
@@ -1331,9 +1331,9 @@ Estado 86
 
     vardec      ir ao estado 116
     blockstmts  ir ao estado 117
-    type        ir ao estado 118
-    stmt        ir ao estado 119
-    expr        ir ao estado 120
+    stmt        ir ao estado 118
+    expr        ir ao estado 119
+    type        ir ao estado 120
     object      ir ao estado 55
 
 
@@ -1367,9 +1367,9 @@ Estado 87
 
     vardec      ir ao estado 116
     blockstmts  ir ao estado 121
-    type        ir ao estado 118
-    stmt        ir ao estado 119
-    expr        ir ao estado 120
+    stmt        ir ao estado 118
+    expr        ir ao estado 119
+    type        ir ao estado 120
     object      ir ao estado 55
 
 
@@ -1456,20 +1456,20 @@ Estado 93
 
 Estado 94
 
-   37 expr: expr . '>' expr
-   38     | expr . '<' expr
-   38     | expr '<' expr .
-   39     | expr . GREAT_EQ expr
-   40     | expr . LESS_EQ expr
-   41     | expr . EQ expr
-   42     | expr . DIFF expr
-   43     | expr . OR expr
-   44     | expr . AND expr
-   45     | expr . '+' expr
-   46     | expr . '-' expr
-   47     | expr . '/' expr
-   48     | expr . '*' expr
-   49     | expr . '%' expr
+   32 expr: expr . '>' expr
+   33     | expr . '<' expr
+   33     | expr '<' expr .
+   34     | expr . GREAT_EQ expr
+   35     | expr . LESS_EQ expr
+   36     | expr . EQ expr
+   37     | expr . DIFF expr
+   38     | expr . OR expr
+   39     | expr . AND expr
+   40     | expr . '+' expr
+   41     | expr . '-' expr
+   42     | expr . '/' expr
+   43     | expr . '*' expr
+   44     | expr . '%' expr
    64 object: expr . '.' ID '(' exprlistopt ')'
 
     AND  deslocar, e ir ao estado 76
@@ -1487,25 +1487,97 @@ Estado 94
     LESS_EQ   erro (não associativo)
     GREAT_EQ  erro (não associativo)
 
-    $padrão  reduzir usando a regra 38 (expr)
+    $padrão  reduzir usando a regra 33 (expr)
 
 
 Estado 95
 
-   37 expr: expr . '>' expr
-   37     | expr '>' expr .
-   38     | expr . '<' expr
-   39     | expr . GREAT_EQ expr
-   40     | expr . LESS_EQ expr
-   41     | expr . EQ expr
-   42     | expr . DIFF expr
-   43     | expr . OR expr
-   44     | expr . AND expr
-   45     | expr . '+' expr
-   46     | expr . '-' expr
-   47     | expr . '/' expr
-   48     | expr . '*' expr
-   49     | expr . '%' expr
+   32 expr: expr . '>' expr
+   32     | expr '>' expr .
+   33     | expr . '<' expr
+   34     | expr . GREAT_EQ expr
+   35     | expr . LESS_EQ expr
+   36     | expr . EQ expr
+   37     | expr . DIFF expr
+   38     | expr . OR expr
+   39     | expr . AND expr
+   40     | expr . '+' expr
+   41     | expr . '-' expr
+   42     | expr . '/' expr
+   43     | expr . '*' expr
+   44     | expr . '%' expr
+   64 object: expr . '.' ID '(' exprlistopt ')'
+
+    AND  deslocar, e ir ao estado 76
+    OR   deslocar, e ir ao estado 77
+    '+'  deslocar, e ir ao estado 78
+    '-'  deslocar, e ir ao estado 79
+    '*'  deslocar, e ir ao estado 80
+    '/'  deslocar, e ir ao estado 81
+    '%'  deslocar, e ir ao estado 82
+
+    '<'       erro (não associativo)
+    '>'       erro (não associativo)
+    EQ        erro (não associativo)
+    DIFF      erro (não associativo)
+    LESS_EQ   erro (não associativo)
+    GREAT_EQ  erro (não associativo)
+
+    $padrão  reduzir usando a regra 32 (expr)
+
+
+Estado 96
+
+   32 expr: expr . '>' expr
+   33     | expr . '<' expr
+   34     | expr . GREAT_EQ expr
+   35     | expr . LESS_EQ expr
+   36     | expr . EQ expr
+   36     | expr EQ expr .
+   37     | expr . DIFF expr
+   38     | expr . OR expr
+   39     | expr . AND expr
+   40     | expr . '+' expr
+   41     | expr . '-' expr
+   42     | expr . '/' expr
+   43     | expr . '*' expr
+   44     | expr . '%' expr
+   64 object: expr . '.' ID '(' exprlistopt ')'
+
+    AND  deslocar, e ir ao estado 76
+    OR   deslocar, e ir ao estado 77
+    '+'  deslocar, e ir ao estado 78
+    '-'  deslocar, e ir ao estado 79
+    '*'  deslocar, e ir ao estado 80
+    '/'  deslocar, e ir ao estado 81
+    '%'  deslocar, e ir ao estado 82
+
+    '<'       erro (não associativo)
+    '>'       erro (não associativo)
+    EQ        erro (não associativo)
+    DIFF      erro (não associativo)
+    LESS_EQ   erro (não associativo)
+    GREAT_EQ  erro (não associativo)
+
+    $padrão  reduzir usando a regra 36 (expr)
+
+
+Estado 97
+
+   32 expr: expr . '>' expr
+   33     | expr . '<' expr
+   34     | expr . GREAT_EQ expr
+   35     | expr . LESS_EQ expr
+   36     | expr . EQ expr
+   37     | expr . DIFF expr
+   37     | expr DIFF expr .
+   38     | expr . OR expr
+   39     | expr . AND expr
+   40     | expr . '+' expr
+   41     | expr . '-' expr
+   42     | expr . '/' expr
+   43     | expr . '*' expr
+   44     | expr . '%' expr
    64 object: expr . '.' ID '(' exprlistopt ')'
 
     AND  deslocar, e ir ao estado 76
@@ -1526,94 +1598,22 @@ Estado 95
     $padrão  reduzir usando a regra 37 (expr)
 
 
-Estado 96
-
-   37 expr: expr . '>' expr
-   38     | expr . '<' expr
-   39     | expr . GREAT_EQ expr
-   40     | expr . LESS_EQ expr
-   41     | expr . EQ expr
-   41     | expr EQ expr .
-   42     | expr . DIFF expr
-   43     | expr . OR expr
-   44     | expr . AND expr
-   45     | expr . '+' expr
-   46     | expr . '-' expr
-   47     | expr . '/' expr
-   48     | expr . '*' expr
-   49     | expr . '%' expr
-   64 object: expr . '.' ID '(' exprlistopt ')'
-
-    AND  deslocar, e ir ao estado 76
-    OR   deslocar, e ir ao estado 77
-    '+'  deslocar, e ir ao estado 78
-    '-'  deslocar, e ir ao estado 79
-    '*'  deslocar, e ir ao estado 80
-    '/'  deslocar, e ir ao estado 81
-    '%'  deslocar, e ir ao estado 82
-
-    '<'       erro (não associativo)
-    '>'       erro (não associativo)
-    EQ        erro (não associativo)
-    DIFF      erro (não associativo)
-    LESS_EQ   erro (não associativo)
-    GREAT_EQ  erro (não associativo)
-
-    $padrão  reduzir usando a regra 41 (expr)
-
-
-Estado 97
-
-   37 expr: expr . '>' expr
-   38     | expr . '<' expr
-   39     | expr . GREAT_EQ expr
-   40     | expr . LESS_EQ expr
-   41     | expr . EQ expr
-   42     | expr . DIFF expr
-   42     | expr DIFF expr .
-   43     | expr . OR expr
-   44     | expr . AND expr
-   45     | expr . '+' expr
-   46     | expr . '-' expr
-   47     | expr . '/' expr
-   48     | expr . '*' expr
-   49     | expr . '%' expr
-   64 object: expr . '.' ID '(' exprlistopt ')'
-
-    AND  deslocar, e ir ao estado 76
-    OR   deslocar, e ir ao estado 77
-    '+'  deslocar, e ir ao estado 78
-    '-'  deslocar, e ir ao estado 79
-    '*'  deslocar, e ir ao estado 80
-    '/'  deslocar, e ir ao estado 81
-    '%'  deslocar, e ir ao estado 82
-
-    '<'       erro (não associativo)
-    '>'       erro (não associativo)
-    EQ        erro (não associativo)
-    DIFF      erro (não associativo)
-    LESS_EQ   erro (não associativo)
-    GREAT_EQ  erro (não associativo)
-
-    $padrão  reduzir usando a regra 42 (expr)
-
-
 Estado 98
 
-   37 expr: expr . '>' expr
-   38     | expr . '<' expr
-   39     | expr . GREAT_EQ expr
-   40     | expr . LESS_EQ expr
-   40     | expr LESS_EQ expr .
-   41     | expr . EQ expr
-   42     | expr . DIFF expr
-   43     | expr . OR expr
-   44     | expr . AND expr
-   45     | expr . '+' expr
-   46     | expr . '-' expr
-   47     | expr . '/' expr
-   48     | expr . '*' expr
-   49     | expr . '%' expr
+   32 expr: expr . '>' expr
+   33     | expr . '<' expr
+   34     | expr . GREAT_EQ expr
+   35     | expr . LESS_EQ expr
+   35     | expr LESS_EQ expr .
+   36     | expr . EQ expr
+   37     | expr . DIFF expr
+   38     | expr . OR expr
+   39     | expr . AND expr
+   40     | expr . '+' expr
+   41     | expr . '-' expr
+   42     | expr . '/' expr
+   43     | expr . '*' expr
+   44     | expr . '%' expr
    64 object: expr . '.' ID '(' exprlistopt ')'
 
     AND  deslocar, e ir ao estado 76
@@ -1631,25 +1631,25 @@ Estado 98
     LESS_EQ   erro (não associativo)
     GREAT_EQ  erro (não associativo)
 
-    $padrão  reduzir usando a regra 40 (expr)
+    $padrão  reduzir usando a regra 35 (expr)
 
 
 Estado 99
 
-   37 expr: expr . '>' expr
-   38     | expr . '<' expr
-   39     | expr . GREAT_EQ expr
-   39     | expr GREAT_EQ expr .
-   40     | expr . LESS_EQ expr
-   41     | expr . EQ expr
-   42     | expr . DIFF expr
-   43     | expr . OR expr
-   44     | expr . AND expr
-   45     | expr . '+' expr
-   46     | expr . '-' expr
-   47     | expr . '/' expr
-   48     | expr . '*' expr
-   49     | expr . '%' expr
+   32 expr: expr . '>' expr
+   33     | expr . '<' expr
+   34     | expr . GREAT_EQ expr
+   34     | expr GREAT_EQ expr .
+   35     | expr . LESS_EQ expr
+   36     | expr . EQ expr
+   37     | expr . DIFF expr
+   38     | expr . OR expr
+   39     | expr . AND expr
+   40     | expr . '+' expr
+   41     | expr . '-' expr
+   42     | expr . '/' expr
+   43     | expr . '*' expr
+   44     | expr . '%' expr
    64 object: expr . '.' ID '(' exprlistopt ')'
 
     AND  deslocar, e ir ao estado 76
@@ -1667,25 +1667,25 @@ Estado 99
     LESS_EQ   erro (não associativo)
     GREAT_EQ  erro (não associativo)
 
-    $padrão  reduzir usando a regra 39 (expr)
+    $padrão  reduzir usando a regra 34 (expr)
 
 
 Estado 100
 
-   37 expr: expr . '>' expr
-   38     | expr . '<' expr
-   39     | expr . GREAT_EQ expr
-   40     | expr . LESS_EQ expr
-   41     | expr . EQ expr
-   42     | expr . DIFF expr
-   43     | expr . OR expr
-   44     | expr . AND expr
-   44     | expr AND expr .
-   45     | expr . '+' expr
-   46     | expr . '-' expr
-   47     | expr . '/' expr
-   48     | expr . '*' expr
-   49     | expr . '%' expr
+   32 expr: expr . '>' expr
+   33     | expr . '<' expr
+   34     | expr . GREAT_EQ expr
+   35     | expr . LESS_EQ expr
+   36     | expr . EQ expr
+   37     | expr . DIFF expr
+   38     | expr . OR expr
+   39     | expr . AND expr
+   39     | expr AND expr .
+   40     | expr . '+' expr
+   41     | expr . '-' expr
+   42     | expr . '/' expr
+   43     | expr . '*' expr
+   44     | expr . '%' expr
    64 object: expr . '.' ID '(' exprlistopt ')'
 
     '+'  deslocar, e ir ao estado 78
@@ -1694,25 +1694,25 @@ Estado 100
     '/'  deslocar, e ir ao estado 81
     '%'  deslocar, e ir ao estado 82
 
-    $padrão  reduzir usando a regra 44 (expr)
+    $padrão  reduzir usando a regra 39 (expr)
 
 
 Estado 101
 
-   37 expr: expr . '>' expr
-   38     | expr . '<' expr
-   39     | expr . GREAT_EQ expr
-   40     | expr . LESS_EQ expr
-   41     | expr . EQ expr
-   42     | expr . DIFF expr
-   43     | expr . OR expr
-   43     | expr OR expr .
-   44     | expr . AND expr
-   45     | expr . '+' expr
-   46     | expr . '-' expr
-   47     | expr . '/' expr
-   48     | expr . '*' expr
-   49     | expr . '%' expr
+   32 expr: expr . '>' expr
+   33     | expr . '<' expr
+   34     | expr . GREAT_EQ expr
+   35     | expr . LESS_EQ expr
+   36     | expr . EQ expr
+   37     | expr . DIFF expr
+   38     | expr . OR expr
+   38     | expr OR expr .
+   39     | expr . AND expr
+   40     | expr . '+' expr
+   41     | expr . '-' expr
+   42     | expr . '/' expr
+   43     | expr . '*' expr
+   44     | expr . '%' expr
    64 object: expr . '.' ID '(' exprlistopt ')'
 
     '+'  deslocar, e ir ao estado 78
@@ -1721,137 +1721,137 @@ Estado 101
     '/'  deslocar, e ir ao estado 81
     '%'  deslocar, e ir ao estado 82
 
-    $padrão  reduzir usando a regra 43 (expr)
+    $padrão  reduzir usando a regra 38 (expr)
 
 
 Estado 102
 
-   37 expr: expr . '>' expr
-   38     | expr . '<' expr
-   39     | expr . GREAT_EQ expr
-   40     | expr . LESS_EQ expr
-   41     | expr . EQ expr
-   42     | expr . DIFF expr
-   43     | expr . OR expr
-   44     | expr . AND expr
-   45     | expr . '+' expr
-   45     | expr '+' expr .
-   46     | expr . '-' expr
-   47     | expr . '/' expr
-   48     | expr . '*' expr
-   49     | expr . '%' expr
+   32 expr: expr . '>' expr
+   33     | expr . '<' expr
+   34     | expr . GREAT_EQ expr
+   35     | expr . LESS_EQ expr
+   36     | expr . EQ expr
+   37     | expr . DIFF expr
+   38     | expr . OR expr
+   39     | expr . AND expr
+   40     | expr . '+' expr
+   40     | expr '+' expr .
+   41     | expr . '-' expr
+   42     | expr . '/' expr
+   43     | expr . '*' expr
+   44     | expr . '%' expr
    64 object: expr . '.' ID '(' exprlistopt ')'
 
     '*'  deslocar, e ir ao estado 80
     '/'  deslocar, e ir ao estado 81
     '%'  deslocar, e ir ao estado 82
 
-    $padrão  reduzir usando a regra 45 (expr)
+    $padrão  reduzir usando a regra 40 (expr)
 
 
 Estado 103
 
-   37 expr: expr . '>' expr
-   38     | expr . '<' expr
-   39     | expr . GREAT_EQ expr
-   40     | expr . LESS_EQ expr
-   41     | expr . EQ expr
-   42     | expr . DIFF expr
-   43     | expr . OR expr
-   44     | expr . AND expr
-   45     | expr . '+' expr
-   46     | expr . '-' expr
-   46     | expr '-' expr .
-   47     | expr . '/' expr
-   48     | expr . '*' expr
-   49     | expr . '%' expr
+   32 expr: expr . '>' expr
+   33     | expr . '<' expr
+   34     | expr . GREAT_EQ expr
+   35     | expr . LESS_EQ expr
+   36     | expr . EQ expr
+   37     | expr . DIFF expr
+   38     | expr . OR expr
+   39     | expr . AND expr
+   40     | expr . '+' expr
+   41     | expr . '-' expr
+   41     | expr '-' expr .
+   42     | expr . '/' expr
+   43     | expr . '*' expr
+   44     | expr . '%' expr
    64 object: expr . '.' ID '(' exprlistopt ')'
 
     '*'  deslocar, e ir ao estado 80
     '/'  deslocar, e ir ao estado 81
     '%'  deslocar, e ir ao estado 82
 
-    $padrão  reduzir usando a regra 46 (expr)
+    $padrão  reduzir usando a regra 41 (expr)
 
 
 Estado 104
 
-   37 expr: expr . '>' expr
-   38     | expr . '<' expr
-   39     | expr . GREAT_EQ expr
-   40     | expr . LESS_EQ expr
-   41     | expr . EQ expr
-   42     | expr . DIFF expr
-   43     | expr . OR expr
-   44     | expr . AND expr
-   45     | expr . '+' expr
-   46     | expr . '-' expr
-   47     | expr . '/' expr
-   48     | expr . '*' expr
-   48     | expr '*' expr .
-   49     | expr . '%' expr
+   32 expr: expr . '>' expr
+   33     | expr . '<' expr
+   34     | expr . GREAT_EQ expr
+   35     | expr . LESS_EQ expr
+   36     | expr . EQ expr
+   37     | expr . DIFF expr
+   38     | expr . OR expr
+   39     | expr . AND expr
+   40     | expr . '+' expr
+   41     | expr . '-' expr
+   42     | expr . '/' expr
+   43     | expr . '*' expr
+   43     | expr '*' expr .
+   44     | expr . '%' expr
    64 object: expr . '.' ID '(' exprlistopt ')'
 
-    $padrão  reduzir usando a regra 48 (expr)
+    $padrão  reduzir usando a regra 43 (expr)
 
 
 Estado 105
 
-   37 expr: expr . '>' expr
-   38     | expr . '<' expr
-   39     | expr . GREAT_EQ expr
-   40     | expr . LESS_EQ expr
-   41     | expr . EQ expr
-   42     | expr . DIFF expr
-   43     | expr . OR expr
-   44     | expr . AND expr
-   45     | expr . '+' expr
-   46     | expr . '-' expr
-   47     | expr . '/' expr
-   47     | expr '/' expr .
-   48     | expr . '*' expr
-   49     | expr . '%' expr
+   32 expr: expr . '>' expr
+   33     | expr . '<' expr
+   34     | expr . GREAT_EQ expr
+   35     | expr . LESS_EQ expr
+   36     | expr . EQ expr
+   37     | expr . DIFF expr
+   38     | expr . OR expr
+   39     | expr . AND expr
+   40     | expr . '+' expr
+   41     | expr . '-' expr
+   42     | expr . '/' expr
+   42     | expr '/' expr .
+   43     | expr . '*' expr
+   44     | expr . '%' expr
    64 object: expr . '.' ID '(' exprlistopt ')'
 
-    $padrão  reduzir usando a regra 47 (expr)
+    $padrão  reduzir usando a regra 42 (expr)
 
 
 Estado 106
 
-   37 expr: expr . '>' expr
-   38     | expr . '<' expr
-   39     | expr . GREAT_EQ expr
-   40     | expr . LESS_EQ expr
-   41     | expr . EQ expr
-   42     | expr . DIFF expr
-   43     | expr . OR expr
-   44     | expr . AND expr
-   45     | expr . '+' expr
-   46     | expr . '-' expr
-   47     | expr . '/' expr
-   48     | expr . '*' expr
-   49     | expr . '%' expr
-   49     | expr '%' expr .
+   32 expr: expr . '>' expr
+   33     | expr . '<' expr
+   34     | expr . GREAT_EQ expr
+   35     | expr . LESS_EQ expr
+   36     | expr . EQ expr
+   37     | expr . DIFF expr
+   38     | expr . OR expr
+   39     | expr . AND expr
+   40     | expr . '+' expr
+   41     | expr . '-' expr
+   42     | expr . '/' expr
+   43     | expr . '*' expr
+   44     | expr . '%' expr
+   44     | expr '%' expr .
    64 object: expr . '.' ID '(' exprlistopt ')'
 
-    $padrão  reduzir usando a regra 49 (expr)
+    $padrão  reduzir usando a regra 44 (expr)
 
 
 Estado 107
 
-   37 expr: expr . '>' expr
-   38     | expr . '<' expr
-   39     | expr . GREAT_EQ expr
-   40     | expr . LESS_EQ expr
-   41     | expr . EQ expr
-   42     | expr . DIFF expr
-   43     | expr . OR expr
-   44     | expr . AND expr
-   45     | expr . '+' expr
-   46     | expr . '-' expr
-   47     | expr . '/' expr
-   48     | expr . '*' expr
-   49     | expr . '%' expr
+   32 expr: expr . '>' expr
+   33     | expr . '<' expr
+   34     | expr . GREAT_EQ expr
+   35     | expr . LESS_EQ expr
+   36     | expr . EQ expr
+   37     | expr . DIFF expr
+   38     | expr . OR expr
+   39     | expr . AND expr
+   40     | expr . '+' expr
+   41     | expr . '-' expr
+   42     | expr . '/' expr
+   43     | expr . '*' expr
+   44     | expr . '%' expr
    64 object: expr . '.' ID '(' exprlistopt ')'
    72 filledbracks: '[' expr . ']'
 
@@ -1896,22 +1896,22 @@ Estado 108
 
 Estado 109
 
-   33 stmt: BREAK . ';'
+   28 stmt: BREAK . ';'
 
     ';'  deslocar, e ir ao estado 129
 
 
 Estado 110
 
-   32 stmt: CONTINUE . ';'
+   27 stmt: CONTINUE . ';'
 
     ';'  deslocar, e ir ao estado 130
 
 
 Estado 111
 
-   34 stmt: RETURN . expr ';'
-   35     | RETURN . ';'
+   29 stmt: RETURN . expr ';'
+   30     | RETURN . ';'
 
     LIT_INT   deslocar, e ir ao estado 41
     TRUE      deslocar, e ir ao estado 42
@@ -1934,32 +1934,32 @@ Estado 111
 
 Estado 112
 
-   28 stmt: IF . '(' expr ')' stmt
-   29     | IF . '(' expr ')' stmt ELSE stmt
+   23 stmt: IF . '(' expr ')' stmt
+   24     | IF . '(' expr ')' stmt ELSE stmt
 
     '('  deslocar, e ir ao estado 133
 
 
 Estado 113
 
-   30 stmt: WHILE . '(' expr ')' stmt
+   25 stmt: WHILE . '(' expr ')' stmt
 
     '('  deslocar, e ir ao estado 134
 
 
 Estado 114
 
-   26 type: ID .
+   58 type: ID .
    61 object: ID .
 
-    ID        reduzir usando a regra 26 (type)
-    ARR       reduzir usando a regra 26 (type)
+    ID        reduzir usando a regra 58 (type)
+    ARR       reduzir usando a regra 58 (type)
     $padrão  reduzir usando a regra 61 (object)
 
 
 Estado 115
 
-   27 stmt: '{' . blockstmts '}'
+   22 stmt: '{' . blockstmts '}'
    66 object: '{' . exprlist '}'
 
     LIT_INT   deslocar, e ir ao estado 41
@@ -1988,9 +1988,9 @@ Estado 115
 
     vardec      ir ao estado 116
     blockstmts  ir ao estado 135
-    type        ir ao estado 118
-    stmt        ir ao estado 119
+    stmt        ir ao estado 118
     expr        ir ao estado 136
+    type        ir ao estado 120
     object      ir ao estado 55
     exprlist    ir ao estado 66
 
@@ -2025,9 +2025,9 @@ Estado 116
 
     vardec      ir ao estado 116
     blockstmts  ir ao estado 137
-    type        ir ao estado 118
-    stmt        ir ao estado 119
-    expr        ir ao estado 120
+    stmt        ir ao estado 118
+    expr        ir ao estado 119
+    type        ir ao estado 120
     object      ir ao estado 55
 
 
@@ -2039,16 +2039,6 @@ Estado 117
 
 
 Estado 118
-
-    9 vardec: type . ID ';'
-   10       | type . ID '=' expr ';'
-   22 type: type . ARR
-
-    ID   deslocar, e ir ao estado 139
-    ARR  deslocar, e ir ao estado 32
-
-
-Estado 119
 
    20 blockstmts: stmt . blockstmts
 
@@ -2077,33 +2067,33 @@ Estado 119
     $padrão  reduzir usando a regra 21 (blockstmts)
 
     vardec      ir ao estado 116
-    blockstmts  ir ao estado 140
-    type        ir ao estado 118
-    stmt        ir ao estado 119
-    expr        ir ao estado 120
+    blockstmts  ir ao estado 139
+    stmt        ir ao estado 118
+    expr        ir ao estado 119
+    type        ir ao estado 120
     object      ir ao estado 55
 
 
-Estado 120
+Estado 119
 
-   31 stmt: expr . '=' expr ';'
-   36     | expr . '.' ID '(' exprlistopt ')' ';'
-   37 expr: expr . '>' expr
-   38     | expr . '<' expr
-   39     | expr . GREAT_EQ expr
-   40     | expr . LESS_EQ expr
-   41     | expr . EQ expr
-   42     | expr . DIFF expr
-   43     | expr . OR expr
-   44     | expr . AND expr
-   45     | expr . '+' expr
-   46     | expr . '-' expr
-   47     | expr . '/' expr
-   48     | expr . '*' expr
-   49     | expr . '%' expr
+   26 stmt: expr . '=' expr ';'
+   31     | expr . '.' ID '(' exprlistopt ')' ';'
+   32 expr: expr . '>' expr
+   33     | expr . '<' expr
+   34     | expr . GREAT_EQ expr
+   35     | expr . LESS_EQ expr
+   36     | expr . EQ expr
+   37     | expr . DIFF expr
+   38     | expr . OR expr
+   39     | expr . AND expr
+   40     | expr . '+' expr
+   41     | expr . '-' expr
+   42     | expr . '/' expr
+   43     | expr . '*' expr
+   44     | expr . '%' expr
    64 object: expr . '.' ID '(' exprlistopt ')'
 
-    '.'       deslocar, e ir ao estado 141
+    '.'       deslocar, e ir ao estado 140
     '<'       deslocar, e ir ao estado 70
     '>'       deslocar, e ir ao estado 71
     EQ        deslocar, e ir ao estado 72
@@ -2117,7 +2107,17 @@ Estado 120
     '*'       deslocar, e ir ao estado 80
     '/'       deslocar, e ir ao estado 81
     '%'       deslocar, e ir ao estado 82
-    '='       deslocar, e ir ao estado 142
+    '='       deslocar, e ir ao estado 141
+
+
+Estado 120
+
+    9 vardec: type . ID ';'
+   10       | type . ID '=' expr ';'
+   54 type: type . ARR
+
+    ID   deslocar, e ir ao estado 142
+    ARR  deslocar, e ir ao estado 32
 
 
 Estado 121
@@ -2190,19 +2190,19 @@ Estado 127
 
 Estado 128
 
-   37 expr: expr . '>' expr
-   38     | expr . '<' expr
-   39     | expr . GREAT_EQ expr
-   40     | expr . LESS_EQ expr
-   41     | expr . EQ expr
-   42     | expr . DIFF expr
-   43     | expr . OR expr
-   44     | expr . AND expr
-   45     | expr . '+' expr
-   46     | expr . '-' expr
-   47     | expr . '/' expr
-   48     | expr . '*' expr
-   49     | expr . '%' expr
+   32 expr: expr . '>' expr
+   33     | expr . '<' expr
+   34     | expr . GREAT_EQ expr
+   35     | expr . LESS_EQ expr
+   36     | expr . EQ expr
+   37     | expr . DIFF expr
+   38     | expr . OR expr
+   39     | expr . AND expr
+   40     | expr . '+' expr
+   41     | expr . '-' expr
+   42     | expr . '/' expr
+   43     | expr . '*' expr
+   44     | expr . '%' expr
    64 object: expr . '.' ID '(' exprlistopt ')'
    71 filledbracks: filledbracks '[' expr . ']'
 
@@ -2225,41 +2225,41 @@ Estado 128
 
 Estado 129
 
-   33 stmt: BREAK ';' .
+   28 stmt: BREAK ';' .
 
-    $padrão  reduzir usando a regra 33 (stmt)
+    $padrão  reduzir usando a regra 28 (stmt)
 
 
 Estado 130
 
-   32 stmt: CONTINUE ';' .
+   27 stmt: CONTINUE ';' .
 
-    $padrão  reduzir usando a regra 32 (stmt)
+    $padrão  reduzir usando a regra 27 (stmt)
 
 
 Estado 131
 
-   35 stmt: RETURN ';' .
+   30 stmt: RETURN ';' .
 
-    $padrão  reduzir usando a regra 35 (stmt)
+    $padrão  reduzir usando a regra 30 (stmt)
 
 
 Estado 132
 
-   34 stmt: RETURN expr . ';'
-   37 expr: expr . '>' expr
-   38     | expr . '<' expr
-   39     | expr . GREAT_EQ expr
-   40     | expr . LESS_EQ expr
-   41     | expr . EQ expr
-   42     | expr . DIFF expr
-   43     | expr . OR expr
-   44     | expr . AND expr
-   45     | expr . '+' expr
-   46     | expr . '-' expr
-   47     | expr . '/' expr
-   48     | expr . '*' expr
-   49     | expr . '%' expr
+   29 stmt: RETURN expr . ';'
+   32 expr: expr . '>' expr
+   33     | expr . '<' expr
+   34     | expr . GREAT_EQ expr
+   35     | expr . LESS_EQ expr
+   36     | expr . EQ expr
+   37     | expr . DIFF expr
+   38     | expr . OR expr
+   39     | expr . AND expr
+   40     | expr . '+' expr
+   41     | expr . '-' expr
+   42     | expr . '/' expr
+   43     | expr . '*' expr
+   44     | expr . '%' expr
    64 object: expr . '.' ID '(' exprlistopt ')'
 
     '.'       deslocar, e ir ao estado 69
@@ -2281,8 +2281,8 @@ Estado 132
 
 Estado 133
 
-   28 stmt: IF '(' . expr ')' stmt
-   29     | IF '(' . expr ')' stmt ELSE stmt
+   23 stmt: IF '(' . expr ')' stmt
+   24     | IF '(' . expr ')' stmt ELSE stmt
 
     LIT_INT   deslocar, e ir ao estado 41
     TRUE      deslocar, e ir ao estado 42
@@ -2304,7 +2304,7 @@ Estado 133
 
 Estado 134
 
-   30 stmt: WHILE '(' . expr ')' stmt
+   25 stmt: WHILE '(' . expr ')' stmt
 
     LIT_INT   deslocar, e ir ao estado 41
     TRUE      deslocar, e ir ao estado 42
@@ -2326,33 +2326,33 @@ Estado 134
 
 Estado 135
 
-   27 stmt: '{' blockstmts . '}'
+   22 stmt: '{' blockstmts . '}'
 
     '}'  deslocar, e ir ao estado 150
 
 
 Estado 136
 
-   31 stmt: expr . '=' expr ';'
-   36     | expr . '.' ID '(' exprlistopt ')' ';'
-   37 expr: expr . '>' expr
-   38     | expr . '<' expr
-   39     | expr . GREAT_EQ expr
-   40     | expr . LESS_EQ expr
-   41     | expr . EQ expr
-   42     | expr . DIFF expr
-   43     | expr . OR expr
-   44     | expr . AND expr
-   45     | expr . '+' expr
-   46     | expr . '-' expr
-   47     | expr . '/' expr
-   48     | expr . '*' expr
-   49     | expr . '%' expr
+   26 stmt: expr . '=' expr ';'
+   31     | expr . '.' ID '(' exprlistopt ')' ';'
+   32 expr: expr . '>' expr
+   33     | expr . '<' expr
+   34     | expr . GREAT_EQ expr
+   35     | expr . LESS_EQ expr
+   36     | expr . EQ expr
+   37     | expr . DIFF expr
+   38     | expr . OR expr
+   39     | expr . AND expr
+   40     | expr . '+' expr
+   41     | expr . '-' expr
+   42     | expr . '/' expr
+   43     | expr . '*' expr
+   44     | expr . '%' expr
    64 object: expr . '.' ID '(' exprlistopt ')'
    67 exprlist: expr . ',' exprlist
    68         | expr .
 
-    '.'       deslocar, e ir ao estado 141
+    '.'       deslocar, e ir ao estado 140
     '<'       deslocar, e ir ao estado 70
     '>'       deslocar, e ir ao estado 71
     EQ        deslocar, e ir ao estado 72
@@ -2366,7 +2366,7 @@ Estado 136
     '*'       deslocar, e ir ao estado 80
     '/'       deslocar, e ir ao estado 81
     '%'       deslocar, e ir ao estado 82
-    '='       deslocar, e ir ao estado 142
+    '='       deslocar, e ir ao estado 141
     ','       deslocar, e ir ao estado 90
 
     $padrão  reduzir usando a regra 68 (exprlist)
@@ -2388,31 +2388,22 @@ Estado 138
 
 Estado 139
 
-    9 vardec: type ID . ';'
-   10       | type ID . '=' expr ';'
-
-    ';'  deslocar, e ir ao estado 35
-    '='  deslocar, e ir ao estado 36
-
-
-Estado 140
-
    20 blockstmts: stmt blockstmts .
 
     $padrão  reduzir usando a regra 20 (blockstmts)
 
 
-Estado 141
+Estado 140
 
-   36 stmt: expr '.' . ID '(' exprlistopt ')' ';'
+   31 stmt: expr '.' . ID '(' exprlistopt ')' ';'
    64 object: expr '.' . ID '(' exprlistopt ')'
 
     ID  deslocar, e ir ao estado 152
 
 
-Estado 142
+Estado 141
 
-   31 stmt: expr '=' . expr ';'
+   26 stmt: expr '=' . expr ';'
 
     LIT_INT   deslocar, e ir ao estado 41
     TRUE      deslocar, e ir ao estado 42
@@ -2430,6 +2421,15 @@ Estado 142
 
     expr    ir ao estado 153
     object  ir ao estado 55
+
+
+Estado 142
+
+    9 vardec: type ID . ';'
+   10       | type ID . '=' expr ';'
+
+    ';'  deslocar, e ir ao estado 35
+    '='  deslocar, e ir ao estado 36
 
 
 Estado 143
@@ -2462,28 +2462,28 @@ Estado 146
 
 Estado 147
 
-   34 stmt: RETURN expr ';' .
+   29 stmt: RETURN expr ';' .
 
-    $padrão  reduzir usando a regra 34 (stmt)
+    $padrão  reduzir usando a regra 29 (stmt)
 
 
 Estado 148
 
-   28 stmt: IF '(' expr . ')' stmt
-   29     | IF '(' expr . ')' stmt ELSE stmt
-   37 expr: expr . '>' expr
-   38     | expr . '<' expr
-   39     | expr . GREAT_EQ expr
-   40     | expr . LESS_EQ expr
-   41     | expr . EQ expr
-   42     | expr . DIFF expr
-   43     | expr . OR expr
-   44     | expr . AND expr
-   45     | expr . '+' expr
-   46     | expr . '-' expr
-   47     | expr . '/' expr
-   48     | expr . '*' expr
-   49     | expr . '%' expr
+   23 stmt: IF '(' expr . ')' stmt
+   24     | IF '(' expr . ')' stmt ELSE stmt
+   32 expr: expr . '>' expr
+   33     | expr . '<' expr
+   34     | expr . GREAT_EQ expr
+   35     | expr . LESS_EQ expr
+   36     | expr . EQ expr
+   37     | expr . DIFF expr
+   38     | expr . OR expr
+   39     | expr . AND expr
+   40     | expr . '+' expr
+   41     | expr . '-' expr
+   42     | expr . '/' expr
+   43     | expr . '*' expr
+   44     | expr . '%' expr
    64 object: expr . '.' ID '(' exprlistopt ')'
 
     '.'       deslocar, e ir ao estado 69
@@ -2505,20 +2505,20 @@ Estado 148
 
 Estado 149
 
-   30 stmt: WHILE '(' expr . ')' stmt
-   37 expr: expr . '>' expr
-   38     | expr . '<' expr
-   39     | expr . GREAT_EQ expr
-   40     | expr . LESS_EQ expr
-   41     | expr . EQ expr
-   42     | expr . DIFF expr
-   43     | expr . OR expr
-   44     | expr . AND expr
-   45     | expr . '+' expr
-   46     | expr . '-' expr
-   47     | expr . '/' expr
-   48     | expr . '*' expr
-   49     | expr . '%' expr
+   25 stmt: WHILE '(' expr . ')' stmt
+   32 expr: expr . '>' expr
+   33     | expr . '<' expr
+   34     | expr . GREAT_EQ expr
+   35     | expr . LESS_EQ expr
+   36     | expr . EQ expr
+   37     | expr . DIFF expr
+   38     | expr . OR expr
+   39     | expr . AND expr
+   40     | expr . '+' expr
+   41     | expr . '-' expr
+   42     | expr . '/' expr
+   43     | expr . '*' expr
+   44     | expr . '%' expr
    64 object: expr . '.' ID '(' exprlistopt ')'
 
     '.'       deslocar, e ir ao estado 69
@@ -2540,9 +2540,9 @@ Estado 149
 
 Estado 150
 
-   27 stmt: '{' blockstmts '}' .
+   22 stmt: '{' blockstmts '}' .
 
-    $padrão  reduzir usando a regra 27 (stmt)
+    $padrão  reduzir usando a regra 22 (stmt)
 
 
 Estado 151
@@ -2554,7 +2554,7 @@ Estado 151
 
 Estado 152
 
-   36 stmt: expr '.' ID . '(' exprlistopt ')' ';'
+   31 stmt: expr '.' ID . '(' exprlistopt ')' ';'
    64 object: expr '.' ID . '(' exprlistopt ')'
 
     '('  deslocar, e ir ao estado 157
@@ -2562,20 +2562,20 @@ Estado 152
 
 Estado 153
 
-   31 stmt: expr '=' expr . ';'
-   37 expr: expr . '>' expr
-   38     | expr . '<' expr
-   39     | expr . GREAT_EQ expr
-   40     | expr . LESS_EQ expr
-   41     | expr . EQ expr
-   42     | expr . DIFF expr
-   43     | expr . OR expr
-   44     | expr . AND expr
-   45     | expr . '+' expr
-   46     | expr . '-' expr
-   47     | expr . '/' expr
-   48     | expr . '*' expr
-   49     | expr . '%' expr
+   26 stmt: expr '=' expr . ';'
+   32 expr: expr . '>' expr
+   33     | expr . '<' expr
+   34     | expr . GREAT_EQ expr
+   35     | expr . LESS_EQ expr
+   36     | expr . EQ expr
+   37     | expr . DIFF expr
+   38     | expr . OR expr
+   39     | expr . AND expr
+   40     | expr . '+' expr
+   41     | expr . '-' expr
+   42     | expr . '/' expr
+   43     | expr . '*' expr
+   44     | expr . '%' expr
    64 object: expr . '.' ID '(' exprlistopt ')'
 
     '.'       deslocar, e ir ao estado 69
@@ -2604,8 +2604,8 @@ Estado 154
 
 Estado 155
 
-   28 stmt: IF '(' expr ')' . stmt
-   29     | IF '(' expr ')' . stmt ELSE stmt
+   23 stmt: IF '(' expr ')' . stmt
+   24     | IF '(' expr ')' . stmt ELSE stmt
 
     LIT_INT   deslocar, e ir ao estado 41
     TRUE      deslocar, e ir ao estado 42
@@ -2627,13 +2627,13 @@ Estado 155
     '!'       deslocar, e ir ao estado 53
 
     stmt    ir ao estado 159
-    expr    ir ao estado 120
+    expr    ir ao estado 119
     object  ir ao estado 55
 
 
 Estado 156
 
-   30 stmt: WHILE '(' expr ')' . stmt
+   25 stmt: WHILE '(' expr ')' . stmt
 
     LIT_INT   deslocar, e ir ao estado 41
     TRUE      deslocar, e ir ao estado 42
@@ -2655,13 +2655,13 @@ Estado 156
     '!'       deslocar, e ir ao estado 53
 
     stmt    ir ao estado 160
-    expr    ir ao estado 120
+    expr    ir ao estado 119
     object  ir ao estado 55
 
 
 Estado 157
 
-   36 stmt: expr '.' ID '(' . exprlistopt ')' ';'
+   31 stmt: expr '.' ID '(' . exprlistopt ')' ';'
    64 object: expr '.' ID '(' . exprlistopt ')'
 
     LIT_INT   deslocar, e ir ao estado 41
@@ -2688,31 +2688,31 @@ Estado 157
 
 Estado 158
 
-   31 stmt: expr '=' expr ';' .
+   26 stmt: expr '=' expr ';' .
 
-    $padrão  reduzir usando a regra 31 (stmt)
+    $padrão  reduzir usando a regra 26 (stmt)
 
 
 Estado 159
 
-   28 stmt: IF '(' expr ')' stmt .
-   29     | IF '(' expr ')' stmt . ELSE stmt
+   23 stmt: IF '(' expr ')' stmt .
+   24     | IF '(' expr ')' stmt . ELSE stmt
 
     ELSE  deslocar, e ir ao estado 162
 
-    $padrão  reduzir usando a regra 28 (stmt)
+    $padrão  reduzir usando a regra 23 (stmt)
 
 
 Estado 160
 
-   30 stmt: WHILE '(' expr ')' stmt .
+   25 stmt: WHILE '(' expr ')' stmt .
 
-    $padrão  reduzir usando a regra 30 (stmt)
+    $padrão  reduzir usando a regra 25 (stmt)
 
 
 Estado 161
 
-   36 stmt: expr '.' ID '(' exprlistopt . ')' ';'
+   31 stmt: expr '.' ID '(' exprlistopt . ')' ';'
    64 object: expr '.' ID '(' exprlistopt . ')'
 
     ')'  deslocar, e ir ao estado 163
@@ -2720,7 +2720,7 @@ Estado 161
 
 Estado 162
 
-   29 stmt: IF '(' expr ')' stmt ELSE . stmt
+   24 stmt: IF '(' expr ')' stmt ELSE . stmt
 
     LIT_INT   deslocar, e ir ao estado 41
     TRUE      deslocar, e ir ao estado 42
@@ -2742,13 +2742,13 @@ Estado 162
     '!'       deslocar, e ir ao estado 53
 
     stmt    ir ao estado 164
-    expr    ir ao estado 120
+    expr    ir ao estado 119
     object  ir ao estado 55
 
 
 Estado 163
 
-   36 stmt: expr '.' ID '(' exprlistopt ')' . ';'
+   31 stmt: expr '.' ID '(' exprlistopt ')' . ';'
    64 object: expr '.' ID '(' exprlistopt ')' .
 
     ';'  deslocar, e ir ao estado 165
@@ -2758,13 +2758,13 @@ Estado 163
 
 Estado 164
 
-   29 stmt: IF '(' expr ')' stmt ELSE stmt .
+   24 stmt: IF '(' expr ')' stmt ELSE stmt .
 
-    $padrão  reduzir usando a regra 29 (stmt)
+    $padrão  reduzir usando a regra 24 (stmt)
 
 
 Estado 165
 
-   36 stmt: expr '.' ID '(' exprlistopt ')' ';' .
+   31 stmt: expr '.' ID '(' exprlistopt ')' ';' .
 
-    $padrão  reduzir usando a regra 36 (stmt)
+    $padrão  reduzir usando a regra 31 (stmt)

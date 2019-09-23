@@ -1,25 +1,18 @@
 %{
 #include <ctype.h>
 #include <stdio.h>
-
-#define YYSTYPE Node*
-#define NUMBER_OF_CHILDREN 20
-#define ACCESS(x) (*(*x))
-
 int yylex();
 void yyerror(char* s);
 
 typedef struct Node{
-  struct Node* children[NUMBER_OF_CHILDREN];
+  struct Node** children;
   char* content;
 } Node;
 
-
+#define YYSTYPE Node*
 
 Node* createNode(char* name);
-void addChildToParent(Node** parent, Node* child);
-void printTree(Node* root);
-
+void addChildToParent(Node** parent, Node** child);
 
 
 /*
@@ -70,7 +63,7 @@ void printTree(Node* root);
 
 %%
 
-goal : mainclass classdecs          { printf("\n");}
+goal : mainclass classdecs
      ;
 
 mainclass : CLASS ID '{' VOID ID '(' ID ARR ID ')' '{' blockstmts '}' '}'
@@ -116,6 +109,12 @@ blockstmts : vardec blockstmts
            | 
            ;
 
+type : type ARR
+     | BOOLEAN
+     | INT
+     | VOID
+     | ID
+
 stmt : '{' blockstmts '}'
      | IF '(' expr ')' stmt %prec PREC_ELSELESS_IF
      | IF '(' expr ')' stmt ELSE stmt
@@ -131,11 +130,10 @@ stmt : '{' blockstmts '}'
 expr : expr '>' expr          {
                                 Node* parent = createNode("expr");
                                 Node* child2 = createNode(">"); 
-                                addChildToParent(&parent, $1);
-                                addChildToParent(&parent, child2);
-                                addChildToParent(&parent, $3);
+                                addChildToParent(&parent, &$1);
+                                addChildToParent(&parent, &child2);
+                                addChildToParent(&parent, &$3);
                                 $$ = parent;
-                                printTree(parent);
                                }                   
      | expr '<' expr                    
      | expr GREAT_EQ expr           
@@ -150,11 +148,7 @@ expr : expr '>' expr          {
      | expr '*' expr                    
      | expr '%' expr                    
      | object filledbracks 
-     | LIT_INT               {
-                                Node* parent = createNode("LIT_INT");
-                                $$ = parent;
-
-                              }                      
+     | LIT_INT                      
      | LIT_STR                      
      | TRUE                         
      | FALSE                        
@@ -163,13 +157,6 @@ expr : expr '>' expr          {
      | '-' expr %prec PREC_UNARY_OP                        
      | '!' expr %prec PREC_UNARY_OP                                              
      ; 
-
-type : type ARR
-     | BOOLEAN
-     | INT
-     | VOID
-     | ID
-     ;
 
 object : NEW type  
        | NEW ID '(' exprlistopt ')'   
@@ -202,41 +189,11 @@ void yyerror(char* s){
   fprintf(stderr, "line: %d: %s\n", yylineno, s);
 }
 
-Node* createNode(char* content){
-  Node* newNode = (Node*) malloc(sizeof(Node));
-  newNode->content = content;
-//  printf("createNode\n");
-  return newNode;
+Node* createNode(char* name){
+  printf("created node\n");
+  return NULL;
 }
 
-void addChildToParent(Node** parent, Node* child){
-  for(int i = 0; i < NUMBER_OF_CHILDREN; ++i){
-    if( ACCESS(parent).children[i] == NULL  ){
-      ACCESS(parent).children[i] = child;
-      break;
-    }
-  }
-
-  //printf("added child\n");
-}
-
-void printTree(Node* root){
-  printf("%s", root->content);
-
-  if(root->children[0] != NULL) {
-    printf(" { ");
-
-    for(int i = 0; i < NUMBER_OF_CHILDREN; i++){
-      if(root->children[i] == NULL)
-        break;
-
-      printTree(root->children[i]);
-    }
-
-
-    printf("}");
-  }
-
-  printf(" ");
-
+void addChildToParent(Node** parent, Node** child){
+  printf("added child\n");
 }
