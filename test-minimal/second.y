@@ -81,38 +81,21 @@ goal : mainclass classdecs          {
 
 mainclass : CLASS ID '{' VOID ID '(' ID ARR ID ')' '{' blockstmts '}' '}' {
                                       Node* parent = createNode("mainclass");
-                                      Node* child1 = createNode("CLASS");
-                                      Node* child2 = createNode("ID");
-                                      Node* child3 = createNode("{");
-                                      Node* child4 = createNode("VOID");
-                                      Node* child5 = createNode("ID");
-                                      Node* child6 = createNode("(");
-                                      Node* child7 = createNode("ID");
-                                      Node* child8 = createNode("ARR");
-                                      Node* child9 = createNode("ID");
-                                      Node* child10 = createNode(")");
-                                      Node* child11 = createNode("{");
-
-                                      Node* child13 = createNode("}");
-                                      Node* child14 = createNode("}");
-
-                                      addChildToParent(&parent, child1);
-                                      addChildToParent(&parent, child2);
-                                      addChildToParent(&parent, child3);
-                                      addChildToParent(&parent, child4);
-                                      addChildToParent(&parent, child5);
-                                      addChildToParent(&parent, child6);
-                                      addChildToParent(&parent, child7);
-                                      addChildToParent(&parent, child8);
-                                      addChildToParent(&parent, child9);
-                                      addChildToParent(&parent, child10);
-                                      addChildToParent(&parent, child11);
+                                      addChildToParent(&parent, createNode("CLASS"));
+                                      addChildToParent(&parent, createNode("ID"));
+                                      addChildToParent(&parent, createNode("{"));
+                                      addChildToParent(&parent, createNode("VOID"));
+                                      addChildToParent(&parent, createNode("ID"));
+                                      addChildToParent(&parent, createNode("("));
+                                      addChildToParent(&parent, ccreateNode("ID"));
+                                      addChildToParent(&parent, createNode("ARR"));
+                                      addChildToParent(&parent, createNode("ID"));
+                                      addChildToParent(&parent, createNode(")"));
+                                      addChildToParent(&parent, createNode("{"));
                                       addChildToParent(&parent, $12);
-                                      addChildToParent(&parent, child13);
-                                      addChildToParent(&parent, child14);
-
+                                      addChildToParent(&parent, createNode("}"));
+                                      addChildToParent(&parent, createNode("}"));
                                       $$ = parent;
-                                      printTree(parent);
                                     }
           ;
 
@@ -120,11 +103,12 @@ classdecs : classdec classdecs      {
                                       Node* parent = createNode("classdecs");
                                       addChildToParent(&parent, $1);
                                       addChildToParent(&parent, $2);
-                                      printTree(parent);
+                                      $$ = parent;
                                     }
           |                         {
-                                      Node* parent = createNode("EPS");
-                                      printTree(parent);
+                                      Node* parent = createNode("classdecs");
+                                      addChildToParent(&parent, createNode("EPS"));
+                                      $$ = parent;
                                     }
           ;
 
@@ -142,8 +126,7 @@ classdec : CLASS ID extendsopt '{' classmembers '}' {
                                       addChildToParent(&parent, $5);
                                       addChildToParent(&parent, child6);
 
-                                      printTree(parent);
-                                      printf("\n");
+                                      $$ = parent;
                                     }
          ;
 
@@ -152,7 +135,7 @@ classmembers : vardec classmembers {
 
                                       addChildToParent(&parent, $1);
                                       addChildToParent(&parent, $2);
-                                      printTree(parent);
+                                      $$ = parent;
                                     }
              | methoddec classmembers
                                     {
@@ -160,11 +143,12 @@ classmembers : vardec classmembers {
 
                                       addChildToParent(&parent, $1);
                                       addChildToParent(&parent, $2);
-                                      printTree(parent);
+                                      $$ = parent;
                                     }
              |                      {
-                                      Node* parent = createNode("EPS");
-                                      printTree(parent);
+                                      Node* parent = createNode("classmembers");
+                                      addChildToParent(&parent, createNode("EPS"))
+                                      $$ = parent;
                                     }
              ;
 
@@ -175,7 +159,7 @@ vardec : type ID ';'                {
                                       addChildToParent(&parent, $1);
                                       addChildToParent(&parent, child2);
                                       addChildToParent(&parent, child3);
-                                      printTree(parent);
+                                      $$ = parent;
                                     }
        | type ID '=' expr ';'       {
                                       Node* parent = createNode("vardec");
@@ -187,7 +171,7 @@ vardec : type ID ';'                {
                                       addChildToParent(&parent, child3);
                                       addChildToParent(&parent, $4);
                                       addChildToParent(&parent, child5);
-                                      printTree(parent);
+                                      $$ = parent;
                                     }
        ;
 
@@ -207,7 +191,7 @@ methoddec : type ID '(' params ')' '{' blockstmts '}'
                                       addChildToParent(&parent, child6);
                                       addChildToParent(&parent, $7);
                                       addChildToParent(&parent, child8);
-                                      printTree(parent);
+                                      $$ = parent;
                                     }
           ;
 
@@ -215,25 +199,26 @@ params : param paramsrest           {
                                       Node* parent = createNode("params");
                                       addChildToParent(&parent, $1);
                                       addChildToParent(&parent, $2);
-                                      printTree(parent);
+                                      $$ = parent;
                                     }
        |                            {
-                                      Node* parent = createNode("EPS");
-                                      printTree(parent);
+                                      Node* parent = createNode("params");
+                                      addChildToParent(&parent, createNode("EPS"))
+                                      $$ = parent;
                                     }
        ;
 
 paramsrest : ';' param paramsrest   {
                                       Node* parent = createNode("paramsrest");
                                       Node* child1 = createNode(";");
-                                      addChildToParent(&parent, child1);
                                       addChildToParent(&parent, $2);
                                       addChildToParent(&parent, $3);
-                                      printTree(parent);
+                                      $$ = parent;
                                     }
            |                        {
-                                      Node* parent = createNode("EPS");
-                                      printTree(parent);
+                                      Node* parent = createNode("paramsrest");
+                                      addChildToParent(&parent, createNode("EPS"))
+                                      $$ = parent;
                                     }
            ;
 
@@ -242,7 +227,7 @@ param : type ID                     {
                                       Node* child2 = createNode("ID");
                                       addChildToParent(&parent, $1);
                                       addChildToParent(&parent, child2);
-                                      printTree(parent);
+                                      $$ = parent;
                                     }
       ;
 
@@ -253,11 +238,12 @@ extendsopt : EXTENDS ID             {
                                       addChildToParent(&parent, child1);
                                       addChildToParent(&parent, child2);
 
-                                      printTree(parent);
+                                      $$ = parent;
                                     }
            |                        {
-                                      Node* parent = createNode("EPS");
-                                      printTree(parent);
+                                      Node* parent = createNode("extendsopt");
+                                      addChildToParent(&parent, createNode("EPS"))
+                                      $$ = parent;
                                     }
            ;
 
@@ -267,18 +253,19 @@ blockstmts : vardec blockstmts      {
                                       addChildToParent(&parent, $1);
                                       addChildToParent(&parent, $2);
 
-                                      printTree(parent);
+                                      $$ = parent;
                                     }
            | stmt blockstmts        {
                                       Node* parent = createNode("blockstmts");
                                       addChildToParent(&parent, $1);
                                       addChildToParent(&parent, $2);
 
-                                      printTree(parent);
+                                      $$ = parent;
                                     }
            |                        {
-                                      Node* parent = createNode("EPS");
-                                      printTree(parent);
+                                      Node* parent = createNode("blockstmts");
+                                      addChildToParent(&parent, createNode("EPS"))
+                                      $$ = parent;
                                     }
            ;
 
