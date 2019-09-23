@@ -87,7 +87,7 @@ mainclass : CLASS ID '{' VOID ID '(' ID ARR ID ')' '{' blockstmts '}' '}' {
                                       addChildToParent(&parent, createNode("VOID"));
                                       addChildToParent(&parent, createNode("ID"));
                                       addChildToParent(&parent, createNode("("));
-                                      addChildToParent(&parent, ccreateNode("ID"));
+                                      addChildToParent(&parent, createNode("ID"));
                                       addChildToParent(&parent, createNode("ARR"));
                                       addChildToParent(&parent, createNode("ID"));
                                       addChildToParent(&parent, createNode(")"));
@@ -147,7 +147,7 @@ classmembers : vardec classmembers {
                                     }
              |                      {
                                       Node* parent = createNode("classmembers");
-                                      addChildToParent(&parent, createNode("EPS"))
+                                      addChildToParent(&parent, createNode("EPS"));
                                       $$ = parent;
                                     }
              ;
@@ -203,7 +203,7 @@ params : param paramsrest           {
                                     }
        |                            {
                                       Node* parent = createNode("params");
-                                      addChildToParent(&parent, createNode("EPS"))
+                                      addChildToParent(&parent, createNode("EPS"));
                                       $$ = parent;
                                     }
        ;
@@ -217,7 +217,7 @@ paramsrest : ';' param paramsrest   {
                                     }
            |                        {
                                       Node* parent = createNode("paramsrest");
-                                      addChildToParent(&parent, createNode("EPS"))
+                                      addChildToParent(&parent, createNode("EPS"));
                                       $$ = parent;
                                     }
            ;
@@ -242,7 +242,7 @@ extendsopt : EXTENDS ID             {
                                     }
            |                        {
                                       Node* parent = createNode("extendsopt");
-                                      addChildToParent(&parent, createNode("EPS"))
+                                      addChildToParent(&parent, createNode("EPS"));
                                       $$ = parent;
                                     }
            ;
@@ -264,7 +264,7 @@ blockstmts : vardec blockstmts      {
                                     }
            |                        {
                                       Node* parent = createNode("blockstmts");
-                                      addChildToParent(&parent, createNode("EPS"))
+                                      addChildToParent(&parent, createNode("EPS"));
                                       $$ = parent;
                                     }
            ;

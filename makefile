@@ -4,7 +4,7 @@ OBJ = ./obj
 LEXER_PATH = ./lexer
 NONRECURSIVE_PARSER_PATH = ./nonrecursive-topdown-parser
 RECURSIVE_PARSER_PATH = ./recursive-topdown-parser
-YACC_PARSER_PATH = ./yacc-bottomup-parser
+YACC_PARSER_PATH = ./lr1-yacc-parser
 STACK_PATH = ./model
 GRAMMAR_PATH = ./grammar
 MAIN = ./main.c
@@ -19,8 +19,10 @@ GCC := gcc
 # Compile program (no recompiling if files haven't changed)
 #all: $(BIN)/main.out
 
-yacc_parser: $(OBJ)/yacc.o $(MAIN)
-	$(GCC) $(FLAGS) $(INC) $(OBJ)/*.o main.c -o $(BIN)/main.out -D YACC_PARSER
+yacc_parser: 
+	$(LEX) -o $(OBJ)/lex.yy.c $(YACC_PARSER_PATH)/lexer_for_yacc.l 
+	$(YACC) -v $(YACC_PARSER_PATH)/yacc.y -d -o $(OBJ)/y.tab.c
+	$(GCC) $(OBJ)/y.tab.c -ly -ll -lfl -o $(BIN)/main.out 
 
 rec_parser: obj $(MAIN)
 	$(GCC) $(FLAGS) $(INC) $(OBJ)/*.o main.c -o $(BIN)/main.out -D REC_PARSER
