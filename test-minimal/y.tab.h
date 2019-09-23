@@ -60,23 +60,22 @@ extern int yydebug;
     ELSE = 270,
     WHILE = 271,
     THIS = 272,
-    NEW = 273,
-    TOK_NULL = 274,
+    TOK_NULL = 273,
+    NEW = 274,
     ID = 275,
     ERROR = 276,
     LIT_STR = 277,
     ARR = 278,
-    PREC_UNARY_OP = 279,
-    AND = 280,
-    OR = 281,
-    EQ = 282,
-    DIFF = 283,
-    LESS_EQ = 284,
-    GREAT_EQ = 285,
-    PREC_NEW_MATRIX = 286,
-    PREC_THIS_WITHOUT_DOT = 287,
-    PREC_THIS_WITH_DOT = 288,
-    PREC_ELSELESS_IF = 289
+    THIS_DOT = 279,
+    EQ = 280,
+    DIFF = 281,
+    LESS_EQ = 282,
+    GREAT_EQ = 283,
+    AND = 284,
+    OR = 285,
+    PREC_UNARY_OP = 286,
+    FILLED_BRACK = 287,
+    PREC_ELSELESS_IF = 288
   };
 #endif
 /* Tokens.  */
@@ -95,23 +94,22 @@ extern int yydebug;
 #define ELSE 270
 #define WHILE 271
 #define THIS 272
-#define NEW 273
-#define TOK_NULL 274
+#define TOK_NULL 273
+#define NEW 274
 #define ID 275
 #define ERROR 276
 #define LIT_STR 277
 #define ARR 278
-#define PREC_UNARY_OP 279
-#define AND 280
-#define OR 281
-#define EQ 282
-#define DIFF 283
-#define LESS_EQ 284
-#define GREAT_EQ 285
-#define PREC_NEW_MATRIX 286
-#define PREC_THIS_WITHOUT_DOT 287
-#define PREC_THIS_WITH_DOT 288
-#define PREC_ELSELESS_IF 289
+#define THIS_DOT 279
+#define EQ 280
+#define DIFF 281
+#define LESS_EQ 282
+#define GREAT_EQ 283
+#define AND 284
+#define OR 285
+#define PREC_UNARY_OP 286
+#define FILLED_BRACK 287
+#define PREC_ELSELESS_IF 288
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED

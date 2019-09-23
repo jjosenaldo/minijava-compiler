@@ -33,19 +33,19 @@ void yyerror(char* s);
 
 %}
 
-%token LIT_INT INT TRUE FALSE BOOLEAN BREAK CLASS CONTINUE VOID EXTENDS RETURN IF ELSE WHILE THIS NEW TOK_NULL ID ERROR LIT_STR ARR
+%token LIT_INT INT TRUE FALSE BOOLEAN BREAK CLASS CONTINUE VOID EXTENDS RETURN IF ELSE WHILE THIS TOK_NULL NEW ID ERROR LIT_STR ARR THIS_DOT
 
-%nonassoc PREC_UNARY_OP
+%left '.'
+
+
+%nonassoc '<' '>' EQ DIFF LESS_EQ GREAT_EQ
+%left AND OR
 %left '+' '-'
 %left '*' '/' '%'
-%nonassoc AND OR
-%nonassoc '<' '>' EQ DIFF LESS_EQ GREAT_EQ
+%nonassoc PREC_UNARY_OP
 
-%nonassoc PREC_NEW_MATRIX
+%right FILLED_BRACK
 
-
-%nonassoc PREC_THIS_WITHOUT_DOT
-%nonassoc PREC_THIS_WITH_DOT
 
 %nonassoc PREC_ELSELESS_IF
 %nonassoc ELSE
@@ -115,11 +115,8 @@ stmt : '{' blockstmts '}'
      | BREAK ';'
      | RETURN expr ';'
      | RETURN ';'
-     | methodcall ';'
+     | expr '.' ID '(' exprlistopt ')'  ';'
      ;
-
-methodcall : expr '.' ID '(' exprlistopt ')' 
-           ;
 
 expr : expr '>' expr                    
      | expr '<' expr                    
@@ -134,23 +131,26 @@ expr : expr '>' expr
      | expr '/' expr                    
      | expr '*' expr                    
      | expr '%' expr                    
-     | expr '[' expr ']'                
-     | '{' exprlist '}'                
-     | methodcall
+     | object filledbracks 
      | LIT_INT                      
      | LIT_STR                      
      | TRUE                         
      | FALSE                        
-     | THIS '.' ID %prec PREC_THIS_WITH_DOT          
-     | THIS %prec PREC_THIS_WITHOUT_DOT                         
-     | ID                           
      | TOK_NULL                         
-     | NEW type filledbracks %prec PREC_NEW_MATRIX        
-     | NEW type '(' exprlistopt ')'   
+     | object
      | '-' expr %prec PREC_UNARY_OP                        
-     | '!' expr %prec PREC_UNARY_OP                         
-     | '(' expr ')'                     
+     | '!' expr %prec PREC_UNARY_OP                                              
      ; 
+
+object : NEW type  
+       | NEW ID '(' exprlistopt ')'   
+       | ID
+       | THIS_DOT ID
+       | THIS
+       | expr '.' ID '(' exprlistopt ')'
+       | '(' expr ')'      
+       | '{' exprlist '}'                         
+       ;
 
 exprlist : expr ',' exprlist
          | expr
@@ -161,8 +161,8 @@ exprlistopt : exprlist
             ;
 
 
-filledbracks : '[' expr ']' filledbracks
-             | 
+filledbracks : filledbracks '[' expr ']' 
+             | '[' expr ']' 
              ; 
 
 %%
