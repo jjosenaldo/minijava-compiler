@@ -107,8 +107,8 @@ return          { return RETURN; }
 if              { return IF; }
 else            { return ELSE; }
 while           { return WHILE; }
-this{sp}\./{sp}{id}{sp}[^(] { printf("oi"); return THIS_DOT; }
-this            { return THIS; }
+this{sp}\./{sp}{id}{sp}[^(] { printf("this_dot\n"); return THIS_DOT; }
+this            { printf("this\n"); return THIS; }
 new             { return NEW; }
 null            { return TOK_NULL; }
 \{              { return '{'; }
@@ -126,3 +126,7 @@ null            { return TOK_NULL; }
 .               { yyerror("invalid character"); }
 
 %%
+/*
+void main(){
+    yylex();
+}*/
