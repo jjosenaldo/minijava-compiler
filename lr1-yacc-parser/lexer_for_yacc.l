@@ -21,6 +21,8 @@ int prev_column;
 digit                   [0-9]
 brackets               \[[\n \t]*\]
 letter                  [a-zA-Z]
+sp                      [\n \t]*
+id                      {letter}({digit}|{letter}|"_")*
 C_START                   "/*"
 C_WORRYING                "*"
 C_NOT_WORRYING            [^*]
@@ -96,7 +98,6 @@ int             { return INT; }
 true            { return TRUE; }
 false           { return FALSE; }
 boolean         { return BOOLEAN; }
-
 break           { return BREAK; }
 class           { return CLASS; }
 continue        { return CONTINUE; }
@@ -106,7 +107,7 @@ return          { return RETURN; }
 if              { return IF; }
 else            { return ELSE; }
 while           { return WHILE; }
-this[\n \t]*\.  { return THIS_DOT; }
+this{sp}\./{sp}{id}{sp}[^(] { printf("oi"); return THIS_DOT; }
 this            { return THIS; }
 new             { return NEW; }
 null            { return TOK_NULL; }

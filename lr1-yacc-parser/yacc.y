@@ -349,16 +349,6 @@ stmt : '{' blockstmts '}'                             {
                                                         addChildToParent(&parent, createNode(";"));
                                                         $$ = parent;
                                                       }
-     | THIS_DOT ID '(' exprlistopt ')'  ';'           {
-                                                        Node* parent = createNode("stmt");
-                                                        addChildToParent(&parent, createNode("this ."));
-                                                        addChildToParent(&parent, createNode("ID"));
-                                                        addChildToParent(&parent, createNode("("));
-                                                        addChildToParent(&parent, $4);
-                                                        addChildToParent(&parent, createNode(")"));
-                                                        addChildToParent(&parent, createNode(";"));
-                                                        $$ = parent;
-                                                      }
      ;
 
 expr : expr '>' expr          {
@@ -602,15 +592,6 @@ object : NEW type                         {
                                             addChildToParent(&parent, $5);
                                             addChildToParent(&parent, createNode(")"));
                                             $$ = parent;
-                                          }
-       | THIS_DOT ID '(' exprlistopt ')'  {
-                                             Node* parent = createNode("object");
-                                             addChildToParent(&parent, createNode("this ."));
-                                             addChildToParent(&parent, createNode("ID"));
-                                             addChildToParent(&parent, createNode("("));
-                                             addChildToParent(&parent, $4);
-                                             addChildToParent(&parent, createNode(")"));
-                                             $$ = parent;
                                           }
        | '(' expr ')'                     {
                                             Node* parent = createNode("object");
