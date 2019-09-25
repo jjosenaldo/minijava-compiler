@@ -7,6 +7,8 @@ int main(){
 	rec_parse();
 #elif STACK_PARSER
     stack_parse();
+#elif YACC_PARSER
+    yyparse();
 #elif LEX
     struct token t = getNextToken();
     while(t.id != TOK_EOF) {
