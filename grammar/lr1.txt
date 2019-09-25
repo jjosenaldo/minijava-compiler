@@ -27,7 +27,7 @@ params : param paramsrest
        |                            
        ;
 
-paramsrest : ';' param paramsrest   
+paramsrest : ',' param paramsrest   
            |                        
            ;
 
