@@ -1,7 +1,7 @@
 goal : mainclass classdecs          
      ;
 
-mainclass : CLASS ID '{' VOID ID '(' ID '[' ']' ID ')' '{' blockstmts '}' '}' 
+mainclass : CLASS ID '{' VOID ID '(' ID ARR ID ')' '{' blockstmts '}' '}' 
           ;
 
 classdecs : classdec classdecs      
@@ -12,7 +12,7 @@ classdec : CLASS ID extendsopt '{' classmembers '}'
          ;
 
 classmembers : vardec classmembers 
-             | methoddec classmembers
+             | methoddec classmembers 
              |                      
              ;
 
@@ -20,7 +20,7 @@ vardec : type ID ';'
        | type ID '=' expr ';'       
        ;
 
-methoddec : type ID '(' params ')' '{' blockstmts '}'       
+methoddec : type ID '(' params ')' '{' blockstmts '}'
           ;
 
 params : param paramsrest           
@@ -38,6 +38,7 @@ extendsopt : EXTENDS ID
            |                        
            ;
 
+
 blockstmts : vardec blockstmts      
            | stmt blockstmts        
            |                        
@@ -53,6 +54,7 @@ stmt : '{' blockstmts '}'
      | RETURN expr ';'                                
      | RETURN ';'                                     
      | expr '.' ID '(' exprlistopt ')'  ';'           
+     | ';'                                            
      ;
 
 expr : expr '>' expr          
@@ -75,7 +77,7 @@ expr : expr '>' expr
      | FALSE                  
      | TOK_NULL               
      | object                 
-     | '-' expr %prec PREC_UNARY_OP   
+     | '-' expr %prec PREC_UNARY_OP  
      | '!' expr %prec PREC_UNARY_OP   
      ;
 
@@ -89,7 +91,7 @@ type : type ARR
 object : NEW type                         
        | NEW ID '(' exprlistopt ')'       
        | ID                               
-       | THIS '.' ID                      
+       | THIS_DOT ID                      
        | THIS                             
        | expr '.' ID '(' exprlistopt ')'  
        | '(' expr ')'                     
@@ -103,6 +105,7 @@ exprlist : expr ',' exprlist
 exprlistopt : exprlist  
             |           
             ;
+
 
 filledbracks : filledbracks '[' expr ']'  
              | '[' expr ']'               
