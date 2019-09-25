@@ -680,22 +680,25 @@ void addChildToParent(Node** parent, Node* child){
 }
 
 void printTree(Node* root){
-  printf("%s", root->content);
-
   if(root->children[0] != NULL) {
     printf(" { ");
+    printf(" \"%s\" ", root->content);
+
+    printf(" : [ ");
 
     for(int i = 0; i < NUMBER_OF_CHILDREN; i++){
       if(root->children[i] == NULL)
         break;
 
+      if(i > 0)
+        printf(" , ");
+
       printTree(root->children[i]);
     }
 
-
-    printf("}");
+    printf("]");
+    printf(" } ");
+  } else {
+    printf(" \"%s\" ", root->content);
   }
-
-  printf(" ");
-
 }
