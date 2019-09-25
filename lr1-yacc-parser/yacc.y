@@ -349,6 +349,11 @@ stmt : '{' blockstmts '}'                             {
                                                         addChildToParent(&parent, createNode(";"));
                                                         $$ = parent;
                                                       }
+     | ';'                                            {
+                                                        Node* parent = createNode("stmt");
+                                                        addChildToParent(&parent, createNode(";"));
+                                                        $$ = parent;
+                                                      }
      ;
 
 expr : expr '>' expr          {

@@ -3,10 +3,11 @@ class Test{
 		this.a = 1;
 		this.a = this.b;
 		this.a[1] = 1;
-		this.a[1].a()[1];
+		this.a[1].a()[1] = 1;
 		this.a[1].a() = a;
 
 		int a = new int[0][0];
 		int a = this.a().a()[a].a();
+		this.id[1] = 2;
 	}
 }

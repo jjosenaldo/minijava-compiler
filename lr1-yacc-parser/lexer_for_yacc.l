@@ -107,8 +107,9 @@ return          { return RETURN; }
 if              { return IF; }
 else            { return ELSE; }
 while           { return WHILE; }
-this{sp}\./{sp}{id}{sp}[^(] { printf("this_dot\n"); return THIS_DOT; }
-this            { printf("this\n"); return THIS; }
+this{sp}\.      { return THIS_DOT; }
+this/{sp}\.{sp}{id}{sp}\( { return THIS; }
+this            {  return THIS; }
 new             { return NEW; }
 null            { return TOK_NULL; }
 \{              { return '{'; }
@@ -121,12 +122,7 @@ null            { return TOK_NULL; }
 \,              { return ','; }
 \.              { return '.'; }
 \!              { return '!'; }
-
-{letter}({digit}|{letter}|"_")*    { return ID; }
+{id}            { return ID; }
 .               { yyerror("invalid character"); }
 
 %%
-/*
-void main(){
-    yylex();
-}*/

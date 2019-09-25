@@ -8,7 +8,7 @@ class ClassDec extends Parent {
 	int mathod(int a, Id b) {
 		// StmtWithoutId
 		while(a) {
-			System.out.println("Hello, World!");
+			System.println("Hello, World!");
 			continue;
 			if(a == 1)
 				break;
@@ -23,11 +23,11 @@ class ClassDec extends Parent {
 			return a;
 
 		// AfterThisInStmt
-		this.id.id()[3];
+		this.id.id()[3] = 1;
 		this.id();
+		this.id() = 3;			// Tratar na semântica
 		this.id()[3] = 2;
 		this.id = 2;
-		this.id[][] id;
 
 		// AfterId
 		Id id = 2;
@@ -48,7 +48,6 @@ class Expression {
 	void expressions() {
 		// Tp, X, Xp, P, T2, T3
 		a = "oi".length();
-		a = "oi".length;
 		a = "oi".substring(1);
 		a = "oi".substring(1,2);
 		a = "oi".id();
@@ -75,7 +74,7 @@ class Expression {
 		// R, El
 		b = (23);
 		a = {1,2};
-		b = {};
+		b = {1};
 
 		// RelOp
 		b = a < 2;
