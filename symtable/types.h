@@ -30,23 +30,23 @@ typedef struct TypeList{
     TypeNode* head;
 } TypeList;
 
-Type MkTypeNull();
+Type* MkTypeNull();
 
-Type MkTypeInt();
+Type* MkTypeInt();
 
-Type MkTypeVoid();
+Type* MkTypeVoid();
 
-Type MkTypeBoolean();
+Type* MkTypeBoolean();
 
-Type MkTypeClass(char* className);
+Type* MkTypeClass(char* className);
 
-Type MkTypeArray(Type* baseType);
+Type* MkTypeArray(Type* baseType);
 
-Type MkTypeFunction(TypeNode* TypeNode);
+Type* MkTypeFunction(TypeNode* TypeNode);
 
-TypeNode MkTypeNode(Type* type);
+TypeNode* MkTypeNode(Type* type);
 
-TypeList MkTypeList();
+TypeList* MkTypeList();
 
 void addTypeToList(TypeList* list, Type* next);
 
