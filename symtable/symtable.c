@@ -117,5 +117,4 @@ int hashString(char *key){
     // hash += (hash << 15);
     // return hash;
     return key[0] % TABLE_SIZE;
-    // return 4;
 }
