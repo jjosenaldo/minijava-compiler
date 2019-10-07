@@ -6,9 +6,9 @@
 #include "types.h"
 
 typedef enum Kind{
-	VAR,
-	FUNCTION,
-	CLASS
+	_VAR,
+	_FUNCTION,
+	_CLASS
 } Kind;
 
 typedef struct TableEntry{

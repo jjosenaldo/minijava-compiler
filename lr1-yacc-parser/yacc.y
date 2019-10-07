@@ -1,6 +1,8 @@
 %{
 #include <ctype.h>
 #include <stdio.h>
+#include <string.h>
+#include "../symtable/symtable.h"
 
 #define YYSTYPE Node*
 #define NUMBER_OF_CHILDREN 20
@@ -14,7 +16,7 @@ typedef struct Node{
   char* content;
 } Node;
 
-
+TableEntryList* symTable;
 
 Node* createNode(char* name);
 void addChildToParent(Node** parent, Node* child);
@@ -74,8 +76,6 @@ goal : mainclass classdecs          {
                                       Node* parent = createNode("goal");
                                       addChildToParent(&parent, $1);
                                       addChildToParent(&parent, $2);
-                                      printTree(parent);
-                                      printf("\n");
                                     }
      ;
 
@@ -96,6 +96,27 @@ mainclass : CLASS ID '{' VOID ID '(' ID ARR ID ')' '{' blockstmts '}' '}' {
                                       addChildToParent(&parent, createNode("}"));
                                       addChildToParent(&parent, createNode("}"));
                                       $$ = parent;
+
+                                      // SymTable
+                                      TableEntry* entry1 = (TableEntry*) malloc(sizeof(TableEntry));
+                                      TableEntry* entry2 = (TableEntry*) malloc(sizeof(TableEntry));
+                                      TableEntry* entry3 = (TableEntry*) malloc(sizeof(TableEntry));
+                                      TableEntry* entry4 = (TableEntry*) malloc(sizeof(TableEntry));
+                                      
+                                      // Fazer caso base
+                                      printf("%p\n",$2);
+
+                                      strcpy(entry1->id, $2->content);
+                                      strcpy(entry2->id, $5->content);
+                                      strcpy(entry3->id, $7->content);
+                                      strcpy(entry4->id, $9->content);
+
+                                      printf("Cheguei2\n");
+
+                                      addEntryToList(symTable, entry1);
+                                      addEntryToList(symTable, entry2);
+                                      addEntryToList(symTable, entry3);
+                                      addEntryToList(symTable, entry4);
                                     }
           ;
 
