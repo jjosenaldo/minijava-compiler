@@ -3,9 +3,9 @@
 #include "trie.h"
 
 // Function that returns a new Trie node
-struct Trie* getNewTrieNode()
+Trie* getNewTrieNode()
 {
-	struct Trie* node = (struct Trie*)malloc(sizeof(struct Trie));
+	Trie* node = (Trie*)malloc(sizeof(Trie));
 	node->isLeaf = 0;
 
 	for (int i = 0; i < CHAR_SIZE; i++)
@@ -15,8 +15,10 @@ struct Trie* getNewTrieNode()
 }
 
 void deleteTrie(Trie **head) {
-	if(head == NULL || *head == NULL)
+	if(head == NULL || *head == NULL) {
+		*head = NULL;
 		return;
+	}
 
 	for(int i = 0; i < CHAR_SIZE; i++) {
 		if((**head).character[i] != NULL)
@@ -24,14 +26,14 @@ void deleteTrie(Trie **head) {
 	}
 
 	free(*head);
-	head = NULL;
+	*head = NULL;
 }
 
 // Iterative function to insert a string in Trie
-void insert(struct Trie *head, char* str)
+void insert(Trie *head, char* str)
 {
 	// start from root node
-	struct Trie* curr = head;
+	Trie* curr = head;
 	while (*str)
 	{
 		// create a new node if path doesn't exists
@@ -51,13 +53,13 @@ void insert(struct Trie *head, char* str)
 
 // Iterative function to search a string in Trie. It returns 1
 // if the string is found in the Trie, else it returns 0
-int search(struct Trie* head, char* str)
+int search(Trie* head, char* str)
 {
 	// return 0 if Trie is empty
 	if (head == NULL)
 		return 0;
 
-	struct Trie* curr = head;
+	Trie* curr = head;
 	while (*str)
 	{
 		// go to next node
@@ -77,7 +79,7 @@ int search(struct Trie* head, char* str)
 }
 
 // returns 1 if given node has any children
-int haveChildren(struct Trie* curr)
+int haveChildren(Trie* curr)
 {
 	for (int i = 0; i < CHAR_SIZE; i++)
 		if (curr->character[i])
@@ -87,7 +89,7 @@ int haveChildren(struct Trie* curr)
 }
 
 // Recursive function to delete a string in Trie
-int deletion(struct Trie **curr, char* str)
+int deletion(Trie **curr, char* str)
 {
 	// return if Trie is empty
 	if (*curr == NULL)

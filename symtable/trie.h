@@ -5,13 +5,16 @@
 #define CHAR_SIZE 63
 
 // A Trie node
-struct Trie {
+typedef struct Trie {
 	int isLeaf;	// 1 when node is a leaf node
 	struct Trie* character[CHAR_SIZE];
-};
+} Trie;
 
 // Function that returns a new Trie node
 struct Trie* getNewTrieNode();
+
+// Function that delete all nodes
+void deleteTrie(Trie **head);
 
 // Iterative function to insert a string in Trie
 void insert(struct Trie *head, char* str);
