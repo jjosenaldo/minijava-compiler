@@ -14,6 +14,19 @@ struct Trie* getNewTrieNode()
 	return node;
 }
 
+void deleteTrie(Trie **head) {
+	if(head == NULL || *head == NULL)
+		return;
+
+	for(int i = 0; i < CHAR_SIZE; i++) {
+		if((**head).character[i] != NULL)
+			deleteTrie(&(**head).character[i]);
+	}
+
+	free(*head);
+	head = NULL;
+}
+
 // Iterative function to insert a string in Trie
 void insert(struct Trie *head, char* str)
 {
