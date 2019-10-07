@@ -38,11 +38,12 @@ int hashString(char* string);
 void addEntryToList(TableEntryList* list, TableEntry* entry);
 void removeEntryFromList(TableEntryList* list, char* id);
 TableEntry* getEntryFromList(TableEntryList* list, char* id);
-
+void printList(TableEntryList* list);
 
 // Table methods
 void addEntryToTable(TableEntryList* table, TableEntry* entry);
 void removeEntryFromTable(TableEntryList* table, char* id);
 TableEntry* getEntryFromTable(TableEntryList* table, char* id);
+void printTable(TableEntryList* table);
 
 #endif
