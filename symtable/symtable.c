@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include "symtable.h"
+#include "trie.h"
 
 TableEntryList* createSymTable(){
 	TableEntryList* table = (TableEntryList*) malloc(sizeof(TableEntryList)*TABLE_SIZE);
@@ -33,7 +34,21 @@ void printTable(TableEntryList* table){
 }
 
 void printList(TableEntryList* list){
-	
+	struct Trie* printTrie = getNewTrieNode();
+
+	if(list->head == NULL)
+		return;
+
+	TableEntryNode* currNode = list->head;
+
+	while(currNode != NULL){
+		if(!search(printTrie, currNode->tableEntry->id)){
+			printf("%s ", currNode->tableEntry->id);
+			insert(printTrie, currNode->tableEntry->id);
+		}
+
+		currNode = currNode->next;
+	}
 }
 
 void addEntryToList(TableEntryList* list, TableEntry* entry){
