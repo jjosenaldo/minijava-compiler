@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "symtable.h"
 
@@ -22,6 +23,17 @@ void removeEntryFromTable(TableEntryList* table, char* id){
 TableEntry* getEntryFromTable(TableEntryList* table, char* id){
 	int position = hashString(id);
 	return getEntryFromList(table+position, id);
+}
+
+void printTable(TableEntryList* table){
+	for(int i = 0; i < TABLE_SIZE; ++i){
+		printList(table + i);
+		printf("\n");
+	}
+}
+
+void printList(TableEntryList* list){
+	
 }
 
 void addEntryToList(TableEntryList* list, TableEntry* entry){
