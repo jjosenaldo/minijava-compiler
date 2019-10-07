@@ -13,7 +13,7 @@ TableEntryList* createSymTable(){
 
 void addEntryToTable(TableEntryList* table, TableEntry* entry){
 	int position = hashString(entry->id);
-	addEntryToList(table + position, entry);
+	addEntryToList(table, entry);
 }
 
 void removeEntryFromTable(TableEntryList* table, char* id){

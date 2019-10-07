@@ -122,7 +122,10 @@ null            { return TOK_NULL; }
 \,              { return ','; }
 \.              { return '.'; }
 \!              { return '!'; }
-{id}            { return ID; }
+{id}            { 
+                    yylval.string = (char*) malloc(sizeof(char)*yyleng);
+                    strcpy(yylval.string ,yytext); 
+                    return ID; }
 .               { yyerror("invalid character"); }
 
 %%

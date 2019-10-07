@@ -1,7 +1,7 @@
 #ifndef SYMTABLE_H
 #define SYMTABLE_H
 
-#define TABLE_SIZE 1
+#define TABLE_SIZE 10
 
 #include "types.h"
 
@@ -45,5 +45,8 @@ void addEntryToTable(TableEntryList* table, TableEntry* entry);
 void removeEntryFromTable(TableEntryList* table, char* id);
 TableEntry* getEntryFromTable(TableEntryList* table, char* id);
 void printTable(TableEntryList* table);
+
+// Symbol table
+TableEntryList* symTable;
 
 #endif
