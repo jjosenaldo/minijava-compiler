@@ -34,10 +34,12 @@ void printTable(TableEntryList* table){
 }
 
 void printList(TableEntryList* list){
-	struct Trie* printTrie = getNewTrieNode();
+	Trie* printTrie = getNewTrieNode();
 
-	if(list->head == NULL)
+	if(list->head == NULL) {
+		deleteTrie(&printTrie);
 		return;
+	}
 
 	TableEntryNode* currNode = list->head;
 
@@ -49,6 +51,8 @@ void printList(TableEntryList* list){
 
 		currNode = currNode->next;
 	}
+
+	deleteTrie(&printTrie);
 }
 
 void addEntryToList(TableEntryList* list, TableEntry* entry){

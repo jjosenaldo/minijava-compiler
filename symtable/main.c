@@ -20,6 +20,8 @@ int main(){
 	TableEntry entry6;
 	TableEntry entry7;
 	TableEntry entry8;
+	TableEntry entry9;
+
 
 	entry1.id = "JSDFH82384JH_jasjd";
 	entry2.id = "bfsd7f763724HHAA__sda7sd";
@@ -29,6 +31,7 @@ int main(){
 	entry6.id = "wild_";
 	entry7.id = "myVar2";
 	entry8.id = "myVar1";
+	entry9.id = "myVar1";
 
 	addEntryToTable(table, &entry1);
 	addEntryToTable(table, &entry2);

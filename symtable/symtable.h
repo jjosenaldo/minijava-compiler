@@ -1,7 +1,7 @@
 #ifndef SYMTABLE_H
 #define SYMTABLE_H
 
-#define TABLE_SIZE 3
+#define TABLE_SIZE 1
 
 #include "types.h"
 
