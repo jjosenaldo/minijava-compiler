@@ -3,6 +3,7 @@ SRC = ./src
 BIN = ./bin
 OBJ = ./obj
 PARSER_PATH = ./src/parser
+NODE_PATH = ./src/node
 GRAMMAR_PATH = ./grammar
 SYMTABLE_PATH = ./symtable
 
@@ -10,7 +11,7 @@ SYMTABLE_PATH = ./symtable
 #FLAGS = -Wall
 LEX := flex
 YACC := bison
-INC := -I $(GRAMMAR_PATH) -I $(PARSER_PATH) -I $(SYMTABLE_PATH)
+INC := -I $(GRAMMAR_PATH) -I $(PARSER_PATH) -I $(SYMTABLE_PATH) -I $(NODE_PATH)
 
 parser: lexer yaccer
 	g++ -x c++ $(OBJ)/yaccer.cpp $(OBJ)/lex.yy.c -ly -ll -o $(BIN)/main.out $(INC)
