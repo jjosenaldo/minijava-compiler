@@ -1,22 +1,24 @@
 # Paths
 BIN = ./bin
 OBJ = ./obj
-YACC_PARSER_PATH = ./lr1-yacc-parser
+PARSER_PATH = ./parser
 GRAMMAR_PATH = ./grammar
-MAIN = ./main.c
 SYMTABLE_PATH = ./symtable
 
 # Commands
 #FLAGS = -Wall
-LEX := lex
-YACC := yacc
-INC := -I $(GRAMMAR_PATH) -I $(YACC_PARSER_PATH) -I $(SYMTABLE_PATH)
-GCC := gcc
+LEX := flex
+YACC := bison
+INC := -I $(GRAMMAR_PATH) -I $(PARSER_PATH) -I $(SYMTABLE_PATH)
 
-yacc_parser: 
-	$(LEX) -o $(OBJ)/lex.yy.c $(YACC_PARSER_PATH)/lexer_for_yacc.l 
-	$(YACC) $(YACC_PARSER_PATH)/yacc.y  -d -o $(OBJ)/y.tab.c
-	$(GCC) $(OBJ)/y.tab.c $(SYMTABLE_PATH)/symtable.c $(SYMTABLE_PATH)/trie.c $(SYMTABLE_PATH)/types.c -ly -ll -lfl -o $(BIN)/main.out -D YACC_PARSER
+parser: lexer yaccer
+	g++ -x c++ $(OBJ)/yaccer.cpp $(OBJ)/lex.yy.c -ly -ll -o $(BIN)/main.out $(INC)
+
+lexer: $(PARSER_PATH)/lexer.l 
+	$(LEX) -o $(OBJ)/lex.yy.c $(PARSER_PATH)/lexer.l
+
+yaccer: $(PARSER_PATH)/yaccer.y 
+	$(YACC) -d $(PARSER_PATH)/yaccer.y -o $(OBJ)/yaccer.cpp
 
 # Clean project
 clean:
