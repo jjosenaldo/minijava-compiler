@@ -1,58 +1,36 @@
 %{
-#include <ctype.h>
-#include <stdio.h>
-
-#define YYSTYPE Node*
-#define NUMBER_OF_CHILDREN 20
-#define ACCESS(x) (*(*x))
-
-int yylex();
-void yyerror(char* s);
-
-typedef struct Node{
-  struct Node* children[NUMBER_OF_CHILDREN];
-  char* content;
-} Node;
-
-
-
-Node* createNode(char* name);
-void addChildToParent(Node** parent, Node* child);
-void printTree(Node* root);
-
-
-
-/*
-
-| Operator         | Precedence | Associativity
-| PAR_OP           |     0      | ?
-| ARRAY_OP         |     0      | ?
-| LIST_OP          |     0      | ?
-| CALL_OP          |     0      | ?
-| ATT_ACCESS_OP    |     0      | ?
-| NEW_ARRAY_OP     |     0      | ?
-| NEW_OBJ_OP       |     0      | ?
-| -(unary)         |     1      | ?
-| !(unary)         |     1      | ?
-| *                |     2      | left
-| /                |     2      | left
-| %                |     2      | left
-| +                |     3      | left
-| -                |     3      | left
-| &&               |     4      | left
-| ||               |     4      | left
-| <=               |     5      | left
-| <                |     5      | left
-| >=               |     5      | left
-| >                |     5      | left
-| ==               |     5      | left
-| !=               |     5      | left
-*/
-
+    #include <ctype.h>
+    #include <stdio.h>
+    #include <string.h>
+    #include <stdlib.h>
+    #include "../symtable/symtable.h"
+    
+    #define NUMBER_OF_CHILDREN 20
+    #define ACCESS(x) (*(*x))
+    
+    int yylex();
+    void yyerror(char* s);
+    
+    typedef struct Node{
+      struct Node* children[NUMBER_OF_CHILDREN];
+      char* content;
+    } Node;
+    
+    Node* createNode(char* name);
+    void addChildToParent(Node** parent, Node* child);
+    void printTree(Node* root); 
 %}
 
-%token LIT_INT INT TRUE FALSE BOOLEAN BREAK CLASS CONTINUE VOID EXTENDS RETURN IF ELSE WHILE THIS TOK_NULL NEW ID ERROR LIT_STR ARR THIS_DOT
+%union{
+  Node* nodePointer;
+  char* string;
+};
 
+%token LIT_INT INT TRUE FALSE BOOLEAN BREAK CLASS CONTINUE VOID EXTENDS RETURN IF ELSE WHILE THIS TOK_NULL NEW ERROR LIT_STR ARR THIS_DOT
+
+%type <nodePointer> mainclass classdecs blockstmts classdec extendsopt classmembers vardec type methoddec params expr paramsrest param stmt exprlistopt object filledbracks exprlist
+
+%token <string> ID
 %left '.'
 
 
@@ -71,11 +49,12 @@ void printTree(Node* root);
 %%
 
 goal : mainclass classdecs          {
+                                      // Inits the table of symbols, as this can't be done in the first part of this file --'
+                                      symTable = createSymTable();
+
                                       Node* parent = createNode("goal");
                                       addChildToParent(&parent, $1);
                                       addChildToParent(&parent, $2);
-                                      printTree(parent);
-                                      printf("\n");
                                     }
      ;
 
@@ -96,6 +75,33 @@ mainclass : CLASS ID '{' VOID ID '(' ID ARR ID ')' '{' blockstmts '}' '}' {
                                       addChildToParent(&parent, createNode("}"));
                                       addChildToParent(&parent, createNode("}"));
                                       $$ = parent;
+
+                                      // SymTable
+                                      TableEntry* entry1 = (TableEntry*) malloc(sizeof(TableEntry));
+                                      TableEntry* entry2 = (TableEntry*) malloc(sizeof(TableEntry));
+                                      TableEntry* entry3 = (TableEntry*) malloc(sizeof(TableEntry));
+                                      TableEntry* entry4 = (TableEntry*) malloc(sizeof(TableEntry));
+                                      
+                                      // Allocate space in the table entries for the symbol names
+                                      entry1->id = (char*) malloc(sizeof(char)*strlen($2));
+                                      entry2->id = (char*) malloc(sizeof(char)*strlen($5));
+                                      entry3->id = (char*) malloc(sizeof(char)*strlen($7));
+                                      entry4->id = (char*) malloc(sizeof(char)*strlen($9));
+
+                                      // Copy the symbol names for the entries
+                                      strcpy(entry1->id, $2);
+                                      strcpy(entry2->id, $5);
+                                      strcpy(entry3->id, $7);
+                                      strcpy(entry4->id, $9);
+
+                                      // Fills the table of symbols
+                                      addEntryToTable(symTable, entry1);
+                                      addEntryToTable(symTable, entry2);
+                                      addEntryToTable(symTable, entry3);
+                                      addEntryToTable(symTable, entry4);
+
+                                      // Prints the table of symbols
+                                      printTable(symTable);
                                     }
           ;
 
@@ -706,4 +712,11 @@ void printTree(Node* root){
   } else {
     printf(" \"%s\" ", root->content);
   }
+}
+
+int main(){
+  // Creates the table of symbols
+  symTable = createSymTable();
+  yyparse();
+  return 0;
 }
