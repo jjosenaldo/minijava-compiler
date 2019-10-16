@@ -1,8 +1,27 @@
 #ifndef SYMTABLE_HPP
 #define SYMTABLE_HPP
 
-class Symtable{
+#include <string>
+#include <unordered_map>
 
+#include "../table-content/table-content.hpp"
+
+using std::string;
+using std::unordered_map;
+
+class Symtable{
+    private:
+        Symtable* parent;
+        unordered_map<string, TableContent> table;
+
+    public:
+        Symtable();
+
+        Symtable(Symtable* parent);
+
+        void insert(string id, TableContent content);
+
+        TableContent get(string id);
 };
 
 
