@@ -1,7 +1,8 @@
 # Paths
+SRC = ./src
 BIN = ./bin
 OBJ = ./obj
-PARSER_PATH = ./parser
+PARSER_PATH = ./src/parser
 GRAMMAR_PATH = ./grammar
 SYMTABLE_PATH = ./symtable
 
