@@ -17,10 +17,6 @@ void yyerror(char*s);
 int yylex();
 void yyerror(char* s);
 
-Node* createNode(char* name);
-void addChildToParent(Node** parent, Node* child);
-void printTree(Node* root); 
-
 %}
 
 %union{

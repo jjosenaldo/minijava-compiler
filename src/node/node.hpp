@@ -8,4 +8,10 @@ struct Node{
 	char* content;
 };
 
+Node* createNode(char* name);
+
+void addChildToParent(Node** parent, Node* child);
+
+void printTree(Node* root); 
+
 #endif
