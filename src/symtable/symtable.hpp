@@ -18,6 +18,8 @@ class Symtable{
 
         Symtable(Symtable* parent);
 
+        Symtable* getParent();
+
         bool insert(string id, TableContent content);
 
         TableContent get(string id);

@@ -16,6 +16,8 @@ void yyerror(const char* s);
 
 void errorMsgPrefix();
 void multipleClassError(char* id);
+void beginScope();
+void endScope();
 
 SymtablePool tablePool;
 Symtable* currentScope;
@@ -160,25 +162,23 @@ vardec : type ID ';'                {
                                     }
        ;
 
-methoddec : type ID '(' params ')' '{' blockstmts '}'
-                                    {
-                                      Node* parent = createNode("methoddec");
-                                      Node* child2 = createNode("ID");
-                                      Node* child3 = createNode("(");
-                                      Node* child5 = createNode(")");
-                                      Node* child6 = createNode("{");
-                                      Node* child8 = createNode("}");
-                                      addChildToParent(&parent, $1);
-                                      addChildToParent(&parent, child2);
-                                      addChildToParent(&parent, child3);
-                                      addChildToParent(&parent, $4);
-                                      addChildToParent(&parent, child5);
-                                      addChildToParent(&parent, child6);
-                                      addChildToParent(&parent, $7);
-                                      addChildToParent(&parent, child8);
-                                      $$ = parent;
-                                    }
-          ;
+methoddec : type ID '(' params ')' '{' blockstmts '}' {
+    Node* parent = createNode("methoddec");
+    Node* child2 = createNode("ID");
+    Node* child3 = createNode("(");
+    Node* child5 = createNode(")");
+    Node* child6 = createNode("{");
+    Node* child8 = createNode("}");
+    addChildToParent(&parent, $1);
+    addChildToParent(&parent, child2);
+    addChildToParent(&parent, child3);
+    addChildToParent(&parent, $4);
+    addChildToParent(&parent, child5);
+    addChildToParent(&parent, child6);
+    addChildToParent(&parent, $7);
+    addChildToParent(&parent, child8);
+    $$ = parent;
+} ;
 
 params : param paramsrest           {
                                       Node* parent = createNode("params");
@@ -655,6 +655,15 @@ void errorMsgPrefix(){
 void multipleClassError(char* id){
     errorMsgPrefix();
     cout << "the class " << id << " was multiply defined!" << endl;
+}
+
+void beginScope(){
+    Symtable* table = new Symtable(currentScope);
+    currentScope = table;
+}
+
+void endScope(){
+    currentScope = currentScope->getParent();
 }
 
 int main(){

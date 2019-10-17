@@ -12,6 +12,10 @@ Symtable::Symtable(Symtable* parent){
     this->parent = parent;
 }
 
+Symtable* Symtable::getParent(){
+    return this->parent;
+}
+
 bool Symtable::insert(string id, TableContent content){
     if(this->table.find(id) != this->table.end())
         return false;
