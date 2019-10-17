@@ -120,8 +120,8 @@ null            { return TOK_NULL; }
 \.              { return '.'; }
 \!              { return '!'; }
 {id}            { 
-                    yylval.string = (char*) malloc(sizeof(char)*yyleng);
-                    strcpy(yylval.string ,yytext); 
+                    yylval.str = (char*) malloc(sizeof(char)*yyleng);
+                    strcpy(yylval.str ,yytext); 
                     return ID; }
 .               { printf("an error happened\n");/*yyerror("invalid character"); //TODO */ }
 

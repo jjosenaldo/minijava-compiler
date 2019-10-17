@@ -6,46 +6,41 @@
 #include <string.h>
 #include <stdlib.h>
 #include "node.hpp"
+#include "symtable-pool.hpp"
+
 using namespace std;
+
 extern int yylex();
 extern int yylineno;
-void yyerror(char*s);
+void yyerror(const char* s);
 
+void errorMsgPrefix();
+void multipleClassError(char* id);
+void beginScope();
+void endScope();
 
-#define ACCESS(x) (*(*x))
-
-int yylex();
-void yyerror(char* s);
-
-Node* createNode(char* name);
-void addChildToParent(Node** parent, Node* child);
-void printTree(Node* root); 
+SymtablePool tablePool;
+Symtable* currentScope;
 
 %}
 
 %union{
   struct Node* nodePointer;
-  char* string;
+  char* str;
 };
 
 %token LIT_INT INT TRUE FALSE BOOLEAN BREAK CLASS CONTINUE VOID EXTENDS RETURN IF ELSE WHILE THIS TOK_NULL NEW ERROR LIT_STR ARR THIS_DOT
+%token <str> ID
 
 %type <nodePointer> mainclass classdecs blockstmts classdec extendsopt classmembers vardec type methoddec params expr paramsrest param stmt exprlistopt object filledbracks exprlist
 
-%token <string> ID
-
 %left '.'
-
-
 %nonassoc '<' '>' EQ DIFF LESS_EQ GREAT_EQ
 %left AND OR
 %left '+' '-'
 %left '*' '/' '%'
 %nonassoc PREC_UNARY_OP
-
 %right FILLED_BRACK
-
-
 %nonassoc PREC_ELSELESS_IF
 %nonassoc ELSE
 
@@ -61,6 +56,10 @@ goal : mainclass classdecs          {
      ;
 
 mainclass : CLASS ID '{' VOID ID '(' ID ARR ID ')' '{' blockstmts '}' '}' {
+                                      Symtable* newTable = new Symtable();
+                                      tablePool.insert(string($2), newTable);
+                                      currentScope = newTable;
+
                                       Node* parent = createNode("mainclass");
                                       addChildToParent(&parent, createNode("CLASS"));
                                       addChildToParent(&parent, createNode("ID"));
@@ -94,6 +93,13 @@ classdecs : classdec classdecs      {
           ;
 
 classdec : CLASS ID extendsopt '{' classmembers '}' {
+                                      Symtable* newTable = new Symtable();
+                                      if(!tablePool.insert(string($2), newTable)){
+                                        multipleClassError($2);
+                                        return 1;
+                                      }
+                                      currentScope = newTable;
+
                                       Node* parent = createNode("classdec");
                                       Node* child1 = createNode("CLASS");
                                       Node* child2 = createNode("ID");
@@ -156,25 +162,23 @@ vardec : type ID ';'                {
                                     }
        ;
 
-methoddec : type ID '(' params ')' '{' blockstmts '}'
-                                    {
-                                      Node* parent = createNode("methoddec");
-                                      Node* child2 = createNode("ID");
-                                      Node* child3 = createNode("(");
-                                      Node* child5 = createNode(")");
-                                      Node* child6 = createNode("{");
-                                      Node* child8 = createNode("}");
-                                      addChildToParent(&parent, $1);
-                                      addChildToParent(&parent, child2);
-                                      addChildToParent(&parent, child3);
-                                      addChildToParent(&parent, $4);
-                                      addChildToParent(&parent, child5);
-                                      addChildToParent(&parent, child6);
-                                      addChildToParent(&parent, $7);
-                                      addChildToParent(&parent, child8);
-                                      $$ = parent;
-                                    }
-          ;
+methoddec : type ID '(' params ')' '{' blockstmts '}' {
+    Node* parent = createNode("methoddec");
+    Node* child2 = createNode("ID");
+    Node* child3 = createNode("(");
+    Node* child5 = createNode(")");
+    Node* child6 = createNode("{");
+    Node* child8 = createNode("}");
+    addChildToParent(&parent, $1);
+    addChildToParent(&parent, child2);
+    addChildToParent(&parent, child3);
+    addChildToParent(&parent, $4);
+    addChildToParent(&parent, child5);
+    addChildToParent(&parent, child6);
+    addChildToParent(&parent, $7);
+    addChildToParent(&parent, child8);
+    $$ = parent;
+} ;
 
 params : param paramsrest           {
                                       Node* parent = createNode("params");
@@ -640,54 +644,31 @@ filledbracks : filledbracks '[' expr ']'  {
              ;
 %%
 
-void yyerror(char *s) {
-   cout << "Syntax error on line " << yylineno << endl; //TODO: line number
+void yyerror(const char *s) {
+    fprintf(stderr, "line: %d: %s\n", yylineno, s);
 }
 
-
-Node* createNode(char* content){
-  Node* newNode = (Node*) malloc(sizeof(Node));
-  newNode->content = content;
-//  printf("createNode\n");
-  return newNode;
+void errorMsgPrefix(){
+    cout << "ERROR at l." << yylineno << ": ";
 }
 
-void addChildToParent(Node** parent, Node* child){
-  for(int i = 0; i < NUMBER_OF_CHILDREN; ++i){
-    if( ACCESS(parent).children[i] == NULL  ){
-      ACCESS(parent).children[i] = child;
-      break;
-    }
-  }
-
-  //printf("added child\n");
+void multipleClassError(char* id){
+    errorMsgPrefix();
+    cout << "the class " << id << " was multiply defined!" << endl;
 }
 
-void printTree(Node* root){
-  if(root->children[0] != NULL) {
-    printf(" { ");
-    printf(" \"%s\" ", root->content);
+void beginScope(){
+    Symtable* table = new Symtable(currentScope);
+    currentScope = table;
+}
 
-    printf(" : [ ");
-
-    for(int i = 0; i < NUMBER_OF_CHILDREN; i++){
-      if(root->children[i] == NULL)
-        break;
-
-      if(i > 0)
-        printf(" , ");
-
-      printTree(root->children[i]);
-    }
-
-    printf("]");
-    printf(" } ");
-  } else {
-    printf(" \"%s\" ", root->content);
-  }
+void endScope(){
+    currentScope = currentScope->getParent();
 }
 
 int main(){
-  yyparse();
-  return 0;
+    tablePool = SymtablePool();
+    if(yyparse() != 1)
+        tablePool.print();
+    return 0;
 }
