@@ -13,9 +13,9 @@ class SymtablePool{
         unordered_map<string, Symtable*> pool;
     
     public:
-        SymtablePool();
+        bool insert(string className, Symtable* table);
 
-        void addTable(string className, Symtable* table);
+        Symtable* get(string className);
 };
 
 
