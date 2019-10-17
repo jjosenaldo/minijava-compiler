@@ -22,6 +22,8 @@ class Symtable{
         void insert(string id, TableContent content);
 
         TableContent get(string id);
+
+        void print();
 };
 
 
