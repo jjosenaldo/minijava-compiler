@@ -1,9 +1,7 @@
-%option noyywrap
 %option yylineno
 
 %{
-#include "y.tab.h"
-
+#include "yaccer.hpp"
 int current_column = 1;
 int prev_column;
 
@@ -16,6 +14,8 @@ int prev_column;
     for (current_column = 1; yytext[yyleng - current_column] != '\n'; ++current_column) {} \
     prev_yylineno = yylineno;                                                              \
   }
+
+
 %}
 
 digit                   [0-9]
@@ -75,9 +75,6 @@ S_FINAL                   \"
     yyleng = writing;
     return LIT_STR; }
 
-
-
-
 {digit}+        { return LIT_INT; }
 \+              { return '+'; }
 \-              { return '-'; }
@@ -123,9 +120,9 @@ null            { return TOK_NULL; }
 \.              { return '.'; }
 \!              { return '!'; }
 {id}            { 
-                    yylval.string = (char*) malloc(sizeof(char)*yyleng);
-                    strcpy(yylval.string ,yytext); 
+                    yylval.str = (char*) malloc(sizeof(char)*yyleng);
+                    strcpy(yylval.str ,yytext); 
                     return ID; }
-.               { yyerror("invalid character"); }
+.               { printf("an error happened\n");/*yyerror("invalid character"); //TODO */ }
 
 %%

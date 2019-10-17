@@ -1,22 +1,31 @@
 # Paths
+SRC = ./src
 BIN = ./bin
 OBJ = ./obj
-YACC_PARSER_PATH = ./lr1-yacc-parser
 GRAMMAR_PATH = ./grammar
-MAIN = ./main.c
-SYMTABLE_PATH = ./symtable
+NODE_PATH = ./src/node
+PARSER_PATH = ./src/parser
+SYMTABLE_PATH = ./src/symtable
+SYMTABLEPOOL_PATH = ./src/symtable-pool
+TABLECONTENT_PATH = ./src/table-content
+TYPE_PATH = ./src/type
 
 # Commands
-#FLAGS = -Wall
-LEX := lex
-YACC := yacc
-INC := -I $(GRAMMAR_PATH) -I $(YACC_PARSER_PATH) -I $(SYMTABLE_PATH)
-GCC := gcc
+FLAGS = -Wno-write-strings
+LEX := flex
+YACC := bison
+INC := -I $(GRAMMAR_PATH) -I $(PARSER_PATH) -I $(SYMTABLE_PATH) -I $(SYMTABLEPOOL_PATH) -I $(NODE_PATH) -I $(TABLECONTENT_PATH) -I $(TYPE_PATH)
+SRCS = $(SYMTABLE_PATH)/symtable.cpp $(TABLECONTENT_PATH)/table-content.cpp $(TYPE_PATH)/type.cpp $(SYMTABLEPOOL_PATH)/symtable-pool.cpp $(NODE_PATH)/node.cpp
 
-yacc_parser: 
-	$(LEX) -o $(OBJ)/lex.yy.c $(YACC_PARSER_PATH)/lexer_for_yacc.l 
-	$(YACC) $(YACC_PARSER_PATH)/yacc.y  -d -o $(OBJ)/y.tab.c
-	$(GCC) $(OBJ)/y.tab.c $(SYMTABLE_PATH)/symtable.c $(SYMTABLE_PATH)/trie.c $(SYMTABLE_PATH)/types.c -ly -ll -lfl -o $(BIN)/main.out -D YACC_PARSER
+parser: lexer yaccer
+	g++ -x c++ $(OBJ)/yaccer.cpp $(OBJ)/lex.yy.c $(SRCS) -ly -ll -o $(BIN)/main.out $(INC) $(FLAGS)
+
+lexer: $(PARSER_PATH)/lexer.l 
+	$(LEX) -o $(OBJ)/lex.yy.c $(PARSER_PATH)/lexer.l
+
+yaccer: $(PARSER_PATH)/yaccer.y 
+	$(YACC) -d $(PARSER_PATH)/yaccer.y -o $(OBJ)/yaccer.cpp
+
 
 # Clean project
 clean:
