@@ -13,7 +13,7 @@ typedef enum TypeKind{
     TypeVoid, 
     TypeBoolean,
     TypeArray, 
-    TypeFunction, 
+    TypeMethod, 
     TypeClass
 } TypeKind;
 
@@ -22,7 +22,7 @@ struct Type{
     union {
         string className;
         struct Type* baseType;
-        vector<Type*>* functionHeader;
+        vector<Type*>* methodHeader;
     } content;
 };
 
@@ -38,7 +38,7 @@ Type* MkTypeClass(string className);
 
 Type* MkTypeArray(Type* baseType);
 
-Type* MkTypeFunction(vector<Type*>* functionHeader);
+Type* MkTypeMethod(vector<Type*>* methodHeader);
 
 void printType(Type* type);
 

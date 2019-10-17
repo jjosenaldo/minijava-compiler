@@ -3,7 +3,6 @@
 
 #include <string>
 #include <unordered_map>
-
 #include "../table-content/table-content.hpp"
 
 using std::string;
@@ -19,12 +18,11 @@ class Symtable{
 
         Symtable(Symtable* parent);
 
-        void insert(string id, TableContent content);
+        bool insert(string id, TableContent content);
 
         TableContent get(string id);
 
         void print();
 };
-
 
 #endif

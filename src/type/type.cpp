@@ -43,10 +43,10 @@ Type* MkTypeArray(Type* baseType){
     return type;
 }
 
-Type* MkTypeFunction(vector<Type*>* functionHeader){
+Type* MkTypeMethod(vector<Type*>* methodHeader){
     Type* type = (Type*) malloc(sizeof(Type));
-    type->kind = TypeFunction;
-    type->content.functionHeader = functionHeader;
+    type->kind = TypeMethod;
+    type->content.methodHeader = methodHeader;
     return type;
 }
 
