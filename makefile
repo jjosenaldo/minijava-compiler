@@ -15,7 +15,7 @@ FLAGS = -Wno-write-strings
 LEX := flex
 YACC := bison
 INC := -I $(GRAMMAR_PATH) -I $(PARSER_PATH) -I $(SYMTABLE_PATH) -I $(SYMTABLEPOOL_PATH) -I $(NODE_PATH) -I $(TABLECONTENT_PATH) -I $(TYPE_PATH)
-SRCS = $(SYMTABLE_PATH)/symtable.cpp $(TABLECONTENT_PATH)/table-content.cpp $(TYPE_PATH)/type.cpp $(SYMTABLEPOOL_PATH)/symtable-pool.cpp
+SRCS = $(SYMTABLE_PATH)/symtable.cpp $(TABLECONTENT_PATH)/table-content.cpp $(TYPE_PATH)/type.cpp $(SYMTABLEPOOL_PATH)/symtable-pool.cpp $(NODE_PATH)/node.cpp
 
 parser: lexer yaccer
 	g++ -x c++ $(OBJ)/yaccer.cpp $(OBJ)/lex.yy.c $(SRCS) -ly -ll -o $(BIN)/main.out $(INC) $(FLAGS)
