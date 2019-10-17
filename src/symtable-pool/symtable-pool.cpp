@@ -1,4 +1,8 @@
+#include <iostream>
 #include "symtable-pool.hpp"
+
+using std::cout;
+using std::endl;
 
 bool SymtablePool::insert(string className, Symtable* table){
     if(this->pool.find(className) != this->pool.end())
@@ -18,4 +22,12 @@ Symtable* SymtablePool::get(string className){
     
     else
         return it->second;
+}
+
+void SymtablePool::print(){
+    for(auto it : this->pool){
+        cout << it.first << " : ";
+        it.second->print();
+        cout << endl;
+    }
 }

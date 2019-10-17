@@ -6,16 +6,15 @@
 #include <string.h>
 #include <stdlib.h>
 #include "node.hpp"
+#include "symtable-pool.hpp"
+#define ACCESS(x) (*(*x))
 using namespace std;
+
 extern int yylex();
 extern int yylineno;
 void yyerror(char*s);
 
-
-#define ACCESS(x) (*(*x))
-
-int yylex();
-void yyerror(char* s);
+SymtablePool tablePool;
 
 %}
 
@@ -25,23 +24,17 @@ void yyerror(char* s);
 };
 
 %token LIT_INT INT TRUE FALSE BOOLEAN BREAK CLASS CONTINUE VOID EXTENDS RETURN IF ELSE WHILE THIS TOK_NULL NEW ERROR LIT_STR ARR THIS_DOT
+%token <string> ID
 
 %type <nodePointer> mainclass classdecs blockstmts classdec extendsopt classmembers vardec type methoddec params expr paramsrest param stmt exprlistopt object filledbracks exprlist
 
-%token <string> ID
-
 %left '.'
-
-
 %nonassoc '<' '>' EQ DIFF LESS_EQ GREAT_EQ
 %left AND OR
 %left '+' '-'
 %left '*' '/' '%'
 %nonassoc PREC_UNARY_OP
-
 %right FILLED_BRACK
-
-
 %nonassoc PREC_ELSELESS_IF
 %nonassoc ELSE
 
@@ -57,6 +50,7 @@ goal : mainclass classdecs          {
      ;
 
 mainclass : CLASS ID '{' VOID ID '(' ID ARR ID ')' '{' blockstmts '}' '}' {
+                                      tablePool.insert("a", new Symtable);
                                       Node* parent = createNode("mainclass");
                                       addChildToParent(&parent, createNode("CLASS"));
                                       addChildToParent(&parent, createNode("ID"));
@@ -684,6 +678,8 @@ void printTree(Node* root){
 }
 
 int main(){
+  tablePool = SymtablePool();
   yyparse();
+  tablePool.print();
   return 0;
 }

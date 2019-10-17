@@ -16,6 +16,8 @@ class SymtablePool{
         bool insert(string className, Symtable* table);
 
         Symtable* get(string className);
+
+        void print();
 };
 
 
