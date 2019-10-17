@@ -1,6 +1,12 @@
 #ifndef TYPE_HPP
 #define TYPE_HPP
 
+#include <string>
+#include <vector>
+
+using std::string;
+using std::vector;
+
 typedef enum TypeKind{
     TypeNull, 
     TypeInt, 
@@ -11,24 +17,14 @@ typedef enum TypeKind{
     TypeClass
 } TypeKind;
 
-typedef struct Type{
+struct Type{
     TypeKind kind;
     union {
-        char* className;
+        string className;
         struct Type* baseType;
-        struct TypeNode* functionHeader;
+        vector<Type*>* functionHeader;
     } content;
-} Type;
-
-typedef struct TypeNode{
-    Type* type;
-    struct TypeNode* next;
-} TypeNode;
-
-
-typedef struct TypeList{
-    TypeNode* head;
-} TypeList;
+};
 
 Type* MkTypeNull();
 
@@ -38,19 +34,11 @@ Type* MkTypeVoid();
 
 Type* MkTypeBoolean();
 
-Type* MkTypeClass(char* className);
+Type* MkTypeClass(string className);
 
 Type* MkTypeArray(Type* baseType);
 
-Type* MkTypeFunction(TypeNode* TypeNode);
-
-TypeNode* MkTypeNode(Type* type);
-
-TypeList* MkTypeList();
-
-void addTypeToList(TypeList* list, Type* next);
-
-void printTypeList(TypeList* list);
+Type* MkTypeFunction(vector<Type*>* functionHeader);
 
 void printType(Type* type);
 
