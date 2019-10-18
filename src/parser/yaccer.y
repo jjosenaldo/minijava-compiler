@@ -376,22 +376,26 @@ expr : expr '>' expr {
     AtomExpValue val;
     val.strval = $1;
     AtomExpression* exp = new AtomExpression(val, MkTypeClass("String"));
+    $$ = exp;
 }
 
 | TRUE {
     AtomExpValue val;
     val.boolval = true;
     AtomExpression* exp = new AtomExpression(val, MkTypeBoolean());
+    $$ = exp;
 }
 
 | FALSE {
     AtomExpValue val;
     val.boolval = false;
     AtomExpression* exp = new AtomExpression(val, MkTypeBoolean());
+    $$ = exp;
 }
 
 | TOK_NULL {
     AtomExpression* exp = new AtomExpression(MkTypeNull());
+    $$ = exp;
 }
 
 | object {
