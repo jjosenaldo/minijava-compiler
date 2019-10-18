@@ -1,11 +1,12 @@
 #ifndef EXPRESSION_HPP
 #define EXPRESSION_HPP
 
+#include <deque>
 #include <unordered_map>
 #include <string>
 #include "type.hpp"
 
-using std::hash;
+using std::deque;
 using std::unordered_map;
 using std::string;
 
@@ -73,7 +74,7 @@ class UnExpression : public Expression{
         void print();
 };
 
-// boolean, int, ID, this, null
+// boolean, int, ID (String), null
 class AtomExpression : public Expression{
     private:
         AtomExpValue val;
@@ -84,4 +85,88 @@ class AtomExpression : public Expression{
         AtomExpValue getVal();
         void print();
 };
+
+class ObjExpression : public Expression{
+    
+};
+
+class ArrayDeclExpression : public ObjExpression{
+    private:
+        Type* type;
+    public:
+        ArrayDeclExpression(Type* type);
+        void print();
+};
+
+class NewObjExpression : public ObjExpression{
+    private:
+        string id;
+        deque<Expression*>* arguments;
+    
+    public:
+        NewObjExpression(string id, deque<Expression*>* args);
+        void print();
+};
+
+class IdExpression : public ObjExpression{
+    private:
+        string id;
+    
+    public:
+        IdExpression(string id);
+        void print();
+};
+
+class FieldAccessExpression : public ObjExpression{
+    private:
+        string id;
+    
+    public:
+        FieldAccessExpression(string id);
+        void print();
+};
+
+class ThisExpression : public ObjExpression{
+    public:
+        void print();
+};
+
+class MethodCallExpression : public ObjExpression{
+    private:
+        Expression* left;
+        string method;
+        deque<Expression*>* arguments;
+
+    public:
+        MethodCallExpression(Expression* left, string method, deque<Expression*>* args);
+        void print();
+};
+
+class ParenExpression : public ObjExpression{
+    private:
+        Expression* first;
+
+    public:
+        ParenExpression(Expression* first);
+        void print();
+};
+
+class LitArrayExpression : public ObjExpression{
+    private:
+        deque<Expression*>* expressions;
+    public:
+        LitArrayExpression(deque<Expression*>* exprs);
+        void print();
+};
+
+class ArrayAccessExpression : public Expression{
+    private:
+        ObjExpression* left;
+        deque<Expression*>* dimensions;
+
+    public:
+        ArrayAccessExpression(ObjExpression* left, deque<Expression*>* dimensions);
+        void print();
+};
+
 #endif

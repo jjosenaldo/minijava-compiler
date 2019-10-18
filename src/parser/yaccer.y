@@ -56,6 +56,8 @@ Program* program;
   deque<Parameter*>* _params;
   Parameter* _param;
   Expression* _expr;
+  ObjExpression* _objExpr;
+  deque<Expression*>* _exprList;
 };
 
 %token INT TRUE FALSE BOOLEAN BREAK CLASS CONTINUE VOID EXTENDS RETURN IF ELSE WHILE THIS TOK_NULL NEW ERROR ARR THIS_DOT
@@ -67,14 +69,16 @@ Program* program;
 %type <_classMembers> classmembers
 %type <_classDecl> mainclass classdec
 %type <_classDecls> classdecs
-%type <_expr> expr
+%type <_expr> expr 
+%type <_objExpr> object
+%type <_exprList> exprlistopt filledbracks exprlist
 %type <_param> param
 %type <_params> params paramsrest
 %type <_program> goal
 %type <_varDec> vardec
 %type <_methodDec> methoddec
 %type <_type> type
-%type <nodePointer>  stmt exprlistopt object filledbracks exprlist
+%type <nodePointer>  stmt   
 
 %left '.'
 %nonassoc '<' '>' EQ DIFF LESS_EQ GREAT_EQ
@@ -362,7 +366,7 @@ expr : expr '>' expr {
 }
 
 | object filledbracks { 
-    // TODO   
+    $$ = new ArrayAccessExpression($1, $2);
 }
 
 | LIT_INT {
@@ -399,7 +403,7 @@ expr : expr '>' expr {
 }
 
 | object {
-    // TODO
+    $$ = $1;
 }
 
 | '-' expr %prec PREC_UNARY_OP {
@@ -426,60 +430,55 @@ type : type ARR {
     $$ = MkTypeClass($1);
 };
 
- // TODO
 object : NEW type {
-
+    $$ = new ArrayDeclExpression($2);
 }
-       | NEW ID '(' exprlistopt ')'       {
-                                            
-                                          }
-       | ID                               {
-                                            
-                                          }
-       | THIS_DOT ID                      {
-                                            
-                                          }
-       | THIS                             {
-                                            
-                                          }
-       | expr '.' ID '(' exprlistopt ')'  {
-                                            
-                                          }
-       | '(' expr ')'                     {
-                                            
-                                          }
-       | '{' exprlist '}'                 {
-                                            
-                                          }
-       ;
+| NEW ID '(' exprlistopt ')' {
+    $$ = new NewObjExpression($2, $4);
+} | ID {
+    $$ = new IdExpression($1);
+} | THIS_DOT ID {
+    $$ = new FieldAccessExpression($2);
+} | THIS {
+    $$ = new ThisExpression;
+} | expr '.' ID '(' exprlistopt ')' {
+    $$ = new MethodCallExpression($1, $3, $5);
+} | '(' expr ')' {
+    $$ = new ParenExpression($2);
+} | '{' exprlist '}' {
+    $$ = new LitArrayExpression($2);
+};
 
- // TODO
 exprlist : expr ',' exprlist  {
-                                
-                              }
-         | expr               {
-                                
-                              }
-         ;
+    deque<Expression*>* newExprList;
+    if($3 == nullptr)
+        newExprList = new deque<Expression*>();
+    else
+        newExprList = $3;
 
- // TODO
+    newExprList->push_front($1);
+    $$ = newExprList;
+} | expr {
+    deque<Expression*>* newExprList = new deque<Expression*>();
+    newExprList->push_front($1);
+    $$ = newExprList;
+} ;
+
 exprlistopt : exprlist  {
-                          
-                        }
-            |           {
-                          
-                        }
-            ;
+    $$ = $1;
+} | {
+    $$ = nullptr;
+} ;
 
-
- // TODO
 filledbracks : filledbracks '[' expr ']'  {
-                                            
-                                          }
-             | '[' expr ']'               {
-                                            
-                                          }
-             ;
+    deque<Expression*>* newExprList = $1;
+    newExprList->push_front($3);
+    $$ = newExprList;
+} | '[' expr ']' {
+    deque<Expression*>* newExprList = new deque<Expression*>();
+    newExprList->push_front($2);
+    $$ = newExprList;
+} ;
 %%
 
 void yyerror(const char *s) {

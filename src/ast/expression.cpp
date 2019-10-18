@@ -81,3 +81,84 @@ void UnExpression::print(){
     cout << unOpSymbol(op);
     first->print();
 }
+
+ArrayDeclExpression::ArrayDeclExpression(Type* type){
+    this->type = type;
+}
+
+void ArrayDeclExpression::print(){
+    cout << "new ";
+    printType(type);
+}
+
+NewObjExpression::NewObjExpression(string id, deque<Expression*>* args){
+    this->id = id;
+    this->arguments = args;
+}
+
+void NewObjExpression::print(){
+    cout << "new " << id << "(";
+    if(arguments != nullptr) for(auto e : *arguments) {e->print();cout << ",";}
+    cout << ")";
+}
+
+IdExpression::IdExpression(string id){
+    this->id = id;
+}
+
+void IdExpression::print(){
+    cout << id;
+}
+
+FieldAccessExpression::FieldAccessExpression(string id){
+    this->id = id;
+}
+
+void FieldAccessExpression::print(){
+    cout << "this." << id;
+}
+
+void ThisExpression::print(){
+    cout << "this";
+}
+
+MethodCallExpression::MethodCallExpression(Expression* left, string method, deque<Expression*>* args){
+    this->left = left;
+    this->method = method;
+    this->arguments = args;
+}
+
+void MethodCallExpression::print(){
+    left->print();
+    cout << "." << method << "(";
+    if(arguments != nullptr) for(auto e : *arguments){e->print();cout << ",";}
+    cout << ")";
+}
+
+ParenExpression::ParenExpression(Expression* fst){
+    this->first = fst;
+}
+
+void ParenExpression::print(){
+    cout << "("; first->print(); cout << ")";
+}
+
+LitArrayExpression::LitArrayExpression(deque<Expression*>* exprs){
+    this->expressions = exprs;
+}
+
+void LitArrayExpression::print(){
+    cout << "{";
+    for(auto e : *expressions){e->print();cout << ",";}
+    cout << "}";
+}
+
+ArrayAccessExpression::ArrayAccessExpression(ObjExpression* left, deque<Expression*>* dimensions){
+    this->left = left;
+    this->dimensions = dimensions;
+}
+
+void ArrayAccessExpression::print(){
+    left->print();
+    for(auto d : *dimensions){cout << "[";d->print();cout << "]";}
+}
