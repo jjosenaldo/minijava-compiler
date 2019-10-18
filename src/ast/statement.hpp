@@ -1,22 +1,43 @@
 #ifndef STATEMENT_HPP
 #define STATEMENT_HPP
 
+#include <deque>
 #include "expression.hpp"
 
-class GenStatement{};
+using std::deque;
 
-class Statement : GenStatement {};
 
-class VarDec : GenStatement{
+class GenStatement{
+    public:
+        // Will be defined in a derived class
+        virtual void print() = 0;
+};
+
+class Statement : public GenStatement {};
+
+class VarDec : public GenStatement{
     private:
         Type* type;
         string id;
         Expression* value;
+    public:
+        VarDec(Type* type, string id);
+
+        VarDec(Type* type, string id, Expression* value);
+
+        void print();
 };
 
-class Block : Statement{
+class Block : public Statement{
     private:
-        vector<GenStatement*>* statements;
+        deque<GenStatement*> statements;
+    
+    public:
+        void addStatement(GenStatement* stmt);
+
+        void addStatementAtFront(GenStatement* stmt);
+
+        void print();
 };
 
 class ElselessIf : Statement{

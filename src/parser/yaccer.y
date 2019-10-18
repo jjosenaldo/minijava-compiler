@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "ast.hpp"
 #include "node.hpp"
 #include "symtable-pool.hpp"
 
@@ -22,17 +23,28 @@ void endScope();
 SymtablePool tablePool;
 Symtable* currentScope;
 
+Program* program;
 %}
 
 %union{
   struct Node* nodePointer;
   char* str;
+  class ClassDeclaration* _classDecl;
+  class Block* _block;
+  class Program* _program;
+  class VarDec* _varDec;
+  struct Type* _type;
 };
 
 %token LIT_INT INT TRUE FALSE BOOLEAN BREAK CLASS CONTINUE VOID EXTENDS RETURN IF ELSE WHILE THIS TOK_NULL NEW ERROR LIT_STR ARR THIS_DOT
 %token <str> ID
 
-%type <nodePointer> mainclass classdecs blockstmts classdec extendsopt classmembers vardec type methoddec params expr paramsrest param stmt exprlistopt object filledbracks exprlist
+%type <_block> blockstmts
+%type <_classDecl> mainclass;
+%type <_program> goal
+%type <_varDec> vardec
+%type <_type> type
+%type <nodePointer> classdecs classdec extendsopt classmembers  methoddec params expr paramsrest param stmt exprlistopt object filledbracks exprlist
 
 %left '.'
 %nonassoc '<' '>' EQ DIFF LESS_EQ GREAT_EQ
@@ -46,38 +58,32 @@ Symtable* currentScope;
 
 
 %%
-goal : mainclass classdecs          {
-                                      Node* parent = createNode("goal");
-                                      addChildToParent(&parent, $1);
-                                      addChildToParent(&parent, $2);
-									  printTree(parent);
-                                      printf("\n");
-                                    }
-     ;
+goal : mainclass classdecs {
+    program = new Program();
+    program->addClassDecl($1);                        
+} ;
 
 mainclass : CLASS ID '{' VOID ID '(' ID ARR ID ')' '{' blockstmts '}' '}' {
-                                      Symtable* newTable = new Symtable();
-                                      tablePool.insert(string($2), newTable);
-                                      currentScope = newTable;
+    Symtable* newTable = new Symtable();
+    tablePool.insert(string($2), newTable);
+    currentScope = newTable;
 
-                                      Node* parent = createNode("mainclass");
-                                      addChildToParent(&parent, createNode("CLASS"));
-                                      addChildToParent(&parent, createNode("ID"));
-                                      addChildToParent(&parent, createNode("{"));
-                                      addChildToParent(&parent, createNode("VOID"));
-                                      addChildToParent(&parent, createNode("ID"));
-                                      addChildToParent(&parent, createNode("("));
-                                      addChildToParent(&parent, createNode("ID"));
-                                      addChildToParent(&parent, createNode("ARR"));
-                                      addChildToParent(&parent, createNode("ID"));
-                                      addChildToParent(&parent, createNode(")"));
-                                      addChildToParent(&parent, createNode("{"));
-                                      addChildToParent(&parent, $12);
-                                      addChildToParent(&parent, createNode("}"));
-                                      addChildToParent(&parent, createNode("}"));
-                                      $$ = parent;
-                                    }
-          ;
+    // Parameter
+    Type* paramType = MkTypeArray(MkTypeClass($7));
+    string paramName = string($9);
+    Parameter* param = new Parameter(paramType, paramName);
+
+    // Method
+    Block* statements = $12;
+    Type* returnType = MkTypeVoid();
+    Method* mainMethod = new Method(string($5), returnType, statements);
+    mainMethod->addParam(param);
+
+    // Class
+    ClassDeclaration* decl = new ClassDeclaration($2);
+    decl->addMethod(mainMethod);
+    $$ = decl;
+};
 
 classdecs : classdec classdecs      {
                                       Node* parent = createNode("classdecs");
@@ -118,12 +124,8 @@ classdec : CLASS ID extendsopt '{' classmembers '}' {
          ;
 
 classmembers : vardec classmembers {
-                                      Node* parent = createNode("classmembers");
 
-                                      addChildToParent(&parent, $1);
-                                      addChildToParent(&parent, $2);
-                                      $$ = parent;
-                                    }
+}
              | methoddec classmembers
                                     {
                                       Node* parent = createNode("classmembers");
@@ -139,45 +141,15 @@ classmembers : vardec classmembers {
                                     }
              ;
 
-vardec : type ID ';'                {
-                                      Node* parent = createNode("vardec");
-                                      Node* child2 = createNode("ID");
-                                      Node* child3 = createNode(";");
-                                      addChildToParent(&parent, $1);
-                                      addChildToParent(&parent, child2);
-                                      addChildToParent(&parent, child3);
-                                      $$ = parent;
-                                    }
-       | type ID '=' expr ';'       {
-                                      Node* parent = createNode("vardec");
-                                      Node* child2 = createNode("ID");
-                                      Node* child3 = createNode("=");
-                                      Node* child5 = createNode(";");
-                                      addChildToParent(&parent, $1);
-                                      addChildToParent(&parent, child2);
-                                      addChildToParent(&parent, child3);
-                                      addChildToParent(&parent, $4);
-                                      addChildToParent(&parent, child5);
-                                      $$ = parent;
-                                    }
-       ;
+vardec : type ID ';' {
+    VarDec* decl = new VarDec($1, $2);
+    $$ = decl;
+}
+| type ID '=' expr ';' {
+};
 
 methoddec : type ID '(' params ')' '{' blockstmts '}' {
-    Node* parent = createNode("methoddec");
-    Node* child2 = createNode("ID");
-    Node* child3 = createNode("(");
-    Node* child5 = createNode(")");
-    Node* child6 = createNode("{");
-    Node* child8 = createNode("}");
-    addChildToParent(&parent, $1);
-    addChildToParent(&parent, child2);
-    addChildToParent(&parent, child3);
-    addChildToParent(&parent, $4);
-    addChildToParent(&parent, child5);
-    addChildToParent(&parent, child6);
-    addChildToParent(&parent, $7);
-    addChildToParent(&parent, child8);
-    $$ = parent;
+    $$ = nullptr;
 } ;
 
 params : param paramsrest           {
@@ -207,14 +179,8 @@ paramsrest : ',' param paramsrest   {
                                     }
            ;
 
-param : type ID                     {
-                                      Node* parent = createNode("param");
-                                      Node* child2 = createNode("ID");
-                                      addChildToParent(&parent, $1);
-                                      addChildToParent(&parent, child2);
-                                      $$ = parent;
-                                    }
-      ;
+param : type ID {
+};
 
 extendsopt : EXTENDS ID             {
                                       Node* parent = createNode("extendsopt");
@@ -233,34 +199,28 @@ extendsopt : EXTENDS ID             {
            ;
 
 
-blockstmts : vardec blockstmts      {
-                                      Node* parent = createNode("blockstmts");
-                                      addChildToParent(&parent, $1);
-                                      addChildToParent(&parent, $2);
+blockstmts : vardec blockstmts{
+    if($2 != nullptr){
+        $2->addStatementAtFront($1);
+        $$ = $2;
+    }
+        
+    else{
+        Block* block = new Block;
+        block->addStatement($1);
+        $$ = block;
+    }
+}
+| stmt blockstmts   {
+    $$ = nullptr;
+}
+| {
+    $$ = nullptr;
+};
 
-                                      $$ = parent;
-                                    }
-           | stmt blockstmts        {
-                                      Node* parent = createNode("blockstmts");
-                                      addChildToParent(&parent, $1);
-                                      addChildToParent(&parent, $2);
-
-                                      $$ = parent;
-                                    }
-           |                        {
-                                      Node* parent = createNode("blockstmts");
-                                      addChildToParent(&parent, createNode("EPS"));
-                                      $$ = parent;
-                                    }
-           ;
-
-stmt : '{' blockstmts '}'                             {
-                                                        Node* parent = createNode("stmt");
-                                                        addChildToParent(&parent, createNode("{"));
-                                                        addChildToParent(&parent, $2);
-                                                        addChildToParent(&parent, createNode("}"));
-                                                        $$ = parent;
-                                                      }
+stmt : '{' blockstmts '}' {
+    $$ = nullptr;
+}
      | IF '(' expr ')' stmt %prec PREC_ELSELESS_IF    {
                                                         Node* parent = createNode("stmt");
                                                         addChildToParent(&parent, createNode("IF"));
@@ -514,39 +474,24 @@ expr : expr '>' expr          {
      ;
 
 type : type ARR {
-                  Node* parent = createNode("type");
-                  addChildToParent(&parent, $1);
-                  addChildToParent(&parent, createNode("[]"));
-                  $$ = parent;
-                }
-     | BOOLEAN  {
-                  Node* parent = createNode("type");
-                  addChildToParent(&parent, createNode("BOOLEAN"));
-                  $$ = parent;
-                }
-     | INT      {
-                  Node* parent = createNode("type");
-                  addChildToParent(&parent, createNode("INT"));
-                  $$ = parent;
-                }
-     | VOID     {
-                  Node* parent = createNode("type");
-                  addChildToParent(&parent, createNode("VOID"));
-                  $$ = parent;
-                }
-     | ID       {
-                  Node* parent = createNode("type");
-                  addChildToParent(&parent, createNode("ID"));
-                  $$ = parent;
-                }
-     ;
 
-object : NEW type                         {
-                                            Node* parent = createNode("object");
-                                            addChildToParent(&parent, createNode("NEW"));
-                                            addChildToParent(&parent, $2);
-                                            $$ = parent;
-                                          }
+}
+| BOOLEAN  {
+    
+}
+| INT {
+    $$ = MkTypeInt();
+}
+| VOID {
+
+}
+| ID {
+
+};
+
+object : NEW type {
+
+}
        | NEW ID '(' exprlistopt ')'       {
                                             Node* parent = createNode("object");
                                             addChildToParent(&parent, createNode("NEW"));
@@ -668,7 +613,9 @@ void endScope(){
 
 int main(){
     tablePool = SymtablePool();
-    if(yyparse() != 1)
-        tablePool.print();
+    if(yyparse() != 1){
+        // tablePool.print();
+        program->print();
+    }
     return 0;
 }

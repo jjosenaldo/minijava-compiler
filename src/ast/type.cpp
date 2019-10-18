@@ -32,21 +32,21 @@ Type* MkTypeBoolean(){
 Type* MkTypeClass(string className){
     Type* type = (Type*) malloc(sizeof(Type));
     type->kind = TypeClass;
-    type->content.className = className;
+    type->className = className;
     return type;
 }
 
 Type* MkTypeArray(Type* baseType){
     Type* type = (Type*) malloc(sizeof(Type));
     type->kind = TypeArray;
-    type->content.baseType = baseType;
+    type->baseType = baseType;
     return type;
 }
 
 Type* MkTypeMethod(vector<Type*>* methodHeader){
     Type* type = (Type*) malloc(sizeof(Type));
     type->kind = TypeMethod;
-    type->content.methodHeader = methodHeader;
+    type->methodHeader = methodHeader;
     return type;
 }
 
@@ -65,9 +65,13 @@ void printType(Type* type){
             printf("boolean");
             break;
         case TypeClass:
-            cout << type->content.className;
+            cout << type->className;
+            break;
+        case TypeArray:
+            printType(type->baseType);
+            printf("[]");
             break;
         default:
-            printf("ERROR\n");
+            printf("ERROR at printType()\n");
     }
 }

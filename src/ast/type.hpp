@@ -23,7 +23,7 @@ struct Type{
         string className;
         struct Type* baseType;
         vector<Type*>* methodHeader;
-    } content;
+    };
 };
 
 Type* MkTypeNull();

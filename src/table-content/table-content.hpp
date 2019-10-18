@@ -1,7 +1,7 @@
 #ifndef TABLECONTENT_HPP
 #define TABLECONTENT_HPP
 
-#include "../type/type.hpp"
+#include "type.hpp"
 
 // Forward declaration
 class Symtable;
