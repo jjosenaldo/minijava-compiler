@@ -263,8 +263,8 @@ blockstmts : vardec blockstmts{
     $$ = nullptr;
 };
 
+ // TODO
 stmt : '{' blockstmts '}' {
-    // TODO
     $$ = nullptr;
 }
      | IF '(' expr ')' stmt %prec PREC_ELSELESS_IF    {
@@ -361,8 +361,8 @@ expr : expr '>' expr {
     $$ = new BinExpression($1, $3, OP_MOD);   
 }
 
-| object filledbracks {
-    
+| object filledbracks { 
+    // TODO   
 }
 
 | LIT_INT {
@@ -399,7 +399,7 @@ expr : expr '>' expr {
 }
 
 | object {
-
+    // TODO
 }
 
 | '-' expr %prec PREC_UNARY_OP {
@@ -426,6 +426,7 @@ type : type ARR {
     $$ = MkTypeClass($1);
 };
 
+ // TODO
 object : NEW type {
 
 }
@@ -452,6 +453,7 @@ object : NEW type {
                                           }
        ;
 
+ // TODO
 exprlist : expr ',' exprlist  {
                                 
                               }
@@ -460,6 +462,7 @@ exprlist : expr ',' exprlist  {
                               }
          ;
 
+ // TODO
 exprlistopt : exprlist  {
                           
                         }
@@ -469,6 +472,7 @@ exprlistopt : exprlist  {
             ;
 
 
+ // TODO
 filledbracks : filledbracks '[' expr ']'  {
                                             
                                           }
