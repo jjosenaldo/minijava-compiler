@@ -18,7 +18,9 @@ void VarDec::print(){
     
     if(this->value != nullptr){
         cout << " = ";
-        value->print();
+        //AtomExpression e = (AtomExpression) (*(this->value));
+        //if(this->value->getType() != nullptr) cout << "ai";
+        this->value->print();
     }
     cout << ";";
 }

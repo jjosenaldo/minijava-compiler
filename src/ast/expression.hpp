@@ -25,11 +25,19 @@ enum UnOperator{
     OP_NOT
 };
 
+union AtomExpValue{
+    bool boolval;   
+    int intval;
+    char* strval;
+};
+
 class Expression{
     protected:
         Type* type;
 
     public:
+        virtual ~Expression() {}
+        Type* getType();
         virtual void print() = 0;
 };
 
@@ -46,4 +54,15 @@ class UnExpression : Expression{
         UnOperator op;
 };
 
+// boolean, int, ID, this, null
+class AtomExpression : public Expression{
+    private:
+        AtomExpValue val;
+
+    public:
+        AtomExpression(Type* type);
+        AtomExpression(AtomExpValue val, Type* type);
+        AtomExpValue getVal();
+        void print();
+};
 #endif
