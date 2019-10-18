@@ -229,6 +229,7 @@ paramsrest : ',' param paramsrest {
 };
 
 param : type ID {
+    $$ = new Parameter($1, $2);
 };
 
 extendsopt : EXTENDS ID {

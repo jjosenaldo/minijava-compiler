@@ -7,7 +7,7 @@ class Main{
 
 class Cat{
     int a;
-    void meow(){
-        
+    void meow(void a, int b, String[] c){
+
     }
 }
