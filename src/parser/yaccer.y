@@ -310,55 +310,55 @@ stmt : '{' blockstmts '}' {
      ;
 
 expr : expr '>' expr {
-
+    $$ = new BinExpression($1, $3, OP_GREAT);
 }
 
 | expr '<' expr {
-    
+    $$ = new BinExpression($1, $3, OP_LESS);
 }
 
 | expr GREAT_EQ expr {
-
+    $$ = new BinExpression($1, $3, OP_GREAT_EQ);
 }
 
 | expr LESS_EQ expr {
-
+    $$ = new BinExpression($1, $3, OP_LESS_EQ);
 }
 
 | expr EQ expr {
-    
+    $$ = new BinExpression($1, $3, OP_IS_EQ);
 }
 
 | expr DIFF expr {
-    
+    $$ = new BinExpression($1, $3, OP_DIFF);
 }
 
 | expr OR expr {
-
+    $$ = new BinExpression($1, $3, OP_OR);
 }
 
 | expr AND expr {
-
+    $$ = new BinExpression($1, $3, OP_AND);
 }
 
 | expr '+' expr {
-
+    $$ = new BinExpression($1, $3, OP_PLUS);   
 }
 
 | expr '-' expr {
-    
+    $$ = new BinExpression($1, $3, OP_BIN_MINUS);   
 }
 
 | expr '/' expr {
-    
+    $$ = new BinExpression($1, $3, OP_DIV);   
 }
 
 | expr '*' expr {
-    
+    $$ = new BinExpression($1, $3, OP_TIMES);   
 }
 
 | expr '%' expr {
-    
+    $$ = new BinExpression($1, $3, OP_MOD);   
 }
 
 | object filledbracks {
@@ -403,11 +403,11 @@ expr : expr '>' expr {
 }
 
 | '-' expr %prec PREC_UNARY_OP {
-
+    $$ = new UnExpression($2, OP_UN_MINUS);
 }
 
 | '!' expr %prec PREC_UNARY_OP {
-
+    $$ = new UnExpression($2, OP_NOT);
 } ;
 
 type : type ARR {

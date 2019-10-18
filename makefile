@@ -10,7 +10,7 @@ SYMTABLEPOOL_PATH = ./src/symtable-pool
 TABLECONTENT_PATH = ./src/table-content
 
 # Commands
-FLAGS = -Wno-write-strings
+FLAGS = -Wno-write-strings -std=c++11
 LEX := flex
 YACC := bison
 INC := -I $(GRAMMAR_PATH) -I $(PARSER_PATH) -I $(SYMTABLE_PATH) -I $(SYMTABLEPOOL_PATH) -I $(TABLECONTENT_PATH) -I $(AST_PATH)
