@@ -9,7 +9,8 @@
 #include "node.hpp"
 #include "symtable-pool.hpp"
 
-using namespace std;
+using std::cout;
+using std::endl;
 
 extern int yylex();
 extern int yylineno;
@@ -26,25 +27,50 @@ Symtable* currentScope;
 Program* program;
 %}
 
+%code requires{
+    #include <deque>
+    #include "ast.hpp"
+    using std::deque;
+
+    struct ClassMember{
+        bool isField;
+        union{
+            Method* method;
+            Field* field;
+        };
+    };
+}
+
 %union{
   struct Node* nodePointer;
-  char* str;
+  char* _str;
   class ClassDeclaration* _classDecl;
   class Block* _block;
   class Program* _program;
   class VarDec* _varDec;
+  class Method* _methodDec;
   struct Type* _type;
+  deque<ClassDeclaration*>* _classDecls; 
+  deque<ClassMember>* _classMembers; 
+  deque<Parameter*>* _params;
+  Parameter* _param;
 };
 
 %token LIT_INT INT TRUE FALSE BOOLEAN BREAK CLASS CONTINUE VOID EXTENDS RETURN IF ELSE WHILE THIS TOK_NULL NEW ERROR LIT_STR ARR THIS_DOT
-%token <str> ID
+%token <_str> ID 
 
+%type <_str> extendsopt
 %type <_block> blockstmts
-%type <_classDecl> mainclass;
+%type <_classMembers> classmembers
+%type <_classDecl> mainclass classdec
+%type <_classDecls> classdecs
+%type <_param> param
+%type <_params> params paramsrest
 %type <_program> goal
 %type <_varDec> vardec
+%type <_methodDec> methoddec
 %type <_type> type
-%type <nodePointer> classdecs classdec extendsopt classmembers  methoddec params expr paramsrest param stmt exprlistopt object filledbracks exprlist
+%type <nodePointer>  expr stmt exprlistopt object filledbracks exprlist
 
 %left '.'
 %nonassoc '<' '>' EQ DIFF LESS_EQ GREAT_EQ
@@ -59,8 +85,8 @@ Program* program;
 
 %%
 goal : mainclass classdecs {
-    program = new Program();
-    program->addClassDecl($1);                        
+    program = new Program($2);
+    program->addClassDeclAtFront($1); 
 } ;
 
 mainclass : CLASS ID '{' VOID ID '(' ID ARR ID ')' '{' blockstmts '}' '}' {
@@ -85,118 +111,132 @@ mainclass : CLASS ID '{' VOID ID '(' ID ARR ID ')' '{' blockstmts '}' '}' {
     $$ = decl;
 };
 
-classdecs : classdec classdecs      {
-                                      Node* parent = createNode("classdecs");
-                                      addChildToParent(&parent, $1);
-                                      addChildToParent(&parent, $2);
-                                      $$ = parent;
-                                    }
-          |                         {
-                                      Node* parent = createNode("classdecs");
-                                      addChildToParent(&parent, createNode("EPS"));
-                                      $$ = parent;
-                                    }
-          ;
+classdecs : classdec classdecs {
+    if($2 != nullptr){
+        $2->push_front($1);
+        $$ = $2;
+    }
+        
+    else{
+        $$ = new deque<ClassDeclaration*>();
+        $$->push_front($1);
+    }
+}
+| {
+    $$ = nullptr;
+};
 
 classdec : CLASS ID extendsopt '{' classmembers '}' {
-                                      Symtable* newTable = new Symtable();
-                                      if(!tablePool.insert(string($2), newTable)){
-                                        multipleClassError($2);
-                                        return 1;
-                                      }
-                                      currentScope = newTable;
+    Symtable* newTable = new Symtable();
+    if(!tablePool.insert(string($2), newTable)){
+        multipleClassError($2);
+        return 1;
+    }
 
-                                      Node* parent = createNode("classdec");
-                                      Node* child1 = createNode("CLASS");
-                                      Node* child2 = createNode("ID");
-                                      Node* child4 = createNode("{");
-                                      Node* child6 = createNode("}");
+    ClassDeclaration* decl;
 
-                                      addChildToParent(&parent, child1);
-                                      addChildToParent(&parent, child2);
-                                      addChildToParent(&parent, $3);
-                                      addChildToParent(&parent, child4);
-                                      addChildToParent(&parent, $5);
-                                      addChildToParent(&parent, child6);
+    if($3 != nullptr)
+        decl = new ClassDeclaration($2,string($3));
+    else
+        decl = new ClassDeclaration($2);
+    
+    if($5 != nullptr){
+        for(auto classMember : *$5){
+            if(classMember.isField){
+                decl->addField(classMember.field);
+            } else{
+                decl->addMethod(classMember.method);
+            }
+        }
+    }
+    
+    $$ = decl;
 
-                                      $$ = parent;
-                                    }
-         ;
+    currentScope = newTable;
+} ;
 
 classmembers : vardec classmembers {
-
+    Field* f = new Field($1->getType(), $1->getId(), $1->getExpression());
+    ClassMember member;
+    member.field = f;
+    member.isField = true;
+    
+    if($2 == nullptr){
+        $$ = new deque<ClassMember>();
+        $$->push_front(member);
+    } else{
+        $2->push_front(member);
+        $$ = $2;
+    }
 }
-             | methoddec classmembers
-                                    {
-                                      Node* parent = createNode("classmembers");
-
-                                      addChildToParent(&parent, $1);
-                                      addChildToParent(&parent, $2);
-                                      $$ = parent;
-                                    }
-             |                      {
-                                      Node* parent = createNode("classmembers");
-                                      addChildToParent(&parent, createNode("EPS"));
-                                      $$ = parent;
-                                    }
-             ;
+| methoddec classmembers {
+    Method* m = new Method($1->getId(), $1->getReturnType(), $1->getParameters(), $1->getStatement());
+    ClassMember member;
+    member.method = m;
+    member.isField = false;
+    
+    if($2 == nullptr){
+        $$ = new deque<ClassMember>();
+        $$->push_front(member);
+    } else{
+        $2->push_front(member);
+        $$ = $2;
+    }
+}
+|{
+    $$ = nullptr;
+};
 
 vardec : type ID ';' {
     VarDec* decl = new VarDec($1, $2);
     $$ = decl;
 }
 | type ID '=' expr ';' {
+    // TODO
 };
 
 methoddec : type ID '(' params ')' '{' blockstmts '}' {
+    Method* m = new Method($2, $1, $4, $7);
+    $$ = m;
+} ;
+
+params : param paramsrest {
+    if($2 == nullptr){
+        deque<Parameter*>* params = new deque<Parameter*>();
+        params->push_front($1);
+        $$ = params;
+    } else{
+        $2->push_front($1);
+        $$ = $2;
+    }
+}
+| {
     $$ = nullptr;
 } ;
 
-params : param paramsrest           {
-                                      Node* parent = createNode("params");
-                                      addChildToParent(&parent, $1);
-                                      addChildToParent(&parent, $2);
-                                      $$ = parent;
-                                    }
-       |                            {
-                                      Node* parent = createNode("params");
-                                      addChildToParent(&parent, createNode("EPS"));
-                                      $$ = parent;
-                                    }
-       ;
-
-paramsrest : ',' param paramsrest   {
-                                      Node* parent = createNode("paramsrest");
-                                      Node* child1 = createNode(",");
-                                      addChildToParent(&parent, $2);
-                                      addChildToParent(&parent, $3);
-                                      $$ = parent;
-                                    }
-           |                        {
-                                      Node* parent = createNode("paramsrest");
-                                      addChildToParent(&parent, createNode("EPS"));
-                                      $$ = parent;
-                                    }
-           ;
+paramsrest : ',' param paramsrest {
+    if($3 == nullptr){
+        deque<Parameter*>* params = new deque<Parameter*>();
+        params->push_front($2);
+        $$ = params;
+    } else{
+        $3->push_front($2);
+        $$ = $3;
+    }
+} 
+| {
+    $$ = nullptr;
+};
 
 param : type ID {
 };
 
-extendsopt : EXTENDS ID             {
-                                      Node* parent = createNode("extendsopt");
-                                      Node* child1 = createNode("EXTENDS");
-                                      Node* child2 = createNode("ID");
-                                      addChildToParent(&parent, child1);
-                                      addChildToParent(&parent, child2);
-
-                                      $$ = parent;
-                                    }
-           |                        {
-                                      Node* parent = createNode("extendsopt");
-                                      addChildToParent(&parent, createNode("EPS"));
-                                      $$ = parent;
-                                    }
-           ;
+extendsopt : EXTENDS ID {
+    $$ = $2;
+}
+| {
+    $$ = nullptr;
+};
 
 
 blockstmts : vardec blockstmts{
@@ -474,19 +514,19 @@ expr : expr '>' expr          {
      ;
 
 type : type ARR {
-
+    $$ = MkTypeArray($1);
 }
 | BOOLEAN  {
-    
+    $$ = MkTypeBoolean();
 }
 | INT {
     $$ = MkTypeInt();
 }
 | VOID {
-
+    $$ = MkTypeVoid();
 }
 | ID {
-
+    $$ = MkTypeClass($1);
 };
 
 object : NEW type {

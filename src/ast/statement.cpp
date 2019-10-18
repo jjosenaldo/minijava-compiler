@@ -20,6 +20,19 @@ void VarDec::print(){
         cout << " = ";
         value->print();
     }
+    cout << ";";
+}
+
+Type* VarDec::getType(){
+    return this->type;
+}
+
+string VarDec::getId(){
+    return this->id;
+}
+
+Expression* VarDec::getExpression(){
+    return this->value;
 }
 
 void Block::addStatement(GenStatement* stmt){

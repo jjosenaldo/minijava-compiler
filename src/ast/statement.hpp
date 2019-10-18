@@ -22,9 +22,10 @@ class VarDec : public GenStatement{
         Expression* value;
     public:
         VarDec(Type* type, string id);
-
         VarDec(Type* type, string id, Expression* value);
-
+        Type* getType();
+        string getId();
+        Expression* getExpression();
         void print();
 };
 
