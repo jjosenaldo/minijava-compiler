@@ -24,6 +24,7 @@ struct Type{
         struct Type* baseType;
         vector<Type*>* methodHeader;
     };
+    Type() {}
 };
 
 Type* MkTypeNull();

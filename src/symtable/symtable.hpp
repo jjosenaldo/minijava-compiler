@@ -37,7 +37,7 @@ class Symtable{
 
         Symtable* getParent();
 
-        bool insert(string id, TableContent content);
+        void insert(string id, TableContent content);
 
         TableContent get(string id);
 
@@ -49,7 +49,7 @@ class SymtablePool{
         unordered_map<string, Symtable*> pool;
     
     public:
-        bool insert(string className, Symtable* table);
+        void insert(string className, Symtable* table);
 
         Symtable* get(string className);
 

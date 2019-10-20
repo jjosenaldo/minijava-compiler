@@ -1,7 +1,7 @@
-#include "type.hpp"
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
+#include "type.hpp"
 
 using std::cout;
 
@@ -71,6 +71,17 @@ void printType(Type* type){
             printType(type->baseType);
             printf("[]");
             break;
+        case TypeMethod:{
+            cout << "(";
+            auto it = type->methodHeader->begin();
+            printType(*it++);
+
+            while(it != type->methodHeader->end()) {
+                cout << ", ";
+                printType(*it++);
+            }
+            cout << ")";
+            break;}
         default:
             printf("ERROR at printType()\n");
     }

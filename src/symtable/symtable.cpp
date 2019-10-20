@@ -17,14 +17,8 @@ Symtable* Symtable::getParent(){
     return this->parent;
 }
 
-bool Symtable::insert(string id, TableContent content){
-    if(this->table.find(id) != this->table.end())
-        return false;
-    
-    else{
-        this->table[id] = content;
-        return true;
-    }
+void Symtable::insert(string id, TableContent content){
+    this->table[id] = content;
 }
 
 TableContent Symtable::get(string id){
@@ -47,14 +41,8 @@ void Symtable::print(){
     cout << "}";
 }
 
-bool SymtablePool::insert(string className, Symtable* table){
-    if(this->pool.find(className) != this->pool.end())
-        return false;
-    
-    else{
-        this->pool[className] = table;
-        return true;
-    }
+void SymtablePool::insert(string className, Symtable* table){
+    this->pool[className] = table;
 }
 
 Symtable* SymtablePool::get(string className){

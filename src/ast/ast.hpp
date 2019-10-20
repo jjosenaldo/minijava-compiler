@@ -6,6 +6,7 @@
 #include <vector>
 #include "expression.hpp"
 #include "statement.hpp"
+#include "symtable.hpp"
 #include "type.hpp"
 
 using std::deque;
@@ -18,7 +19,7 @@ class Parameter;
 
 class Program{
     private:
-        deque<ClassDeclaration*> declarations;
+        deque<ClassDeclaration*>* declarations;
     
     public:
         Program(deque<ClassDeclaration*>* decls);
@@ -26,6 +27,8 @@ class Program{
         void addClassDecl(ClassDeclaration* decl);
 
         void addClassDeclAtFront(ClassDeclaration* decl);
+
+        deque<ClassDeclaration*>* getDecls();
 
         void print();
 };
@@ -42,6 +45,7 @@ class Method{
         Method(string id, Type* returnType, deque<Parameter*>* parameters, Block* stmt);
         string getId();
         Type* getReturnType();
+        Type* getType();
         deque<Parameter*>* getParameters();
         Block* getStatement();
         void addParam(Parameter* param);
@@ -52,8 +56,8 @@ class ClassDeclaration{
     private:
         string name;
         string parent;
-        vector<Method*> methods;
-        vector<Field*> fields;  
+        vector<Method*>* methods;
+        vector<Field*>* fields;  
     public:
         ClassDeclaration(string name);
 
@@ -61,7 +65,11 @@ class ClassDeclaration{
 
         void addMethod(Method* method);
 
+        string getName();
+
         void addField(Field* field);
+
+        vector<Method*>* getMethods();
 
         void print();
 };
@@ -86,7 +94,19 @@ class Parameter{
     public:
         Parameter(Type* type, string name);
 
+        Type* getType();
+
+        string getName();
+
         void print();
 };
+
+SymtablePool* buildSymtablePool(Program* program);
+
+void multipleClassError(string id);
+
+void errorMsgPrefix();
+
+void multipleMethodError(string className, string methodName);
 
 #endif

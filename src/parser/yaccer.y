@@ -464,15 +464,6 @@ void yyerror(const char *s) {
     fprintf(stderr, "line: %d: %s\n", yylineno, s);
 }
 
-void errorMsgPrefix(){
-    cout << "ERROR at l." << yylineno << ": ";
-}
-
-void multipleClassError(char* id){
-    errorMsgPrefix();
-    cout << "the class " << id << " was multiply defined!" << endl;
-}
-
 void idAlreadyDefinedError(char* id){
     errorMsgPrefix();
     cout << "there already exists an entity with id " << id << " in the current scope!" << endl;
@@ -489,7 +480,8 @@ void idAlreadyDefinedError(char* id){
 
 int main(){
     if(yyparse() != 1){
-        program->print();
+        // program->print();
+        buildSymtablePool(program);
     }
     return 0;
 }
