@@ -41,48 +41,77 @@ class Block : public Statement{
         void print();
 };
 
-class ElselessIf : Statement{
+class ElselessIf : public Statement{
     private:
         Expression* guard;
         Statement* statement;
+
+    public:
+        ElselessIf(Expression* guard, Statement* statement);
+        void print();
 };
 
-class IfElse : Statement{
+class IfElse : public Statement{
     private: 
         Expression* guard;
         Statement* statementIf;
         Statement* statementElse;
+    public:
+        IfElse(Expression* guard, Statement* statementIf, Statement* statementElse);
+        void print();
 };
 
-class While : Statement{
+class While : public Statement{
     private:
         Expression* guard;
         Statement* statement;
+    public:
+        While(Expression* guard, Statement* statement);
+        void print();
 };
 
-class Assignment : Statement{
+class Assignment : public Statement{
     private:
         Expression* lvalue;
         Expression* rvalue;
+    public:
+        Assignment(Expression* lvalue, Expression* rvalue);
+        void print();
 };
 
-class Continue : Statement{};
+class Continue : public Statement{
+    public:
+        void print();
+};
 
-class Break : Statement{};
+class Break : public Statement{
+    public:
+        void print();
+};
 
-class Return : Statement{
+class Return : public Statement{
     private:
         Expression* optExp;
+    public:
+        Return();
+        Return(Expression* optExp);
+        void print();
 };
 
-class MethodCall : Statement{
+class MethodCall : public Statement{
     private:
         Expression* lvalue;
         string methodName;
-        vector<Expression*>* arguments;
+        deque<Expression*>* arguments;
+    public:
+        MethodCall(Expression* lvalue, string methodName, deque<Expression*>* arguments);
+        void print();
 };
 
-class Skip : Statement {};
+class Skip : public Statement {
+    public:
+        void print();
+};
 
 
 #endif
