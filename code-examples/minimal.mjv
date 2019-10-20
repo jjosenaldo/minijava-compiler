@@ -1,0 +1,17 @@
+class Main{
+    void main(String[] args){
+        int a;
+        int b = !!1;
+        void a = null;       
+    }
+}
+
+class Cat{
+    int a;
+    void meow(void a, int b, String[] c){
+        int i = j.k()[1][1];
+        void a = new a();
+        a a = ((((((((a.a())))))))[1]);
+        int l = {{{1,1,1}}}[1][1][1];
+    }
+}

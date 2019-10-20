@@ -73,9 +73,11 @@ S_FINAL                   \"
     aux[writing++] = '\0';
     strcpy (yytext,aux);
     yyleng = writing;
+    yylval._str = (char*) malloc(sizeof(char)*yyleng);
+    strcpy(yylval._str ,yytext); 
     return LIT_STR; }
 
-{digit}+        { return LIT_INT; }
+{digit}+        { yylval._int = atoi(yytext); return LIT_INT; }
 \+              { return '+'; }
 \-              { return '-'; }
 \*              { return '*'; }
@@ -120,8 +122,8 @@ null            { return TOK_NULL; }
 \.              { return '.'; }
 \!              { return '!'; }
 {id}            { 
-                    yylval.str = (char*) malloc(sizeof(char)*yyleng);
-                    strcpy(yylval.str ,yytext); 
+                    yylval._str = (char*) malloc(sizeof(char)*yyleng);
+                    strcpy(yylval._str ,yytext); 
                     return ID; }
 .               { printf("an error happened\n");/*yyerror("invalid character"); //TODO */ }
 

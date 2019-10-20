@@ -5,10 +5,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "ast.hpp"
 #include "node.hpp"
 #include "symtable-pool.hpp"
 
-using namespace std;
+using std::cout;
+using std::endl;
 
 extern int yylex();
 extern int yylineno;
@@ -22,17 +24,61 @@ void endScope();
 SymtablePool tablePool;
 Symtable* currentScope;
 
+Program* program;
 %}
+
+%code requires{
+    #include <deque>
+    #include "ast.hpp"
+    using std::deque;
+
+    struct ClassMember{
+        bool isField;
+        union{
+            Method* method;
+            Field* field;
+        };
+    };
+}
 
 %union{
   struct Node* nodePointer;
-  char* str;
+  char* _str;
+  int _int;
+  class ClassDeclaration* _classDecl;
+  class Block* _block;
+  class Program* _program;
+  class VarDec* _varDec;
+  class Method* _methodDec;
+  struct Type* _type;
+  deque<ClassDeclaration*>* _classDecls; 
+  deque<ClassMember>* _classMembers; 
+  deque<Parameter*>* _params;
+  Parameter* _param;
+  Expression* _expr;
+  ObjExpression* _objExpr;
+  deque<Expression*>* _exprList;
 };
 
-%token LIT_INT INT TRUE FALSE BOOLEAN BREAK CLASS CONTINUE VOID EXTENDS RETURN IF ELSE WHILE THIS TOK_NULL NEW ERROR LIT_STR ARR THIS_DOT
-%token <str> ID
+%token INT TRUE FALSE BOOLEAN BREAK CLASS CONTINUE VOID EXTENDS RETURN IF ELSE WHILE THIS TOK_NULL NEW ERROR ARR THIS_DOT
+%token <_str> ID LIT_STR
+%token <_int> LIT_INT
 
-%type <nodePointer> mainclass classdecs blockstmts classdec extendsopt classmembers vardec type methoddec params expr paramsrest param stmt exprlistopt object filledbracks exprlist
+%type <_str> extendsopt
+%type <_block> blockstmts
+%type <_classMembers> classmembers
+%type <_classDecl> mainclass classdec
+%type <_classDecls> classdecs
+%type <_expr> expr 
+%type <_objExpr> object
+%type <_exprList> exprlistopt filledbracks exprlist
+%type <_param> param
+%type <_params> params paramsrest
+%type <_program> goal
+%type <_varDec> vardec
+%type <_methodDec> methoddec
+%type <_type> type
+%type <nodePointer>  stmt   
 
 %left '.'
 %nonassoc '<' '>' EQ DIFF LESS_EQ GREAT_EQ
@@ -46,257 +92,195 @@ Symtable* currentScope;
 
 
 %%
-goal : mainclass classdecs          {
-                                      Node* parent = createNode("goal");
-                                      addChildToParent(&parent, $1);
-                                      addChildToParent(&parent, $2);
-									  printTree(parent);
-                                      printf("\n");
-                                    }
-     ;
-
-mainclass : CLASS ID '{' VOID ID '(' ID ARR ID ')' '{' blockstmts '}' '}' {
-                                      Symtable* newTable = new Symtable();
-                                      tablePool.insert(string($2), newTable);
-                                      currentScope = newTable;
-
-                                      Node* parent = createNode("mainclass");
-                                      addChildToParent(&parent, createNode("CLASS"));
-                                      addChildToParent(&parent, createNode("ID"));
-                                      addChildToParent(&parent, createNode("{"));
-                                      addChildToParent(&parent, createNode("VOID"));
-                                      addChildToParent(&parent, createNode("ID"));
-                                      addChildToParent(&parent, createNode("("));
-                                      addChildToParent(&parent, createNode("ID"));
-                                      addChildToParent(&parent, createNode("ARR"));
-                                      addChildToParent(&parent, createNode("ID"));
-                                      addChildToParent(&parent, createNode(")"));
-                                      addChildToParent(&parent, createNode("{"));
-                                      addChildToParent(&parent, $12);
-                                      addChildToParent(&parent, createNode("}"));
-                                      addChildToParent(&parent, createNode("}"));
-                                      $$ = parent;
-                                    }
-          ;
-
-classdecs : classdec classdecs      {
-                                      Node* parent = createNode("classdecs");
-                                      addChildToParent(&parent, $1);
-                                      addChildToParent(&parent, $2);
-                                      $$ = parent;
-                                    }
-          |                         {
-                                      Node* parent = createNode("classdecs");
-                                      addChildToParent(&parent, createNode("EPS"));
-                                      $$ = parent;
-                                    }
-          ;
-
-classdec : CLASS ID extendsopt '{' classmembers '}' {
-                                      Symtable* newTable = new Symtable();
-                                      if(!tablePool.insert(string($2), newTable)){
-                                        multipleClassError($2);
-                                        return 1;
-                                      }
-                                      currentScope = newTable;
-
-                                      Node* parent = createNode("classdec");
-                                      Node* child1 = createNode("CLASS");
-                                      Node* child2 = createNode("ID");
-                                      Node* child4 = createNode("{");
-                                      Node* child6 = createNode("}");
-
-                                      addChildToParent(&parent, child1);
-                                      addChildToParent(&parent, child2);
-                                      addChildToParent(&parent, $3);
-                                      addChildToParent(&parent, child4);
-                                      addChildToParent(&parent, $5);
-                                      addChildToParent(&parent, child6);
-
-                                      $$ = parent;
-                                    }
-         ;
-
-classmembers : vardec classmembers {
-                                      Node* parent = createNode("classmembers");
-
-                                      addChildToParent(&parent, $1);
-                                      addChildToParent(&parent, $2);
-                                      $$ = parent;
-                                    }
-             | methoddec classmembers
-                                    {
-                                      Node* parent = createNode("classmembers");
-
-                                      addChildToParent(&parent, $1);
-                                      addChildToParent(&parent, $2);
-                                      $$ = parent;
-                                    }
-             |                      {
-                                      Node* parent = createNode("classmembers");
-                                      addChildToParent(&parent, createNode("EPS"));
-                                      $$ = parent;
-                                    }
-             ;
-
-vardec : type ID ';'                {
-                                      Node* parent = createNode("vardec");
-                                      Node* child2 = createNode("ID");
-                                      Node* child3 = createNode(";");
-                                      addChildToParent(&parent, $1);
-                                      addChildToParent(&parent, child2);
-                                      addChildToParent(&parent, child3);
-                                      $$ = parent;
-                                    }
-       | type ID '=' expr ';'       {
-                                      Node* parent = createNode("vardec");
-                                      Node* child2 = createNode("ID");
-                                      Node* child3 = createNode("=");
-                                      Node* child5 = createNode(";");
-                                      addChildToParent(&parent, $1);
-                                      addChildToParent(&parent, child2);
-                                      addChildToParent(&parent, child3);
-                                      addChildToParent(&parent, $4);
-                                      addChildToParent(&parent, child5);
-                                      $$ = parent;
-                                    }
-       ;
-
-methoddec : type ID '(' params ')' '{' blockstmts '}' {
-    Node* parent = createNode("methoddec");
-    Node* child2 = createNode("ID");
-    Node* child3 = createNode("(");
-    Node* child5 = createNode(")");
-    Node* child6 = createNode("{");
-    Node* child8 = createNode("}");
-    addChildToParent(&parent, $1);
-    addChildToParent(&parent, child2);
-    addChildToParent(&parent, child3);
-    addChildToParent(&parent, $4);
-    addChildToParent(&parent, child5);
-    addChildToParent(&parent, child6);
-    addChildToParent(&parent, $7);
-    addChildToParent(&parent, child8);
-    $$ = parent;
+goal : mainclass classdecs {
+    program = new Program($2);
+    program->addClassDeclAtFront($1); 
 } ;
 
-params : param paramsrest           {
-                                      Node* parent = createNode("params");
-                                      addChildToParent(&parent, $1);
-                                      addChildToParent(&parent, $2);
-                                      $$ = parent;
-                                    }
-       |                            {
-                                      Node* parent = createNode("params");
-                                      addChildToParent(&parent, createNode("EPS"));
-                                      $$ = parent;
-                                    }
-       ;
+mainclass : CLASS ID '{' VOID ID '(' ID ARR ID ')' '{' blockstmts '}' '}' {
+    Symtable* newTable = new Symtable();
+    tablePool.insert(string($2), newTable);
+    currentScope = newTable;
 
-paramsrest : ',' param paramsrest   {
-                                      Node* parent = createNode("paramsrest");
-                                      Node* child1 = createNode(",");
-                                      addChildToParent(&parent, $2);
-                                      addChildToParent(&parent, $3);
-                                      $$ = parent;
-                                    }
-           |                        {
-                                      Node* parent = createNode("paramsrest");
-                                      addChildToParent(&parent, createNode("EPS"));
-                                      $$ = parent;
-                                    }
-           ;
+    // Parameter
+    Type* paramType = MkTypeArray(MkTypeClass($7));
+    string paramName = string($9);
+    Parameter* param = new Parameter(paramType, paramName);
 
-param : type ID                     {
-                                      Node* parent = createNode("param");
-                                      Node* child2 = createNode("ID");
-                                      addChildToParent(&parent, $1);
-                                      addChildToParent(&parent, child2);
-                                      $$ = parent;
-                                    }
-      ;
+    // Method
+    Block* statements = $12;
+    Type* returnType = MkTypeVoid();
+    Method* mainMethod = new Method(string($5), returnType, statements);
+    mainMethod->addParam(param);
 
-extendsopt : EXTENDS ID             {
-                                      Node* parent = createNode("extendsopt");
-                                      Node* child1 = createNode("EXTENDS");
-                                      Node* child2 = createNode("ID");
-                                      addChildToParent(&parent, child1);
-                                      addChildToParent(&parent, child2);
+    // Class
+    ClassDeclaration* decl = new ClassDeclaration($2);
+    decl->addMethod(mainMethod);
+    $$ = decl;
+};
 
-                                      $$ = parent;
-                                    }
-           |                        {
-                                      Node* parent = createNode("extendsopt");
-                                      addChildToParent(&parent, createNode("EPS"));
-                                      $$ = parent;
-                                    }
-           ;
+classdecs : classdec classdecs {
+    if($2 != nullptr){
+        $2->push_front($1);
+        $$ = $2;
+    }
+        
+    else{
+        $$ = new deque<ClassDeclaration*>();
+        $$->push_front($1);
+    }
+}
+| {
+    $$ = nullptr;
+};
+
+classdec : CLASS ID extendsopt '{' classmembers '}' {
+    Symtable* newTable = new Symtable();
+    if(!tablePool.insert(string($2), newTable)){
+        multipleClassError($2);
+        return 1;
+    }
+
+    ClassDeclaration* decl;
+
+    if($3 != nullptr)
+        decl = new ClassDeclaration($2,string($3));
+    else
+        decl = new ClassDeclaration($2);
+    
+    if($5 != nullptr){
+        for(auto classMember : *$5){
+            if(classMember.isField){
+                decl->addField(classMember.field);
+            } else{
+                decl->addMethod(classMember.method);
+            }
+        }
+    }
+    
+    $$ = decl;
+
+    currentScope = newTable;
+} ;
+
+classmembers : vardec classmembers {
+    Field* f = new Field($1->getType(), $1->getId(), $1->getExpression());
+    ClassMember member;
+    member.field = f;
+    member.isField = true;
+    
+    if($2 == nullptr){
+        $$ = new deque<ClassMember>();
+        $$->push_front(member);
+    } else{
+        $2->push_front(member);
+        $$ = $2;
+    }
+}
+| methoddec classmembers {
+    Method* m = new Method($1->getId(), $1->getReturnType(), $1->getParameters(), $1->getStatement());
+    ClassMember member;
+    member.method = m;
+    member.isField = false;
+    
+    if($2 == nullptr){
+        $$ = new deque<ClassMember>();
+        $$->push_front(member);
+    } else{
+        $2->push_front(member);
+        $$ = $2;
+    }
+}
+|{
+    $$ = nullptr;
+};
+
+vardec : type ID ';' {
+    $$ = new VarDec($1, $2);
+}
+| type ID '=' expr ';' {
+    $$ = new VarDec($1, $2, $4);
+};
+
+methoddec : type ID '(' params ')' '{' blockstmts '}' {
+    Method* m = new Method($2, $1, $4, $7);
+    $$ = m;
+} ;
+
+params : param paramsrest {
+    if($2 == nullptr){
+        deque<Parameter*>* params = new deque<Parameter*>();
+        params->push_front($1);
+        $$ = params;
+    } else{
+        $2->push_front($1);
+        $$ = $2;
+    }
+}
+| {
+    $$ = nullptr;
+} ;
+
+paramsrest : ',' param paramsrest {
+    if($3 == nullptr){
+        deque<Parameter*>* params = new deque<Parameter*>();
+        params->push_front($2);
+        $$ = params;
+    } else{
+        $3->push_front($2);
+        $$ = $3;
+    }
+} 
+| {
+    $$ = nullptr;
+};
+
+param : type ID {
+    $$ = new Parameter($1, $2);
+};
+
+extendsopt : EXTENDS ID {
+    $$ = $2;
+}
+| {
+    $$ = nullptr;
+};
 
 
-blockstmts : vardec blockstmts      {
-                                      Node* parent = createNode("blockstmts");
-                                      addChildToParent(&parent, $1);
-                                      addChildToParent(&parent, $2);
+blockstmts : vardec blockstmts{
+    if($2 != nullptr){
+        $2->addStatementAtFront($1);
+        $$ = $2;
+    }
+        
+    else{
+        Block* block = new Block;
+        block->addStatement($1);
+        $$ = block;
+    }
+}
+| stmt blockstmts   {
+    // TODO
+    $$ = nullptr;
+}
+| {
+    $$ = nullptr;
+};
 
-                                      $$ = parent;
-                                    }
-           | stmt blockstmts        {
-                                      Node* parent = createNode("blockstmts");
-                                      addChildToParent(&parent, $1);
-                                      addChildToParent(&parent, $2);
-
-                                      $$ = parent;
-                                    }
-           |                        {
-                                      Node* parent = createNode("blockstmts");
-                                      addChildToParent(&parent, createNode("EPS"));
-                                      $$ = parent;
-                                    }
-           ;
-
-stmt : '{' blockstmts '}'                             {
-                                                        Node* parent = createNode("stmt");
-                                                        addChildToParent(&parent, createNode("{"));
-                                                        addChildToParent(&parent, $2);
-                                                        addChildToParent(&parent, createNode("}"));
-                                                        $$ = parent;
-                                                      }
+ // TODO
+stmt : '{' blockstmts '}' {
+    $$ = nullptr;
+}
      | IF '(' expr ')' stmt %prec PREC_ELSELESS_IF    {
-                                                        Node* parent = createNode("stmt");
-                                                        addChildToParent(&parent, createNode("IF"));
-                                                        addChildToParent(&parent, createNode("("));
-                                                        addChildToParent(&parent, $3);
-                                                        addChildToParent(&parent, createNode(")"));
-                                                        addChildToParent(&parent, $5);
-                                                        $$ = parent;
                                                       }
      | IF '(' expr ')' stmt ELSE stmt                 {
-                                                        Node* parent = createNode("stmt");
-                                                        addChildToParent(&parent, createNode("IF"));
-                                                        addChildToParent(&parent, createNode("("));
-                                                        addChildToParent(&parent, $3);
-                                                        addChildToParent(&parent, createNode(")"));
-                                                        addChildToParent(&parent, $5);
-                                                        addChildToParent(&parent, createNode("ELSE"));
-                                                        addChildToParent(&parent, $7);
-                                                        $$ = parent;
+                                                       
                                                       }
      | WHILE '(' expr ')' stmt                        {
-                                                        Node* parent = createNode("stmt");
-                                                        addChildToParent(&parent, createNode("WHILE"));
-                                                        addChildToParent(&parent, createNode("("));
-                                                        addChildToParent(&parent, $3);
-                                                        addChildToParent(&parent, createNode(")"));
-                                                        addChildToParent(&parent, $5);
-                                                        $$ = parent;
+                                                        
                                                       }
      | expr '=' expr ';'                              {
-                                                        Node* parent = createNode("stmt");
-                                                        addChildToParent(&parent, $1);
-                                                        addChildToParent(&parent, createNode("="));
-                                                        addChildToParent(&parent, $3);
-                                                        addChildToParent(&parent, createNode(";"));
-                                                        $$ = parent;
+                                                        
                                                       }
      | CONTINUE ';'                                   {
                                                         Node* parent = createNode("stmt");
@@ -311,11 +295,7 @@ stmt : '{' blockstmts '}'                             {
                                                         $$ = parent;
                                                       }
      | RETURN expr ';'                                {
-                                                        Node* parent = createNode("stmt");
-                                                        addChildToParent(&parent, createNode("RETURN"));
-                                                        addChildToParent(&parent, $2);
-                                                        addChildToParent(&parent, createNode(";"));
-                                                        $$ = parent;
+                                                        
                                                       }
      | RETURN ';'                                     {
                                                         Node* parent = createNode("stmt");
@@ -324,15 +304,7 @@ stmt : '{' blockstmts '}'                             {
                                                         $$ = parent;
                                                       }
      | expr '.' ID '(' exprlistopt ')'  ';'           {
-                                                        Node* parent = createNode("stmt");
-                                                        addChildToParent(&parent, $1);
-                                                        addChildToParent(&parent, createNode("."));
-                                                        addChildToParent(&parent, createNode("ID"));
-                                                        addChildToParent(&parent, createNode("("));
-                                                        addChildToParent(&parent, $5);
-                                                        addChildToParent(&parent, createNode(")"));
-                                                        addChildToParent(&parent, createNode(";"));
-                                                        $$ = parent;
+                                                        
                                                       }
      | ';'                                            {
                                                         Node* parent = createNode("stmt");
@@ -341,307 +313,172 @@ stmt : '{' blockstmts '}'                             {
                                                       }
      ;
 
-expr : expr '>' expr          {
-                                Node* parent = createNode("expr");
-                                Node* child2 = createNode(">");
-                                addChildToParent(&parent, $1);
-                                addChildToParent(&parent, child2);
-                                addChildToParent(&parent, $3);
-                                $$ = parent;
-                               }
+expr : expr '>' expr {
+    $$ = new BinExpression($1, $3, OP_GREAT);
+}
 
-     | expr '<' expr           {
-                                Node* parent = createNode("expr");
-                                Node* child2 = createNode("<");
-                                addChildToParent(&parent, $1);
-                                addChildToParent(&parent, child2);
-                                addChildToParent(&parent, $3);
-                                $$ = parent;
-                               }
+| expr '<' expr {
+    $$ = new BinExpression($1, $3, OP_LESS);
+}
 
-     | expr GREAT_EQ expr      {
-                                Node* parent = createNode("expr");
-                                Node* child2 = createNode(">=");
-                                addChildToParent(&parent, $1);
-                                addChildToParent(&parent, child2);
-                                addChildToParent(&parent, $3);
-                                $$ = parent;
-                               }
+| expr GREAT_EQ expr {
+    $$ = new BinExpression($1, $3, OP_GREAT_EQ);
+}
 
-     | expr LESS_EQ expr       {
-                                Node* parent = createNode("expr");
-                                Node* child2 = createNode("<=");
-                                addChildToParent(&parent, $1);
-                                addChildToParent(&parent, child2);
-                                addChildToParent(&parent, $3);
-                                $$ = parent;
-                               }
+| expr LESS_EQ expr {
+    $$ = new BinExpression($1, $3, OP_LESS_EQ);
+}
 
-     | expr EQ expr            {
-                                Node* parent = createNode("expr");
-                                Node* child2 = createNode("==");
-                                addChildToParent(&parent, $1);
-                                addChildToParent(&parent, child2);
-                                addChildToParent(&parent, $3);
-                                $$ = parent;
-                               }
+| expr EQ expr {
+    $$ = new BinExpression($1, $3, OP_IS_EQ);
+}
 
-     | expr DIFF expr          {
-                                Node* parent = createNode("expr");
-                                Node* child2 = createNode("!=");
-                                addChildToParent(&parent, $1);
-                                addChildToParent(&parent, child2);
-                                addChildToParent(&parent, $3);
-                                $$ = parent;
-                               }
+| expr DIFF expr {
+    $$ = new BinExpression($1, $3, OP_DIFF);
+}
 
-     | expr OR expr            {
-                                Node* parent = createNode("expr");
-                                Node* child2 = createNode("||");
-                                addChildToParent(&parent, $1);
-                                addChildToParent(&parent, child2);
-                                addChildToParent(&parent, $3);
-                                $$ = parent;
-                               }
+| expr OR expr {
+    $$ = new BinExpression($1, $3, OP_OR);
+}
 
-     | expr AND expr           {
-                                Node* parent = createNode("expr");
-                                Node* child2 = createNode("&&");
-                                addChildToParent(&parent, $1);
-                                addChildToParent(&parent, child2);
-                                addChildToParent(&parent, $3);
-                                $$ = parent;
-                               }
+| expr AND expr {
+    $$ = new BinExpression($1, $3, OP_AND);
+}
 
-     | expr '+' expr           {
-                                Node* parent = createNode("expr");
-                                Node* child2 = createNode("+");
-                                addChildToParent(&parent, $1);
-                                addChildToParent(&parent, child2);
-                                addChildToParent(&parent, $3);
-                                $$ = parent;
-                               }
+| expr '+' expr {
+    $$ = new BinExpression($1, $3, OP_PLUS);   
+}
 
-     | expr '-' expr           {
-                                Node* parent = createNode("expr");
-                                Node* child2 = createNode("-");
-                                addChildToParent(&parent, $1);
-                                addChildToParent(&parent, child2);
-                                addChildToParent(&parent, $3);
-                                $$ = parent;
-                               }
+| expr '-' expr {
+    $$ = new BinExpression($1, $3, OP_BIN_MINUS);   
+}
 
-     | expr '/' expr           {
-                                Node* parent = createNode("expr");
-                                Node* child2 = createNode("/");
-                                addChildToParent(&parent, $1);
-                                addChildToParent(&parent, child2);
-                                addChildToParent(&parent, $3);
-                                $$ = parent;
-                               }
+| expr '/' expr {
+    $$ = new BinExpression($1, $3, OP_DIV);   
+}
 
-     | expr '*' expr           {
-                                Node* parent = createNode("expr");
-                                Node* child2 = createNode("*");
-                                addChildToParent(&parent, $1);
-                                addChildToParent(&parent, child2);
-                                addChildToParent(&parent, $3);
-                                $$ = parent;
-                               }
+| expr '*' expr {
+    $$ = new BinExpression($1, $3, OP_TIMES);   
+}
 
-     | expr '%' expr           {
-                                Node* parent = createNode("expr");
-                                Node* child2 = createNode("%");
-                                addChildToParent(&parent, $1);
-                                addChildToParent(&parent, child2);
-                                addChildToParent(&parent, $3);
-                                $$ = parent;
-                               }
+| expr '%' expr {
+    $$ = new BinExpression($1, $3, OP_MOD);   
+}
 
-     | object filledbracks     {
-                                Node* parent = createNode("expr");
-                                addChildToParent(&parent, $1);
-                                addChildToParent(&parent, $2);
-                                $$ = parent;
-                               }
+| object filledbracks { 
+    $$ = new ArrayAccessExpression($1, $2);
+}
 
-     | LIT_INT                {
-                                 Node* parent = createNode("LIT_INT");
-                                 $$ = parent;
-                              }
+| LIT_INT {
+    AtomExpValue val;
+    val.intval = $1;
+    AtomExpression* exp = new AtomExpression(val, MkTypeInt());
+    $$ = exp;
+}
 
-     | LIT_STR                {
-                                 Node* parent = createNode("LIT_STR");
-                                 $$ = parent;
-                              }
+| LIT_STR {
+    AtomExpValue val;
+    val.strval = $1;
+    AtomExpression* exp = new AtomExpression(val, MkTypeClass("String"));
+    $$ = exp;
+}
 
-     | TRUE                   {
-                                 Node* parent = createNode("TRUE");
-                                 $$ = parent;
-                              }
+| TRUE {
+    AtomExpValue val;
+    val.boolval = true;
+    AtomExpression* exp = new AtomExpression(val, MkTypeBoolean());
+    $$ = exp;
+}
 
-     | FALSE                  {
-                                 Node* parent = createNode("FALSE");
-                                 $$ = parent;
-                              }
+| FALSE {
+    AtomExpValue val;
+    val.boolval = false;
+    AtomExpression* exp = new AtomExpression(val, MkTypeBoolean());
+    $$ = exp;
+}
 
-     | TOK_NULL               {
-                                 Node* parent = createNode("NULL");
-                                 $$ = parent;
-                              }
+| TOK_NULL {
+    AtomExpression* exp = new AtomExpression(MkTypeNull());
+    $$ = exp;
+}
 
-     | object                 {
-                                 Node* parent = createNode("expr");
-                                 addChildToParent(&parent, $1);
-                                 $$ = parent;
-                              }
+| object {
+    $$ = $1;
+}
 
-     | '-' expr %prec PREC_UNARY_OP   {
-                                        Node* parent = createNode("expr");
-                                        Node* child1 = createNode("-");
-                                        addChildToParent(&parent, child1);
-                                        addChildToParent(&parent, $2);
-                                        $$ = parent;
-                                      }
+| '-' expr %prec PREC_UNARY_OP {
+    $$ = new UnExpression($2, OP_UN_MINUS);
+}
 
-     | '!' expr %prec PREC_UNARY_OP   {
-                                        Node* parent = createNode("expr");
-                                        Node* child1 = createNode("!");
-                                        addChildToParent(&parent, child1);
-                                        addChildToParent(&parent, $2);
-                                        $$ = parent;
-                                      }
-     ;
+| '!' expr %prec PREC_UNARY_OP {
+    $$ = new UnExpression($2, OP_NOT);
+} ;
 
 type : type ARR {
-                  Node* parent = createNode("type");
-                  addChildToParent(&parent, $1);
-                  addChildToParent(&parent, createNode("[]"));
-                  $$ = parent;
-                }
-     | BOOLEAN  {
-                  Node* parent = createNode("type");
-                  addChildToParent(&parent, createNode("BOOLEAN"));
-                  $$ = parent;
-                }
-     | INT      {
-                  Node* parent = createNode("type");
-                  addChildToParent(&parent, createNode("INT"));
-                  $$ = parent;
-                }
-     | VOID     {
-                  Node* parent = createNode("type");
-                  addChildToParent(&parent, createNode("VOID"));
-                  $$ = parent;
-                }
-     | ID       {
-                  Node* parent = createNode("type");
-                  addChildToParent(&parent, createNode("ID"));
-                  $$ = parent;
-                }
-     ;
+    $$ = MkTypeArray($1);
+}
+| BOOLEAN  {
+    $$ = MkTypeBoolean();
+}
+| INT {
+    $$ = MkTypeInt();
+}
+| VOID {
+    $$ = MkTypeVoid();
+}
+| ID {
+    $$ = MkTypeClass($1);
+};
 
-object : NEW type                         {
-                                            Node* parent = createNode("object");
-                                            addChildToParent(&parent, createNode("NEW"));
-                                            addChildToParent(&parent, $2);
-                                            $$ = parent;
-                                          }
-       | NEW ID '(' exprlistopt ')'       {
-                                            Node* parent = createNode("object");
-                                            addChildToParent(&parent, createNode("NEW"));
-                                            addChildToParent(&parent, createNode("ID"));
-                                            addChildToParent(&parent, createNode("("));
-                                            addChildToParent(&parent, $4);
-                                            addChildToParent(&parent, createNode(")"));
-                                            $$ = parent;
-                                          }
-       | ID                               {
-                                            Node* parent = createNode("object");
-                                            addChildToParent(&parent, createNode("ID"));
-                                            $$ = parent;
-                                          }
-       | THIS_DOT ID                      {
-                                            Node* parent = createNode("object");
-                                            addChildToParent(&parent, createNode("THIS"));
-                                            addChildToParent(&parent, createNode("."));
-                                            addChildToParent(&parent, createNode("ID"));
-                                            $$ = parent;
-                                          }
-       | THIS                             {
-                                            Node* parent = createNode("object");
-                                            addChildToParent(&parent, createNode("THIS"));
-                                            $$ = parent;
-                                          }
-       | expr '.' ID '(' exprlistopt ')'  {
-                                            Node* parent = createNode("object");
-                                            addChildToParent(&parent, $1);
-                                            addChildToParent(&parent, createNode("."));
-                                            addChildToParent(&parent, createNode("ID"));
-                                            addChildToParent(&parent, createNode("("));
-                                            addChildToParent(&parent, $5);
-                                            addChildToParent(&parent, createNode(")"));
-                                            $$ = parent;
-                                          }
-       | '(' expr ')'                     {
-                                            Node* parent = createNode("object");
-                                            addChildToParent(&parent, createNode("("));
-                                            addChildToParent(&parent, $2);
-                                            addChildToParent(&parent, createNode(")"));
-                                            $$ = parent;
-                                          }
-       | '{' exprlist '}'                 {
-                                            Node* parent = createNode("object");
-                                            addChildToParent(&parent, createNode("'{'"));
-                                            addChildToParent(&parent, $2);
-                                            addChildToParent(&parent, createNode("'}'"));
-                                            $$ = parent;
-                                          }
-       ;
+object : NEW type {
+    $$ = new ArrayDeclExpression($2);
+}
+| NEW ID '(' exprlistopt ')' {
+    $$ = new NewObjExpression($2, $4);
+} | ID {
+    $$ = new IdExpression($1);
+} | THIS_DOT ID {
+    $$ = new FieldAccessExpression($2);
+} | THIS {
+    $$ = new ThisExpression;
+} | expr '.' ID '(' exprlistopt ')' {
+    $$ = new MethodCallExpression($1, $3, $5);
+} | '(' expr ')' {
+    $$ = new ParenExpression($2);
+} | '{' exprlist '}' {
+    $$ = new LitArrayExpression($2);
+};
 
 exprlist : expr ',' exprlist  {
-                                Node* parent = createNode("exprlist");
-                                addChildToParent(&parent, $1);
-                                addChildToParent(&parent, createNode(","));
-                                addChildToParent(&parent, $3);
-                                $$ = parent;
-                              }
-         | expr               {
-                                Node* parent = createNode("exprlist");
-                                addChildToParent(&parent, $1);
-                                $$ = parent;
-                              }
-         ;
+    deque<Expression*>* newExprList;
+    if($3 == nullptr)
+        newExprList = new deque<Expression*>();
+    else
+        newExprList = $3;
+
+    newExprList->push_front($1);
+    $$ = newExprList;
+} | expr {
+    deque<Expression*>* newExprList = new deque<Expression*>();
+    newExprList->push_front($1);
+    $$ = newExprList;
+} ;
 
 exprlistopt : exprlist  {
-                          Node* parent = createNode("exprlistopt");
-                          addChildToParent(&parent, $1);
-                          $$ = parent;
-                        }
-            |           {
-                          Node* parent = createNode("exprlistopt");
-                          addChildToParent(&parent, createNode("EPS"));
-                          $$ = parent;
-                        }
-            ;
-
+    $$ = $1;
+} | {
+    $$ = nullptr;
+} ;
 
 filledbracks : filledbracks '[' expr ']'  {
-                                            Node* parent = createNode("filledbracks");
-                                            addChildToParent(&parent, $1);
-                                            addChildToParent(&parent, createNode("["));
-                                            addChildToParent(&parent, $3);
-                                            addChildToParent(&parent, createNode("]"));
-                                            $$ = parent;
-                                          }
-             | '[' expr ']'               {
-                                            Node* parent = createNode("filledbracks");
-                                            addChildToParent(&parent, createNode("["));
-                                            addChildToParent(&parent, $2);
-                                            addChildToParent(&parent, createNode("]"));
-                                            $$ = parent;
-                                          }
-             ;
+    deque<Expression*>* newExprList = $1;
+    newExprList->push_front($3);
+    $$ = newExprList;
+} | '[' expr ']' {
+    deque<Expression*>* newExprList = new deque<Expression*>();
+    newExprList->push_front($2);
+    $$ = newExprList;
+} ;
 %%
 
 void yyerror(const char *s) {
@@ -668,7 +505,9 @@ void endScope(){
 
 int main(){
     tablePool = SymtablePool();
-    if(yyparse() != 1)
-        tablePool.print();
+    if(yyparse() != 1){
+        // tablePool.print();
+        program->print();
+    }
     return 0;
 }
