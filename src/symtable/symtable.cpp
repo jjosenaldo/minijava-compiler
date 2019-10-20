@@ -1,6 +1,6 @@
 #include <iostream>
 #include "symtable.hpp"
-#include "../table-content/table-content.hpp"
+#include "table-content.hpp"
 using std::cout;
 using std::endl;
 

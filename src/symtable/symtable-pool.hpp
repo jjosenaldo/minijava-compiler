@@ -3,7 +3,7 @@
 
 #include <string>
 #include <unordered_map>
-#include "../symtable/symtable.hpp"
+#include "symtable.hpp"
 
 using std::unordered_map;
 using std::string;

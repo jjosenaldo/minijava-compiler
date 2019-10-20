@@ -3,7 +3,7 @@
 
 #include <string>
 #include <unordered_map>
-#include "../table-content/table-content.hpp"
+#include "table-content.hpp"
 
 using std::string;
 using std::unordered_map;
