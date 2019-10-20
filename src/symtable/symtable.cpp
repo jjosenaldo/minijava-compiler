@@ -27,7 +27,13 @@ bool Symtable::insert(string id, TableContent content){
 }
 
 TableContent Symtable::get(string id){
-    return this->table[id];
+    if(this->table.find(id) != this->table.end())
+        return this->table[id];
+    else{
+        TableContent tcReturn;
+        tcReturn.tag = TCNOCONTENT;
+        return tcReturn;
+    }
 }
 
 void Symtable::print(){

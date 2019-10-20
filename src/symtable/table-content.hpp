@@ -8,7 +8,8 @@ class Symtable;
 
 enum TableContentTag{
     TCTYPE,
-    TCSYMTABLE
+    TCSYMTABLE,
+    TCNOCONTENT
 };
 
 struct TableContent{
