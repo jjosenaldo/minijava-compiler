@@ -58,6 +58,7 @@ Program* program;
   Expression* _expr;
   ObjExpression* _objExpr;
   deque<Expression*>* _exprList;
+  Statement* _statement;
 };
 
 %token INT TRUE FALSE BOOLEAN BREAK CLASS CONTINUE VOID EXTENDS RETURN IF ELSE WHILE THIS TOK_NULL NEW ERROR ARR THIS_DOT
@@ -78,7 +79,7 @@ Program* program;
 %type <_varDec> vardec
 %type <_methodDec> methoddec
 %type <_type> type
-%type <nodePointer>  stmt   
+%type <_statement>  stmt   
 
 %left '.'
 %nonassoc '<' '>' EQ DIFF LESS_EQ GREAT_EQ
@@ -260,58 +261,54 @@ blockstmts : vardec blockstmts{
     }
 }
 | stmt blockstmts   {
-    // TODO
-    $$ = nullptr;
+     if($2 != nullptr){
+        $2->addStatementAtFront($1);
+        $$ = $2;
+    }
+        
+    else{
+        Block* block = new Block;
+        block->addStatement($1);
+        $$ = block;
+    }
 }
 | {
     $$ = nullptr;
 };
 
- // TODO
 stmt : '{' blockstmts '}' {
-    $$ = nullptr;
+    $$ = $2;
 }
-     | IF '(' expr ')' stmt %prec PREC_ELSELESS_IF    {
-                                                      }
-     | IF '(' expr ')' stmt ELSE stmt                 {
-                                                       
-                                                      }
-     | WHILE '(' expr ')' stmt                        {
-                                                        
-                                                      }
-     | expr '=' expr ';'                              {
-                                                        
-                                                      }
-     | CONTINUE ';'                                   {
-                                                        Node* parent = createNode("stmt");
-                                                        addChildToParent(&parent, createNode("CONTINUE"));
-                                                        addChildToParent(&parent, createNode(";"));
-                                                        $$ = parent;
-                                                      }
-     | BREAK ';'                                      {
-                                                        Node* parent = createNode("stmt");
-                                                        addChildToParent(&parent, createNode("BREAK"));
-                                                        addChildToParent(&parent, createNode(";"));
-                                                        $$ = parent;
-                                                      }
-     | RETURN expr ';'                                {
-                                                        
-                                                      }
-     | RETURN ';'                                     {
-                                                        Node* parent = createNode("stmt");
-                                                        addChildToParent(&parent, createNode("RETURN"));
-                                                        addChildToParent(&parent, createNode(";"));
-                                                        $$ = parent;
-                                                      }
-     | expr '.' ID '(' exprlistopt ')'  ';'           {
-                                                        
-                                                      }
-     | ';'                                            {
-                                                        Node* parent = createNode("stmt");
-                                                        addChildToParent(&parent, createNode(";"));
-                                                        $$ = parent;
-                                                      }
-     ;
+| IF '(' expr ')' stmt %prec PREC_ELSELESS_IF {
+    $$ = new ElselessIf($3, $5);
+}
+| IF '(' expr ')' stmt ELSE stmt {
+    $$ = new IfElse($3, $5, $7);
+}
+| WHILE '(' expr ')' stmt {
+    $$ = new While($3, $5);
+}
+| expr '=' expr ';' {
+    $$ = new Assignment($1, $3);
+}
+| CONTINUE ';' {
+    $$ = new Continue;
+}
+| BREAK ';' {
+    $$ = new Break;
+}
+| RETURN expr ';' {
+    $$ = new Return($2);
+}
+| RETURN ';' {
+    $$ = new Return;
+}
+| expr '.' ID '(' exprlistopt ')'  ';'{
+    $$ = new MethodCall($1, $3, $5);
+}
+| ';' {
+    $$ = new Skip;
+} ;
 
 expr : expr '>' expr {
     $$ = new BinExpression($1, $3, OP_GREAT);
