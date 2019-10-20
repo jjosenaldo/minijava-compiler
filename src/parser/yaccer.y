@@ -17,12 +17,8 @@ extern int yylineno;
 void yyerror(const char* s);
 
 void errorMsgPrefix();
+void idAlreadyDefinedError(char* id);
 void multipleClassError(char* id);
-void beginScope();
-void endScope();
-
-SymtablePool tablePool;
-Symtable* currentScope;
 
 Program* program;
 %}
@@ -99,10 +95,6 @@ goal : mainclass classdecs {
 } ;
 
 mainclass : CLASS ID '{' VOID ID '(' ID ARR ID ')' '{' blockstmts '}' '}' {
-    Symtable* newTable = new Symtable();
-    tablePool.insert(string($2), newTable);
-    currentScope = newTable;
-
     // Parameter
     Type* paramType = MkTypeArray(MkTypeClass($7));
     string paramName = string($9);
@@ -136,12 +128,6 @@ classdecs : classdec classdecs {
 };
 
 classdec : CLASS ID extendsopt '{' classmembers '}' {
-    Symtable* newTable = new Symtable();
-    if(!tablePool.insert(string($2), newTable)){
-        multipleClassError($2);
-        return 1;
-    }
-
     ClassDeclaration* decl;
 
     if($3 != nullptr)
@@ -160,8 +146,6 @@ classdec : CLASS ID extendsopt '{' classmembers '}' {
     }
     
     $$ = decl;
-
-    currentScope = newTable;
 } ;
 
 classmembers : vardec classmembers {
@@ -491,19 +475,22 @@ void multipleClassError(char* id){
     cout << "the class " << id << " was multiply defined!" << endl;
 }
 
-void beginScope(){
-    Symtable* table = new Symtable(currentScope);
-    currentScope = table;
+void idAlreadyDefinedError(char* id){
+    errorMsgPrefix();
+    cout << "there already exists an entity with id " << id << " in the current scope!" << endl;
 }
 
-void endScope(){
-    currentScope = currentScope->getParent();
-}
+// void beginScope(){
+//     Symtable* table = new Symtable(currentScope);
+//     currentScope = table;
+// }
+
+// void endScope(){
+//     currentScope = currentScope->getParent();
+// }
 
 int main(){
-    tablePool = SymtablePool();
     if(yyparse() != 1){
-        // tablePool.print();
         program->print();
     }
     return 0;

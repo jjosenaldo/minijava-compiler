@@ -8,7 +8,7 @@ PARSER_PATH = ./src/parser
 SYMTABLE_PATH = ./src/symtable
 
 # Commands
-FLAGS = -Wno-write-strings
+FLAGS = -Wno-write-strings -g
 LEX := flex
 YACC := bison
 INC := -I $(GRAMMAR_PATH) -I $(PARSER_PATH) -I $(SYMTABLE_PATH) -I $(SYMTABLE_PATH) -I $(SYMTABLE_PATH) -I $(AST_PATH)
