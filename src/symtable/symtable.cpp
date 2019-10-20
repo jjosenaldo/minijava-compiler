@@ -1,6 +1,7 @@
 #include <iostream>
 #include "symtable.hpp"
-#include "table-content.hpp"
+#include "type.hpp"
+
 using std::cout;
 using std::endl;
 
@@ -44,4 +45,40 @@ void Symtable::print(){
         cout << endl;
     }
     cout << "}";
+}
+
+bool SymtablePool::insert(string className, Symtable* table){
+    if(this->pool.find(className) != this->pool.end())
+        return false;
+    
+    else{
+        this->pool[className] = table;
+        return true;
+    }
+}
+
+Symtable* SymtablePool::get(string className){
+    auto it = this->pool.find(className);
+
+    if(it == this->pool.end())
+        return nullptr;
+    
+    else
+        return it->second;
+}
+
+void SymtablePool::print(){
+    for(auto it : this->pool){
+        cout << it.first << " : ";
+        it.second->print();
+        cout << endl;
+    }
+}
+
+void printTableContent(TableContent content){
+    if(content.tag == TCTYPE){
+        printType(content.type);
+    } else if(content.tag == TCSYMTABLE){
+        content.symtable->print();
+    }
 }

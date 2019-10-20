@@ -3,10 +3,27 @@
 
 #include <string>
 #include <unordered_map>
-#include "table-content.hpp"
+#include "type.hpp"
 
 using std::string;
 using std::unordered_map;
+
+class Symtable;
+
+enum TableContentTag{
+    TCTYPE,
+    TCSYMTABLE,
+    TCNOCONTENT
+};
+
+struct TableContent{
+    TableContentTag tag;
+
+    union{
+        Symtable* symtable;
+        Type* type;
+    };
+};
 
 class Symtable{
     private:
@@ -26,5 +43,19 @@ class Symtable{
 
         void print();
 };
+
+class SymtablePool{
+    private:
+        unordered_map<string, Symtable*> pool;
+    
+    public:
+        bool insert(string className, Symtable* table);
+
+        Symtable* get(string className);
+
+        void print();
+};
+
+void printTableContent(TableContent content);
 
 #endif

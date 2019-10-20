@@ -6,8 +6,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include "ast.hpp"
-#include "node.hpp"
-#include "symtable-pool.hpp"
 
 using std::cout;
 using std::endl;
