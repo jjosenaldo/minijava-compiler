@@ -283,12 +283,13 @@ ClassSymtablePool* buildClassSymtablePool(Program* program){
 
                 for(auto stmt : *stmts){
                     if(!stmt->buildSymtable(methodTable, pool)){
-                        stmt->print();
-                        cout << "\n%%%%%%%%%%%\n";
-                        methodTable->print();
-                        cout << "\n%%%%%%%%%%%\n";
-                        pool->print();
-                        cout << "%%%%%%%%%%%" << endl;
+                        // DEBUG: 
+                        // stmt->print();
+                        // cout << "\n%%%%%%%%%%%\n";
+                        // methodTable->print();
+                        // cout << "\n%%%%%%%%%%%\n";
+                        // pool->print();
+                        // cout << "%%%%%%%%%%%" << endl;
                         delete pool;
                         return nullptr;
                     }

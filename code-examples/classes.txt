@@ -3,7 +3,7 @@ class MainClass{
 		System.println("hello world!");
 		Cat cat = new Cat();
 		boolean a = cat.eat();
-		//cat.meow();
+		cat.meow();
 	}
 }
 

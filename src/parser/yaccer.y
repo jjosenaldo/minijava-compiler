@@ -469,8 +469,6 @@ int main(){
 
         if(pool != nullptr)
             pool->print();
-        else
-            cout << "NULL POOL :(" << endl;
     }
     return 0;
 }
