@@ -123,4 +123,6 @@ void multipleVariableError(string id);
 
 void multiplyDefinedFieldError(string id, string className);
 
+void multiplyDefinedParamError(string param, string method, string className);
+
 #endif

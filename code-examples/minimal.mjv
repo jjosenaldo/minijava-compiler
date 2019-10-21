@@ -10,7 +10,7 @@ class Main{
 
 class Cat{
     int a;
-    void meow(void a, int b, String[] c){
+    void meow(void a, int b, String[] c/*, void b*/){
         int i = j.k()[1][1];
         void a = new a();
         //a a = ((((((((a.a())))))))[1]);

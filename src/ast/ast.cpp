@@ -208,7 +208,6 @@ ClassSymtablePool* buildClassSymtablePool(Program* program){
 
         auto fields = classDecl->getFields();
 
-        // TODO: check fields with the same name
         if(fields != nullptr) 
             for(auto field : *fields){ 
                 if(root->get(field->getName()).tag != TCNOCONTENT){
@@ -250,8 +249,17 @@ ClassSymtablePool* buildClassSymtablePool(Program* program){
                 // Adds the method params
                 auto params = method->getParameters();
                 if(params != nullptr)
-                    for(auto param : *params)
+                    for(auto param : *params){
+                        if(methodTable->get(param->getName()).tag != TCNOCONTENT){
+                            multiplyDefinedParamError(param->getName(), methodName, className);
+                            delete methodTable;
+                            delete root;
+                            delete pool;
+                            return nullptr;
+                        }
+
                         methodTable->insert(param->getName(), tableContentFromType(param->getType()));
+                    }
 
                 root->insertMethodTable(methodName, methodTable);
             }
@@ -283,12 +291,12 @@ ClassSymtablePool* buildClassSymtablePool(Program* program){
 
 void multipleClassError(string id){
     errorMsgPrefix();
-    cout << "the class " << id << " was multiply defined!" << endl;
+    cout << "the class " << id << " was multiply defined" << endl;
 }
 
 void multipleMethodError(string className, string methodName){
     errorMsgPrefix();
-    cout << "the method " << methodName << " in the class " << className << " is already defined!" << endl;
+    cout << "the entity " << methodName << " in the class " << className << " is multiply defined" << endl;
 }
 
 void multipleVariableError(string id){
@@ -299,6 +307,11 @@ void multipleVariableError(string id){
 void multiplyDefinedFieldError(string id, string className){
     errorMsgPrefix();
     cout << "the field " << id << " is multiply defined in the class " << className << endl;
+}
+
+void multiplyDefinedParamError(string param, string method, string className){
+    errorMsgPrefix();
+    cout << "there are many params named " << param << " in the method " << method << " of the " << className << " class" << endl; 
 }
 
 void errorMsgPrefix(){
