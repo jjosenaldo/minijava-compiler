@@ -3,14 +3,15 @@
 
 #include <deque>
 #include "expression.hpp"
+#include "symtable.hpp"
 
 using std::deque;
-
 
 class GenStatement{
     public:
         // Will be defined in a derived class
         virtual void print() = 0;
+        virtual void buildSymtable(Symtable* parent){}
 };
 
 class Statement : public GenStatement {};
@@ -26,22 +27,24 @@ class VarDec : public GenStatement{
         Type* getType();
         string getId();
         Expression* getExpression();
+        void buildSymtable(Symtable* parent);
         void print();
 };
 
 class Block : public Statement{
     private:
-        deque<GenStatement*> statements;
+        deque<GenStatement*>* statements;
     
     public:
+        Block();
         void addStatement(GenStatement* stmt);
-
         void addStatementAtFront(GenStatement* stmt);
-
+        deque<GenStatement*>* getStatements();
+        void buildSymtable(Symtable* parent);
         void print();
 };
 
-class ElselessIf : public Statement{
+class ElselessIf : public Statement {
     private:
         Expression* guard;
         Statement* statement;

@@ -7,6 +7,8 @@ using std::endl;
 Program::Program(deque<ClassDeclaration*>* decls){
     if(decls != nullptr)
         this->declarations = decls;
+    else
+        this->declarations = new deque<ClassDeclaration*>;
 }
 
 void Program::print(){
@@ -28,6 +30,14 @@ deque<ClassDeclaration*>* Program::getDecls(){
     return declarations;
 }
 
+// TODO: the class declarations should be in a hash map
+ClassDeclaration* Program::getClassDecl(string className){
+    for(auto decl : *declarations)
+        if(decl->getName() == className)
+            return decl;
+    return nullptr;
+}
+
 Parameter::Parameter(Type* type, string name){
     this->type = type;
     this->name = name;
@@ -40,6 +50,10 @@ void Parameter::print(){
 
 Type* Parameter::getType(){
     return type;
+}
+
+string Parameter::getName(){
+    return name;
 }
 
 Method::Method(string id, Type* returnType, Block* stmt) : Method(id, returnType, new deque<Parameter*>(), stmt){}
@@ -108,6 +122,14 @@ Field::Field(Type* type, string name, Expression* initValue){
     this->initValue = initValue;
 }
 
+string Field::getName(){
+    return name;
+}
+
+Type* Field::getType(){
+    return type;
+}
+
 void Field::print(){
     printType(this->type);
     cout << " " << this->name;
@@ -159,9 +181,20 @@ vector<Method*>* ClassDeclaration::getMethods(){
     return methods;
 }
 
-SymtablePool* buildSymtablePool(Program* program){
-    SymtablePool* pool = new SymtablePool;
+vector<Field*>* ClassDeclaration::getFields(){
+    return fields;
+}
 
+// TODO: the methods should be in a hashtable
+Method* ClassDeclaration::getMethod(string methodName){
+    for(Method* method : *methods) if(method->getId() == methodName) return method;
+    return nullptr;
+}
+
+ClassSymtablePool* buildClassSymtablePool(Program* program){
+    ClassSymtablePool* pool = new ClassSymtablePool;
+
+    // Processes the method headers and fields of each class
     for(auto classDecl : *program->getDecls()){
         string className = classDecl->getName();
 
@@ -171,10 +204,23 @@ SymtablePool* buildSymtablePool(Program* program){
             return nullptr;
         }
 
-        Symtable* root = new Symtable;
+        ClassSymtable* root = new ClassSymtable;
+
+        auto fields = classDecl->getFields();
+
+        // TODO: check fields with the same name
+        if(fields != nullptr) 
+            for(auto field : *fields){ 
+                TableContent tc;
+                tc.tag = TCTYPE;
+                tc.type = field->getType();
+                root->insert(field->getName(), tc);
+            }
+
         auto methods = classDecl->getMethods();
         
         if(methods != nullptr){
+            // First, adds the method headers in the symbol table
             for(auto method : *methods){
                 string methodName = method->getId();
 
@@ -185,17 +231,46 @@ SymtablePool* buildSymtablePool(Program* program){
                     return nullptr;
                 }
 
+                // Adds the method name
                 TableContent tcMethodType;
                 tcMethodType.tag = TCTYPE;
                 tcMethodType.type = method->getType();
                 root->insert(methodName, tcMethodType);
+
+                Symtable* methodTable = new Symtable;
+
+                // TODO: check method parameters with the same name
+                // Adds the method params
+                auto params = method->getParameters();
+                if(params != nullptr)
+                    for(auto param : *params)
+                        methodTable->insert(param->getName(), tableContentFromType(param->getType()));
+
+                root->insertMethodTable(methodName, methodTable);
             }
         }
 
         pool->insert(className, root);
     }
 
-    pool->print();
+    // Processes each method body
+    unordered_map<string, ClassSymtable*>* tablePool = pool->getPool();
+    for(auto tablePoolEntry : *tablePool){
+        string className = tablePoolEntry.first;
+        ClassSymtable* classSymtable = tablePoolEntry.second;
+
+        for(auto methodTablePair : *classSymtable->getMethodTables()){
+            string methodName = methodTablePair.first;
+            Symtable* methodTable = methodTablePair.second;
+            auto classDecl = program->getClassDecl(className);
+            auto method = classDecl->getMethod(methodName);
+            auto blockStmt = method->getStatement();
+
+            if(blockStmt != nullptr)
+                blockStmt->buildSymtable(methodTable);
+        }
+    }
+
     return pool;
 }
 

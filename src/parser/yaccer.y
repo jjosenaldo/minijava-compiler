@@ -15,8 +15,6 @@ extern int yylineno;
 void yyerror(const char* s);
 
 void errorMsgPrefix();
-void idAlreadyDefinedError(char* id);
-void multipleClassError(char* id);
 
 Program* program;
 %}
@@ -255,7 +253,7 @@ blockstmts : vardec blockstmts{
     }
 }
 | {
-    $$ = nullptr;
+    $$ = new Block;
 };
 
 stmt : '{' blockstmts '}' {
@@ -464,24 +462,11 @@ void yyerror(const char *s) {
     fprintf(stderr, "line: %d: %s\n", yylineno, s);
 }
 
-void idAlreadyDefinedError(char* id){
-    errorMsgPrefix();
-    cout << "there already exists an entity with id " << id << " in the current scope!" << endl;
-}
-
-// void beginScope(){
-//     Symtable* table = new Symtable(currentScope);
-//     currentScope = table;
-// }
-
-// void endScope(){
-//     currentScope = currentScope->getParent();
-// }
-
 int main(){
     if(yyparse() != 1){
         // program->print();
-        buildSymtablePool(program);
+        auto pool = buildClassSymtablePool(program);
+        pool->print();
     }
     return 0;
 }

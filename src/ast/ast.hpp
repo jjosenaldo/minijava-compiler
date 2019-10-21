@@ -30,6 +30,8 @@ class Program{
 
         deque<ClassDeclaration*>* getDecls();
 
+        ClassDeclaration* getClassDecl(string className);
+
         void print();
 };
 
@@ -71,6 +73,10 @@ class ClassDeclaration{
 
         vector<Method*>* getMethods();
 
+        vector<Field*>* getFields();
+
+        Method* getMethod(string methodName);
+
         void print();
 };
 
@@ -82,6 +88,10 @@ class Field{
     
     public:
         Field(Type* type, string name, Expression* initValue);
+
+        string getName();
+
+        Type* getType();
 
         void print();
 };
@@ -101,7 +111,7 @@ class Parameter{
         void print();
 };
 
-SymtablePool* buildSymtablePool(Program* program);
+ClassSymtablePool* buildClassSymtablePool(Program* program);
 
 void multipleClassError(string id);
 

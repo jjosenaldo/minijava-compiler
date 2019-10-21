@@ -3,8 +3,10 @@
 
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include "type.hpp"
 
+using std::pair;
 using std::string;
 using std::unordered_map;
 
@@ -25,10 +27,13 @@ struct TableContent{
     };
 };
 
+TableContent tableContentFromType(Type* type);
+
 class Symtable{
-    private:
+    protected:
         Symtable* parent;
-        unordered_map<string, TableContent> table;
+        int localId;
+        vector<pair<string, TableContent>>* table;
 
     public:
         Symtable();
@@ -37,21 +42,40 @@ class Symtable{
 
         Symtable* getParent();
 
+        void setParent(Symtable* table);
+
         void insert(string id, TableContent content);
+
+        void insert(Symtable* content);
+
+        void setLocalId(int id);
 
         TableContent get(string id);
 
+        virtual void print();
+};
+
+class ClassSymtable : public Symtable{
+    private:
+        unordered_map<string, Symtable*>* methodTables;
+    public:
+        ClassSymtable();
+        void insertMethodTable(string methodName, Symtable* table);
+        unordered_map<string, Symtable*>* getMethodTables();
         void print();
 };
 
-class SymtablePool{
+class ClassSymtablePool{
     private:
-        unordered_map<string, Symtable*> pool;
+        unordered_map<string, ClassSymtable*>* pool;
     
     public:
-        void insert(string className, Symtable* table);
+        ClassSymtablePool();
+        void insert(string className, ClassSymtable* table);
 
-        Symtable* get(string className);
+        ClassSymtable* get(string className);
+
+        unordered_map<string, ClassSymtable*>* getPool();
 
         void print();
 };

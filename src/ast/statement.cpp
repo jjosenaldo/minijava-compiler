@@ -23,6 +23,11 @@ void VarDec::print(){
     cout << ";";
 }
 
+void VarDec::buildSymtable(Symtable* parent){
+    // TODO: checks if the variable is already there
+    parent->insert(id, tableContentFromType(type));
+}
+
 Type* VarDec::getType(){
     return this->type;
 }
@@ -35,17 +40,36 @@ Expression* VarDec::getExpression(){
     return this->value;
 }
 
+Block:: Block(){
+    this->statements = new deque<GenStatement*>;
+}
+
 void Block::addStatement(GenStatement* stmt){
-    this->statements.push_back(stmt);
+    this->statements->push_back(stmt);
 }
 
 void Block::addStatementAtFront(GenStatement* stmt){
-    this->statements.push_front(stmt);
+    this->statements->push_front(stmt);
+}
+
+deque<GenStatement*>* Block::getStatements(){
+    return statements;
+}
+
+void Block::buildSymtable(Symtable* parent){
+    Symtable* table = new Symtable;
+
+    if(statements != nullptr)
+        for(auto stmt : *statements)
+            stmt->buildSymtable(table);
+
+    table->setParent(parent);
+    parent->insert(table);
 }
 
 void Block::print(){
     cout << "{ ";
-    for(auto stmt : this->statements){
+    for(auto stmt : *this->statements){
         stmt->print();
     }
     cout << " }";
