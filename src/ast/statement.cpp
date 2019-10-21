@@ -80,6 +80,10 @@ ElselessIf::ElselessIf(Expression* guard, Statement* statement){
     this->statement = statement;
 }
 
+void ElselessIf::buildSymtable(Symtable* parent){
+    statement->buildSymtable(parent);
+}
+
 void ElselessIf::print(){
     cout << "if(";
     guard->print();
@@ -91,6 +95,11 @@ IfElse::IfElse(Expression* guard, Statement* statementIf, Statement* statementEl
     this->guard = guard;
     this->statementIf = statementIf;
     this->statementElse = statementElse;
+}
+
+void IfElse::buildSymtable(Symtable* parent){
+    statementIf->buildSymtable(parent);
+    statementElse->buildSymtable(parent);
 }
 
 void IfElse::print(){
@@ -105,6 +114,10 @@ void IfElse::print(){
 While::While(Expression* guard, Statement* statement){
     this->guard = guard;
     this->statement = statement;
+}
+
+void While::buildSymtable(Symtable* parent){
+    statement->buildSymtable(parent);
 }
 
 void While::print(){

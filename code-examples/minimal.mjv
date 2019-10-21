@@ -17,3 +17,17 @@ class Cat{
 
     void meow2(){}
 }
+
+class IfElseTest{
+    Cat foo(){
+        if(1==1){
+            int c = 5;
+        } else{
+            int c = 6;
+        }
+
+        while(true){
+            c = 7;
+        }
+    }
+}

@@ -51,7 +51,9 @@ class ElselessIf : public Statement {
 
     public:
         ElselessIf(Expression* guard, Statement* statement);
+        void buildSymtable(Symtable* parent);
         void print();
+        
 };
 
 class IfElse : public Statement{
@@ -61,6 +63,7 @@ class IfElse : public Statement{
         Statement* statementElse;
     public:
         IfElse(Expression* guard, Statement* statementIf, Statement* statementElse);
+        void buildSymtable(Symtable* parent);
         void print();
 };
 
@@ -70,6 +73,7 @@ class While : public Statement{
         Statement* statement;
     public:
         While(Expression* guard, Statement* statement);
+        void buildSymtable(Symtable* parent);
         void print();
 };
 
