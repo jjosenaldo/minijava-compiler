@@ -121,4 +121,6 @@ class Skip : public Statement {
 };
 
 
+#include "ast.hpp"
+
 #endif

@@ -113,10 +113,12 @@ class Parameter{
 
 ClassSymtablePool* buildClassSymtablePool(Program* program);
 
-void multipleClassError(string id);
-
 void errorMsgPrefix();
 
+void multipleClassError(string id);
+
 void multipleMethodError(string className, string methodName);
+
+void multipleVariableError(string id);
 
 #endif

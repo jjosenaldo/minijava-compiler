@@ -280,7 +280,13 @@ void multipleClassError(string id){
 }
 
 void multipleMethodError(string className, string methodName){
+    errorMsgPrefix();
     cout << "the method " << methodName << " in the class " << className << " is already defined!" << endl;
+}
+
+void multipleVariableError(string id){
+    errorMsgPrefix();
+    cout << "the variable " << id << " is already defined in this scope" << endl;
 }
 
 void errorMsgPrefix(){

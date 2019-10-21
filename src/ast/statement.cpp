@@ -24,8 +24,11 @@ void VarDec::print(){
 }
 
 void VarDec::buildSymtable(Symtable* parent){
-    // TODO: checks if the variable is already there
-    parent->insert(id, tableContentFromType(type));
+    if(parent->get(id).tag != TCNOCONTENT)
+        multipleVariableError(id);
+    
+    else 
+        parent->insert(id, tableContentFromType(type));
 }
 
 Type* VarDec::getType(){
