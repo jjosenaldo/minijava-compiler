@@ -410,8 +410,8 @@ type : type ARR {
 object : NEW type {
     $$ = new ArrayDeclExpression($2);
 }
-| NEW ID '(' exprlistopt ')' {
-    $$ = new NewObjExpression($2, $4);
+| NEW ID '(' ')' {
+    $$ = new NewObjExpression($2);
 } | ID {
     $$ = new IdExpression($1);
 } | THIS_DOT ID {
@@ -469,6 +469,8 @@ int main(){
 
         if(pool != nullptr)
             pool->print();
+        else
+            cout << "NULL POOL :(" << endl;
     }
     return 0;
 }

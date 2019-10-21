@@ -4,32 +4,12 @@
 #include <deque>
 #include <unordered_map>
 #include <string>
-#include "type.hpp"
+#include "operator.hpp"
+#include "symtable.hpp"
 
 using std::deque;
 using std::unordered_map;
 using std::string;
-
-enum BinOperator{
-    OP_GREAT,
-    OP_LESS,   
-    OP_GREAT_EQ,
-    OP_LESS_EQ,
-    OP_IS_EQ,
-    OP_DIFF,
-    OP_OR,
-    OP_AND,
-    OP_PLUS,
-    OP_BIN_MINUS,
-    OP_TIMES,
-    OP_DIV,
-    OP_MOD
-};
-
-enum UnOperator{
-    OP_UN_MINUS,
-    OP_NOT
-};
 
 union AtomExpValue{
     bool boolval;   
@@ -37,9 +17,9 @@ union AtomExpValue{
     char* strval;
 };
 
-string binOpSymbol(BinOperator op);
+bool predefinedId(char* id);
 
-string unOpSymbol(UnOperator op);
+#include "type.hpp"
 
 class Expression{
     protected:
@@ -49,8 +29,11 @@ class Expression{
         virtual ~Expression() {}
         Type* getType();
         virtual void print() = 0;
+        virtual bool process(Symtable* environment, ClassSymtablePool* pool) = 0;
+        virtual string toString() {return "";} // TODO
 };
 
+// Example: 1+1
 class BinExpression : public Expression{
     private:
         Expression* first;
@@ -59,10 +42,11 @@ class BinExpression : public Expression{
     
     public:
         BinExpression(Expression* first, Expression* second, BinOperator op);
-
+        bool process(Symtable* environment, ClassSymtablePool* pool);
         void print();
 };
 
+// Example: !a
 class UnExpression : public Expression{
     private:
         Expression* first;
@@ -70,11 +54,16 @@ class UnExpression : public Expression{
 
     public:
         UnExpression(Expression* first, UnOperator op);
+        bool process(Symtable* environment, ClassSymtablePool* pool);
 
         void print();
 };
 
-// boolean, int, ID (String), null
+// Example: false
+//,         52
+//          "oi"
+//          null
+// The type is set when the parse tree is built
 class AtomExpression : public Expression{
     private:
         AtomExpValue val;
@@ -83,54 +72,64 @@ class AtomExpression : public Expression{
         AtomExpression(Type* type);
         AtomExpression(AtomExpValue val, Type* type);
         AtomExpValue getVal();
+        bool process(Symtable* environment, ClassSymtablePool* pool);
         void print();
 };
 
-class ObjExpression : public Expression{
-    
-};
+class ObjExpression : public Expression{};
 
+// Example: new int
+// The type is set when the parse tree is built
 class ArrayDeclExpression : public ObjExpression{
     private:
         Type* type;
     public:
         ArrayDeclExpression(Type* type);
+        bool process(Symtable* environment, ClassSymtablePool* pool);
         void print();
 };
 
+// Example: new Cat()
 class NewObjExpression : public ObjExpression{
     private:
         string id;
-        deque<Expression*>* arguments;
     
     public:
-        NewObjExpression(string id, deque<Expression*>* args);
+        NewObjExpression(string id);
+        bool process(Symtable* environment, ClassSymtablePool* pool);
         void print();
 };
 
+// Its type is not known when the tree is being built
 class IdExpression : public ObjExpression{
     private:
         string id;
     
     public:
         IdExpression(string id);
+        bool process(Symtable* environment, ClassSymtablePool* pool);
         void print();
 };
 
+// Its type is not known when the tree is being built
 class FieldAccessExpression : public ObjExpression{
     private:
         string id;
     
     public:
         FieldAccessExpression(string id);
+        bool process(Symtable* environment, ClassSymtablePool* pool);
         void print();
 };
 
+// Its type is not known when the tree is being built
 class ThisExpression : public ObjExpression{
     public:
         void print();
+        bool process(Symtable* environment, ClassSymtablePool* pool);
 };
 
+// Its type is not known when the tree is being built
 class MethodCallExpression : public ObjExpression{
     private:
         Expression* left;
@@ -139,15 +138,18 @@ class MethodCallExpression : public ObjExpression{
 
     public:
         MethodCallExpression(Expression* left, string method, deque<Expression*>* args);
+        bool process(Symtable* environment, ClassSymtablePool* pool);
         void print();
 };
 
+// Example: (a)
 class ParenExpression : public ObjExpression{
     private:
         Expression* first;
 
     public:
         ParenExpression(Expression* first);
+        bool process(Symtable* environment, ClassSymtablePool* pool);
         void print();
 };
 
@@ -156,6 +158,7 @@ class LitArrayExpression : public ObjExpression{
         deque<Expression*>* expressions;
     public:
         LitArrayExpression(deque<Expression*>* exprs);
+        bool process(Symtable* environment, ClassSymtablePool* pool);
         void print();
 };
 
@@ -166,6 +169,7 @@ class ArrayAccessExpression : public Expression{
 
     public:
         ArrayAccessExpression(ObjExpression* left, deque<Expression*>* dimensions);
+        bool process(Symtable* environment, ClassSymtablePool* pool);
         void print();
 };
 

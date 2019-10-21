@@ -12,11 +12,22 @@ TableContent tableContentFromType(Type* type){
     return tc;
 }
 
-Symtable::Symtable() : Symtable(nullptr){}
+TableContent tableContentNoContent(){
+    TableContent tc;
+    tc.tag = TCNOCONTENT;
+    return tc;
+}
 
-Symtable::Symtable(Symtable* parent){
+Symtable::Symtable(string className) : Symtable(className, nullptr){}
+
+Symtable::Symtable(string className, Symtable* parent){
+    this->className = className;
     this->parent = parent;
     this->table = new vector<pair<string, TableContent>>;
+}
+
+string Symtable::getClassName(){
+    return this->className;
 }
 
 Symtable* Symtable::getParent(){
@@ -42,6 +53,19 @@ void Symtable::insert(Symtable* table){
 
 void Symtable::setLocalId(int id){
     this->localId = id;
+}
+
+TableContent Symtable::lookup(string name){
+    Symtable* table = this;
+
+    while(table->getParent() != nullptr){
+        TableContent tc = table->get(name);
+        if(tc.tag != TCNOCONTENT)
+            return tc;
+        table = table->getParent();
+    }
+    
+    return tableContentNoContent();
 }
 
 TableContent Symtable::get(string id){
@@ -111,7 +135,7 @@ void ClassSymtablePool::print(){
     }
 }
 
-ClassSymtable::ClassSymtable(){
+ClassSymtable::ClassSymtable(string className) : Symtable(className) {
     this->methodTables = new unordered_map<string, Symtable*>;
 }
 

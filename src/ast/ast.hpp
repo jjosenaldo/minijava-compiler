@@ -47,7 +47,7 @@ class Method{
         Method(string id, Type* returnType, deque<Parameter*>* parameters, Block* stmt);
         string getId();
         Type* getReturnType();
-        Type* getType();
+        MethodType* getType();
         deque<Parameter*>* getParameters();
         Block* getStatement();
         void addParam(Parameter* param);
@@ -112,17 +112,5 @@ class Parameter{
 };
 
 ClassSymtablePool* buildClassSymtablePool(Program* program);
-
-void errorMsgPrefix();
-
-void multipleClassError(string id);
-
-void multipleMethodError(string className, string methodName);
-
-void multipleVariableError(string id);
-
-void multiplyDefinedFieldError(string id, string className);
-
-void multiplyDefinedParamError(string param, string method, string className);
 
 #endif

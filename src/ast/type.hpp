@@ -3,9 +3,13 @@
 
 #include <string>
 #include <vector>
+#include "operator.hpp"
 
 using std::string;
 using std::vector;
+
+enum BinOperator;
+enum UnOperator;
 
 typedef enum TypeKind{
     TypeNull, 
@@ -17,30 +21,80 @@ typedef enum TypeKind{
     TypeClass
 } TypeKind;
 
-struct Type{
-    TypeKind kind;
-    union {
-        string className;
-        struct Type* baseType;
-        vector<Type*>* methodHeader;
-    };
-    Type() {}
+class Type{
+    public:
+        TypeKind kind;
+
+        Type(TypeKind kind);
+        virtual string toString() = 0;
+        virtual Type* copy(Type* other) = 0;
+        virtual string getClassName(){return "";}
+        virtual vector<Type*>* getMethodHeader(){return nullptr;};
+        virtual Type* getBaseType(){return nullptr;}
 };
 
-Type* MkTypeNull();
+class ClassType : public Type{
+    public:
+        string className;
+        ClassType(string className);
+        string toString();
+        virtual Type* copy(Type* other);
+        string getClassName();
+};
 
-Type* MkTypeInt();
+class BasicType : public Type{
+    public:
+        BasicType(TypeKind tk);
+        string toString();
+        virtual Type* copy(Type* other);
+};
 
-Type* MkTypeVoid();
+class ArrayType : public Type{
+    public:
+        Type* baseType;
 
-Type* MkTypeBoolean();
+        ArrayType(Type* baseType);
+        string toString();
+        virtual Type* copy(Type* other);
+        Type* getBaseType();
+};
 
-Type* MkTypeClass(string className);
+class MethodType : public Type{
+    public: 
+        vector<Type*>* methodHeader;
+        MethodType();
+        MethodType(vector<Type*>* methodHeader);
+        string toString();
+        virtual Type* copy(Type* other);
+        vector<Type*>* getMethodHeader();
+};
 
-Type* MkTypeArray(Type* baseType);
+ClassType* ToClassType(Type* type);
 
-Type* MkTypeMethod(vector<Type*>* methodHeader);
+ArrayType* ToArrayType(Type* type);
+
+BasicType* MkTypeNull();
+
+BasicType* MkTypeInt();
+
+BasicType* MkTypeVoid();
+
+BasicType* MkTypeBoolean();
+
+ClassType* MkTypeClass(string className);
+
+ArrayType* MkTypeArray(Type* baseType);
+
+MethodType* MkTypeMethod(vector<Type*>* methodHeader);
 
 void printType(Type* type);
+
+Type* returnTypeBinOp(Type* t1, Type* t2, BinOperator op);
+
+Type* returnTypeUnOp(Type* t1, UnOperator op);
+
+bool areCompatibleTypes(Type* expected, Type* actual);
+
+Type* resultingType(Type** types, int n);
 
 #endif  

@@ -29,18 +29,23 @@ struct TableContent{
 
 TableContent tableContentFromType(Type* type);
 
+TableContent tableContentNoContent();
+
 class Symtable{
     protected:
+        string className;
         Symtable* parent;
         int localId;
         vector<pair<string, TableContent>>* table;
 
     public:
-        Symtable();
+        Symtable(string className);
 
-        Symtable(Symtable* parent);
+        Symtable(string className, Symtable* parent);
 
         Symtable* getParent();
+
+        string getClassName();
 
         void setParent(Symtable* table);
 
@@ -49,6 +54,8 @@ class Symtable{
         void insert(Symtable* content);
 
         void setLocalId(int id);
+
+        TableContent lookup(string id);
 
         TableContent get(string id);
 
@@ -59,7 +66,7 @@ class ClassSymtable : public Symtable{
     private:
         unordered_map<string, Symtable*>* methodTables;
     public:
-        ClassSymtable();
+        ClassSymtable(string className);
         void insertMethodTable(string methodName, Symtable* table);
         unordered_map<string, Symtable*>* getMethodTables();
         void print();

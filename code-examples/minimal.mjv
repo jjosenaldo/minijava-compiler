@@ -1,6 +1,13 @@
 // TODO: 
 //      return false on error when building the symtable
-//      add line numbers to the error messages
+//      add line numbers to the error messages (optional)
+//      first add the class names then the methods and fields in order to check things like "Cat getNewCat(){}";
+//      verify, in the method calls, if the left expression is an object
+//      process extends
+//      check, in an array access, if the left expression is an array
+//      forbid that "new int" and the like be expressions
+//      lookup the table *up to something*?
+//      check the expressions used in the init value of fields (beware of loops!)
 
 class Main{
     void main(String[] args){
@@ -19,7 +26,7 @@ class Cat{
         if(a==1+1)continue;break;;;
     }
     int c;
-    // int a;
+    int a;
 
     void meow2(){}
 }
@@ -27,6 +34,7 @@ class Cat{
 class IfElseTest{
     int a;
     Cat foo(){
+        int b = m;
         if(1==1){
             int c = 5;
         } else{

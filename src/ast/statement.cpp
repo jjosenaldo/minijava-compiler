@@ -1,4 +1,5 @@
 #include <iostream>
+#include "error.hpp"
 #include "statement.hpp"
 
 using std::cout;
@@ -23,12 +24,18 @@ void VarDec::print(){
     cout << ";";
 }
 
-void VarDec::buildSymtable(Symtable* parent){
-    if(parent->get(id).tag != TCNOCONTENT)
-        multipleVariableError(id);
+bool VarDec::buildSymtable(Symtable* parent, ClassSymtablePool* pool){
+    if(!this->value->process(parent, pool))
+        return false;
     
-    else 
-        parent->insert(id, tableContentFromType(type));
+    if(parent->get(id).tag != TCNOCONTENT){
+        multipleVariableError(id);
+        return false;
+    }
+    
+    parent->insert(id, tableContentFromType(type));
+
+    return true;
 }
 
 Type* VarDec::getType(){
@@ -59,15 +66,19 @@ deque<GenStatement*>* Block::getStatements(){
     return statements;
 }
 
-void Block::buildSymtable(Symtable* parent){
-    Symtable* table = new Symtable;
+bool Block::buildSymtable(Symtable* parent, ClassSymtablePool* pool){
+    Symtable* table = new Symtable(parent->getClassName());
 
     if(statements != nullptr)
-        for(auto stmt : *statements)
-            stmt->buildSymtable(table);
+        for(auto stmt : *statements){
+            if(!stmt->buildSymtable(table, pool))
+                return false;
+        }
+            
 
     table->setParent(parent);
     parent->insert(table);
+    return true;
 }
 
 void Block::print(){
@@ -83,8 +94,8 @@ ElselessIf::ElselessIf(Expression* guard, Statement* statement){
     this->statement = statement;
 }
 
-void ElselessIf::buildSymtable(Symtable* parent){
-    statement->buildSymtable(parent);
+bool ElselessIf::buildSymtable(Symtable* parent, ClassSymtablePool* pool){
+    return statement->buildSymtable(parent, pool);
 }
 
 void ElselessIf::print(){
@@ -100,9 +111,8 @@ IfElse::IfElse(Expression* guard, Statement* statementIf, Statement* statementEl
     this->statementElse = statementElse;
 }
 
-void IfElse::buildSymtable(Symtable* parent){
-    statementIf->buildSymtable(parent);
-    statementElse->buildSymtable(parent);
+bool IfElse::buildSymtable(Symtable* parent, ClassSymtablePool* pool){
+    return statementIf->buildSymtable(parent, pool) && statementElse->buildSymtable(parent, pool);
 }
 
 void IfElse::print(){
@@ -119,8 +129,8 @@ While::While(Expression* guard, Statement* statement){
     this->statement = statement;
 }
 
-void While::buildSymtable(Symtable* parent){
-    statement->buildSymtable(parent);
+bool While::buildSymtable(Symtable* parent, ClassSymtablePool* pool){
+    return statement->buildSymtable(parent, pool);
 }
 
 void While::print(){

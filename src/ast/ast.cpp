@@ -1,5 +1,6 @@
 #include <iostream>
 #include "ast.hpp"
+#include "error.hpp"
 
 using std::cout;
 using std::endl;
@@ -73,16 +74,13 @@ Type* Method::getReturnType(){
     return this->returnType;
 }
 
-Type* Method::getType(){
-    Type* type = new Type;
-    type->kind = TypeMethod;
+MethodType* Method::getType(){
     auto header = new vector<Type*>;
     header->push_back(returnType);
 
     if(parameters != nullptr) for(auto param : *parameters) header->push_back(param->getType());
 
-    type->methodHeader = header;
-    return type;
+    return new MethodType(header);
 }
 
 deque<Parameter*>* Method::getParameters(){
@@ -204,10 +202,10 @@ ClassSymtablePool* buildClassSymtablePool(Program* program){
             return nullptr;
         }
 
-        ClassSymtable* root = new ClassSymtable;
+        ClassSymtable* root = new ClassSymtable(className);
 
+        // Processes the fields of the current class
         auto fields = classDecl->getFields();
-
         if(fields != nullptr) 
             for(auto field : *fields){ 
                 if(root->get(field->getName()).tag != TCNOCONTENT){
@@ -243,9 +241,8 @@ ClassSymtablePool* buildClassSymtablePool(Program* program){
                 tcMethodType.type = method->getType();
                 root->insert(methodName, tcMethodType);
 
-                Symtable* methodTable = new Symtable;
+                Symtable* methodTable = new Symtable(className, root);
 
-                // TODO: check method parameters with the same name
                 // Adds the method params
                 auto params = method->getParameters();
                 if(params != nullptr)
@@ -281,39 +278,24 @@ ClassSymtablePool* buildClassSymtablePool(Program* program){
             auto method = classDecl->getMethod(methodName);
             auto blockStmt = method->getStatement();
 
-            if(blockStmt != nullptr)
-                blockStmt->buildSymtable(methodTable);
+            if(blockStmt != nullptr){
+                auto stmts = blockStmt->getStatements();
+
+                for(auto stmt : *stmts){
+                    if(!stmt->buildSymtable(methodTable, pool)){
+                        stmt->print();
+                        cout << "\n%%%%%%%%%%%\n";
+                        methodTable->print();
+                        cout << "\n%%%%%%%%%%%\n";
+                        pool->print();
+                        cout << "%%%%%%%%%%%" << endl;
+                        delete pool;
+                        return nullptr;
+                    }
+                }
+            }   
         }
     }
 
     return pool;
-}
-
-void multipleClassError(string id){
-    errorMsgPrefix();
-    cout << "the class " << id << " was multiply defined" << endl;
-}
-
-void multipleMethodError(string className, string methodName){
-    errorMsgPrefix();
-    cout << "the entity " << methodName << " in the class " << className << " is multiply defined" << endl;
-}
-
-void multipleVariableError(string id){
-    errorMsgPrefix();
-    cout << "the variable " << id << " is already defined in this scope" << endl;
-}
-
-void multiplyDefinedFieldError(string id, string className){
-    errorMsgPrefix();
-    cout << "the field " << id << " is multiply defined in the class " << className << endl;
-}
-
-void multiplyDefinedParamError(string param, string method, string className){
-    errorMsgPrefix();
-    cout << "there are many params named " << param << " in the method " << method << " of the " << className << " class" << endl; 
-}
-
-void errorMsgPrefix(){
-    cout << "ERROR: ";
 }

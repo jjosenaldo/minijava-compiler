@@ -11,7 +11,7 @@ class GenStatement{
     public:
         // Will be defined in a derived class
         virtual void print() = 0;
-        virtual void buildSymtable(Symtable* parent){}
+        virtual bool buildSymtable(Symtable* parent, ClassSymtablePool* pool){ return true;}
 };
 
 class Statement : public GenStatement {};
@@ -27,7 +27,7 @@ class VarDec : public GenStatement{
         Type* getType();
         string getId();
         Expression* getExpression();
-        void buildSymtable(Symtable* parent);
+        bool buildSymtable(Symtable* parent, ClassSymtablePool* pool);
         void print();
 };
 
@@ -40,7 +40,7 @@ class Block : public Statement{
         void addStatement(GenStatement* stmt);
         void addStatementAtFront(GenStatement* stmt);
         deque<GenStatement*>* getStatements();
-        void buildSymtable(Symtable* parent);
+        bool buildSymtable(Symtable* parent, ClassSymtablePool* pool);
         void print();
 };
 
@@ -51,7 +51,7 @@ class ElselessIf : public Statement {
 
     public:
         ElselessIf(Expression* guard, Statement* statement);
-        void buildSymtable(Symtable* parent);
+        bool buildSymtable(Symtable* parent, ClassSymtablePool* pool);
         void print();
         
 };
@@ -63,7 +63,7 @@ class IfElse : public Statement{
         Statement* statementElse;
     public:
         IfElse(Expression* guard, Statement* statementIf, Statement* statementElse);
-        void buildSymtable(Symtable* parent);
+        bool buildSymtable(Symtable* parent, ClassSymtablePool* pool);
         void print();
 };
 
@@ -73,7 +73,7 @@ class While : public Statement{
         Statement* statement;
     public:
         While(Expression* guard, Statement* statement);
-        void buildSymtable(Symtable* parent);
+        bool buildSymtable(Symtable* parent, ClassSymtablePool* pool);
         void print();
 };
 
