@@ -211,6 +211,13 @@ ClassSymtablePool* buildClassSymtablePool(Program* program){
         // TODO: check fields with the same name
         if(fields != nullptr) 
             for(auto field : *fields){ 
+                if(root->get(field->getName()).tag != TCNOCONTENT){
+                    multiplyDefinedFieldError(field->getName(), className);
+                    delete root;
+                    delete pool;
+                    return nullptr;
+                }
+
                 TableContent tc;
                 tc.tag = TCTYPE;
                 tc.type = field->getType();
@@ -287,6 +294,11 @@ void multipleMethodError(string className, string methodName){
 void multipleVariableError(string id){
     errorMsgPrefix();
     cout << "the variable " << id << " is already defined in this scope" << endl;
+}
+
+void multiplyDefinedFieldError(string id, string className){
+    errorMsgPrefix();
+    cout << "the field " << id << " is multiply defined in the class " << className << endl;
 }
 
 void errorMsgPrefix(){

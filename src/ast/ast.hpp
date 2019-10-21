@@ -121,4 +121,6 @@ void multipleMethodError(string className, string methodName);
 
 void multipleVariableError(string id);
 
+void multiplyDefinedFieldError(string id, string className);
+
 #endif

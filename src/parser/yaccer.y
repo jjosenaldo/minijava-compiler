@@ -466,7 +466,9 @@ int main(){
     if(yyparse() != 1){
         // program->print();
         auto pool = buildClassSymtablePool(program);
-        pool->print();
+
+        if(pool != nullptr)
+            pool->print();
     }
     return 0;
 }
