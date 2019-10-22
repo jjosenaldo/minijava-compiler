@@ -230,14 +230,19 @@ bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* poo
     int expectedArgs = tc.type->getMethodHeader()->size() - 1;
     
     if(arguments == nullptr) {
-        if(expectedArgs != 0)
+        if(expectedArgs != 0){
+            diffNumberOfArgsMethodError(method, 0, expectedArgs);
             return false;
+        }
         
         type = (*(tc.type->getMethodHeader()))[0];
         return true;
     }
 
-    if(arguments->size() != expectedArgs) return false;
+    if(arguments->size() != expectedArgs){
+        diffNumberOfArgsMethodError(method, arguments->size(), expectedArgs);
+        return false;
+    }
 
     for(int i = 0; i < expectedArgs; ++i){
         if(!  arguments->at(i)->process(environment, pool)  )

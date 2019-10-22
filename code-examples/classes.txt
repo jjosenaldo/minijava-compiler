@@ -2,8 +2,8 @@ class MainClass{
 	void main(String[] args){
 		System.println("hello world!");
 		Cat cat = new Cat();
-		boolean a = cat.eat();
-		cat.meow();
+		boolean a = cat.meow();
+		//cat.meow();
 	}
 }
 
@@ -16,7 +16,7 @@ class Animal{
 class Cat extends Animal{
 	int paws = 4;
 	int weight;
-	void meow(){
+	void meow(int seconds){
 		
 	}
 

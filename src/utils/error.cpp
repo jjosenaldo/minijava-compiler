@@ -84,6 +84,11 @@ void nonIntArrayDimensionError(string exp){
     cout << "the expression " << exp << " is not an int so it cannot be used as an array dimension" << endl;
 }
 
+void diffNumberOfArgsMethodError(string method, int actual, int expected){
+    errorMsgPrefix();
+    cout << "the method " << method << " was called with " << actual << " arguments but it requires " << expected << endl;
+}
+
 void errorMsgPrefix(){
     cout << "ERROR: ";
 }
