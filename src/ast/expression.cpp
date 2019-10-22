@@ -7,7 +7,7 @@ using std::cout;
 using std::string;
 using std::to_string;
 
-bool predefinedId(char* id){
+bool predefinedId(string id){
     return string(id) == "String";
 }
 
@@ -110,13 +110,21 @@ string ArrayDeclExpression::toString(){
 }
 
 bool ArrayDeclExpression::process(Symtable* environment, ClassSymtablePool* pool){
-    if(type->kind == TypeClass){
-        ClassType* ct = ToClassType(type);
-        
-        if(pool->get(ct->className) == nullptr){
-            classNotDefinedError(ct->className);
+    switch(type->kind){
+        case TypeNull:
+            arrayOfInvalidTypeError(type->toString());
             return false;
-        }
+        case TypeMethod:
+            arrayOfInvalidTypeError(type->toString());
+            return false;
+        case TypeVoid:
+            arrayOfInvalidTypeError(type->toString());
+            return false;
+        case TypeClass:
+            if(pool->get(type->getClassName()) == nullptr){
+                classNotDefinedError(type->getClassName());
+                return false;
+            }
     }
 
     return true;
@@ -348,6 +356,41 @@ bool ArrayAccessExpression::process(Symtable* environment, ClassSymtablePool* po
 
     type = currentType;
     return true;
+}
+
+NewArrayExpression::NewArrayExpression(ArrayDeclExpression* decl, deque<Expression*>* dimensions){
+    this->type = decl->getType();
+    this->dimensions = dimensions;
+}
+
+bool NewArrayExpression::process(Symtable* environment, ClassSymtablePool* pool){
+    for(auto dim : *dimensions)
+        if(!dim->process(environment, pool))
+            return false;
+    
+    if(type->kind == TypeMethod || type->kind == TypeNull || type->kind == TypeVoid){
+        arrayOfInvalidTypeError(type->toString());
+        return false;
+    }
+
+    if(type->kind == TypeClass){
+        if(predefinedId(type->getClassName()))
+            return true;
+        
+        if(pool->get(type->getClassName()) != nullptr)
+            return true;
+
+        classNotDefinedError(type->getClassName());
+        return false;
+    }
+}
+
+string NewArrayExpression::toString(){
+    string ans = this->type->toString();
+
+    for(auto dim : *dimensions) ans += "[" + dim->toString() +"]";
+
+    return ans;
 }
 
 #include "ast.hpp"

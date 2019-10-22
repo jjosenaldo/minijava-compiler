@@ -89,6 +89,11 @@ void diffNumberOfArgsMethodError(string method, int actual, int expected){
     cout << "the method " << method << " was called with " << actual << " arguments but it requires " << expected << endl;
 }
 
+void arrayOfInvalidTypeError(string type){
+    errorMsgPrefix();
+    cout << "you cannot make an array of type " << type << endl;
+}
+
 void errorMsgPrefix(){
     cout << "ERROR: ";
 }

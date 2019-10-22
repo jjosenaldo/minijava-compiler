@@ -342,8 +342,13 @@ expr : expr '>' expr {
     $$ = new BinExpression($1, $3, OP_MOD);   
 }
 
-| object filledbracks { 
-    $$ = new ArrayAccessExpression($1, $2);
+| object filledbracks {
+    auto arrayDecl = static_cast<ArrayDeclExpression*>($1);
+    if(arrayDecl != nullptr ){
+        $$ = new NewArrayExpression(arrayDecl, $2);
+    } else{
+        $$ = new ArrayAccessExpression($1, $2);
+    }
 }
 
 | LIT_INT {

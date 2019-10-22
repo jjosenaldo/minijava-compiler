@@ -19,7 +19,7 @@ union AtomExpValue{
     char* strval;
 };
 
-bool predefinedId(char* id);
+bool predefinedId(string id);
 
 #include "type.hpp"
 
@@ -31,6 +31,18 @@ class Expression{
         virtual ~Expression() {}
         Type* getType();
         void print(){cout << toString();}
+
+        /**
+         * @brief Checks if the expression is correct, and sets its type.
+         *        
+         *        Checks if the expression doesn't contain errors such as type errors and references to undefined ids. If it's
+         *        correct, then its type is set.
+         * 
+         * @param environment   The current scope
+         * @param pool          The pool of class tables (needed for looking for class names)
+         * @return true         The expression is correct
+         * @return false        The expression is not correct
+         */
         virtual bool process(Symtable* environment, ClassSymtablePool* pool) = 0;
         virtual string toString() = 0;
 };
@@ -82,8 +94,6 @@ class ObjExpression : public Expression{};
 // Example: new int
 // The type is set when the parse tree is built
 class ArrayDeclExpression : public ObjExpression{
-    private:
-        Type* type;
     public:
         ArrayDeclExpression(Type* type);
         bool process(Symtable* environment, ClassSymtablePool* pool);
@@ -170,6 +180,16 @@ class ArrayAccessExpression : public Expression{
 
     public:
         ArrayAccessExpression(ObjExpression* left, deque<Expression*>* dimensions);
+        bool process(Symtable* environment, ClassSymtablePool* pool);
+        string toString();
+};
+
+class NewArrayExpression : public Expression{
+    private:
+        deque<Expression*>* dimensions;
+    
+    public:
+        NewArrayExpression(ArrayDeclExpression* decl, deque<Expression*>* dimensions);
         bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
 };

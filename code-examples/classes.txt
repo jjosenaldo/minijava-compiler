@@ -3,7 +3,8 @@ class MainClass{
 		System.println("hello world!");
 		Cat cat = new Cat();
 		Cat cat2 = "a";
-		//boolean a = cat.meow("a");
+		boolean a = cat.meow(10);
+		Cat[] cat3 = new void[5];
 		//cat.meow();
 	}
 }

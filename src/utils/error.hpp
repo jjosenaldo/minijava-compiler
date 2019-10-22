@@ -41,4 +41,6 @@ void nonIntArrayDimensionError(string exp);
 
 void diffNumberOfArgsMethodError(string method, int actual, int expected);
 
+void arrayOfInvalidTypeError(string type);
+
 #endif
