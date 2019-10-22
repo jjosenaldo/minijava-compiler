@@ -2,7 +2,8 @@ class MainClass{
 	void main(String[] args){
 		System.println("hello world!");
 		Cat cat = new Cat();
-		boolean a = cat.meow();
+		Cat cat2 = "a";
+		//boolean a = cat.meow("a");
 		//cat.meow();
 	}
 }

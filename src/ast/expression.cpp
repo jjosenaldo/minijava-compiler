@@ -98,10 +98,6 @@ string AtomExpression::toString(){
 }
 
 bool AtomExpression::process(Symtable* environment, ClassSymtablePool* pool){
-    if(type->kind == TypeClass && !predefinedId(val.strval)){
-        idNotPredefinedError(string(val.strval));
-        return false;
-    }
     return true;
 }
 
