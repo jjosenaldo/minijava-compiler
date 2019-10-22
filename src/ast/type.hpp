@@ -95,6 +95,15 @@ Type* returnTypeUnOp(Type* t1, UnOperator op);
 
 bool areCompatibleTypes(Type* expected, Type* actual);
 
+/**
+ * @brief           Evaluates the type of an array literal.
+ *
+ *                  Evaluates the type of an array literal based on the types of its elements. Returns nullptr if there is none (for example: {"a",1})                    
+ * 
+ * @param types     Array of types
+ * @param n         Number of types in the array (it should be >=1 )
+ * @return Type*    The type of the array
+ */
 Type* resultingType(Type** types, int n);
 
 #endif  

@@ -5,6 +5,7 @@
 
 using std::cout;
 using std::string;
+using std::to_string;
 
 bool predefinedId(char* id){
     return string(id) == "String";
@@ -20,10 +21,8 @@ BinExpression::BinExpression(Expression* first, Expression* second, BinOperator 
     this->op = op;
 }
 
-void BinExpression::print(){
-    this->first->print();
-    cout << " " << binOpSymbol(op) << " ";
-    this->second->print();
+string BinExpression::toString(){
+    return this->first->toString() + " " + binOpSymbol(op) + " " + second->toString();
 }
 
 bool BinExpression::process(Symtable* environment, ClassSymtablePool* pool){
@@ -49,9 +48,8 @@ UnExpression::UnExpression(Expression* first, UnOperator op){
     this->op = op;
 }
 
-void UnExpression::print(){
-    cout << unOpSymbol(op);
-    first->print();
+string UnExpression::toString(){
+    return unOpSymbol(op) + first->toString();
 }
 
 bool UnExpression::process(Symtable* environment, ClassSymtablePool* pool){
@@ -80,22 +78,22 @@ AtomExpression::AtomExpression(AtomExpValue val, Type* type){
     this->val = val;
 }
 
-void AtomExpression::print(){
+string AtomExpression::toString(){
     if(this->type == nullptr){
-        cout << "???";
+        return "???";
     } else switch(this->type->kind){
         case TypeNull:
-            cout << "null";break;
+            return "null";
         case TypeInt:
-            cout << this->val.intval;break;
+            return to_string(this->val.intval);
         case TypeVoid:
-            cout << "ERROR: exp of type void";break;
+            return "ERROR: exp of type void";
         case TypeBoolean:
-            cout << this->val.boolval;break;
+            return to_string(this->val.boolval);
         case TypeClass:
-            cout << string(this->val.strval);break;
+            return string(this->val.strval);
         default:
-            cout << "ERROR: invalid type for an atomic expression";
+            return "ERROR: invalid type for an atomic expression";
     }
 }
 
@@ -111,9 +109,8 @@ ArrayDeclExpression::ArrayDeclExpression(Type* type){
     this->type = type;
 }
 
-void ArrayDeclExpression::print(){
-    cout << "new ";
-    printType(type);
+string ArrayDeclExpression::toString(){
+    return "new " + type->toString();
 }
 
 bool ArrayDeclExpression::process(Symtable* environment, ClassSymtablePool* pool){
@@ -133,8 +130,8 @@ NewObjExpression::NewObjExpression(string id){
     this->id = id;
 }
 
-void NewObjExpression::print(){
-    cout << "new " << id << "(" << ")";
+string NewObjExpression::toString(){
+    return  "new " + id + "( )";
 }
 
 bool NewObjExpression::process(Symtable* environment, ClassSymtablePool* pool){
@@ -151,8 +148,8 @@ IdExpression::IdExpression(string id){
     this->id = id;
 }
 
-void IdExpression::print(){
-    cout << id;
+string IdExpression::toString(){
+    return id;
 }
 
 bool IdExpression::process(Symtable* environment, ClassSymtablePool* pool){
@@ -171,8 +168,8 @@ FieldAccessExpression::FieldAccessExpression(string id){
     this->id = id;
 }
 
-void FieldAccessExpression::print(){
-    cout << "this." << id;
+string FieldAccessExpression::toString(){
+    return "this." + id;
 }
 
 bool FieldAccessExpression::process(Symtable* environment, ClassSymtablePool* pool){
@@ -187,8 +184,8 @@ bool FieldAccessExpression::process(Symtable* environment, ClassSymtablePool* po
     return true;
 }
 
-void ThisExpression::print(){
-    cout << "this";
+string ThisExpression::toString(){
+    return "this";
 }
 
 bool ThisExpression::process(Symtable* environment, ClassSymtablePool* pool){
@@ -202,11 +199,10 @@ MethodCallExpression::MethodCallExpression(Expression* left, string method, dequ
     this->arguments = args;
 }
 
-void MethodCallExpression::print(){
-    left->print();
-    cout << "." << method << "(";
-    if(arguments != nullptr) for(auto e : *arguments){e->print();cout << ",";}
-    cout << ")";
+string MethodCallExpression::toString(){
+    string ans = left->toString() + "." + method + "(";
+    if(arguments != nullptr) for(auto e : *arguments) ans += e->toString() + ",";
+    return ans + ")";
 }
 
 bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* pool){
@@ -261,8 +257,8 @@ ParenExpression::ParenExpression(Expression* fst){
     this->first = fst;
 }
 
-void ParenExpression::print(){
-    cout << "("; first->print(); cout << ")";
+string ParenExpression::toString(){
+    return "(" + first->toString() + ")";
 }
 
 bool ParenExpression::process(Symtable* environment, ClassSymtablePool* pool){
@@ -279,10 +275,10 @@ LitArrayExpression::LitArrayExpression(deque<Expression*>* exprs){
     this->expressions = exprs;
 }
 
-void LitArrayExpression::print(){
-    cout << "{";
-    for(auto e : *expressions){e->print();cout << ",";}
-    cout << "}";
+string LitArrayExpression::toString(){
+    string ans = "{";
+    for(auto e : *expressions) ans += e->toString() + ",";
+    return ans + "}";
 }
 
 bool LitArrayExpression::process(Symtable* environment, ClassSymtablePool* pool){
@@ -316,9 +312,10 @@ ArrayAccessExpression::ArrayAccessExpression(ObjExpression* left, deque<Expressi
     this->dimensions = dimensions;
 }
 
-void ArrayAccessExpression::print(){
-    left->print();
-    for(auto d : *dimensions){cout << "[";d->print();cout << "]";}
+string ArrayAccessExpression::toString(){
+    string ans = left->toString();
+    for(auto d : *dimensions) ans += "[" + d->toString() + "]";
+    return ans;
 }
 
 bool ArrayAccessExpression::process(Symtable* environment, ClassSymtablePool* pool){
