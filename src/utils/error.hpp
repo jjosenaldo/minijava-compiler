@@ -49,4 +49,6 @@ void classAsExpressionError(string id);
 
 void classAsVariableNameError(string id);
 
+void classInheritsFromItselfError(string id);
+
 #endif

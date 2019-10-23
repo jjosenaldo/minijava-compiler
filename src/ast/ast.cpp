@@ -240,6 +240,23 @@ Method* ClassDeclaration::getMethod(string methodName){
     return nullptr;
 }
 
+bool ClassDeclaration::process(ClassSymtablePool* pool){
+    if(parent == "")
+        return true;
+
+    if(parent == name){
+        classInheritsFromItselfError(name);
+        return false;
+    }
+    
+    if(pool->get(parent) == nullptr){
+        classNotDefinedError(parent);
+        return false;
+    }
+
+    return true;
+}
+
 bool addClassNamesToPool(Program* program, ClassSymtablePool* pool){
     for(auto classDecl : *program->getDecls()){
         string className = classDecl->getName();
@@ -264,11 +281,18 @@ ClassSymtablePool* buildClassSymtablePool(Program* program){
         return nullptr;
     }
 
-    // Processes the method headers and fields of each class
+    // Processes each class
     for(auto classDecl : *program->getDecls()){
+        // Processes the class declaration (looks for its superclass, if it has one)
+        if(!classDecl->process(pool)){
+            delete pool;
+            return nullptr;
+        }
+
         string className = classDecl->getName();
         ClassSymtable* root = pool->get(className);
 
+        // Processes the fields
         auto fields = classDecl->getFields();
         if(fields != nullptr) 
             for(auto field : *fields)
@@ -277,6 +301,7 @@ ClassSymtablePool* buildClassSymtablePool(Program* program){
                     return nullptr;
                 }
 
+        // Processes the method headers
         auto methods = classDecl->getMethods();
         if(methods != nullptr){
             for(auto method : *methods)

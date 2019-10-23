@@ -78,6 +78,8 @@ class ClassDeclaration{
 
         Method* getMethod(string methodName);
 
+        bool process(ClassSymtablePool* pool);
+
         void print();
 };
 

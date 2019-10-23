@@ -109,6 +109,11 @@ void classAsVariableNameError(string id){
     cout << id << " is a class name so it cannot be used as the name of a variable" << endl;
 }
 
+void classInheritsFromItselfError(string id){
+    errorMsgPrefix();
+    cout << "the class " << id << " inherits from itself, which is not allowed" << endl;
+}
+
 void errorMsgPrefix(){
     cout << "ERROR: ";
 }
