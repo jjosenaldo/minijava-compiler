@@ -24,7 +24,7 @@ void VarDec::print(){
     cout << ";";
 }
 
-bool VarDec::buildSymtable(Symtable* parent, ClassSymtablePool* pool){
+bool VarDec::process(Symtable* parent, ClassSymtablePool* pool){
     if(predefinedId(id) || pool->get(id) != nullptr){
         classAsVariableNameError(id);
         return false;
@@ -71,12 +71,12 @@ deque<GenStatement*>* Block::getStatements(){
     return statements;
 }
 
-bool Block::buildSymtable(Symtable* parent, ClassSymtablePool* pool){
+bool Block::process(Symtable* parent, ClassSymtablePool* pool){
     Symtable* table = new Symtable(parent->getClassName());
 
     if(statements != nullptr)
         for(auto stmt : *statements){
-            if(!stmt->buildSymtable(table, pool))
+            if(!stmt->process(table, pool))
                 return false;
         }
             
@@ -99,8 +99,8 @@ ElselessIf::ElselessIf(Expression* guard, Statement* statement){
     this->statement = statement;
 }
 
-bool ElselessIf::buildSymtable(Symtable* parent, ClassSymtablePool* pool){
-    return statement->buildSymtable(parent, pool);
+bool ElselessIf::process(Symtable* parent, ClassSymtablePool* pool){
+    return statement->process(parent, pool);
 }
 
 void ElselessIf::print(){
@@ -116,8 +116,8 @@ IfElse::IfElse(Expression* guard, Statement* statementIf, Statement* statementEl
     this->statementElse = statementElse;
 }
 
-bool IfElse::buildSymtable(Symtable* parent, ClassSymtablePool* pool){
-    return statementIf->buildSymtable(parent, pool) && statementElse->buildSymtable(parent, pool);
+bool IfElse::process(Symtable* parent, ClassSymtablePool* pool){
+    return statementIf->process(parent, pool) && statementElse->process(parent, pool);
 }
 
 void IfElse::print(){
@@ -134,8 +134,8 @@ While::While(Expression* guard, Statement* statement){
     this->statement = statement;
 }
 
-bool While::buildSymtable(Symtable* parent, ClassSymtablePool* pool){
-    return statement->buildSymtable(parent, pool);
+bool While::process(Symtable* parent, ClassSymtablePool* pool){
+    return statement->process(parent, pool);
 }
 
 void While::print(){

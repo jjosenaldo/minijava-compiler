@@ -11,7 +11,19 @@ class GenStatement{
     public:
         // Will be defined in a derived class
         virtual void print() = 0;
-        virtual bool buildSymtable(Symtable* parent, ClassSymtablePool* pool){ return true;}
+
+        /**
+         * @brief Does a semantic analysis on the statement.
+         *
+         *        Processes the statement and does semantic analyses. It modifies the symbol table
+         *        and/or typechecks things if needed.
+         *
+         * @param parent    The symbol table of the class that has the statement
+         * @param pool      The pool of all class tables (it may be needed for typechecking)
+         * @return true     The statement doesn't contain any semantic errors
+         * @return false    The statement contains a semantic error
+         */
+        virtual bool process(Symtable* parent, ClassSymtablePool* pool){ return true;}
 };
 
 class Statement : public GenStatement {};
@@ -27,7 +39,7 @@ class VarDec : public GenStatement{
         Type* getType();
         string getId();
         Expression* getExpression();
-        bool buildSymtable(Symtable* parent, ClassSymtablePool* pool);
+        bool process(Symtable* parent, ClassSymtablePool* pool);
         void print();
 };
 
@@ -40,7 +52,7 @@ class Block : public Statement{
         void addStatement(GenStatement* stmt);
         void addStatementAtFront(GenStatement* stmt);
         deque<GenStatement*>* getStatements();
-        bool buildSymtable(Symtable* parent, ClassSymtablePool* pool);
+        bool process(Symtable* parent, ClassSymtablePool* pool);
         void print();
 };
 
@@ -51,7 +63,7 @@ class ElselessIf : public Statement {
 
     public:
         ElselessIf(Expression* guard, Statement* statement);
-        bool buildSymtable(Symtable* parent, ClassSymtablePool* pool);
+        bool process(Symtable* parent, ClassSymtablePool* pool);
         void print();
         
 };
@@ -63,7 +75,7 @@ class IfElse : public Statement{
         Statement* statementElse;
     public:
         IfElse(Expression* guard, Statement* statementIf, Statement* statementElse);
-        bool buildSymtable(Symtable* parent, ClassSymtablePool* pool);
+        bool process(Symtable* parent, ClassSymtablePool* pool);
         void print();
 };
 
@@ -73,7 +85,7 @@ class While : public Statement{
         Statement* statement;
     public:
         While(Expression* guard, Statement* statement);
-        bool buildSymtable(Symtable* parent, ClassSymtablePool* pool);
+        bool process(Symtable* parent, ClassSymtablePool* pool);
         void print();
 };
 
