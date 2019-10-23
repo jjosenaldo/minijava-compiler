@@ -10,6 +10,7 @@
 //      typecheck declarations of variables
 //      checks if break; and continue; are inside loops
 //      process method calls as statements
+//      checks if an ID is a class name before using it!
 
 class Main{
     void main(String[] args){

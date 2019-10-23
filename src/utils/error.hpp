@@ -45,4 +45,8 @@ void arrayOfInvalidTypeError(string type);
 
 void newTypeIsNotAnExpression(string type);
 
+void classAsExpressionError(string id);
+
+void classAsVariableNameError(string id);
+
 #endif

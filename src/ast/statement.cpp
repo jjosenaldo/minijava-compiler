@@ -25,6 +25,11 @@ void VarDec::print(){
 }
 
 bool VarDec::buildSymtable(Symtable* parent, ClassSymtablePool* pool){
+    if(predefinedId(id) || pool->get(id) != nullptr){
+        classAsVariableNameError(id);
+        return false;
+    }
+    
     if(!this->value->process(parent, pool))
         return false;
     

@@ -95,7 +95,18 @@ void arrayOfInvalidTypeError(string type){
 }
 
 void newTypeIsNotAnExpression(string type){
+    errorMsgPrefix();
     cout << "the string \"new " << type << "\" is not an expression" << endl;
+}
+
+void classAsExpressionError(string id){
+    errorMsgPrefix();
+    cout << id << " is a class name so it cannot be used as an expression" << endl;
+}
+
+void classAsVariableNameError(string id){
+    errorMsgPrefix();
+    cout << id << " is a class name so it cannot be used as the name of a variable" << endl;
 }
 
 void errorMsgPrefix(){

@@ -5,7 +5,11 @@ class MainClass{
 		Cat cat2 = "a";
 		boolean a = cat.meow(10);
 		Cat[] cat3 = new int[1];
-		int a = 1+5;
+		bool a2 = 1+5;
+		//bool a3 = 1 + Cat;
+		//String Cat = new String["oi"];
+		b b = 1;
+		void a4 = new Cat().cut(1);
 		//cat.meow();
 	}
 }
@@ -23,7 +27,7 @@ class Cat extends Animal{
 		
 	}
 
-	void cut(){
+	void cut(int foo){
 		this.paws = 3;
 	}
 }

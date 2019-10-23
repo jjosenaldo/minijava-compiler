@@ -157,6 +157,11 @@ string IdExpression::toString(){
 }
 
 bool IdExpression::process(Symtable* environment, ClassSymtablePool* pool){
+    if(predefinedId(id) || pool->get(id) != nullptr){
+        classAsExpressionError(id);
+        return false;
+    }
+
     TableContent tc = environment->lookup(id);
 
     if(tc.tag != TCTYPE){
