@@ -111,6 +111,8 @@ class Parameter{
         void print();
 };
 
+bool addClassNamesToPool(Program* program, ClassSymtablePool* pool);
+
 ClassSymtablePool* buildClassSymtablePool(Program* program);
 
 #endif

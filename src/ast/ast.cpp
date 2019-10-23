@@ -189,20 +189,34 @@ Method* ClassDeclaration::getMethod(string methodName){
     return nullptr;
 }
 
-ClassSymtablePool* buildClassSymtablePool(Program* program){
-    ClassSymtablePool* pool = new ClassSymtablePool;
-
-    // Processes the method headers and fields of each class
+bool addClassNamesToPool(Program* program, ClassSymtablePool* pool){
     for(auto classDecl : *program->getDecls()){
         string className = classDecl->getName();
 
         if(pool->get(className) != nullptr) {
-            delete pool;
             multipleClassError(className);
-            return nullptr;
+            return false;
         }
 
         ClassSymtable* root = new ClassSymtable(className);
+        pool->insert(className, root);
+    }
+
+    return true;
+}
+
+ClassSymtablePool* buildClassSymtablePool(Program* program){
+    ClassSymtablePool* pool = new ClassSymtablePool;
+
+    if(!addClassNamesToPool(program, pool)){
+        delete pool;
+        return nullptr;
+    }
+
+    // Processes the method headers and fields of each class
+    for(auto classDecl : *program->getDecls()){
+        string className = classDecl->getName();
+        ClassSymtable* root = pool->get(className);
 
         // Processes the fields of the current class
         auto fields = classDecl->getFields();
@@ -261,8 +275,6 @@ ClassSymtablePool* buildClassSymtablePool(Program* program){
                 root->insertMethodTable(methodName, methodTable);
             }
         }
-
-        pool->insert(className, root);
     }
 
     // Processes each method body

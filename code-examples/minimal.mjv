@@ -1,7 +1,6 @@
 // TODO: 
-//      return false on error when building the symtable
 //      add line numbers to the error messages (optional)
-//      first add the class names then the methods and fields in order to check things like "Cat getNewCat(){}";
+//      check things like "Cat getNewCat(){}";
 //      verify, in the method calls, if the left expression is an object
 //      process extends
 //      check, in an array access, if the left expression is an array
@@ -11,6 +10,7 @@
 //      checks if break; and continue; are inside loops
 //      process method calls as statements
 //      checks if an ID is a class name before using it!
+//      checks, in a object declaration, if the class name is actually defined
 
 class Main{
     void main(String[] args){
