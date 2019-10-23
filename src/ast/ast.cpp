@@ -114,6 +114,39 @@ void Method::addParam(Parameter* param){
     this->parameters->push_back(param);
 }
 
+bool Method::processHeader(string className, ClassSymtable* root){
+    string methodName = id;
+
+    if(root->get(methodName).tag != TCNOCONTENT){
+        multipleMethodError(className, methodName);
+        return false;
+    }
+
+    // Adds the method name
+    TableContent tcMethodType;
+    tcMethodType.tag = TCTYPE;
+    tcMethodType.type = this->getType();
+    root->insert(methodName, tcMethodType);
+
+    Symtable* methodTable = new Symtable(className, root);
+
+    // Adds the method params
+    auto params = parameters;
+    if(params != nullptr)
+        for(auto param : *params){
+            if(methodTable->get(param->getName()).tag != TCNOCONTENT){
+                multiplyDefinedParamError(param->getName(), methodName, className);
+                delete methodTable;
+                return false;
+            }
+
+            methodTable->insert(param->getName(), tableContentFromType(param->getType()));
+        }
+
+    root->insertMethodTable(methodName, methodTable);
+    return true;
+}
+
 Field::Field(Type* type, string name, Expression* initValue){
     this->type = type;
     this->name = name;
@@ -138,6 +171,19 @@ void Field::print(){
     }
 
     cout << ";";
+}
+
+bool Field::process(string className, ClassSymtable* root){
+    if(root->get(name).tag != TCNOCONTENT){
+        multiplyDefinedFieldError(name, className);
+        return false;
+    }
+
+    TableContent tc;
+    tc.tag = TCTYPE;
+    tc.type = type;
+    root->insert(name, tc);
+    return true;
 }
 
 ClassDeclaration::ClassDeclaration(string name) : ClassDeclaration(name, "") {}
@@ -218,62 +264,21 @@ ClassSymtablePool* buildClassSymtablePool(Program* program){
         string className = classDecl->getName();
         ClassSymtable* root = pool->get(className);
 
-        // Processes the fields of the current class
         auto fields = classDecl->getFields();
         if(fields != nullptr) 
-            for(auto field : *fields){ 
-                if(root->get(field->getName()).tag != TCNOCONTENT){
-                    multiplyDefinedFieldError(field->getName(), className);
-                    delete root;
+            for(auto field : *fields)
+                if(!field->process(className, root)){
                     delete pool;
                     return nullptr;
                 }
-
-                TableContent tc;
-                tc.tag = TCTYPE;
-                tc.type = field->getType();
-                root->insert(field->getName(), tc);
-            }
 
         auto methods = classDecl->getMethods();
-        
         if(methods != nullptr){
-            // First, adds the method headers in the symbol table
-            for(auto method : *methods){
-                string methodName = method->getId();
-
-                if(root->get(methodName).tag != TCNOCONTENT){
-                    multipleMethodError(className, methodName);
-                    delete root;
+            for(auto method : *methods)
+                if(!method->processHeader(className, root)){
                     delete pool;
                     return nullptr;
                 }
-
-                // Adds the method name
-                TableContent tcMethodType;
-                tcMethodType.tag = TCTYPE;
-                tcMethodType.type = method->getType();
-                root->insert(methodName, tcMethodType);
-
-                Symtable* methodTable = new Symtable(className, root);
-
-                // Adds the method params
-                auto params = method->getParameters();
-                if(params != nullptr)
-                    for(auto param : *params){
-                        if(methodTable->get(param->getName()).tag != TCNOCONTENT){
-                            multiplyDefinedParamError(param->getName(), methodName, className);
-                            delete methodTable;
-                            delete root;
-                            delete pool;
-                            return nullptr;
-                        }
-
-                        methodTable->insert(param->getName(), tableContentFromType(param->getType()));
-                    }
-
-                root->insertMethodTable(methodName, methodTable);
-            }
         }
     }
 
@@ -282,31 +287,9 @@ ClassSymtablePool* buildClassSymtablePool(Program* program){
     for(auto tablePoolEntry : *tablePool){
         string className = tablePoolEntry.first;
         ClassSymtable* classSymtable = tablePoolEntry.second;
-
-        for(auto methodTablePair : *classSymtable->getMethodTables()){
-            string methodName = methodTablePair.first;
-            Symtable* methodTable = methodTablePair.second;
-            auto classDecl = program->getClassDecl(className);
-            auto method = classDecl->getMethod(methodName);
-            auto blockStmt = method->getStatement();
-
-            if(blockStmt != nullptr){
-                auto stmts = blockStmt->getStatements();
-
-                for(auto stmt : *stmts){
-                    if(!stmt->buildSymtable(methodTable, pool)){
-                        // DEBUG: 
-                        // stmt->print();
-                        // cout << "\n%%%%%%%%%%%\n";
-                        // methodTable->print();
-                        // cout << "\n%%%%%%%%%%%\n";
-                        // pool->print();
-                        // cout << "%%%%%%%%%%%" << endl;
-                        delete pool;
-                        return nullptr;
-                    }
-                }
-            }   
+        if(!classSymtable->processMethodBodies(program->getClassDecl(className), pool))  {
+            delete pool;
+            return nullptr;
         }
     }
 

@@ -7,6 +7,7 @@
 //      lookup the table *up to something*?
 //      check the expressions used in the init value of fields (beware of loops!)
 //      typecheck declarations of variables
+//      typecheck returns
 //      checks if break; and continue; are inside loops
 //      process method calls as statements
 //      checks if an ID is a class name before using it!

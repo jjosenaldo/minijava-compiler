@@ -10,6 +10,7 @@ using std::pair;
 using std::string;
 using std::unordered_map;
 
+class ClassDeclaration;
 class Symtable;
 
 enum TableContentTag{
@@ -62,6 +63,8 @@ class Symtable{
         virtual void print();
 };
 
+class ClassSymtablePool;
+
 class ClassSymtable : public Symtable{
     private:
         unordered_map<string, Symtable*>* methodTables;
@@ -70,6 +73,7 @@ class ClassSymtable : public Symtable{
         void insertMethodTable(string methodName, Symtable* table);
         unordered_map<string, Symtable*>* getMethodTables();
         void print();
+        bool processMethodBodies(ClassDeclaration* classDecl, ClassSymtablePool* pool);
 };
 
 class ClassSymtablePool{

@@ -1,6 +1,7 @@
 #include <iostream>
 #include "symtable.hpp"
 #include "type.hpp"
+#include "ast.hpp"
 
 using std::cout;
 using std::endl;
@@ -141,6 +142,25 @@ ClassSymtable::ClassSymtable(string className) : Symtable(className) {
 
 void ClassSymtable::insertMethodTable(string methodName, Symtable* table){
     methodTables->insert({{methodName,table}});
+}
+
+bool ClassSymtable::processMethodBodies(ClassDeclaration* classDecl, ClassSymtablePool* pool){
+    for(auto methodTablePair : *methodTables){
+        string methodName = methodTablePair.first;
+        Symtable* methodTable = methodTablePair.second;
+        auto method = classDecl->getMethod(methodName);
+        auto blockStmt = method->getStatement();
+
+        if(blockStmt != nullptr){
+            auto stmts = blockStmt->getStatements();
+
+            for(auto stmt : *stmts)
+                if(!stmt->buildSymtable(methodTable, pool))
+                    return false;
+        }   
+    }
+
+    return true;
 }
 
 unordered_map<string, Symtable*>* ClassSymtable::getMethodTables(){

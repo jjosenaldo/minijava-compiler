@@ -51,6 +51,7 @@ class Method{
         deque<Parameter*>* getParameters();
         Block* getStatement();
         void addParam(Parameter* param);
+        bool processHeader(string className, ClassSymtable* root);
         void print();
 };
 
@@ -90,7 +91,7 @@ class Field{
         Field(Type* type, string name, Expression* initValue);
 
         string getName();
-
+        bool process(string className, ClassSymtable* root);
         Type* getType();
 
         void print();
