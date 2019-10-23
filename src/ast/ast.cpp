@@ -226,6 +226,10 @@ string ClassDeclaration::getName(){
     return name;
 }
 
+string ClassDeclaration::getParent(){
+    return parent;
+}
+
 vector<Method*>* ClassDeclaration::getMethods(){
     return methods;
 }
@@ -240,23 +244,69 @@ Method* ClassDeclaration::getMethod(string methodName){
     return nullptr;
 }
 
-bool ClassDeclaration::process(ClassSymtablePool* pool){
-    if(parent == "")
-        return true;
+bool processesClassInheritanceHierarchy(deque<ClassDeclaration*>* declarations, ClassSymtablePool* pool){
+    unordered_map<string, string> unprocClasses;
+    unordered_map<string, string> procClasses;
 
-    if(parent == name){
-        classInheritsFromItselfError(name);
-        return false;
-    }
-    
-    if(pool->get(parent) == nullptr){
+    for(auto decl :*declarations)
+        unprocClasses.emplace(decl->getName(), decl->getParent());
+
+    auto itCurrent = unprocClasses.begin();
+    string firstInChain = itCurrent->second;
+    string parent;
+
+    while(true){
+        if(itCurrent->first == itCurrent->second){
+            circularInheritanceError(itCurrent->first);
+            return false;
+        }
+
+        parent = itCurrent->second;
+        if(parent == ""){
+            procClasses.emplace(itCurrent->first, itCurrent->second);
+            unprocClasses.erase(itCurrent);
+
+            if(unprocClasses.empty())
+                return true;
+            
+            itCurrent = unprocClasses.begin();
+            firstInChain = itCurrent->second;
+            continue;
+        }
+
+        auto itParentUnproc = unprocClasses.find(parent);
+        if(itParentUnproc != unprocClasses.end()){
+            procClasses.emplace(itCurrent->first, itCurrent->second);
+            unprocClasses.erase(itCurrent);
+
+            itCurrent = itParentUnproc;
+            continue;
+        }
+
+        auto itParentProc = procClasses.find(parent);
+        if(itParentProc != procClasses.end()){
+            if(itParentProc->second == firstInChain){
+                circularInheritanceError(firstInChain);
+                return false;
+            }
+            
+            procClasses.emplace(itCurrent->first, itCurrent->second);
+            unprocClasses.erase(itCurrent);
+
+            if(unprocClasses.empty())
+                return true;
+
+            itCurrent = unprocClasses.begin();
+            firstInChain = itCurrent->second;
+            continue;
+        }
+
         classNotDefinedError(parent);
         return false;
     }
 
     return true;
 }
-
 bool addClassNamesToPool(Program* program, ClassSymtablePool* pool){
     for(auto classDecl : *program->getDecls()){
         string className = classDecl->getName();
@@ -281,14 +331,13 @@ ClassSymtablePool* buildClassSymtablePool(Program* program){
         return nullptr;
     }
 
+    if(!processesClassInheritanceHierarchy(program->getDecls(), pool)) {
+        delete pool;
+        return nullptr;
+    }
+
     // Processes each class
     for(auto classDecl : *program->getDecls()){
-        // Processes the class declaration (looks for its superclass, if it has one)
-        if(!classDecl->process(pool)){
-            delete pool;
-            return nullptr;
-        }
-
         string className = classDecl->getName();
         ClassSymtable* root = pool->get(className);
 

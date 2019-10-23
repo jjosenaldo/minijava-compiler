@@ -14,14 +14,16 @@ class MainClass{
 	}
 }
 
-class Animal{
+class Animal extends Cat{
 	int a;
 	int eat(){
 		return 5;
 	}
 }
 
-class Cat extends Cat{
+class Dog extends Animal{}
+
+class Cat extends Animal {
 	int paws = 4;
 	int weight;
 	void meow(int seconds){

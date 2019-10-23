@@ -51,4 +51,6 @@ void classAsVariableNameError(string id);
 
 void classInheritsFromItselfError(string id);
 
+void circularInheritanceError(string id);
+
 #endif

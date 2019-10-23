@@ -70,6 +70,8 @@ class ClassDeclaration{
 
         string getName();
 
+        string getParent();
+
         void addField(Field* field);
 
         vector<Method*>* getMethods();
@@ -77,8 +79,6 @@ class ClassDeclaration{
         vector<Field*>* getFields();
 
         Method* getMethod(string methodName);
-
-        bool process(ClassSymtablePool* pool);
 
         void print();
 };
@@ -115,6 +115,8 @@ class Parameter{
 };
 
 bool addClassNamesToPool(Program* program, ClassSymtablePool* pool);
+
+bool processesClassInheritanceHierarchy(deque<ClassDeclaration*>* declarations, ClassSymtablePool* pool);
 
 ClassSymtablePool* buildClassSymtablePool(Program* program);
 

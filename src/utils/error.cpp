@@ -114,6 +114,11 @@ void classInheritsFromItselfError(string id){
     cout << "the class " << id << " inherits from itself, which is not allowed" << endl;
 }
 
+void circularInheritanceError(string id){
+    errorMsgPrefix();
+    cout << "circular inheritance involving the class " << id << endl;
+}
+
 void errorMsgPrefix(){
     cout << "ERROR: ";
 }

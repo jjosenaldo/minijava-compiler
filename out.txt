@@ -1,0 +1,11 @@
+{ <Cat,Animal> <MainClass,> <Animal,Cat>  }
+{  }
+current: <Cat,Animal>
+first in chain: Animal
+
+{ <MainClass,> <Animal,Cat>  }
+{ <Cat,Animal>  }
+current: <Animal,Cat>
+first in chain: Animal
+
+ERROR: circular inheritance involving the class Animal
