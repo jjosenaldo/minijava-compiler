@@ -1,17 +1,16 @@
 // TODO: 
 //      add line numbers to the error messages (optional)
-//      check things like "Cat getNewCat(){}";
+//      typecheck things like "Cat getNewCat(){}";
 //      verify, in the method calls, if the left expression is an object
 //      process extends
 //      check, in an array access, if the left expression is an array
-//      lookup the table *up to something*?
-//      check the expressions used in the init value of fields (beware of loops!)
+//      check the expressions used in the init value of fields (deal with circular definitions!)
 //      typecheck declarations of variables
-//      typecheck returns
-//      checks if break; and continue; are inside loops
-//      process method calls as statements
-//      checks if an ID is a class name before using it!
-//      checks, in a object declaration, if the class name is actually defined
+//      process statements
+//          process method calls            
+//          check if break; and continue; are inside loops
+//              typechecks returns
+//          check, in a object declaration, if the class name is actually defined
 
 class Main{
     void main(String[] args){
