@@ -5,11 +5,11 @@
 //      verify, in the method calls, if the left expression is an object
 //      process extends
 //      check, in an array access, if the left expression is an array
-//      forbid that "new int" and the like be expressions
 //      lookup the table *up to something*?
 //      check the expressions used in the init value of fields (beware of loops!)
 //      typecheck declarations of variables
 //      checks if break; and continue; are inside loops
+//      process method calls as statements
 
 class Main{
     void main(String[] args){

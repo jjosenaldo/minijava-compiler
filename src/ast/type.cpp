@@ -151,7 +151,7 @@ void printType(Type* type){
 
 // TODO: many more cases!
 Type* returnTypeBinOp(Type* t1, Type* t2, BinOperator op){
-    if(op == OP_MOD || op == OP_BIN_MINUS || op == OP_TIMES || op == OP_DIV || op == OP_GREAT || op == OP_LESS || op == OP_GREAT || op == OP_GREAT_EQ){
+    if(op == OP_PLUS || op == OP_MOD || op == OP_BIN_MINUS || op == OP_TIMES || op == OP_DIV || op == OP_GREAT || op == OP_LESS || op == OP_GREAT || op == OP_GREAT_EQ){
         if(t1->kind != TypeInt || t2->kind != TypeInt)
             return nullptr;
         else
