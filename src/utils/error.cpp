@@ -94,6 +94,10 @@ void arrayOfInvalidTypeError(string type){
     cout << "you cannot make an array of type " << type << endl;
 }
 
+void newTypeIsNotAnExpression(string type){
+    cout << "the string \"new " << type << "\" is not an expression" << endl;
+}
+
 void errorMsgPrefix(){
     cout << "ERROR: ";
 }

@@ -6,6 +6,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "ast.hpp"
+#include "error.hpp"
 
 using std::cout;
 using std::endl;
@@ -343,7 +344,7 @@ expr : expr '>' expr {
 }
 
 | object filledbracks {
-    auto arrayDecl = static_cast<ArrayDeclExpression*>($1);
+    auto arrayDecl = dynamic_cast<ArrayDeclExpression*>($1);
     if(arrayDecl != nullptr ){
         $$ = new NewArrayExpression(arrayDecl, $2);
     } else{
@@ -385,6 +386,13 @@ expr : expr '>' expr {
 }
 
 | object {
+    // Prevents things like "new int" from being considered expressions
+    auto decl = dynamic_cast<ArrayDeclExpression*>($1);
+    if(decl != nullptr){
+        newTypeIsNotAnExpression(decl->getType()->toString());
+        return 1;
+    }
+
     $$ = $1;
 }
 

@@ -43,4 +43,6 @@ void diffNumberOfArgsMethodError(string method, int actual, int expected);
 
 void arrayOfInvalidTypeError(string type);
 
+void newTypeIsNotAnExpression(string type);
+
 #endif

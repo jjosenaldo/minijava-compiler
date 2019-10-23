@@ -75,7 +75,7 @@ string MethodType::toString(){
 }
 
 Type* ClassType::copy(Type* other){
-    ClassType* otherCT = static_cast<ClassType*>(other);
+    ClassType* otherCT = dynamic_cast<ClassType*>(other);
 
     if(!otherCT)
         return nullptr;
@@ -84,7 +84,7 @@ Type* ClassType::copy(Type* other){
 }
 
 Type* BasicType::copy(Type* other){
-    BasicType* otherBT = static_cast<BasicType*>(other);
+    BasicType* otherBT = dynamic_cast<BasicType*>(other);
 
     if(!otherBT)
         return nullptr;
@@ -93,7 +93,7 @@ Type* BasicType::copy(Type* other){
 } 
 
 Type* MethodType::copy(Type* other){
-    MethodType* otherMT = static_cast<MethodType*>(other);
+    MethodType* otherMT = dynamic_cast<MethodType*>(other);
     auto header = new vector<Type*>;
     
     for(auto t : *otherMT->methodHeader)
@@ -103,16 +103,16 @@ Type* MethodType::copy(Type* other){
 }
 
 Type* ArrayType::copy(Type* other){
-    ArrayType* otherAT = static_cast<ArrayType*>(other);
+    ArrayType* otherAT = dynamic_cast<ArrayType*>(other);
     return new ArrayType( otherAT->baseType->copy(otherAT->baseType) );
 }
 
 ClassType* ToClassType(Type* type){
-    return static_cast<ClassType*>(type);
+    return dynamic_cast<ClassType*>(type);
 }
 
 ArrayType* ToArrayType(Type* type){
-    return static_cast<ArrayType*>(type);
+    return dynamic_cast<ArrayType*>(type);
 }
 
 BasicType* MkTypeNull(){

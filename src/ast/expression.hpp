@@ -28,8 +28,10 @@ class Expression{
         Type* type;
 
     public:
+        Expression(){}
+        Expression(Type* type);
         virtual ~Expression() {}
-        Type* getType();
+        virtual Type* getType();
         void print(){cout << toString();}
 
         /**
@@ -89,13 +91,17 @@ class AtomExpression : public Expression{
         string toString();
 };
 
-class ObjExpression : public Expression{};
+class ObjExpression : public Expression{
+    public:
+        ObjExpression(){}
+        ObjExpression(Type* type) : Expression(type){}
+};
 
 // Example: new int
 // The type is set when the parse tree is built
 class ArrayDeclExpression : public ObjExpression{
     public:
-        ArrayDeclExpression(Type* type);
+        ArrayDeclExpression(Type* type) : ObjExpression(type) {}
         bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
 };

@@ -11,6 +11,10 @@ bool predefinedId(string id){
     return string(id) == "String";
 }
 
+Expression::Expression(Type* type){
+    this->type = type;
+}
+
 Type* Expression::getType(){
     return this->type;
 }
@@ -99,10 +103,6 @@ string AtomExpression::toString(){
 
 bool AtomExpression::process(Symtable* environment, ClassSymtablePool* pool){
     return true;
-}
-
-ArrayDeclExpression::ArrayDeclExpression(Type* type){
-    this->type = type;
 }
 
 string ArrayDeclExpression::toString(){
