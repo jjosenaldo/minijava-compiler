@@ -114,11 +114,16 @@ void Method::addParam(Parameter* param){
     this->parameters->push_back(param);
 }
 
-bool Method::processHeader(string className, ClassSymtable* root){
+bool Method::processHeader(string className, ClassSymtable* root, ClassSymtablePool* pool){
     string methodName = id;
 
     if(root->get(methodName).tag != TCNOCONTENT){
         multipleMethodError(className, methodName);
+        return false;
+    }
+
+    if(returnType->kind == TypeClass & pool->get(returnType->getClassName()) == nullptr){
+        classNotDefinedError(returnType->getClassName());
         return false;
     }
 
@@ -275,7 +280,7 @@ ClassSymtablePool* buildClassSymtablePool(Program* program){
         auto methods = classDecl->getMethods();
         if(methods != nullptr){
             for(auto method : *methods)
-                if(!method->processHeader(className, root)){
+                if(!method->processHeader(className, root, pool)){
                     delete pool;
                     return nullptr;
                 }

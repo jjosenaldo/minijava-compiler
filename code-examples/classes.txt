@@ -32,7 +32,7 @@ class Cat extends Animal{
 		this.paws = 3;
 	}
 
-	thisIsNotAClass getSomeAnimal(){
+	MainClass getSomeAnimal(){
 
 	}
 }

@@ -1,6 +1,5 @@
 // TODO: 
 //      add line numbers to the error messages (optional)
-//      typecheck things like "Cat getNewCat(){}";
 //      verify, in the method calls, if the left expression is an object
 //      process extends
 //      check, in an array access, if the left expression is an array
@@ -11,6 +10,7 @@
 //          check if break; and continue; are inside loops
 //              typechecks returns
 //          check, in a object declaration, if the class name is actually defined
+//      prevent that objects of the Main class be created
 
 class Main{
     void main(String[] args){

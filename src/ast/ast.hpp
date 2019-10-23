@@ -51,7 +51,7 @@ class Method{
         deque<Parameter*>* getParameters();
         Block* getStatement();
         void addParam(Parameter* param);
-        bool processHeader(string className, ClassSymtable* root);
+        bool processHeader(string className, ClassSymtable* root, ClassSymtablePool* pool);
         void print();
 };
 
