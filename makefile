@@ -9,7 +9,7 @@ SYMTABLE_PATH = ./src/symtable
 UTILS_PATH = ./src/utils
 
 # Commands
-FLAGS = -Wno-write-strings -g 
+FLAGS = -Wno-write-strings -g -std=c++11
 LEX := flex
 YACC := bison
 INC := -I $(GRAMMAR_PATH) -I $(PARSER_PATH) -I $(SYMTABLE_PATH) -I $(SYMTABLE_PATH) -I $(SYMTABLE_PATH) -I $(AST_PATH) -I $(UTILS_PATH)
