@@ -89,8 +89,23 @@ MethodType* MkTypeMethod(vector<Type*>* methodHeader);
 
 void printType(Type* type);
 
+/**
+ * @brief Returns the type of the result of a binary operation
+ * 
+ * @param t1        The first operand
+ * @param t2        The second operand 
+ * @param op        The binary operator
+ * @return Type*    The type of the result, or nullptr if the given types can't be applied to the given operator
+ */
 Type* returnTypeBinOp(Type* t1, Type* t2, BinOperator op);
 
+/**
+ * @brief Returns the type of the result of an unary operation
+ * 
+ * @param t1        The first operand
+ * @param op        The unary operator
+ * @return Type*    The type of the result, or nullptr if the given type can't be applied to the given operator
+ */
 Type* returnTypeUnOp(Type* t1, UnOperator op);
 
 bool areCompatibleTypes(Type* expected, Type* actual);
