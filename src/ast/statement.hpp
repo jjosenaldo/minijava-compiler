@@ -7,6 +7,8 @@
 
 using std::deque;
 
+class Program;
+
 class GenStatement{
     public:
         // Will be defined in a derived class
@@ -20,10 +22,11 @@ class GenStatement{
          *
          * @param parent    The symbol table of the class that has the statement
          * @param pool      The pool of all class tables (it may be needed for typechecking)
+         * @param program   The AST representing the program
          * @return true     The statement doesn't contain any semantic errors
          * @return false    The statement contains a semantic error
          */
-        virtual bool process(Symtable* parent, ClassSymtablePool* pool){ return true;}
+        virtual bool process(Symtable* parent, ClassSymtablePool* pool, Program* program){ return true;}
 };
 
 class Statement : public GenStatement {};
@@ -39,7 +42,7 @@ class VarDec : public GenStatement{
         Type* getType();
         string getId();
         Expression* getExpression();
-        bool process(Symtable* parent, ClassSymtablePool* pool);
+        bool process(Symtable* parent, ClassSymtablePool* pool, Program* program);
         void print();
 };
 
@@ -52,7 +55,7 @@ class Block : public Statement{
         void addStatement(GenStatement* stmt);
         void addStatementAtFront(GenStatement* stmt);
         deque<GenStatement*>* getStatements();
-        bool process(Symtable* parent, ClassSymtablePool* pool);
+        bool process(Symtable* parent, ClassSymtablePool* pool, Program* program);
         void print();
 };
 
@@ -63,7 +66,7 @@ class ElselessIf : public Statement {
 
     public:
         ElselessIf(Expression* guard, Statement* statement);
-        bool process(Symtable* parent, ClassSymtablePool* pool);
+        bool process(Symtable* parent, ClassSymtablePool* pool, Program* program);
         void print();
         
 };
@@ -75,7 +78,7 @@ class IfElse : public Statement{
         Statement* statementElse;
     public:
         IfElse(Expression* guard, Statement* statementIf, Statement* statementElse);
-        bool process(Symtable* parent, ClassSymtablePool* pool);
+        bool process(Symtable* parent, ClassSymtablePool* pool, Program* program);
         void print();
 };
 
@@ -85,7 +88,7 @@ class While : public Statement{
         Statement* statement;
     public:
         While(Expression* guard, Statement* statement);
-        bool process(Symtable* parent, ClassSymtablePool* pool);
+        bool process(Symtable* parent, ClassSymtablePool* pool, Program* program);
         void print();
 };
 
@@ -117,20 +120,25 @@ class Return : public Statement{
         void print();
 };
 
-class MethodCall : public Statement{
-    private:
-        Expression* lvalue;
-        string methodName;
-        deque<Expression*>* arguments;
-    public:
-        MethodCall(Expression* lvalue, string methodName, deque<Expression*>* arguments);
-        void print();
-};
-
 class Skip : public Statement {
     public:
         void print();
 };
+
+// Its type is not known when the tree is being built
+class MethodCallExpression : public Statement,  public ObjExpression{
+    private:
+        Expression* left;
+        string method;
+        deque<Expression*>* arguments;
+
+    public:
+        MethodCallExpression(Expression* left, string method, deque<Expression*>* args);
+        bool process(Symtable* environment, ClassSymtablePool* pool, Program* program);
+        string toString();
+        void print();
+};
+
 
 
 #include "ast.hpp"

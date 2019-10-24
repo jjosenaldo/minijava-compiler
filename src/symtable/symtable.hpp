@@ -10,6 +10,7 @@ using std::pair;
 using std::string;
 using std::unordered_map;
 
+class Program;
 class ClassDeclaration;
 class Symtable;
 
@@ -73,7 +74,7 @@ class ClassSymtable : public Symtable{
         void insertMethodTable(string methodName, Symtable* table);
         unordered_map<string, Symtable*>* getMethodTables();
         void print();
-        bool processMethodBodies(ClassDeclaration* classDecl, ClassSymtablePool* pool);
+        bool processMethodBodies(ClassDeclaration* classDecl, ClassSymtablePool* pool, Program* program);
 };
 
 class ClassSymtablePool{

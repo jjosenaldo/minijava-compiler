@@ -366,7 +366,7 @@ ClassSymtablePool* buildClassSymtablePool(Program* program){
     for(auto tablePoolEntry : *tablePool){
         string className = tablePoolEntry.first;
         ClassSymtable* classSymtable = tablePoolEntry.second;
-        if(!classSymtable->processMethodBodies(program->getClassDecl(className), pool))  {
+        if(!classSymtable->processMethodBodies(program->getClassDecl(className), pool, program))  {
             delete pool;
             return nullptr;
         }
