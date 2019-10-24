@@ -32,7 +32,10 @@ class Cat extends Animal {
 	int gender;
 	boolean meow(int seconds){
 		int gender = this.gender;
-		boolean gender = true;
+		//boolean gender = true;
+
+
+		int ate = this.eat();
 	}
 
 	void cut(int foo){

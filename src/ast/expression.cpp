@@ -5,6 +5,7 @@
 #include "ast.hpp"
 
 using std::cout;
+using std::endl;
 using std::string;
 using std::to_string;
 
@@ -233,9 +234,11 @@ string MethodCallExpression::toString(){
 bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* pool, Program* program){
     bool leftResult = left->process(environment, pool, program);
 
+    // The callee expression is not well-formed
     if(!leftResult)
         return false;
 
+    // The callee expression is not an object
     if(!left->isObject()){
         methodCallOnNonobjectError(left->toString());
         return false;
@@ -244,14 +247,46 @@ bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* poo
     ClassSymtable* classTable = pool->get(left->getType()->getClassName());
     TableContent tc = classTable->get(method);
 
-    if(tc.tag == TCNOCONTENT || (tc.tag == TCTYPE && tc.type->kind != TypeMethod)){
+    // Search for the method (including the ancestor classes)
+    string currentClass = left->getType()->getClassName();
+    bool methodFound = false;
+
+    while(currentClass != ""){
+        tc = pool->get(currentClass)->get(method);
+
+        // The class doesn't contain the field
+        if(tc.tag == TCNOCONTENT || (tc.tag == TCTYPE && tc.type->kind != TypeMethod))
+
+            // Looks in its parent
+            currentClass = program->getClassDecl(currentClass)->getParent();
+        
+        else{
+            methodFound = true;
+            break;
+        }
+    }
+
+    // The method doesnt exist
+    if(!methodFound){
         methodNotFoundError(method, left->getType()->getClassName());
         return false;
-    } 
+    }
 
-    // TODO: go up in the class hierarchy to check for the method
+    type = tc.type;
 
-    int expectedArgs = tc.type->getMethodHeader()->size() - 1;
+    // Up to this point, the method exists. We have to check if it exists
+    // in the child class, so that the child class method is used
+    string actualClassName = left->getType()->getActualClassName();
+
+    // The ID was indeed created by a statement like "Animal a = new Cat()"
+    if(actualClassName != left->getType()->getClassName()){
+        auto methodTypeOnDerivedClass = pool->get(actualClassName)->get(method);
+
+        if(methodTypeOnDerivedClass.tag == TCTYPE)
+            type = methodTypeOnDerivedClass.type; 
+    }
+
+    int expectedArgs = type->getMethodHeader()->size() - 1;
     
     if(arguments == nullptr) {
         if(expectedArgs != 0){
@@ -259,7 +294,7 @@ bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* poo
             return false;
         }
         
-        type = (*(tc.type->getMethodHeader()))[0];
+        type = (*(type->getMethodHeader()))[0]; // TODO: allocate new memory here
         return true;
     }
 
@@ -278,7 +313,7 @@ bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* poo
         }
     }
 
-    type = tc.type->getMethodHeader()->at(0);
+    type = tc.type->getMethodHeader()->at(0); // TODO: allocate new memory here
     return true;
 }
 

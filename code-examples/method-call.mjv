@@ -1,0 +1,23 @@
+class Main{
+    void main(String[] args){
+        Animal animal = new Cat();
+        //int a = animal.meow();
+        int b = animal.eat();
+    }
+}
+
+class Animal{
+  //  int eat(){
+
+    //}
+}
+
+class Cat extends Animal{
+    int meow(){
+
+    }
+
+    void eat(){
+
+    }
+}

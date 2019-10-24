@@ -26,6 +26,7 @@ class Type{
         TypeKind kind;
 
         Type(TypeKind kind);
+        Type(){}
         virtual string toString() = 0;
         virtual Type* copy(Type* other) = 0;
         virtual string getClassName(){return "";}
@@ -70,6 +71,7 @@ class ArrayType : public Type{
 class MethodType : public Type{
     public: 
         vector<Type*>* methodHeader;
+        MethodType(Type* other);
         MethodType();
         MethodType(vector<Type*>* methodHeader);
         string toString();

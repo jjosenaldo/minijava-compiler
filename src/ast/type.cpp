@@ -115,6 +115,14 @@ Type* MethodType::copy(Type* other){
     return new MethodType(header);
 }
 
+MethodType::MethodType(Type* other){
+    MethodType* otherMT = dynamic_cast<MethodType*>(other);
+    methodHeader = new vector<Type*>;
+    
+    for(auto t : *otherMT->methodHeader)
+        methodHeader->push_back(  t->copy(t)  );
+}
+
 Type* ArrayType::copy(Type* other){
     ArrayType* otherAT = dynamic_cast<ArrayType*>(other);
     return new ArrayType( otherAT->baseType->copy(otherAT->baseType) );
@@ -155,7 +163,6 @@ ArrayType* MkTypeArray(Type* baseType){
 MethodType* MkTypeMethod(vector<Type*>* methodHeader){
     return new MethodType(methodHeader);
 }
-
 
 
 void printType(Type* type){
