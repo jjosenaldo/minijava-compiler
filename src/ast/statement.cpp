@@ -291,8 +291,8 @@ bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* poo
 }
 
 void MethodCallExpression::print(){
-    lvalue->print();
-    cout << "." << methodName << "(";
+    left->print();
+    cout << "." << method << "(";
     
     if(arguments != nullptr){
         for(auto arg : *arguments) {arg->print();cout << ",";}
