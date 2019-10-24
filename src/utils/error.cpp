@@ -64,11 +64,6 @@ void typeErrorUnOp(string type1, string op){
     cout << "the operator " << op << " can't be applied to an argument of type " << type1 << endl;
 }
 
-// void notAnObjectError(string exp, string method){
-//     errorMsgPrefix();
-//     cout << "the expression " << exp << " is not an object, so it cannot call methods, such as " << method << endl;
-// }
-
 void incompatibleTypesMethodCall(string method, int position, string expectedType, string actualType){
     errorMsgPrefix();
     cout << "the method " << method << " expects a " << expectedType << " at the position " << position << " but a " << actualType << " was given" << endl;

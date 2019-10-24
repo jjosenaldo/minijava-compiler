@@ -25,20 +25,27 @@ void VarDec::print(){
 }
 
 bool VarDec::process(Symtable* parent, ClassSymtablePool* pool){
+    if(type->kind == TypeClass && pool->get(type->getClassName()) == nullptr){
+        classNotDefinedError(type->getClassName());
+        return false;
+    }
+
     if(predefinedId(id) || pool->get(id) != nullptr){
         classAsVariableNameError(id);
         return false;
     }
     
-    if(!this->value->process(parent, pool))
-        return false;
-    
-    if(parent->get(id).tag != TCNOCONTENT){
-        multipleVariableError(id);
-        return false;
+    if(this->value != nullptr){
+        if(!this->value->process(parent, pool))
+            return false;
+        
+        if(parent->get(id).tag != TCNOCONTENT){
+            multipleVariableError(id);
+            return false;
+        }
+        
+        parent->insert(id, tableContentFromType(type));
     }
-    
-    parent->insert(id, tableContentFromType(type));
 
     return true;
 }

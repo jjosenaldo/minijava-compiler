@@ -31,8 +31,6 @@ void typeErrorBinOp(string type1, string type2, string op);
 
 void typeErrorUnOp(string type1, string op);
 
-// void notAnObjectError(string exp, string method);
-
 void incompatibleTypesMethodCall(string method, int position, string expectedType, string actualType);
 
 void nonArrayExpressionError(string exp);
