@@ -3,7 +3,6 @@
 //      verify, in the method calls, if the left expression is an object
 //      extends
 //          prevent that a class inherits from the main class 
-//          prevent circular inheritance hierarchies
 //          make the superclass methods and fields visible to objects of the subclass
 //      check, in an array access, if the left expression is an array
 //      check the expressions used in the init value of fields (deal with circular definitions!)
