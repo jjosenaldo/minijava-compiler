@@ -150,19 +150,6 @@ class ThisExpression : public ObjExpression{
         string toString();
 };
 
-// Its type is not known when the tree is being built
-class MethodCallExpression : public ObjExpression{
-    private:
-        Expression* left;
-        string method;
-        deque<Expression*>* arguments;
-
-    public:
-        MethodCallExpression(Expression* left, string method, deque<Expression*>* args);
-        bool process(Symtable* environment, ClassSymtablePool* pool, Program* program);
-        string toString();
-};
-
 // Example: (a)
 class ParenExpression : public ObjExpression{
     private:

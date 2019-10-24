@@ -285,7 +285,7 @@ stmt : '{' blockstmts '}' {
     $$ = new Return;
 }
 | expr '.' ID '(' exprlistopt ')'  ';'{
-    $$ = new MethodCall($1, $3, $5);
+    $$ = new MethodCallExpression($1, $3, $5);
 }
 | ';' {
     $$ = new Skip;

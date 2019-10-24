@@ -120,20 +120,25 @@ class Return : public Statement{
         void print();
 };
 
-class MethodCall : public Statement{
-    private:
-        Expression* lvalue;
-        string methodName;
-        deque<Expression*>* arguments;
-    public:
-        MethodCall(Expression* lvalue, string methodName, deque<Expression*>* arguments);
-        void print();
-};
-
 class Skip : public Statement {
     public:
         void print();
 };
+
+// Its type is not known when the tree is being built
+class MethodCallExpression : public Statement,  public ObjExpression{
+    private:
+        Expression* left;
+        string method;
+        deque<Expression*>* arguments;
+
+    public:
+        MethodCallExpression(Expression* left, string method, deque<Expression*>* args);
+        bool process(Symtable* environment, ClassSymtablePool* pool, Program* program);
+        string toString();
+        void print();
+};
+
 
 
 #include "ast.hpp"

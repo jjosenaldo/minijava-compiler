@@ -7,9 +7,9 @@ class Main{
 }
 
 class Animal{
-  //  int eat(){
+    int eat(){
 
-    //}
+    }
 }
 
 class Cat extends Animal{
