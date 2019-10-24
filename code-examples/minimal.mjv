@@ -7,7 +7,7 @@
 //      check the expressions used in the init value of fields (deal with circular definitions!)
 //      typecheck declarations of variables
 //      process statements
-//          process method calls            
+//          process method calls (be careful with polymorphism/substitution)
 //          check if break; and continue; are inside loops
 //              typechecks returns
 //          check, in a object declaration, if the class name is actually defined

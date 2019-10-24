@@ -188,6 +188,7 @@ string FieldAccessExpression::toString(){
 bool FieldAccessExpression::process(Symtable* environment, ClassSymtablePool* pool){
     TableContent tc = pool->get(environment->getClassName())->get(id);
 
+    // TODO: check parents
     if(tc.tag == TCNOCONTENT || (tc.tag == TCTYPE && tc.type->kind == TypeMethod)){
         fieldNotFoundError(id, environment->getClassName());
         return false;
@@ -236,6 +237,8 @@ bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* poo
         methodNotFoundError(method, left->getType()->getClassName());
         return false;
     } 
+
+    // TODO: go up in the class hierarchy to check for the method
 
     int expectedArgs = tc.type->getMethodHeader()->size() - 1;
     

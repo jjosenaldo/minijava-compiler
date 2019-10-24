@@ -53,4 +53,6 @@ void circularInheritanceError(string id);
 
 void methodCallOnNonobjectError(string expr);
 
+void varDeclarationTypeError(string id, string expected, string actual);
+
 #endif

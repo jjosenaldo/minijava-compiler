@@ -34,18 +34,26 @@ bool VarDec::process(Symtable* parent, ClassSymtablePool* pool){
         classAsVariableNameError(id);
         return false;
     }
+
+    if(parent->get(id).tag != TCNOCONTENT){
+        multipleVariableError(id);
+        return false;
+    }
     
     if(this->value != nullptr){
         if(!this->value->process(parent, pool))
             return false;
         
-        if(parent->get(id).tag != TCNOCONTENT){
-            multipleVariableError(id);
+        if(!areCompatibleTypes(type, this->value->getType())){
+            varDeclarationTypeError(id, type->toString(), this->value->getType()->toString());
             return false;
         }
-        
-        parent->insert(id, tableContentFromType(type));
+
+        if(this->value->getType()->kind == TypeClass)
+            type->setActualClassName(this->value->getType()->getClassName());
     }
+
+    parent->insert(id, tableContentFromType(type));
 
     return true;
 }

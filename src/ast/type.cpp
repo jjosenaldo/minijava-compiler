@@ -9,12 +9,25 @@ Type::Type(TypeKind kind){
     this->kind = kind;
 }
 
-ClassType::ClassType(string className) : Type(TypeClass){
+ClassType::ClassType(string className) : ClassType(className, className){
     this->className = className;
+}
+
+ClassType::ClassType(string className,  string actualClassName) : Type(TypeClass){ 
+    this->className = className;
+    this->actualClassName = actualClassName;
+}
+
+string ClassType::getActualClassName(){
+    return actualClassName;
 }
 
 string ClassType::getClassName(){
     return className;
+}
+
+void ClassType::setActualClassName(string actualClassName){
+    this->actualClassName = actualClassName;
 }
 
 ArrayType::ArrayType(Type* baseType) : Type(TypeArray){
@@ -191,7 +204,7 @@ bool areCompatibleTypes(Type* expected, Type* actual){
     if(expected->kind == TypeBoolean)
         return actual->kind == TypeBoolean;
     
-    // TODO: it should check subclassing aswell
+    // TODO: it should check subclassing aswell (maybe it should receive the table pool as argument)
     if(expected->kind == TypeClass){
         return actual->kind == TypeClass && expected->getClassName() == actual->getClassName();
     }

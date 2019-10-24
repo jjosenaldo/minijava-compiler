@@ -29,17 +29,25 @@ class Type{
         virtual string toString() = 0;
         virtual Type* copy(Type* other) = 0;
         virtual string getClassName(){return "";}
+        virtual string getActualClassName(){return "";}
+        virtual void setActualClassName(string actualClassName) {}
         virtual vector<Type*>* getMethodHeader(){return nullptr;};
         virtual Type* getBaseType(){return nullptr;}
 };
 
 class ClassType : public Type{
-    public:
+    private:
         string className;
+        string actualClassName;
+    
+    public:
         ClassType(string className);
+        ClassType(string className,  string actualClassName);
         string toString();
         virtual Type* copy(Type* other);
         string getClassName();
+        string getActualClassName();
+        void setActualClassName(string actualClassName);
 };
 
 class BasicType : public Type{

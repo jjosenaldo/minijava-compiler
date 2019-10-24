@@ -119,6 +119,11 @@ void methodCallOnNonobjectError(string expr){
     cout << "you called a method on the expression " << expr << " but it is not an object" << endl;
 }
 
+void varDeclarationTypeError(string id, string expected, string actual){
+    errorMsgPrefix();
+    cout << "you can't assign a value of type " << actual << " to a variable (" << id << ") of type " << expected << endl;
+}
+
 void errorMsgPrefix(){
     cout << "ERROR: ";
 }
