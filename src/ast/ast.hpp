@@ -4,10 +4,10 @@
 #include <deque>
 #include <string>
 #include <vector>
-#include "expression.hpp"
 #include "statement.hpp"
 #include "symtable.hpp"
 #include "type.hpp"
+#include "expression.hpp"
 
 using std::deque;
 using std::string;

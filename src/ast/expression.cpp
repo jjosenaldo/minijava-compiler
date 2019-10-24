@@ -2,6 +2,7 @@
 #include <string>
 #include "error.hpp"
 #include "expression.hpp"
+#include "ast.hpp"
 
 using std::cout;
 using std::string;
@@ -33,9 +34,9 @@ string BinExpression::toString(){
     return this->first->toString() + " " + binOpSymbol(op) + " " + second->toString();
 }
 
-bool BinExpression::process(Symtable* environment, ClassSymtablePool* pool){
-    bool retFirst = first->process(environment, pool);
-    bool retSecond = second->process(environment, pool);
+bool BinExpression::process(Symtable* environment, ClassSymtablePool* pool, Program* program){
+    bool retFirst = first->process(environment, pool, program);
+    bool retSecond = second->process(environment, pool, program);
 
     if(!retFirst || !retSecond)
         return false;
@@ -60,8 +61,8 @@ string UnExpression::toString(){
     return unOpSymbol(op) + first->toString();
 }
 
-bool UnExpression::process(Symtable* environment, ClassSymtablePool* pool){
-    bool retFirst = first->process(environment, pool);
+bool UnExpression::process(Symtable* environment, ClassSymtablePool* pool, Program* program){
+    bool retFirst = first->process(environment, pool, program);
 
     if(!retFirst)
         return false;
@@ -105,7 +106,7 @@ string AtomExpression::toString(){
     }
 }
 
-bool AtomExpression::process(Symtable* environment, ClassSymtablePool* pool){
+bool AtomExpression::process(Symtable* environment, ClassSymtablePool* pool, Program* program){
     return true;
 }
 
@@ -113,7 +114,7 @@ string ArrayDeclExpression::toString(){
     return "new " + type->toString();
 }
 
-bool ArrayDeclExpression::process(Symtable* environment, ClassSymtablePool* pool){
+bool ArrayDeclExpression::process(Symtable* environment, ClassSymtablePool* pool, Program* program){
     switch(type->kind){
         case TypeNull:
             arrayOfInvalidTypeError(type->toString());
@@ -142,7 +143,7 @@ string NewObjExpression::toString(){
     return  "new " + id + "( )";
 }
 
-bool NewObjExpression::process(Symtable* environment, ClassSymtablePool* pool){
+bool NewObjExpression::process(Symtable* environment, ClassSymtablePool* pool, Program* program){
     if(pool->get(id) == nullptr){
         classNotDefinedError(id);
         return false;
@@ -160,7 +161,7 @@ string IdExpression::toString(){
     return id;
 }
 
-bool IdExpression::process(Symtable* environment, ClassSymtablePool* pool){
+bool IdExpression::process(Symtable* environment, ClassSymtablePool* pool, Program* program){
     if(predefinedId(id) || pool->get(id) != nullptr){
         classAsExpressionError(id);
         return false;
@@ -185,24 +186,34 @@ string FieldAccessExpression::toString(){
     return "this." + id;
 }
 
-bool FieldAccessExpression::process(Symtable* environment, ClassSymtablePool* pool){
-    TableContent tc = pool->get(environment->getClassName())->get(id);
+bool FieldAccessExpression::process(Symtable* environment, ClassSymtablePool* pool, Program* program){
+    TableContent tc;
+    string currentClass = environment->getClassName();
 
-    // TODO: check parents
-    if(tc.tag == TCNOCONTENT || (tc.tag == TCTYPE && tc.type->kind == TypeMethod)){
-        fieldNotFoundError(id, environment->getClassName());
-        return false;
+    while(currentClass != ""){
+        tc = pool->get(currentClass)->get(id);
+
+        // The class doesn't contain the field
+        if(tc.tag == TCNOCONTENT || (tc.tag == TCTYPE && tc.type->kind == TypeMethod))
+
+            // Looks in its parent
+            currentClass = program->getClassDecl(currentClass)->getParent();
+        
+        else{
+            type = tc.type;
+            return true;
+        }
     }
 
-    type = tc.type;
-    return true;
+    fieldNotFoundError(id, environment->getClassName());
+    return false;
 }
 
 string ThisExpression::toString(){
     return "this";
 }
 
-bool ThisExpression::process(Symtable* environment, ClassSymtablePool* pool){
+bool ThisExpression::process(Symtable* environment, ClassSymtablePool* pool, Program* program){
     type = MkTypeClass(environment->getClassName());
     return true;
 }
@@ -219,8 +230,8 @@ string MethodCallExpression::toString(){
     return ans + ")";
 }
 
-bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* pool){
-    bool leftResult = left->process(environment, pool);
+bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* pool, Program* program){
+    bool leftResult = left->process(environment, pool, program);
 
     if(!leftResult)
         return false;
@@ -258,7 +269,7 @@ bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* poo
     }
 
     for(int i = 0; i < expectedArgs; ++i){
-        if(!  arguments->at(i)->process(environment, pool)  )
+        if(!  arguments->at(i)->process(environment, pool, program)  )
             return false;
 
         if(!areCompatibleTypes(tc.type->getMethodHeader()->at(i+1), arguments->at(i)->getType()  )    ){ // +1 because the first element is the return type
@@ -279,8 +290,8 @@ string ParenExpression::toString(){
     return "(" + first->toString() + ")";
 }
 
-bool ParenExpression::process(Symtable* environment, ClassSymtablePool* pool){
-    bool retFirst = first->process(environment, pool);
+bool ParenExpression::process(Symtable* environment, ClassSymtablePool* pool, Program* program){
+    bool retFirst = first->process(environment, pool, program);
 
     if(!retFirst)
         return false;
@@ -299,13 +310,13 @@ string LitArrayExpression::toString(){
     return ans + "}";
 }
 
-bool LitArrayExpression::process(Symtable* environment, ClassSymtablePool* pool){
+bool LitArrayExpression::process(Symtable* environment, ClassSymtablePool* pool, Program* program){
     Type** types = new Type*[expressions->size()];
     bool retExp;
 
     int i = 0;
     for(auto exp : *expressions){
-        retExp = exp->process(environment, pool);
+        retExp = exp->process(environment, pool, program);
 
         if(!retExp){
             delete[] types;
@@ -336,8 +347,8 @@ string ArrayAccessExpression::toString(){
     return ans;
 }
 
-bool ArrayAccessExpression::process(Symtable* environment, ClassSymtablePool* pool){
-    bool retLeft = left->process(environment, pool);
+bool ArrayAccessExpression::process(Symtable* environment, ClassSymtablePool* pool, Program* program){
+    bool retLeft = left->process(environment, pool, program);
 
     if(!retLeft)
         return false;
@@ -350,7 +361,7 @@ bool ArrayAccessExpression::process(Symtable* environment, ClassSymtablePool* po
             return false;
         }
 
-        bool ret = dim->process(environment, pool);
+        bool ret = dim->process(environment, pool, program);
 
         if(!ret)
             return false;
@@ -368,13 +379,13 @@ bool ArrayAccessExpression::process(Symtable* environment, ClassSymtablePool* po
 }
 
 NewArrayExpression::NewArrayExpression(ArrayDeclExpression* decl, deque<Expression*>* dimensions){
-    this->type = decl->getType();
+    this->type = MkTypeArray(decl->getType());
     this->dimensions = dimensions;
 }
 
-bool NewArrayExpression::process(Symtable* environment, ClassSymtablePool* pool){
+bool NewArrayExpression::process(Symtable* environment, ClassSymtablePool* pool, Program* program){
     for(auto dim : *dimensions)
-        if(!dim->process(environment, pool))
+        if(!dim->process(environment, pool, program))
             return false;
     
     if(type->kind == TypeMethod || type->kind == TypeNull || type->kind == TypeVoid){

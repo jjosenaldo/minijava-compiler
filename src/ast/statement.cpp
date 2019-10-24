@@ -24,7 +24,7 @@ void VarDec::print(){
     cout << ";";
 }
 
-bool VarDec::process(Symtable* parent, ClassSymtablePool* pool){
+bool VarDec::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
     if(type->kind == TypeClass && pool->get(type->getClassName()) == nullptr){
         classNotDefinedError(type->getClassName());
         return false;
@@ -41,7 +41,7 @@ bool VarDec::process(Symtable* parent, ClassSymtablePool* pool){
     }
     
     if(this->value != nullptr){
-        if(!this->value->process(parent, pool))
+        if(!this->value->process(parent, pool, program))
             return false;
         
         if(!areCompatibleTypes(type, this->value->getType())){
@@ -86,12 +86,12 @@ deque<GenStatement*>* Block::getStatements(){
     return statements;
 }
 
-bool Block::process(Symtable* parent, ClassSymtablePool* pool){
+bool Block::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
     Symtable* table = new Symtable(parent->getClassName());
 
     if(statements != nullptr)
         for(auto stmt : *statements){
-            if(!stmt->process(table, pool))
+            if(!stmt->process(table, pool, program))
                 return false;
         }
             
@@ -114,8 +114,8 @@ ElselessIf::ElselessIf(Expression* guard, Statement* statement){
     this->statement = statement;
 }
 
-bool ElselessIf::process(Symtable* parent, ClassSymtablePool* pool){
-    return statement->process(parent, pool);
+bool ElselessIf::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
+    return statement->process(parent, pool, program);
 }
 
 void ElselessIf::print(){
@@ -131,8 +131,8 @@ IfElse::IfElse(Expression* guard, Statement* statementIf, Statement* statementEl
     this->statementElse = statementElse;
 }
 
-bool IfElse::process(Symtable* parent, ClassSymtablePool* pool){
-    return statementIf->process(parent, pool) && statementElse->process(parent, pool);
+bool IfElse::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
+    return statementIf->process(parent, pool, program) && statementElse->process(parent, pool, program);
 }
 
 void IfElse::print(){
@@ -149,8 +149,8 @@ While::While(Expression* guard, Statement* statement){
     this->statement = statement;
 }
 
-bool While::process(Symtable* parent, ClassSymtablePool* pool){
-    return statement->process(parent, pool);
+bool While::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
+    return statement->process(parent, pool, program);
 }
 
 void While::print(){

@@ -1,8 +1,8 @@
 class MainClass{
 	void main(String[] args){
 		System.println("hello world!");
-		Cat cat = new Dog();
-		Cat cat2 = "a";
+		Cat cat = new Cat();
+		Cat cat2 = new Cat();
 		boolean a = cat.meow(10);
 		Cat[] cat3 = new int[1];
 		boolean a2 = 1+5;
@@ -16,9 +16,10 @@ class MainClass{
 
 class b{}
 
-class Animal /*extends Cat*/{
-	int a;
+class Animal {
+	int gender;
 	int eat(){
+		int myGender = this.gender;
 		return 5;
 	}
 }
@@ -28,8 +29,10 @@ class Dog extends Animal{}
 class Cat extends Animal {
 	int paws = 4;
 	int weight;
-	void meow(int seconds){
-		
+	int gender;
+	boolean meow(int seconds){
+		int gender = this.gender;
+		boolean gender = true;
 	}
 
 	void cut(int foo){

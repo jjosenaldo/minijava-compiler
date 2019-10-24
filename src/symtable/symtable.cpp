@@ -144,7 +144,7 @@ void ClassSymtable::insertMethodTable(string methodName, Symtable* table){
     methodTables->insert({{methodName,table}});
 }
 
-bool ClassSymtable::processMethodBodies(ClassDeclaration* classDecl, ClassSymtablePool* pool){
+bool ClassSymtable::processMethodBodies(ClassDeclaration* classDecl, ClassSymtablePool* pool, Program* program){
     for(auto methodTablePair : *methodTables){
         string methodName = methodTablePair.first;
         Symtable* methodTable = methodTablePair.second;
@@ -155,7 +155,7 @@ bool ClassSymtable::processMethodBodies(ClassDeclaration* classDecl, ClassSymtab
             auto stmts = blockStmt->getStatements();
 
             for(auto stmt : *stmts)
-                if(!stmt->process(methodTable, pool))
+                if(!stmt->process(methodTable, pool, program))
                     return false;
         }   
     }
