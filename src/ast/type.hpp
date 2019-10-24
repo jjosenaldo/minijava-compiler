@@ -129,4 +129,6 @@ bool areCompatibleTypes(Type* expected, Type* actual);
  */
 Type* resultingType(Type** types, int n);
 
+bool typeIsString(Type* type);
+
 #endif  
