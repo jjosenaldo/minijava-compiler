@@ -1,6 +1,6 @@
 class Main{
     void main(String[] args){
-        Animal animal = new Cat();
+        Animal animal = new Animal();
         //int a = animal.meow();
         int b = animal.eat();
     }

@@ -2,16 +2,13 @@
 //      add line numbers to the error messages (optional)
 //      extends
 //          prevent that a class inherits from the main class 
-//          make the superclass methods and fields visible to objects of the subclass
-//      check, in an array access, if the left expression is an array
 //      check the expressions used in the init value of fields (deal with circular definitions!)
-//      typecheck declarations of variables
 //      process statements
-//          process method calls (be careful with polymorphism/substitution)
 //          check if break; and continue; are inside loops
 //              typechecks returns
-//          check, in a object declaration, if the class name is actually defined
 //      prevent that objects of the Main class be created
+//      deal with recursive methods
+//      when processing the fields that are objects, check if the class exists
 
 class Main{
     void main(String[] args){
