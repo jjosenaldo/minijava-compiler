@@ -1,6 +1,5 @@
 // TODO: 
 //      add line numbers to the error messages (optional)
-//      verify, in the method calls, if the left expression is an object
 //      extends
 //          prevent that a class inherits from the main class 
 //          make the superclass methods and fields visible to objects of the subclass

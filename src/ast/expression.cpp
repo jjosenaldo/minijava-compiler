@@ -19,6 +19,10 @@ Type* Expression::getType(){
     return this->type;
 }
 
+bool Expression::isObject(){
+    return this->type->kind == TypeClass;
+}
+
 BinExpression::BinExpression(Expression* first, Expression* second, BinOperator op){
     this->first = first;
     this->second = second;
@@ -219,20 +223,17 @@ bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* poo
 
     if(!leftResult)
         return false;
-    
 
-    Type* classType = left->getType();
-
-    if(classType->kind != TypeClass){
-        notAnObjectError(left->toString(), method);
+    if(!left->isObject()){
+        methodCallOnNonobjectError(left->toString());
         return false;
     }
 
-    ClassSymtable* classTable = pool->get(classType->getClassName());
+    ClassSymtable* classTable = pool->get(left->getType()->getClassName());
     TableContent tc = classTable->get(method);
 
     if(tc.tag == TCNOCONTENT || (tc.tag == TCTYPE && tc.type->kind != TypeMethod)){
-        methodNotFoundError(method, classType->getClassName());
+        methodNotFoundError(method, left->getType()->getClassName());
         return false;
     } 
 

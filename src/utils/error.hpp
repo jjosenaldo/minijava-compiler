@@ -31,7 +31,7 @@ void typeErrorBinOp(string type1, string type2, string op);
 
 void typeErrorUnOp(string type1, string op);
 
-void notAnObjectError(string exp, string method);
+// void notAnObjectError(string exp, string method);
 
 void incompatibleTypesMethodCall(string method, int position, string expectedType, string actualType);
 
@@ -52,5 +52,7 @@ void classAsVariableNameError(string id);
 void classInheritsFromItselfError(string id);
 
 void circularInheritanceError(string id);
+
+void methodCallOnNonobjectError(string expr);
 
 #endif

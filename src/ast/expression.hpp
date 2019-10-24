@@ -33,6 +33,7 @@ class Expression{
         virtual ~Expression() {}
         virtual Type* getType();
         void print(){cout << toString();}
+        bool isObject();
 
         /**
          * @brief Checks if the expression is correct, and sets its type.

@@ -9,12 +9,12 @@ class MainClass{
 		//bool a3 = 1 + Cat;
 		//String Cat = new String["oi"];
 		b b = 1;
-		void a4 = new Cat().cut(1);
+		void a4 = 1+a.cut(1);
 		//cat.meow();
 	}
 }
 
-class Animal extends Cat{
+class Animal /*extends Cat*/{
 	int a;
 	int eat(){
 		return 5;
