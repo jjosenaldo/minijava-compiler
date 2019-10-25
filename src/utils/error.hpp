@@ -55,4 +55,8 @@ void methodCallOnNonobjectError(string expr);
 
 void varDeclarationTypeError(string id, string expected, string actual);
 
+void notAnLvalueError(string exp);
+
+void typeError(string expected, string actual);
+
 #endif

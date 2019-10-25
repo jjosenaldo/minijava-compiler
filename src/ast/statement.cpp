@@ -172,6 +172,23 @@ void Assignment::print(){
     cout << ";";
 }
 
+bool Assignment::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
+    if(!lvalue->process(parent, pool, program))
+        return false;
+    
+    if(!lvalue->isLvalue()){
+        notAnLvalueError(lvalue->toString());
+        return false;
+    }
+
+    if(!areCompatibleTypes(lvalue->getType(), rvalue->getType())){
+        typeError(lvalue->getType()->toString(), rvalue->getType()->toString());
+        return false;
+    }
+
+    return true;
+}
+
 void Continue::print(){
     cout << "continue;";
 }

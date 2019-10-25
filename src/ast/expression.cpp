@@ -179,6 +179,14 @@ bool IdExpression::process(Symtable* environment, ClassSymtablePool* pool, Progr
     return true;
 }
 
+bool IdExpression::isLvalue(){
+    return true;
+}
+
+bool FieldAccessExpression::isLvalue(){
+    return true;
+}
+
 FieldAccessExpression::FieldAccessExpression(string id){
     this->id = id;
 }
@@ -225,6 +233,10 @@ ParenExpression::ParenExpression(Expression* fst){
 
 string ParenExpression::toString(){
     return "(" + first->toString() + ")";
+}
+
+bool ParenExpression::isLvalue(){
+    return first->isLvalue();
 }
 
 bool ParenExpression::process(Symtable* environment, ClassSymtablePool* pool, Program* program){
@@ -312,6 +324,10 @@ bool ArrayAccessExpression::process(Symtable* environment, ClassSymtablePool* po
     }
 
     type = currentType;
+    return true;
+}
+
+bool ArrayAccessExpression::isLvalue(){
     return true;
 }
 

@@ -98,6 +98,7 @@ class Assignment : public Statement{
         Expression* rvalue;
     public:
         Assignment(Expression* lvalue, Expression* rvalue);
+        bool process(Symtable* parent, ClassSymtablePool* pool, Program* program);
         void print();
 };
 

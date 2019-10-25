@@ -1,0 +1,6 @@
+class Main{
+    void main(String[] args){
+        int int_a = 1;
+        bool_d = int_a == null;
+    }
+}

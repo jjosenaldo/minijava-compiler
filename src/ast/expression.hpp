@@ -37,6 +37,7 @@ class Expression{
         virtual Type* getType();
         void print(){cout << toString();}
         bool isObject();
+        virtual bool isLvalue() {return false;}
 
         /**
          * @brief Checks if the expression is correct, and sets its type.
@@ -130,6 +131,7 @@ class IdExpression : public ObjExpression{
         IdExpression(string id);
         bool process(Symtable* environment, ClassSymtablePool* pool, Program* program);
         string toString();
+        bool isLvalue();
 };
 
 // Its type is not known when the tree is being built
@@ -141,6 +143,7 @@ class FieldAccessExpression : public ObjExpression{
         FieldAccessExpression(string id);
         bool process(Symtable* environment, ClassSymtablePool* pool, Program* program);
         string toString();
+        bool isLvalue();
 };
 
 // Its type is not known when the tree is being built
@@ -159,6 +162,7 @@ class ParenExpression : public ObjExpression{
         ParenExpression(Expression* first);
         bool process(Symtable* environment, ClassSymtablePool* pool, Program* program);
         string toString();
+        bool isLvalue();
 };
 
 class LitArrayExpression : public ObjExpression{
@@ -179,6 +183,7 @@ class ArrayAccessExpression : public Expression{
         ArrayAccessExpression(ObjExpression* left, deque<Expression*>* dimensions);
         bool process(Symtable* environment, ClassSymtablePool* pool, Program* program);
         string toString();
+        bool isLvalue();
 };
 
 class NewArrayExpression : public Expression{

@@ -124,6 +124,16 @@ void varDeclarationTypeError(string id, string expected, string actual){
     cout << "you can't assign a value of type " << actual << " to a variable (" << id << ") of type " << expected << endl;
 }
 
+void typeError(string expected, string actual){
+    errorMsgPrefix();
+    cout << "you used a " << actual << " when a " << expected << " was expected" << endl;
+}
+
+void notAnLvalueError(string exp){
+    errorMsgPrefix();
+    cout << "the expression " << exp << " is not a lvalue" << endl;
+}
+
 void errorMsgPrefix(){
     cout << "ERROR: ";
 }
