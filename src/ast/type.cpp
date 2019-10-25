@@ -9,7 +9,7 @@ Type::Type(TypeKind kind){
     this->kind = kind;
 }
 
-ClassType::ClassType(string className) {
+ClassType::ClassType(string className) : Type(TypeClass) {
     this->className = className;
 }
 
