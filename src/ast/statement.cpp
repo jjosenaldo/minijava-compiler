@@ -288,7 +288,7 @@ bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* poo
             return false;
         }
         
-        type = (*(type->getMethodHeader()))[0]; // TODO: allocate new memory here
+        type = (*(type->getMethodHeader()))[0];
         return true;
     }
 
@@ -307,7 +307,7 @@ bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* poo
         }
     }
 
-    type = tc.type->getMethodHeader()->at(0); // TODO: allocate new memory here
+    type = tc.type->getMethodHeader()->at(0);
     return true;
 }
 

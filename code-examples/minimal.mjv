@@ -1,15 +1,3 @@
-// TODO: 
-//      add line numbers to the error messages (optional)
-//      extends
-//          prevent that a class inherits from the main class 
-//      check the expressions used in the init value of fields (deal with circular definitions!)
-//      process statements
-//          check if break; and continue; are inside loops
-//              typechecks returns
-//      prevent that objects of the Main class be created
-//      deal with recursive methods
-//      when processing the fields that are objects, check if the class exists
-
 class Main{
     void main(String[] args){
         {{{{{{int a;{int a;}/*int a;*/}}}}}}

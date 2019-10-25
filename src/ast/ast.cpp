@@ -31,7 +31,6 @@ deque<ClassDeclaration*>* Program::getDecls(){
     return declarations;
 }
 
-// TODO: the class declarations should be in a hash map
 ClassDeclaration* Program::getClassDecl(string className){
     for(auto decl : *declarations)
         if(decl->getName() == className)
@@ -238,7 +237,6 @@ vector<Field*>* ClassDeclaration::getFields(){
     return fields;
 }
 
-// TODO: the methods should be in a hashtable
 Method* ClassDeclaration::getMethod(string methodName){
     for(Method* method : *methods) if(method->getId() == methodName) return method;
     return nullptr;
