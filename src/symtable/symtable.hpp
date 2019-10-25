@@ -1,15 +1,19 @@
 #ifndef SYMTABLE_HPP
 #define SYMTABLE_HPP
 
+#include <deque>
 #include <string>
 #include <unordered_map>
 #include <utility>
+#include "error.hpp"
 #include "type.hpp"
 
+using std::deque;
 using std::pair;
 using std::string;
 using std::unordered_map;
 
+extern unordered_map<string, string> classParentMap;
 class Program;
 class ClassDeclaration;
 class Symtable;
@@ -93,5 +97,12 @@ class ClassSymtablePool{
 };
 
 void printTableContent(TableContent content);
+
+
+bool addClassNamesToPool(Program* program, ClassSymtablePool* pool);
+
+bool processesClassInheritanceHierarchy(deque<ClassDeclaration*>* declarations, ClassSymtablePool* pool);
+
+ClassSymtablePool* buildClassSymtablePool(Program* program);
 
 #endif
