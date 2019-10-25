@@ -33,7 +33,7 @@ class Main {
 		// bool_c = str_a > str_b;
 		// bool_c = str_a >= str_b;
 
-		bool_c = 1 == null; // Err
+		// boolean bool_d = int_a == null; // Err
 		bool_c = null != 1; // Err
 		// bool_c = str_c == null;
 		// bool_c = null != str_c;

@@ -216,8 +216,8 @@ Type* returnTypeBinOp(Type* t1, Type* t2, BinOperator op){
            t1->kind == TypeMethod or
            t2->kind == TypeMethod)              // Void and Method types can't be compared
             return nullptr;
-        else if(t1->kind == TypeNull or         // Null can be compared with any type
-                t2->kind == TypeNull or         // Null can be compared with any type
+        else if((t1->kind == TypeNull and t2->kind != TypeInt and t2->kind != TypeBoolean) or         // Null can be compared with any non base type
+                (t2->kind == TypeNull and t1->kind != TypeInt and t1->kind != TypeBoolean) or         // Null can be compared with any non base type
                 (t1->kind != TypeClass and 
                     t1->kind == t2->kind) or    // Same type can be compared (ClassTypes must be the same name)
                 (t1->kind == TypeClass and
