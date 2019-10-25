@@ -6,7 +6,8 @@
 using std::cout;
 using std::endl;
 
-unordered_map<string, string> classParentMap = unordered_map<string, string>();
+unordered_map<string, string> g_classParentMap = unordered_map<string, string>();
+string g_mainClassName = "";
 
 TableContent tableContentFromType(Type* type){
     TableContent tc;
@@ -181,7 +182,7 @@ bool processesClassInheritanceHierarchy(ClassSymtablePool* pool){
     unordered_map<string, string> unprocClasses;
     unordered_map<string, string> procClasses;
 
-    for(auto p : classParentMap)
+    for(auto p : g_classParentMap)
         unprocClasses.emplace(p.first, p.second);
 
     auto itCurrent = unprocClasses.begin();
@@ -242,6 +243,11 @@ bool processesClassInheritanceHierarchy(ClassSymtablePool* pool){
 }
 bool addClassNamesToPool(Program* program, ClassSymtablePool* pool){
     for(auto classDecl : *program->getDecls()){
+        if(classDecl->getParent() == g_mainClassName){
+            inheritanceFromMainClassError(classDecl->getName());
+            return false;
+        }
+
         string className = classDecl->getName();
         
         if(pool->get(className) != nullptr) {
@@ -251,7 +257,7 @@ bool addClassNamesToPool(Program* program, ClassSymtablePool* pool){
 
         ClassSymtable* root = new ClassSymtable(className);
         pool->insert(className, root);
-        classParentMap.emplace(className, classDecl->getParent());
+        g_classParentMap.emplace(className, classDecl->getParent());
     }
 
     return true;
@@ -313,12 +319,12 @@ bool isSubclassOf(string descendant, string ancestor){
     if(descendant == ancestor)
         return true;
 
-    string currentParent = classParentMap[descendant];
+    string currentParent = g_classParentMap[descendant];
 
     while(currentParent != ""){
         if(currentParent == ancestor)
             return true;
-        currentParent = classParentMap[currentParent];
+        currentParent = g_classParentMap[currentParent];
     }   
 
     return false;

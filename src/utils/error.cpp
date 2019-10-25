@@ -134,6 +134,16 @@ void notAnLvalueError(string exp){
     cout << "the expression " << exp << " is not a lvalue" << endl;
 }
 
+void instanceOfMainClassError(){
+    errorMsgPrefix();
+    cout << "you cannot create an object with the main class as type" << endl;
+}
+
+void inheritanceFromMainClassError(string id){
+    errorMsgPrefix();
+    cout << "the class " << id << " is inheriting from the main class" << endl;
+}
+
 void errorMsgPrefix(){
     cout << "ERROR: ";
 }

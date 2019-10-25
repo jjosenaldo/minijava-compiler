@@ -59,4 +59,8 @@ void notAnLvalueError(string exp);
 
 void typeError(string expected, string actual);
 
+void instanceOfMainClassError();
+
+void inheritanceFromMainClassError(string id);
+
 #endif

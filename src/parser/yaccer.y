@@ -104,6 +104,7 @@ mainclass : CLASS ID '{' VOID ID '(' ID ARR ID ')' '{' blockstmts '}' '}' {
     mainMethod->addParam(param);
 
     // Class
+    g_mainClassName = $2;
     ClassDeclaration* decl = new ClassDeclaration($2);
     decl->addMethod(mainMethod);
     $$ = decl;

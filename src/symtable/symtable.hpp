@@ -13,7 +13,9 @@ using std::pair;
 using std::string;
 using std::unordered_map;
 
-extern unordered_map<string, string> classParentMap;
+extern unordered_map<string, string> g_classParentMap;
+extern string g_mainClassName;
+
 class Program;
 class ClassDeclaration;
 class Symtable;

@@ -25,10 +25,18 @@ void VarDec::print(){
 }
 
 bool VarDec::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
-    if(type->kind == TypeClass && pool->get(type->getClassName()) == nullptr){
-        classNotDefinedError(type->getClassName());
-        return false;
+    if(type->kind == TypeClass){
+        if(pool->get(type->getClassName()) == nullptr){
+            classNotDefinedError(type->getClassName());
+            return false;
+        }
+
+        if(g_mainClassName == type->getClassName()){
+            instanceOfMainClassError();
+            return false;
+        }
     }
+    
 
     if(predefinedId(id) || pool->get(id) != nullptr){
         classAsVariableNameError(id);
@@ -252,7 +260,7 @@ bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* poo
         if(tc.tag == TCNOCONTENT || (tc.tag == TCTYPE && tc.type->kind != TypeMethod))
 
             // Looks in its parent
-            currentClass = classParentMap[currentClass];
+            currentClass = g_classParentMap[currentClass];
         
         else{
             methodFound = true;

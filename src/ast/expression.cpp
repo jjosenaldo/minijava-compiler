@@ -206,7 +206,7 @@ bool FieldAccessExpression::process(Symtable* environment, ClassSymtablePool* po
         if(tc.tag == TCNOCONTENT || (tc.tag == TCTYPE && tc.type->kind == TypeMethod))
 
             // Looks in its parent
-            currentClass = classParentMap[currentClass];
+            currentClass = g_classParentMap[currentClass];
         
         else{
             type = tc.type;
