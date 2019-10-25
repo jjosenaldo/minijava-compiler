@@ -101,7 +101,7 @@ void printTableContent(TableContent content);
 
 bool addClassNamesToPool(Program* program, ClassSymtablePool* pool);
 
-bool processesClassInheritanceHierarchy(deque<ClassDeclaration*>* declarations, ClassSymtablePool* pool);
+bool processesClassInheritanceHierarchy(ClassSymtablePool* pool);
 
 ClassSymtablePool* buildClassSymtablePool(Program* program);
 

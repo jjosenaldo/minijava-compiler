@@ -177,12 +177,12 @@ void printTableContent(TableContent content){
     }
 }
 
-bool processesClassInheritanceHierarchy(deque<ClassDeclaration*>* declarations, ClassSymtablePool* pool){
+bool processesClassInheritanceHierarchy(ClassSymtablePool* pool){
     unordered_map<string, string> unprocClasses;
     unordered_map<string, string> procClasses;
 
-    for(auto decl :*declarations)
-        unprocClasses.emplace(decl->getName(), decl->getParent());
+    for(auto p : classParentMap)
+        unprocClasses.emplace(p.first, p.second);
 
     auto itCurrent = unprocClasses.begin();
     string firstInChain = itCurrent->second;
@@ -265,7 +265,7 @@ ClassSymtablePool* buildClassSymtablePool(Program* program){
         return nullptr;
     }
 
-    if(!processesClassInheritanceHierarchy(program->getDecls(), pool)) {
+    if(!processesClassInheritanceHierarchy(pool)) {
         delete pool;
         return nullptr;
     }

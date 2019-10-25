@@ -1,0 +1,17 @@
+class Main{
+    void main(String[] args){
+
+    }
+}
+
+class Animal extends Cat{
+
+}
+
+class Mammal extends Animal{
+
+}
+
+class Cat extends Mammal{
+
+}
