@@ -169,6 +169,7 @@ void printType(Type* type){
     cout << type->toString();
 }
 
+// TODO: Operation between class and subclasses
 Type* returnTypeBinOp(Type* t1, Type* t2, BinOperator op){
     // TypeInt: 
     //     - * / %
@@ -184,7 +185,7 @@ Type* returnTypeBinOp(Type* t1, Type* t2, BinOperator op){
        op == OP_DIV or
        op == OP_MOD)
     {
-        if(t1->kind == TypeInt and t1->kind == TypeInt)
+        if(t1->kind == TypeInt and t2->kind == TypeInt)
             return MkTypeInt();
     }
     else if(op == OP_OR or
@@ -194,7 +195,7 @@ Type* returnTypeBinOp(Type* t1, Type* t2, BinOperator op){
             return MkTypeBoolean();
     }
     if(op == OP_PLUS) {
-        if(t1->kind == TypeInt and t1->kind == TypeInt)
+        if(t1->kind == TypeInt and t2->kind == TypeInt)
             return MkTypeInt();
         else if(typeIsString(t1) and typeIsString(t2))
             return MkTypeClass("String");
@@ -204,7 +205,7 @@ Type* returnTypeBinOp(Type* t1, Type* t2, BinOperator op){
             op == OP_GREAT_EQ or
             op == OP_GREAT)
     {
-        if((t1->kind == TypeInt and t1->kind == TypeInt) or
+        if((t1->kind == TypeInt and t2->kind == TypeInt) or
            (typeIsString(t1) and typeIsString(t2))) 
             return MkTypeBoolean();
     }
@@ -218,11 +219,8 @@ Type* returnTypeBinOp(Type* t1, Type* t2, BinOperator op){
             return nullptr;
         else if((t1->kind == TypeNull and t2->kind != TypeInt and t2->kind != TypeBoolean) or         // Null can be compared with any non base type
                 (t2->kind == TypeNull and t1->kind != TypeInt and t1->kind != TypeBoolean) or         // Null can be compared with any non base type
-                (t1->kind != TypeClass and 
-                    t1->kind == t2->kind) or    // Same type can be compared (ClassTypes must be the same name)
-                (t1->kind == TypeClass and
-                    t2->kind == TypeClass and
-                    t1->getClassName()==t2->getClassName())) // ClassType with equal names can be compared
+                (t1->kind != TypeClass and t1->kind == t2->kind) or    // Same type can be compared (ClassTypes must be the same name)
+                (t1->kind == TypeClass and t2->kind == TypeClass and t1->getClassName()==t2->getClassName())) // ClassType with equal names can be compared
             return MkTypeBoolean();
     }
     return nullptr;

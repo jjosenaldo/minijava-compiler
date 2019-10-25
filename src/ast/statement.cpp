@@ -173,6 +173,7 @@ void Assignment::print(){
 }
 
 bool Assignment::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
+
     if(!lvalue->process(parent, pool, program))
         return false;
     
@@ -180,6 +181,9 @@ bool Assignment::process(Symtable* parent, ClassSymtablePool* pool, Program* pro
         notAnLvalueError(lvalue->toString());
         return false;
     }
+
+    if(!rvalue->process(parent, pool, program))
+        return false;
 
     if(!areCompatibleTypes(lvalue->getType(), rvalue->getType())){
         typeError(lvalue->getType()->toString(), rvalue->getType()->toString());
