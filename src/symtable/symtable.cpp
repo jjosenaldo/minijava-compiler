@@ -308,3 +308,18 @@ ClassSymtablePool* buildClassSymtablePool(Program* program){
 
     return pool;
 }
+
+bool isSubclassOf(string descendant, string ancestor){
+    if(descendant == ancestor)
+        return true;
+
+    string currentParent = classParentMap[descendant];
+
+    while(currentParent != ""){
+        if(currentParent == ancestor)
+            return true;
+        currentParent = classParentMap[currentParent];
+    }   
+
+    return false;
+}

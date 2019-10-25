@@ -105,4 +105,6 @@ bool processesClassInheritanceHierarchy(ClassSymtablePool* pool);
 
 ClassSymtablePool* buildClassSymtablePool(Program* program);
 
+bool isSubclassOf(string descendant, string ancestor);
+
 #endif
