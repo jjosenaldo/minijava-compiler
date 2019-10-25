@@ -114,10 +114,4 @@ class Parameter{
         void print();
 };
 
-bool addClassNamesToPool(Program* program, ClassSymtablePool* pool);
-
-bool processesClassInheritanceHierarchy(deque<ClassDeclaration*>* declarations, ClassSymtablePool* pool);
-
-ClassSymtablePool* buildClassSymtablePool(Program* program);
-
 #endif

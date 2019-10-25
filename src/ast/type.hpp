@@ -39,16 +39,12 @@ class Type{
 class ClassType : public Type{
     private:
         string className;
-        string actualClassName;
     
     public:
         ClassType(string className);
-        ClassType(string className,  string actualClassName);
         string toString();
         virtual Type* copy(Type* other);
         string getClassName();
-        string getActualClassName();
-        void setActualClassName(string actualClassName);
 };
 
 class BasicType : public Type{

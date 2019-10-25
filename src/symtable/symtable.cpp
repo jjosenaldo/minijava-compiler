@@ -6,6 +6,8 @@
 using std::cout;
 using std::endl;
 
+unordered_map<string, string> classParentMap = unordered_map<string, string>();
+
 TableContent tableContentFromType(Type* type){
     TableContent tc;
     tc.tag = TCTYPE;
@@ -173,4 +175,136 @@ void printTableContent(TableContent content){
     } else if(content.tag == TCSYMTABLE){
         content.symtable->print();
     }
+}
+
+bool processesClassInheritanceHierarchy(deque<ClassDeclaration*>* declarations, ClassSymtablePool* pool){
+    unordered_map<string, string> unprocClasses;
+    unordered_map<string, string> procClasses;
+
+    for(auto decl :*declarations)
+        unprocClasses.emplace(decl->getName(), decl->getParent());
+
+    auto itCurrent = unprocClasses.begin();
+    string firstInChain = itCurrent->second;
+    string parent;
+
+    while(true){
+        if(itCurrent->first == itCurrent->second){
+            circularInheritanceError(itCurrent->first);
+            return false;
+        }
+
+        parent = itCurrent->second;
+        if(parent == ""){
+            procClasses.emplace(itCurrent->first, itCurrent->second);
+            unprocClasses.erase(itCurrent);
+
+            if(unprocClasses.empty())
+                return true;
+            
+            itCurrent = unprocClasses.begin();
+            firstInChain = itCurrent->second;
+            continue;
+        }
+
+        auto itParentUnproc = unprocClasses.find(parent);
+        if(itParentUnproc != unprocClasses.end()){
+            procClasses.emplace(itCurrent->first, itCurrent->second);
+            unprocClasses.erase(itCurrent);
+
+            itCurrent = itParentUnproc;
+            continue;
+        }
+
+        auto itParentProc = procClasses.find(parent);
+        if(itParentProc != procClasses.end()){
+            if(itParentProc->second == firstInChain){
+                circularInheritanceError(firstInChain);
+                return false;
+            }
+            
+            procClasses.emplace(itCurrent->first, itCurrent->second);
+            unprocClasses.erase(itCurrent);
+
+            if(unprocClasses.empty())
+                return true;
+
+            itCurrent = unprocClasses.begin();
+            firstInChain = itCurrent->second;
+            continue;
+        }
+
+        classNotDefinedError(parent);
+        return false;
+    }
+
+    return true;
+}
+bool addClassNamesToPool(Program* program, ClassSymtablePool* pool){
+    for(auto classDecl : *program->getDecls()){
+        string className = classDecl->getName();
+        
+        if(pool->get(className) != nullptr) {
+            multipleClassError(className);
+            return false;
+        }
+
+        ClassSymtable* root = new ClassSymtable(className);
+        pool->insert(className, root);
+        classParentMap.emplace(className, classDecl->getParent());
+    }
+
+    return true;
+}
+
+ClassSymtablePool* buildClassSymtablePool(Program* program){
+    ClassSymtablePool* pool = new ClassSymtablePool;
+
+    if(!addClassNamesToPool(program, pool)){
+        delete pool;
+        return nullptr;
+    }
+
+    if(!processesClassInheritanceHierarchy(program->getDecls(), pool)) {
+        delete pool;
+        return nullptr;
+    }
+
+    // Processes each class
+    for(auto classDecl : *program->getDecls()){
+        string className = classDecl->getName();
+        ClassSymtable* root = pool->get(className);
+
+        // Processes the fields
+        auto fields = classDecl->getFields();
+        if(fields != nullptr) 
+            for(auto field : *fields)
+                if(!field->process(className, root)){
+                    delete pool;
+                    return nullptr;
+                }
+
+        // Processes the method headers
+        auto methods = classDecl->getMethods();
+        if(methods != nullptr){
+            for(auto method : *methods)
+                if(!method->processHeader(className, root, pool)){
+                    delete pool;
+                    return nullptr;
+                }
+        }
+    }
+
+    // Processes each method body
+    unordered_map<string, ClassSymtable*>* tablePool = pool->getPool();
+    for(auto tablePoolEntry : *tablePool){
+        string className = tablePoolEntry.first;
+        ClassSymtable* classSymtable = tablePoolEntry.second;
+        if(!classSymtable->processMethodBodies(program->getClassDecl(className), pool, program))  {
+            delete pool;
+            return nullptr;
+        }
+    }
+
+    return pool;
 }

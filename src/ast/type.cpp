@@ -9,25 +9,12 @@ Type::Type(TypeKind kind){
     this->kind = kind;
 }
 
-ClassType::ClassType(string className) : ClassType(className, className){
+ClassType::ClassType(string className) {
     this->className = className;
-}
-
-ClassType::ClassType(string className,  string actualClassName) : Type(TypeClass){ 
-    this->className = className;
-    this->actualClassName = actualClassName;
-}
-
-string ClassType::getActualClassName(){
-    return actualClassName;
 }
 
 string ClassType::getClassName(){
     return className;
-}
-
-void ClassType::setActualClassName(string actualClassName){
-    this->actualClassName = actualClassName;
 }
 
 ArrayType::ArrayType(Type* baseType) : Type(TypeArray){

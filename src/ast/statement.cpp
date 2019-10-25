@@ -268,6 +268,10 @@ bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* poo
 
     type = tc.type;
 
+    /*
+
+    This code checks for subclasses, i.e., polymorphism. 
+
     // Up to this point, the method exists. We have to check if it exists
     // in the child class, so that the child class method is used
     string actualClassName = left->getType()->getActualClassName();
@@ -279,6 +283,7 @@ bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* poo
         if(methodTypeOnDerivedClass.tag == TCTYPE)
             type = methodTypeOnDerivedClass.type; 
     }
+    */
 
     int expectedArgs = type->getMethodHeader()->size() - 1;
     
