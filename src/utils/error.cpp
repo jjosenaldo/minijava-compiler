@@ -144,6 +144,11 @@ void inheritanceFromMainClassError(string id){
     cout << "the class " << id << " is inheriting from the main class" << endl;
 }
 
+void mainMethodNameError(string mainMethod, string otherMethod){
+    errorMsgPrefix();
+    cout << "the main method should be called " << mainMethod << ", not " << otherMethod << endl;
+}
+
 void errorMsgPrefix(){
     cout << "ERROR: ";
 }

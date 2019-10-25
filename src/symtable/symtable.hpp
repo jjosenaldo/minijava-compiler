@@ -13,7 +13,9 @@ using std::pair;
 using std::string;
 using std::unordered_map;
 
+// Globals
 extern unordered_map<string, string> g_classParentMap;
+const string MAIN_METHOD_NAME = "main";
 extern string g_mainClassName;
 
 class Program;

@@ -92,6 +92,11 @@ goal : mainclass classdecs {
 } ;
 
 mainclass : CLASS ID '{' VOID ID '(' ID ARR ID ')' '{' blockstmts '}' '}' {
+    if($5 != MAIN_METHOD_NAME){
+        mainMethodNameError(MAIN_METHOD_NAME, $5);
+        return 1;
+    }
+
     // Parameter
     Type* paramType = MkTypeArray(MkTypeClass($7));
     string paramName = string($9);
