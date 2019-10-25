@@ -1,13 +1,11 @@
 #include <iostream>
+#include "global.hpp"
 #include "symtable.hpp"
 #include "type.hpp"
 #include "ast.hpp"
 
 using std::cout;
 using std::endl;
-
-unordered_map<string, string> g_classParentMap = unordered_map<string, string>();
-string g_mainClassName = "";
 
 TableContent tableContentFromType(Type* type){
     TableContent tc;

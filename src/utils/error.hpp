@@ -65,4 +65,6 @@ void inheritanceFromMainClassError(string id);
         
 void mainMethodNameError(string mainMethod, string otherMethod); 
 
+void callMainMethodError();
+
 #endif

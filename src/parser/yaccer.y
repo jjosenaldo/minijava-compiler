@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include "ast.hpp"
 #include "error.hpp"
+#include "global.hpp"
 
 using std::cout;
 using std::endl;

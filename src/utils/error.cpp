@@ -149,6 +149,11 @@ void mainMethodNameError(string mainMethod, string otherMethod){
     cout << "the main method should be called " << mainMethod << ", not " << otherMethod << endl;
 }
 
+void callMainMethodError(){
+    errorMsgPrefix();
+    cout << "you cannot call the main method" << endl;
+}
+
 void errorMsgPrefix(){
     cout << "ERROR: ";
 }

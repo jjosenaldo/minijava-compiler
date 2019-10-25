@@ -1,5 +1,6 @@
 #include <iostream>
 #include "error.hpp"
+#include "global.hpp"
 #include "statement.hpp"
 
 using std::cout;
@@ -233,7 +234,17 @@ string MethodCallExpression::toString(){
     return ans + ")";
 }
 
-bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* pool){
+bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* pool, Program* program){
+    return process(environment, pool);
+}
+
+bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* pool){;
+    if(environment->getClassName() == g_mainClassName){
+        if(method == MAIN_METHOD_NAME){
+            callMainMethodError();
+            return false;
+        }
+    }
     bool leftResult = left->process(environment, pool);
 
     // The callee expression is not well-formed

@@ -136,6 +136,7 @@ class MethodCallExpression : public Statement,  public ObjExpression{
     public:
         MethodCallExpression(Expression* left, string method, deque<Expression*>* args);
         bool process(Symtable* environment, ClassSymtablePool* pool);
+        bool process(Symtable* environment, ClassSymtablePool* pool, Program* program);
         string toString();
         void print();
 };

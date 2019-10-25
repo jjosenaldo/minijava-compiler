@@ -1,8 +1,9 @@
 #include <iostream>
 #include <string>
+#include "ast.hpp"
+#include "global.hpp"
 #include "error.hpp"
 #include "expression.hpp"
-#include "ast.hpp"
 
 using std::cout;
 using std::endl;
