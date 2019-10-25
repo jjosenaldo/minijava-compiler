@@ -169,15 +169,62 @@ void printType(Type* type){
     cout << type->toString();
 }
 
-// TODO: many more cases!
 Type* returnTypeBinOp(Type* t1, Type* t2, BinOperator op){
-    if(op == OP_PLUS || op == OP_MOD || op == OP_BIN_MINUS || op == OP_TIMES || op == OP_DIV || op == OP_GREAT || op == OP_LESS || op == OP_GREAT || op == OP_GREAT_EQ){
-        if(t1->kind != TypeInt || t2->kind != TypeInt)
-            return nullptr;
-        else
+    // TypeInt: 
+    //     - * / %
+    // TypeBoolean:
+    //     && ||
+    // TypeInt and TypeClass[String]:
+    //     + < <= >= >
+    // All expect TypeVoid and TypeMethod:
+    //     == !=
+
+    if(op == OP_BIN_MINUS or
+       op == OP_TIMES or
+       op == OP_DIV or
+       op == OP_MOD)
+    {
+        if(t1->kind == TypeInt and t1->kind == TypeInt)
             return MkTypeInt();
     }
-
+    else if(op == OP_OR or
+            op == OP_AND)
+    {
+        if(t1->kind == TypeBoolean and t2->kind == TypeBoolean)
+            return MkTypeBoolean();
+    }
+    if(op == OP_PLUS) {
+        if(t1->kind == TypeInt and t1->kind == TypeInt)
+            return MkTypeInt();
+        else if(typeIsString(t1) and typeIsString(t2))
+            return MkTypeClass("String");
+    }
+    else if(op == OP_LESS or
+            op == OP_LESS_EQ or
+            op == OP_GREAT_EQ or
+            op == OP_GREAT)
+    {
+        if((t1->kind == TypeInt and t1->kind == TypeInt) or
+           (typeIsString(t1) and typeIsString(t2))) 
+            return MkTypeBoolean();
+    }
+    else if(op == OP_IS_EQ or
+            op == OP_DIFF) // TODO: null must be compare only with class type and array types
+    {
+        if(t1->kind == TypeVoid or
+           t2->kind == TypeVoid or
+           t1->kind == TypeMethod or
+           t2->kind == TypeMethod)              // Void and Method types can't be compared
+            return nullptr;
+        else if((t1->kind == TypeNull and t2->kind != TypeInt and t2->kind != TypeBoolean) or         // Null can be compared with any non base type
+                (t2->kind == TypeNull and t1->kind != TypeInt and t1->kind != TypeBoolean) or         // Null can be compared with any non base type
+                (t1->kind != TypeClass and 
+                    t1->kind == t2->kind) or    // Same type can be compared (ClassTypes must be the same name)
+                (t1->kind == TypeClass and
+                    t2->kind == TypeClass and
+                    t1->getClassName()==t2->getClassName())) // ClassType with equal names can be compared
+            return MkTypeBoolean();
+    }
     return nullptr;
 }
 
@@ -226,4 +273,9 @@ bool areCompatibleTypes(Type* expected, Type* actual){
 // TODO
 Type* resultingType(Type** types, int n){
     return nullptr;
+}
+
+bool typeIsString(Type* type) {
+    return type->kind == TypeClass and
+           type->getClassName() == "String";
 }
