@@ -316,7 +316,12 @@ bool ArrayAccessExpression::process(Symtable* environment, ClassSymtablePool* po
 }
 
 NewArrayExpression::NewArrayExpression(ArrayDeclExpression* decl, deque<Expression*>* dimensions){
-    this->type = MkTypeArray(decl->getType());
+    Type* newType = decl->getType();
+
+    for(auto dim : *dimensions)
+        newType = MkTypeArray(newType);
+
+    this->type = newType;
     this->dimensions = dimensions;
 }
 
@@ -340,6 +345,8 @@ bool NewArrayExpression::process(Symtable* environment, ClassSymtablePool* pool,
         classNotDefinedError(type->getClassName());
         return false;
     }
+
+    return true;
 }
 
 string NewArrayExpression::toString(){
