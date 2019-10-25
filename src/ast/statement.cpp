@@ -41,7 +41,7 @@ bool VarDec::process(Symtable* parent, ClassSymtablePool* pool, Program* program
     }
     
     if(this->value != nullptr){
-        if(!this->value->process(parent, pool, program))
+        if(!this->value->process(parent, pool))
             return false;
         
         if(!areCompatibleTypes(type, this->value->getType())){
@@ -174,7 +174,7 @@ void Assignment::print(){
 
 bool Assignment::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
 
-    if(!lvalue->process(parent, pool, program))
+    if(!lvalue->process(parent, pool))
         return false;
     
     if(!lvalue->isLvalue()){
@@ -182,7 +182,7 @@ bool Assignment::process(Symtable* parent, ClassSymtablePool* pool, Program* pro
         return false;
     }
 
-    if(!rvalue->process(parent, pool, program))
+    if(!rvalue->process(parent, pool))
         return false;
 
     if(!areCompatibleTypes(lvalue->getType(), rvalue->getType())){
@@ -225,8 +225,8 @@ string MethodCallExpression::toString(){
     return ans + ")";
 }
 
-bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* pool, Program* program){
-    bool leftResult = left->process(environment, pool, program);
+bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* pool){
+    bool leftResult = left->process(environment, pool);
 
     // The callee expression is not well-formed
     if(!leftResult)
@@ -252,7 +252,7 @@ bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* poo
         if(tc.tag == TCNOCONTENT || (tc.tag == TCTYPE && tc.type->kind != TypeMethod))
 
             // Looks in its parent
-            currentClass = program->getClassDecl(currentClass)->getParent();
+            currentClass = classParentMap[currentClass];
         
         else{
             methodFound = true;
@@ -303,7 +303,7 @@ bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* poo
     }
 
     for(int i = 0; i < expectedArgs; ++i){
-        if(!  arguments->at(i)->process(environment, pool, program)  )
+        if(!  arguments->at(i)->process(environment, pool)  )
             return false;
 
         if(!areCompatibleTypes(tc.type->getMethodHeader()->at(i+1), arguments->at(i)->getType()  )    ){ // +1 because the first element is the return type
