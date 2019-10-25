@@ -2,40 +2,45 @@ class Main {
 	void main(String[] args) {
 		int int_a = 1;
 		int int_b = 1;
-		boolean bool_a = true;
-		boolean bool_b = true;
+		// boolean bool_a = true;
+		// boolean bool_b = true;
 		// String str_a = "Oi";
-		// String str_b = "Ola";
+		// // String str_b = "Ola";
 
 		int int_c = int_a + int_b;
 		int_c = int_a - int_b;
-		int_c = int_a * int_b;
-		int_c = int_a / int_b;
-		int_c = int_a % int_b;
+		// int_c = int_a * int_b;
+		// int_c = int_a / int_b;
+		// int_c = int_a % int_b;
 
-		// String str_c = str_a + str_b;
-		// str_c = str_a + str_b;
+		// // String str_c = str_a + str_b;
+		// // str_c = str_a + str_b;
 
-		boolean bool_c = bool_a && bool_b;
-		bool_c = bool_a || bool_b;
+		// boolean bool_c = bool_a && bool_b;
+		// bool_c = bool_a || bool_b;
 		
-		bool_c = int_a == int_b;
-		bool_c = int_a != int_b;
-		bool_c = int_a < int_b;
-		bool_c = int_a <= int_b;
-		bool_c = int_a > int_b;
-		bool_c = int_a >= bool_b; // Err
+		// bool_c = int_a == int_b;
+		// bool_c = int_a != int_b;
+		// bool_c = int_a < int_b;
+		// bool_c = int_a <= int_b;
+		// bool_c = int_a > int_b;
+		// bool_c = int_a >= bool_b; // Err
 
-		// bool_c = str_a == str_b;
-		// bool_c = str_a != str_b;
-		// bool_c = str_a < str_b;
-		// bool_c = str_a <= str_b;
-		// bool_c = str_a > str_b;
-		// bool_c = str_a >= str_b;
+		// // bool_c = str_a == str_b;
+		// // bool_c = str_a != str_b;
+		// // bool_c = str_a < str_b;
+		// // bool_c = str_a <= str_b;
+		// // bool_c = str_a > str_b;
+		// // bool_c = str_a >= str_b;
 
-		// boolean bool_d = int_a == null; // Err
-		bool_c = null != 1; // Err
-		// bool_c = str_c == null;
-		// bool_c = null != str_c;
+		// // boolean bool_d = int_a == null; // Err
+		// bool_c = null != 1; // Err
+		// // bool_c = str_c == null;
+		// // bool_c = null != str_c;
+
+		// //int[][] a = new int[4][3];
+
+		// int[] a = new int[4];
+		// //int b = new int;
 	}
 }
