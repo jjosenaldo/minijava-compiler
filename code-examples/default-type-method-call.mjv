@@ -3,6 +3,6 @@ class Main{
         String a;
         a.length();
         int[] b;
-        b.a();
+        b.length();
     }
 }
