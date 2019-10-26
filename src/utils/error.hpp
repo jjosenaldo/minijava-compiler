@@ -62,9 +62,11 @@ void typeError(string expected, string actual);
 void instanceOfMainClassError();
 
 void inheritanceFromMainClassError(string id);
-        
-void mainMethodNameError(string mainMethod, string otherMethod); 
+
+void mainMethodNameError(string mainMethod, string otherMethod);
 
 void callMainMethodError();
+
+void breakOutsideLoop();
 
 #endif

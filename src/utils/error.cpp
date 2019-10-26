@@ -26,7 +26,7 @@ void multiplyDefinedFieldError(string id, string className){
 
 void multiplyDefinedParamError(string param, string method, string className){
     errorMsgPrefix();
-    cout << "there are many params named " << param << " in the method " << method << " of the " << className << " class" << endl; 
+    cout << "there are many params named " << param << " in the method " << method << " of the " << className << " class" << endl;
 }
 
 void idNotPredefinedError(string id){
@@ -152,6 +152,11 @@ void mainMethodNameError(string mainMethod, string otherMethod){
 void callMainMethodError(){
     errorMsgPrefix();
     cout << "you cannot call the main method" << endl;
+}
+
+void breakOutsideLoop() {
+    errorMsgPrefix();
+    cout << "you cannot call a break from outside a loop" << endl;
 }
 
 void errorMsgPrefix(){

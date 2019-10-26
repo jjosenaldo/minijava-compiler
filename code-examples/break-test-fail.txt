@@ -1,0 +1,18 @@
+class Main{
+    void main(String[] args){
+        int x =3;
+        if(2 < 3){
+            int x = 2;
+        };
+
+        while(2 < 10){
+            int y = 3;
+            if(3 < 10) {
+                int i = 2;
+                break;
+            }
+        }
+
+        break;
+    }
+}

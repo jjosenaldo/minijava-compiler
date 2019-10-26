@@ -46,7 +46,7 @@ void Symtable::insert(string id, TableContent content){
 
 void Symtable::insert(Symtable* table){
     table->setLocalId(this->table->size());
-    
+
     TableContent tc;
     tc.tag = TCSYMTABLE;
     tc.symtable = table;
@@ -57,6 +57,7 @@ void Symtable::setLocalId(int id){
     this->localId = id;
 }
 
+
 TableContent Symtable::lookup(string name){
     Symtable* table = this;
 
@@ -66,7 +67,7 @@ TableContent Symtable::lookup(string name){
             return tc;
         table = table->getParent();
     }
-    
+
     return tableContentNoContent();
 }
 
@@ -92,6 +93,15 @@ void Symtable::print(){
 
 ClassSymtablePool::ClassSymtablePool(){
     pool = new unordered_map<string, ClassSymtable*>;
+    this->loopBlockFlag = false;
+}
+
+void ClassSymtablePool::setIsLoopBlock(bool is){
+    this->loopBlockFlag = is;
+}
+
+bool ClassSymtablePool::isLoopBlock() {
+    return this->loopBlockFlag;
 }
 
 void ClassSymtablePool::insert(string className, ClassSymtable* table){
@@ -103,7 +113,7 @@ ClassSymtable* ClassSymtablePool::get(string className){
 
     if(it == this->pool->end())
         return nullptr;
-    
+
     else
         return it->second;
 }
@@ -115,7 +125,7 @@ void ClassSymtable::print(){
         printTableContent(entry.second);
         cout << endl;
     }
-    
+
     for(auto it : *methodTables){
         cout << it.first << " : ";
         it.second->print();
@@ -158,7 +168,7 @@ bool ClassSymtable::processMethodBodies(ClassDeclaration* classDecl, ClassSymtab
             for(auto stmt : *stmts)
                 if(!stmt->process(methodTable, pool, program))
                     return false;
-        }   
+        }
     }
 
     return true;
@@ -200,7 +210,7 @@ bool processesClassInheritanceHierarchy(ClassSymtablePool* pool){
 
             if(unprocClasses.empty())
                 return true;
-            
+
             itCurrent = unprocClasses.begin();
             firstInChain = itCurrent->second;
             continue;
@@ -221,7 +231,7 @@ bool processesClassInheritanceHierarchy(ClassSymtablePool* pool){
                 circularInheritanceError(firstInChain);
                 return false;
             }
-            
+
             procClasses.emplace(itCurrent->first, itCurrent->second);
             unprocClasses.erase(itCurrent);
 
@@ -247,7 +257,7 @@ bool addClassNamesToPool(Program* program, ClassSymtablePool* pool){
         }
 
         string className = classDecl->getName();
-        
+
         if(pool->get(className) != nullptr) {
             multipleClassError(className);
             return false;
@@ -281,7 +291,7 @@ ClassSymtablePool* buildClassSymtablePool(Program* program){
 
         // Processes the fields
         auto fields = classDecl->getFields();
-        if(fields != nullptr) 
+        if(fields != nullptr)
             for(auto field : *fields)
                 if(!field->process(className, root)){
                     delete pool;
@@ -323,7 +333,7 @@ bool isSubclassOf(string descendant, string ancestor){
         if(currentParent == ancestor)
             return true;
         currentParent = g_classParentMap[currentParent];
-    }   
+    }
 
     return false;
 }

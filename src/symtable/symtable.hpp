@@ -83,7 +83,8 @@ class ClassSymtable : public Symtable{
 class ClassSymtablePool{
     private:
         unordered_map<string, ClassSymtable*>* pool;
-    
+        bool loopBlockFlag;
+
     public:
         ClassSymtablePool();
         void insert(string className, ClassSymtable* table);
@@ -91,6 +92,10 @@ class ClassSymtablePool{
         ClassSymtable* get(string className);
 
         unordered_map<string, ClassSymtable*>* getPool();
+
+        void setIsLoopBlock(bool is);
+
+        bool isLoopBlock();
 
         void print();
 };

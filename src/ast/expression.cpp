@@ -68,7 +68,7 @@ bool UnExpression::process(Symtable* environment, ClassSymtablePool* pool){
 
     if(!retFirst)
         return false;
-    
+
     Type* newType = returnTypeUnOp(first->getType(), op);
 
     if(newType == nullptr){
@@ -208,7 +208,7 @@ bool FieldAccessExpression::process(Symtable* environment, ClassSymtablePool* po
 
             // Looks in its parent
             currentClass = g_classParentMap[currentClass];
-        
+
         else{
             type = tc.type;
             return true;
@@ -245,7 +245,7 @@ bool ParenExpression::process(Symtable* environment, ClassSymtablePool* pool){
 
     if(!retFirst)
         return false;
-    
+
     type = first->getType();
     return true;
 }
@@ -281,7 +281,7 @@ bool LitArrayExpression::process(Symtable* environment, ClassSymtablePool* pool)
 
     if(resType == nullptr)
         return false;
-    
+
     type = resType;
     return true;
 }
@@ -302,7 +302,7 @@ bool ArrayAccessExpression::process(Symtable* environment, ClassSymtablePool* po
 
     if(!retLeft)
         return false;
-    
+
     Type* currentType = left->getType();
 
     for(auto dim : *dimensions){
@@ -315,7 +315,7 @@ bool ArrayAccessExpression::process(Symtable* environment, ClassSymtablePool* po
 
         if(!ret)
             return false;
-        
+
         if(dim->getType()->kind != TypeInt){
             nonIntArrayDimensionError(dim->toString());
             return false;
@@ -346,7 +346,7 @@ bool NewArrayExpression::process(Symtable* environment, ClassSymtablePool* pool)
     for(auto dim : *dimensions)
         if(!dim->process(environment, pool))
             return false;
-    
+
     if(type->kind == TypeMethod || type->kind == TypeNull || type->kind == TypeVoid){
         arrayOfInvalidTypeError(type->toString());
         return false;
@@ -355,7 +355,7 @@ bool NewArrayExpression::process(Symtable* environment, ClassSymtablePool* pool)
     if(type->kind == TypeClass){
         if(predefinedId(type->getClassName()))
             return true;
-        
+
         if(pool->get(type->getClassName()) != nullptr)
             return true;
 

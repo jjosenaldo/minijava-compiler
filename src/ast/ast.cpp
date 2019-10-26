@@ -13,7 +13,7 @@ Program::Program(deque<ClassDeclaration*>* decls){
 }
 
 void Program::print(){
-    for(auto decl : *this->declarations){   
+    for(auto decl : *this->declarations){
         decl->print();
         cout << endl;
     }
@@ -100,7 +100,7 @@ void Method::print(){
             cout << ", ";
         }
     }
-    
+
     cout << ") ";
 
     if(this->statement != nullptr)
