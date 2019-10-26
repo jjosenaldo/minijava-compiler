@@ -270,33 +270,60 @@ DefaultSymbolHandler::DefaultSymbolHandler(){
     initDefaultMethodsOfClasses();
 }
 
+void DefaultSymbolHandler::addDefaultNonstaticMethodOfClass(string className, string method, vector<Type*>* args){
+    MethodType* methodType = new MethodType(args);
+    auto it = defaultNonstaticMethodsOfClasses.find(className);
+
+    if(it == defaultNonstaticMethodsOfClasses.end()){
+        unordered_map<string, MethodType*> newMap;
+        newMap.emplace(method, methodType);
+        defaultNonstaticMethodsOfClasses.emplace(className, newMap);
+    } else{
+        it->second.emplace(method, methodType);
+    }
+}
+
+void DefaultSymbolHandler::addDefaultStaticMethodOfClass(string className, string method, vector<Type*>* args){
+    MethodType* methodType = new MethodType(args);
+    auto it = defaultStaticMethodsOfClasses.find(className);
+
+    if(it == defaultStaticMethodsOfClasses.end()){
+        unordered_map<string, MethodType*> newMap;
+        newMap.emplace(method, methodType);
+        defaultStaticMethodsOfClasses.emplace(className, newMap);
+    } else{
+        it->second.emplace(method, methodType);
+    }
+}
+
 void DefaultSymbolHandler::initDefaultMethodsOfClasses(){
-    vector<Type*>* lengthTypeHeaderString = new vector<Type*>;
-    lengthTypeHeaderString->push_back(new BasicType(TypeInt));
-    MethodType* lengthTypeString = new MethodType(lengthTypeHeaderString);
-    unordered_map<string, MethodType*> methodsString;
-    methodsString.emplace("length", lengthTypeString);
-    defaultMethodsOfClasses.emplace("String", methodsString);
-
-
-    vector<Type*>* lengthTypeHeader = new vector<Type*>;
-    lengthTypeHeader->push_back(new BasicType(TypeInt));
-    MethodType* lengthType = new MethodType(lengthTypeHeader);
-    unordered_map<string, MethodType*> methods;
-    methods.emplace("print", lengthType);
-    defaultMethodsOfClasses.emplace("System", methods);
+    vector<Type*>* lengthHeaderString = new vector<Type*>;
+    lengthHeaderString->push_back(new BasicType(TypeInt));
+    addDefaultNonstaticMethodOfClass("String", "length", lengthHeaderString);
+    
+    vector<Type*>* printHeaderSystem = new vector<Type*>;
+    printHeaderSystem->push_back(new BasicType(TypeVoid));
+    printHeaderSystem->push_back(new ClassType("String"));
+    addDefaultStaticMethodOfClass("System", "print", printHeaderSystem);
 }
 
 void DefaultSymbolHandler::initDefaultMethodsOfArrays(){
     vector<Type*>* lengthTypeHeader = new vector<Type*>;
     lengthTypeHeader->push_back(new BasicType(TypeInt));
     MethodType* lengthType = new MethodType(lengthTypeHeader);
-    defaultMethodsOfArrays.emplace("length",lengthType);
+    defaultNonstaticMethodsOfArrays.emplace("length",lengthType);
 }
 
 MethodType* DefaultSymbolHandler::getDefaultStaticMethodHeader(string type, string method){
     ClassType* ct = new ClassType(type);
     MethodType* returnType = this->getDefaultStaticMethodHeader(ct, method);
+    delete ct;
+    return returnType;
+}
+
+MethodType* DefaultSymbolHandler::getDefaultNonstaticMethodHeader(string type, string method){
+    ClassType* ct = new ClassType(type);
+    MethodType* returnType = this->getDefaultNonstaticMethodHeader(ct, method);
     delete ct;
     return returnType;
 }
@@ -307,10 +334,19 @@ bool DefaultSymbolHandler::isInstantiatableDefaultType(string className){
 
 MethodType* DefaultSymbolHandler::getDefaultStaticMethodHeader(Type* type, string method){
     if(type->kind == TypeClass){
-        try {return defaultMethodsOfClasses.at(type->getClassName()).at(method);}
+        try {return defaultStaticMethodsOfClasses.at(type->getClassName()).at(method);}
         catch(out_of_range oor) {return nullptr;}
     } else if(type->kind == TypeArray){
-        try {return defaultMethodsOfArrays.at(method);}
+       return nullptr;
+    } else return nullptr;
+}
+
+MethodType* DefaultSymbolHandler::getDefaultNonstaticMethodHeader(Type* type, string method){
+    if(type->kind == TypeClass){
+        try {return defaultNonstaticMethodsOfClasses.at(type->getClassName()).at(method);}
+        catch(out_of_range oor) {return nullptr;}
+    } else if(type->kind == TypeArray){
+        try {return defaultNonstaticMethodsOfArrays.at(method);}
         catch(out_of_range oor) {return nullptr;}
     } else return nullptr;
 }

@@ -136,16 +136,21 @@ bool typeIsString(Type* type);
 class DefaultSymbolHandler{
     private:
         unordered_map<string, bool> defaultClasses;
-        unordered_map<string, unordered_map<string, MethodType*>> defaultMethodsOfClasses;
-        unordered_map<string, MethodType*> defaultMethodsOfArrays;
+        unordered_map<string, unordered_map<string, MethodType*>> defaultStaticMethodsOfClasses;
+        unordered_map<string, unordered_map<string, MethodType*>> defaultNonstaticMethodsOfClasses;
+        unordered_map<string, MethodType*> defaultNonstaticMethodsOfArrays;
         void initDefaultClasses();
         void initDefaultMethodsOfClasses();
         void initDefaultMethodsOfArrays();
+        void addDefaultNonstaticMethodOfClass(string className, string method, vector<Type*>* args);
+        void addDefaultStaticMethodOfClass(string className, string method, vector<Type*>* args);
     
     public:
         DefaultSymbolHandler();
         MethodType* getDefaultStaticMethodHeader(Type* type, string method);
         MethodType* getDefaultStaticMethodHeader(string type, string method);
+        MethodType* getDefaultNonstaticMethodHeader(Type* type, string method);
+        MethodType* getDefaultNonstaticMethodHeader(string type, string method);
         bool isDefaultClass(string className);
         bool isInstantiatableDefaultType(string className);
 };

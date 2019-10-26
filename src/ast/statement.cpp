@@ -345,7 +345,8 @@ bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* poo
     }
     */
 
-    int expectedArgs = type->getMethodHeader()->size() - 1;
+    vector<Type*>* methodHeader = type->getMethodHeader();
+    int expectedArgs = methodHeader->size() - 1;
 
     if(arguments == nullptr) {
         if(expectedArgs != 0){
@@ -353,7 +354,7 @@ bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* poo
             return false;
         }
 
-        type = (*(type->getMethodHeader()))[0];
+        type = methodHeader->at(0);
         return true;
     }
 
@@ -366,13 +367,13 @@ bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* poo
         if(!  arguments->at(i)->process(environment, pool)  )
             return false;
 
-        if(!areCompatibleTypes(tc.type->getMethodHeader()->at(i+1), arguments->at(i)->getType()  )    ){ // +1 because the first element is the return type
-            incompatibleTypesMethodCall(method, i+1, tc.type->getMethodHeader()->at(i+1)->toString(), arguments->at(i)->getType()->toString());
+        if(!areCompatibleTypes(methodHeader->at(i+1), arguments->at(i)->getType()  )    ){ // +1 because the first element is the return type
+            incompatibleTypesMethodCall(method, i+1, methodHeader->at(i+1)->toString(), arguments->at(i)->getType()->toString());
             return false;
         }
     }
 
-    type = tc.type->getMethodHeader()->at(0);
+    type = methodHeader->at(0);
     return true;
 }
 
