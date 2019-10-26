@@ -20,6 +20,12 @@ TableContent tableContentNoContent(){
     return tc;
 }
 
+Symtable::Symtable(string className, string methodName){
+    this->methodName = methodName;
+    this->className = className;
+    this->table = nullptr;
+}
+
 Symtable::Symtable(string className) : Symtable(className, nullptr){}
 
 Symtable::Symtable(string className, Symtable* parent){

@@ -98,7 +98,7 @@ deque<GenStatement*>* Block::getStatements(){
 }
 
 bool Block::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
-    Symtable* table = new Symtable(parent->getClassName());
+    Symtable* table = new Symtable(parent->getClassName(), parent->getMethodName());
     table->setParent(parent);
 
     if(statements != nullptr)
