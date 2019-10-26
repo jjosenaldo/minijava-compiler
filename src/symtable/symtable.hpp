@@ -116,4 +116,6 @@ ClassSymtablePool* buildClassSymtablePool(Program* program);
 
 bool isSubclassOf(string descendant, string ancestor);
 
+bool canBeInstantiated(Type* type, ClassSymtablePool* pool);
+
 #endif

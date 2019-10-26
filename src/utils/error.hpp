@@ -61,6 +61,8 @@ void typeError(string expected, string actual);
 
 void instanceOfMainClassError();
 
+void instanceOfForbiddenTypeError(string type);
+
 void inheritanceFromMainClassError(string id);
 
 void mainMethodNameError(string mainMethod, string otherMethod);

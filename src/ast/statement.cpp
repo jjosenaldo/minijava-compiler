@@ -26,18 +26,8 @@ void VarDec::print(){
 }
 
 bool VarDec::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
-    if(type->kind == TypeClass){
-        if(pool->get(type->getClassName()) == nullptr){
-            classNotDefinedError(type->getClassName());
-            return false;
-        }
-
-        if(g_mainClassName == type->getClassName()){
-            instanceOfMainClassError();
-            return false;
-        }
-    }
-
+    if(!canBeInstantiated(type, pool))
+        return false;
 
     if(predefinedId(id) || pool->get(id) != nullptr){
         classAsVariableNameError(id);
