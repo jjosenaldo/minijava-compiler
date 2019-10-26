@@ -1,6 +1,6 @@
 class Main{
     void main(String[] args){
-        String a;
-        System.print2();
+        //int a;
+        //System.print2();
     }
 }

@@ -143,6 +143,8 @@ bool Method::processHeader(string className, ClassSymtable* root, ClassSymtableP
                 delete methodTable;
                 return false;
             }
+            if(!canBeInstantiated(param->getType(), pool))
+                return false;
 
             methodTable->insert(param->getName(), tableContentFromType(param->getType()));
         }

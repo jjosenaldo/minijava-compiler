@@ -38,6 +38,8 @@ bool VarDec::process(Symtable* parent, ClassSymtablePool* pool, Program* program
         }
     }
 
+    if(!canBeInstantiated(type, pool))
+        return false;
 
     if(predefinedId(id) || pool->get(id) != nullptr){
         classAsVariableNameError(id);

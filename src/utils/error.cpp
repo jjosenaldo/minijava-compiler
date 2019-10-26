@@ -139,6 +139,11 @@ void instanceOfMainClassError(){
     cout << "you cannot create an object with the main class as type" << endl;
 }
 
+void instanceOfForbiddenTypeError(string type){
+    errorMsgPrefix();
+    cout << "you cannot create an object of type " << type << endl;
+}
+
 void inheritanceFromMainClassError(string id){
     errorMsgPrefix();
     cout << "the class " << id << " is inheriting from the main class" << endl;

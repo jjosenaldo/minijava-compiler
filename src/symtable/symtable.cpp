@@ -345,3 +345,30 @@ bool isSubclassOf(string descendant, string ancestor){
 
     return false;
 }
+
+bool canBeInstantiated(Type* type, ClassSymtablePool* pool) {
+    Type *t = type;
+    while(t != nullptr and t->kind == TypeArray)
+        t = t->getBaseType();
+
+    if(t->kind == TypeClass) {
+        if(t->getClassName() == "System") {
+            instanceOfForbiddenTypeError("System");
+            return false;
+        }
+        if(pool->get(t->getClassName()) == nullptr){
+            classNotDefinedError(t->getClassName());
+            return false;
+        }
+        if(g_mainClassName == t->getClassName()){
+            instanceOfMainClassError();
+            return false;
+        }
+    }
+    else if(t->kind == TypeVoid) {
+        instanceOfForbiddenTypeError("void");
+        return false;
+    }
+
+    return true;
+}
