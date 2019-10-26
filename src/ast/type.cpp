@@ -172,7 +172,7 @@ Type* returnTypeBinOp(Type* t1, Type* t2, BinOperator op){
        op == OP_TIMES or
        op == OP_DIV or
        op == OP_MOD)
-    {
+    {       
         if(t1->kind == TypeInt and t2->kind == TypeInt)
             return MkTypeInt();
     }
@@ -198,38 +198,24 @@ Type* returnTypeBinOp(Type* t1, Type* t2, BinOperator op){
             return MkTypeBoolean();
     }
     else if(op == OP_IS_EQ or
-            op == OP_DIFF) // TODO: null must be compare only with class type and array types
+            op == OP_DIFF)
     {
         if(t1->kind == TypeVoid or
            t2->kind == TypeVoid or
            t1->kind == TypeMethod or
            t2->kind == TypeMethod)              // Void and Method types can't be compared
             return nullptr;
-        else if((t1->kind == TypeNull and t2->kind != TypeInt and t2->kind != TypeBoolean) or         // Null can be compared with any non base type
-                (t2->kind == TypeNull and t1->kind != TypeInt and t1->kind != TypeBoolean) or         // Null can be compared with any non base type
-                (t1->kind != TypeClass and t1->kind == t2->kind))    // Same type can be compared (ClassTypes must be the same name)
+        else if(areCompatibleTypes(t1,t2) or areCompatibleTypes(t2,t1))
             return MkTypeBoolean();
-        else if (t1->kind == TypeClass and t2->kind == TypeClass) { // ClassType can be compared only by Polimorphism
-            // subclass test here
-            // return MkTypeBoolean();
-        }
     }
     return nullptr;
 }
 
 Type* returnTypeUnOp(Type* t1, UnOperator op){
-    if(op == OP_NOT){
-        if(t1->kind != TypeBoolean)
-            return nullptr;
-        else 
-            return MkTypeBoolean();
-    } else if(op == OP_UN_MINUS){
-        if(t1->kind != TypeInt)
-            return nullptr;
-        else 
-            return MkTypeInt();
-    }
-
+    if(op == OP_NOT and t1->kind == TypeBoolean)
+        return MkTypeBoolean();
+    else if(op == OP_UN_MINUS and t1->kind == TypeInt)
+        return MkTypeInt();
     return nullptr;
 }
 
@@ -250,7 +236,6 @@ bool areCompatibleTypes(Type* expected, Type* actual){
     return false;
 }
 
-// TODO
 Type* resultingType(Type** types, int n){
     if(n <= 0)
         return nullptr;
