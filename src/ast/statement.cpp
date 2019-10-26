@@ -50,7 +50,7 @@ bool VarDec::process(Symtable* parent, ClassSymtablePool* pool, Program* program
         multipleVariableError(id);
         return false;
     }
-    
+
     if(this->value != nullptr){
         if(!this->value->process(parent, pool))
             return false;
@@ -99,13 +99,14 @@ deque<GenStatement*>* Block::getStatements(){
 
 bool Block::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
     Symtable* table = new Symtable(parent->getClassName());
+    table->setParent(parent);
+
     if(statements != nullptr)
         for(auto stmt : *statements){
             if(!stmt->process(table, pool, program))
                 return false;
         }
 
-    table->setParent(parent);
     parent->insert(table);
     return true;
 }
@@ -302,7 +303,7 @@ bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* poo
             if(res == nullptr){
                 nonstaticMethodOnDefaultClassNotFound(className, method);
                 return false;
-            } else type = res; 
+            } else type = res;
         } else{
             ClassSymtable* classTable = pool->get(className);
             TableContent tc = classTable->get(method);
@@ -342,7 +343,7 @@ bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* poo
             return false;
         }
     }
-    
+
 
 
     vector<Type*>* methodHeader = type->getMethodHeader();
