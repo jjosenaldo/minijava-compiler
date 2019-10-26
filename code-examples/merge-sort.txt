@@ -8,7 +8,7 @@ class Main{
 
         int i = 0;
         while(i < v.length()){
-            System.println(v[i]);
+            System.print(v[i]);
             i = i+1;
         }
     }
