@@ -260,7 +260,30 @@ bool areCompatibleTypes(Type* expected, Type* actual){
 
 // TODO
 Type* resultingType(Type** types, int n){
-    return nullptr;
+    if(n <= 0)
+        return nullptr;
+
+    Type* type = *types;
+    for(int i = 1; i < n; i++) {
+        Type *t = *(types+i);
+        if(t->kind == type->kind) {
+            if(type->kind == TypeClass) {
+                // check if one of them is subclass of the other
+                if(false /*t is subclass of type*/)
+                    /* Nothing */;
+                else if(false /*type is subclass of t*/)
+                    type = t;
+                else
+                    return nullptr;
+            }
+        }
+        else if(false /* Check null */)
+            ;
+        else
+            return nullptr
+    }
+
+    return type;
 }
 
 bool typeIsString(Type* type) {

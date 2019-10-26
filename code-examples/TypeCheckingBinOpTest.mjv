@@ -5,10 +5,17 @@ class Main {
 		// boolean bool_a = true;
 		// boolean bool_b = true;
 		// String str_a = "Oi";
-		// // String str_b = "Ola";
+		// String str_b = "Ola";
 
 		int int_c = int_a + int_b;
 		int_c = int_a - int_b;
+
+		Cat a = new Cat();
+		//Animal b = a; Err
+
+		Animal b = new Animal();
+
+		boolean bool_a = a != b;
 		// int_c = int_a * int_b;
 		// int_c = int_a / int_b;
 		// int_c = int_a % int_b;
@@ -42,5 +49,20 @@ class Main {
 
 		// int[] a = new int[4];
 		// //int b = new int;
+	}
+}
+
+class Animal {
+	void eat() {
+		//System.print("eat\n");
+	}
+}
+
+class Cat extends Animal {
+	void eat() {
+
+	}
+	boolean meow() {
+		return true;
 	}
 }
