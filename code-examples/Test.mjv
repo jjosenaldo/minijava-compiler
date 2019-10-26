@@ -47,6 +47,7 @@ class ClassDec  {
 class Expression {
 	void expressions() {
 		// Tp, X, Xp, P, T2, T3
+		int a;
 		a = "oi".length();
 		a = "oi".substring(1);
 		a = "oi".substring(1,2);
@@ -99,3 +100,5 @@ class Expression {
 		b = !b;
 	}
 }
+
+class Id{}

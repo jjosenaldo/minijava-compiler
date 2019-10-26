@@ -301,6 +301,12 @@ void DefaultSymbolHandler::initDefaultMethodsOfClasses(){
     vector<Type*>* lengthHeaderString = new vector<Type*>;
     lengthHeaderString->push_back(new BasicType(TypeInt));
     addDefaultNonstaticMethodOfClass("String", "length", lengthHeaderString);
+
+    vector<Type*>* substrHeaderString = new vector<Type*>;
+    substrHeaderString->push_back(new ClassType("String"));
+    substrHeaderString->push_back(new BasicType(TypeInt));
+    substrHeaderString->push_back(new BasicType(TypeInt));
+    addDefaultNonstaticMethodOfClass("String", "substring", substrHeaderString);
     
     vector<Type*>* printHeaderSystem = new vector<Type*>;
     printHeaderSystem->push_back(new BasicType(TypeVoid));
