@@ -301,6 +301,10 @@ MethodType* DefaultSymbolHandler::getDefaultStaticMethodHeader(string type, stri
     return returnType;
 }
 
+bool DefaultSymbolHandler::isInstantiatableDefaultType(string className){
+    return defaultClasses.at(className);
+}
+
 MethodType* DefaultSymbolHandler::getDefaultStaticMethodHeader(Type* type, string method){
     if(type->kind == TypeClass){
         try {return defaultMethodsOfClasses.at(type->getClassName()).at(method);}
@@ -312,8 +316,8 @@ MethodType* DefaultSymbolHandler::getDefaultStaticMethodHeader(Type* type, strin
 }
 
 void DefaultSymbolHandler::initDefaultClasses(){
-    defaultClasses.insert("String");
-    defaultClasses.insert("System");
+    defaultClasses.emplace("String", true);
+    defaultClasses.emplace("System", false);
 }
 
 bool DefaultSymbolHandler::isDefaultClass(string className){

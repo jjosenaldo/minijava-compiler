@@ -135,7 +135,7 @@ bool typeIsString(Type* type);
 
 class DefaultSymbolHandler{
     private:
-        unordered_set<string> defaultClasses;
+        unordered_map<string, bool> defaultClasses;
         unordered_map<string, unordered_map<string, MethodType*>> defaultMethodsOfClasses;
         unordered_map<string, MethodType*> defaultMethodsOfArrays;
         void initDefaultClasses();
@@ -147,6 +147,7 @@ class DefaultSymbolHandler{
         MethodType* getDefaultStaticMethodHeader(Type* type, string method);
         MethodType* getDefaultStaticMethodHeader(string type, string method);
         bool isDefaultClass(string className);
+        bool isInstantiatableDefaultType(string className);
 };
 
 #endif  

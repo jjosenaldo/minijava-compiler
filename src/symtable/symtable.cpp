@@ -352,10 +352,15 @@ bool canBeInstantiated(Type* type, ClassSymtablePool* pool) {
         t = t->getBaseType();
 
     if(t->kind == TypeClass) {
-        if(t->getClassName() == "System") {
-            instanceOfForbiddenTypeError("System");
-            return false;
+        if(g_defaultSymbolHandler.isDefaultClass(t->getClassName())){
+            if(g_defaultSymbolHandler.isInstantiatableDefaultType(t->getClassName()))
+                return true;
+            else{
+                instanceOfForbiddenTypeError(t->getClassName());
+                return false;
+            }
         }
+
         if(pool->get(t->getClassName()) == nullptr){
             classNotDefinedError(t->getClassName());
             return false;
