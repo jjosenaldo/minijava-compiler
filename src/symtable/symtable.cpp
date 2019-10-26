@@ -23,7 +23,8 @@ TableContent tableContentNoContent(){
 Symtable::Symtable(string className, string methodName){
     this->methodName = methodName;
     this->className = className;
-    this->table = nullptr;
+    this->parent = nullptr;
+    this->table = new vector<pair<string, TableContent>>;
 }
 
 Symtable::Symtable(string className) : Symtable(className, nullptr){}
