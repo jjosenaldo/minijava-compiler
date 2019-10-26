@@ -292,7 +292,18 @@ stmt : '{' blockstmts '}' {
     $$ = new Return;
 }
 | expr '.' ID '(' exprlistopt ')'  ';'{
-    $$ = new MethodCallExpression($1, $3, $5);
+    IdExpression* idExpr = dynamic_cast<IdExpression*>($1);
+
+    if(idExpr != nullptr){
+        if(!g_defaultSymbolHandler.isDefaultClass(idExpr->getId())){
+            nonDefaultClassError(idExpr->getId());
+            return 1;
+        } else{
+            $$ = new StaticMethodCallExpression(idExpr->getId(), $3, $5);
+        }
+    } else{
+        $$ = new MethodCallExpression($1, $3, $5);
+    }
 }
 | ';' {
     $$ = new Skip;
@@ -439,7 +450,18 @@ object : NEW type {
 } | THIS {
     $$ = new ThisExpression;
 } | expr '.' ID '(' exprlistopt ')' {
-    $$ = new MethodCallExpression($1, $3, $5);
+    IdExpression* idExpr = dynamic_cast<IdExpression*>($1);
+
+    if(idExpr != nullptr){
+        if(!g_defaultSymbolHandler.isDefaultClass(idExpr->getId())){
+            nonDefaultClassError(idExpr->getId());
+            return 1;
+        } else{
+            $$ = new StaticMethodCallExpression(idExpr->getId(), $3, $5);
+        }
+    } else{
+        $$ = new MethodCallExpression($1, $3, $5);
+    }
 } | '(' expr ')' {
     $$ = new ParenExpression($2);
 } | '{' exprlist '}' {

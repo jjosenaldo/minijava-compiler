@@ -385,6 +385,67 @@ void MethodCallExpression::print(){
     cout << ");";
 }
 
+StaticMethodCallExpression::StaticMethodCallExpression(string className, string method, deque<Expression*>* arguments){
+    this->className = className;
+    this->method = method;
+    this->arguments = arguments;
+}
+
+bool StaticMethodCallExpression::process(Symtable* environment, ClassSymtablePool* pool){
+    auto methodHeader = g_defaultSymbolHandler.getDefaultStaticMethodHeader(className, method);
+
+    if(methodHeader == nullptr){
+        nonExistingMethodInDefaultClass(className, method);
+        return false;
+    }
+
+    int expectedArgs = methodHeader->getMethodHeader()->size() - 1;
+
+    if(arguments == nullptr) {
+        if(expectedArgs != 0){
+            diffNumberOfArgsMethodError(method, 0, expectedArgs);
+            return false;
+        }
+
+        type = methodHeader->getMethodHeader()->at(0);
+        return true;
+    }
+
+    if(arguments->size() != expectedArgs){
+        diffNumberOfArgsMethodError(method, arguments->size(), expectedArgs);
+        return false;
+    }
+
+    for(int i = 0; i < expectedArgs; ++i){
+        if(!  arguments->at(i)->process(environment, pool)  )
+            return false;
+
+        if(!areCompatibleTypes(methodHeader->getMethodHeader()->at(i+1), arguments->at(i)->getType()  )    ){ // +1 because the first element is the return type
+            incompatibleTypesMethodCall(method, i+1, methodHeader->getMethodHeader()->at(i+1)->toString(), arguments->at(i)->getType()->toString());
+            return false;
+        }
+    }
+
+    type = methodHeader->getMethodHeader()->at(0);
+    return true;
+}
+
+bool StaticMethodCallExpression::process(Symtable* environment, ClassSymtablePool* pool, Program* program){
+    return process(environment, pool);
+}
+
+string StaticMethodCallExpression::toString(){
+    // TODO
+    return "";
+}
+
+void StaticMethodCallExpression::print(){
+    // TODO
+}
+
+
+
+
 void Skip::print(){
     cout << ";";
 }

@@ -144,7 +144,8 @@ class DefaultSymbolHandler{
     
     public:
         DefaultSymbolHandler();
-        MethodType* getDefaultMethodHeader(Type* type, string method);
+        MethodType* getDefaultStaticMethodHeader(Type* type, string method);
+        MethodType* getDefaultStaticMethodHeader(string type, string method);
         bool isDefaultClass(string className);
 };
 

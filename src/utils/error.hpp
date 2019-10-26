@@ -73,4 +73,8 @@ void methodReturnTypeError(string returned, string expected, string methodName);
 
 void attributeInitValueTypeError(string id, string expected, string actual);
 
+void nonDefaultClassError(string id);
+
+void nonExistingMethodInDefaultClass(string className, string method);
+
 #endif

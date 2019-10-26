@@ -1,5 +1,6 @@
 class Main{
     void main(String[] args){
-        String a = "oi";
+        String a;
+        System.print2();
     }
 }

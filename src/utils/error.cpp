@@ -168,6 +168,17 @@ void attributeInitValueTypeError(string id, string expected, string actual) {
     errorMsgPrefix();
     cout << "you can't initialize attribute (" << id << ") of type " << expected << " with a value of type " << actual << endl;
 }
+
+void nonDefaultClassError(string id){
+    errorMsgPrefix();
+    cout << id << " is not a default class" << endl;
+}
+
+void nonExistingMethodInDefaultClass(string className, string method){
+    errorMsgPrefix();
+    cout << "the default class " << className << " doesn't have a default method called " << method << endl;
+}
+
 void errorMsgPrefix(){
     cout << "ERROR: ";
 }

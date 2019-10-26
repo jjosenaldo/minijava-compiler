@@ -271,12 +271,20 @@ DefaultSymbolHandler::DefaultSymbolHandler(){
 }
 
 void DefaultSymbolHandler::initDefaultMethodsOfClasses(){
+    vector<Type*>* lengthTypeHeaderString = new vector<Type*>;
+    lengthTypeHeaderString->push_back(new BasicType(TypeInt));
+    MethodType* lengthTypeString = new MethodType(lengthTypeHeaderString);
+    unordered_map<string, MethodType*> methodsString;
+    methodsString.emplace("length", lengthTypeString);
+    defaultMethodsOfClasses.emplace("String", methodsString);
+
+
     vector<Type*>* lengthTypeHeader = new vector<Type*>;
     lengthTypeHeader->push_back(new BasicType(TypeInt));
     MethodType* lengthType = new MethodType(lengthTypeHeader);
     unordered_map<string, MethodType*> methods;
-    methods.emplace("length", lengthType);
-    defaultMethodsOfClasses.emplace("String", methods);
+    methods.emplace("print", lengthType);
+    defaultMethodsOfClasses.emplace("System", methods);
 }
 
 void DefaultSymbolHandler::initDefaultMethodsOfArrays(){
@@ -286,7 +294,14 @@ void DefaultSymbolHandler::initDefaultMethodsOfArrays(){
     defaultMethodsOfArrays.emplace("length",lengthType);
 }
 
-MethodType* DefaultSymbolHandler::getDefaultMethodHeader(Type* type, string method){
+MethodType* DefaultSymbolHandler::getDefaultStaticMethodHeader(string type, string method){
+    ClassType* ct = new ClassType(type);
+    MethodType* returnType = this->getDefaultStaticMethodHeader(ct, method);
+    delete ct;
+    return returnType;
+}
+
+MethodType* DefaultSymbolHandler::getDefaultStaticMethodHeader(Type* type, string method){
     if(type->kind == TypeClass){
         try {return defaultMethodsOfClasses.at(type->getClassName()).at(method);}
         catch(out_of_range oor) {return nullptr;}
@@ -298,6 +313,7 @@ MethodType* DefaultSymbolHandler::getDefaultMethodHeader(Type* type, string meth
 
 void DefaultSymbolHandler::initDefaultClasses(){
     defaultClasses.insert("String");
+    defaultClasses.insert("System");
 }
 
 bool DefaultSymbolHandler::isDefaultClass(string className){

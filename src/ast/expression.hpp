@@ -130,6 +130,7 @@ class IdExpression : public ObjExpression{
     public:
         IdExpression(string id);
         bool process(Symtable* environment, ClassSymtablePool* pool);
+        string getId();
         string toString();
         bool isLvalue();
 };
