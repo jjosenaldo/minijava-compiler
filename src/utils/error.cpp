@@ -164,6 +164,10 @@ void methodReturnTypeError(string returned, string expected, string methodName) 
     cout << "expected " << expected << " but returned " << returned << " in method " << methodName << endl;
 }
 
+void attributeInitValueTypeError(string id, string expected, string actual) {
+    errorMsgPrefix();
+    cout << "you can't initialize attribute (" << id << ") of type " << expected << " with a value of type " << actual << endl;
+}
 void errorMsgPrefix(){
     cout << "ERROR: ";
 }

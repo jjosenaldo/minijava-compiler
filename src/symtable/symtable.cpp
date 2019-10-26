@@ -68,12 +68,12 @@ void Symtable::setMethodName(string name){
 TableContent Symtable::lookup(string name){
     Symtable* table = this;
 
-    while(table->getParent() != nullptr){
+    do{
         TableContent tc = table->get(name);
         if(tc.tag != TCNOCONTENT)
             return tc;
         table = table->getParent();
-    }
+    }while(table != nullptr);
 
     return tableContentNoContent();
 }
@@ -301,7 +301,7 @@ ClassSymtablePool* buildClassSymtablePool(Program* program){
         auto fields = classDecl->getFields();
         if(fields != nullptr)
             for(auto field : *fields)
-                if(!field->process(className, root)){
+                if(!field->process(className, root, pool)){
                     delete pool;
                     return nullptr;
                 }
