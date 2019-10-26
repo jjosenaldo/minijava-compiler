@@ -296,8 +296,7 @@ stmt : '{' blockstmts '}' {
 
     if(idExpr != nullptr){
         if(!g_defaultSymbolHandler.isDefaultClass(idExpr->getId())){
-            nonDefaultClassError(idExpr->getId());
-            return 1;
+            $$ = new MethodCallExpression($1, $3, $5);
         } else{
             $$ = new StaticMethodCallExpression(idExpr->getId(), $3, $5);
         }
@@ -454,8 +453,7 @@ object : NEW type {
 
     if(idExpr != nullptr){
         if(!g_defaultSymbolHandler.isDefaultClass(idExpr->getId())){
-            nonDefaultClassError(idExpr->getId());
-            return 1;
+            $$ = new MethodCallExpression($1, $3, $5);
         } else{
             $$ = new StaticMethodCallExpression(idExpr->getId(), $3, $5);
         }
