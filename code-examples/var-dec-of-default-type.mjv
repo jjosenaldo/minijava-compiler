@@ -1,0 +1,6 @@
+class Main{
+    void main(String[] args){
+        String a = "oi";
+        a.length();
+    }
+}

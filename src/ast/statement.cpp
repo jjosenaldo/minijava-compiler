@@ -26,7 +26,7 @@ void VarDec::print(){
 }
 
 bool VarDec::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
-    if(type->kind == TypeClass){
+    if(type->kind == TypeClass && !g_defaultSymbolHandler.isDefaultClass(type->getClassName())){
         if(pool->get(type->getClassName()) == nullptr){
             classNotDefinedError(type->getClassName());
             return false;
@@ -48,7 +48,7 @@ bool VarDec::process(Symtable* parent, ClassSymtablePool* pool, Program* program
         multipleVariableError(id);
         return false;
     }
-
+    
     if(this->value != nullptr){
         if(!this->value->process(parent, pool))
             return false;

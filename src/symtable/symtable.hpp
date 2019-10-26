@@ -116,4 +116,6 @@ ClassSymtablePool* buildClassSymtablePool(Program* program);
 
 bool isSubclassOf(string descendant, string ancestor);
 
+void initPredefinedClasses();
+
 #endif

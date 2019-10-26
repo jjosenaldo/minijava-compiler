@@ -2,10 +2,14 @@
 #define TYPE_HPP
 
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 #include "operator.hpp"
 
 using std::string;
+using std::unordered_map;
+using std::unordered_set;
 using std::vector;
 
 enum BinOperator;
@@ -128,5 +132,20 @@ bool areCompatibleTypes(Type* expected, Type* actual);
 Type* resultingType(Type** types, int n);
 
 bool typeIsString(Type* type);
+
+class DefaultSymbolHandler{
+    private:
+        unordered_set<string> defaultClasses;
+        unordered_map<string, unordered_map<string, MethodType*>> defaultMethodsOfClasses;
+        unordered_map<string, MethodType*> defaultMethodsOfArrays;
+        void initDefaultClasses();
+        void initDefaultMethodsOfClasses();
+        void initDefaultMethodsOfArrays();
+    
+    public:
+        DefaultSymbolHandler();
+        MethodType* getDefaultMethodHeader(Type* type, string method);
+        bool isDefaultClass(string className);
+};
 
 #endif  

@@ -1,10 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdexcept>
 #include <iostream>
 #include "type.hpp"
 #include "symtable.hpp"
 
 using std::cout;
+using std::out_of_range;
 
 Type::Type(TypeKind kind){
     this->kind = kind;
@@ -261,4 +263,43 @@ Type* resultingType(Type** types, int n){
 bool typeIsString(Type* type) {
     return type->kind == TypeClass and
            type->getClassName() == "String";
+}
+
+DefaultSymbolHandler::DefaultSymbolHandler(){
+    initDefaultClasses();
+    initDefaultMethodsOfClasses();
+}
+
+void DefaultSymbolHandler::initDefaultMethodsOfClasses(){
+    vector<Type*>* lengthTypeHeader = new vector<Type*>;
+    lengthTypeHeader->push_back(new BasicType(TypeInt));
+    MethodType* lengthType = new MethodType(lengthTypeHeader);
+    unordered_map<string, MethodType*> methods;
+    methods.emplace("length", lengthType);
+    defaultMethodsOfClasses.emplace("String", methods);
+}
+
+void DefaultSymbolHandler::initDefaultMethodsOfArrays(){
+    vector<Type*>* lengthTypeHeader = new vector<Type*>;
+    lengthTypeHeader->push_back(new BasicType(TypeInt));
+    MethodType* lengthType = new MethodType(lengthTypeHeader);
+    defaultMethodsOfArrays.emplace("length",lengthType);
+}
+
+MethodType* DefaultSymbolHandler::getDefaultMethodHeader(Type* type, string method){
+    if(type->kind == TypeClass){
+        try {return defaultMethodsOfClasses.at(type->getClassName()).at(method);}
+        catch(out_of_range oor) {return nullptr;}
+    } else if(type->kind == TypeArray){
+        try {return defaultMethodsOfArrays.at(method);}
+        catch(out_of_range oor) {return nullptr;}
+    } else return nullptr;
+}
+
+void DefaultSymbolHandler::initDefaultClasses(){
+    defaultClasses.insert("String");
+}
+
+bool DefaultSymbolHandler::isDefaultClass(string className){
+    return defaultClasses.find(className) != defaultClasses.end();
 }
