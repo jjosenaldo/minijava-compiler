@@ -268,6 +268,7 @@ bool typeIsString(Type* type) {
 DefaultSymbolHandler::DefaultSymbolHandler(){
     initDefaultClasses();
     initDefaultMethodsOfClasses();
+    initDefaultMethodsOfArrays();
 }
 
 void DefaultSymbolHandler::addDefaultNonstaticMethodOfClass(string className, string method, vector<Type*>* args){

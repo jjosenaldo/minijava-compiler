@@ -184,6 +184,16 @@ void nonExistingMethodInDefaultClass(string className, string method){
     cout << "the default class " << className << " doesn't have a default method called " << method << endl;
 }
 
+void nonstaticMethodOnDefaultClassNotFound(string className, string method){
+    errorMsgPrefix();
+    cout << "the default class " << className << " doesn't have a nonstatic method called " << method << endl;
+}
+
+void typeDoesntContainNonstaticMethodError(string type, string method){
+    errorMsgPrefix();
+    cout << "the type " << type << " doesn't contain a method called " << method << endl;
+}
+
 void errorMsgPrefix(){
     cout << "ERROR: ";
 }

@@ -79,4 +79,8 @@ void nonDefaultClassError(string id);
 
 void nonExistingMethodInDefaultClass(string className, string method);
 
+void nonstaticMethodOnDefaultClassNotFound(string className, string method);
+
+void typeDoesntContainNonstaticMethodError(string type, string method);
+
 #endif

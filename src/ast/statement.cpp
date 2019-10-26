@@ -292,58 +292,58 @@ bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* poo
     if(!leftResult)
         return false;
 
-    // The callee expression is not an object
-    if(!left->isObject()){
-        methodCallOnNonobjectError(left->toString());
-        return false;
-    }
+    // The callee expression is an object
+    if(left->isObject()){
+        string className = left->getType()->getClassName();
 
-    ClassSymtable* classTable = pool->get(left->getType()->getClassName());
-    TableContent tc = classTable->get(method);
+        if(g_defaultSymbolHandler.isDefaultClass(className)){
+            MethodType* res = g_defaultSymbolHandler.getDefaultNonstaticMethodHeader(className, method);
 
-    // Search for the method (including the ancestor classes)
-    string currentClass = left->getType()->getClassName();
-    bool methodFound = false;
+            if(res == nullptr){
+                nonstaticMethodOnDefaultClassNotFound(className, method);
+                return false;
+            } else type = res; 
+        } else{
+            ClassSymtable* classTable = pool->get(className);
+            TableContent tc = classTable->get(method);
 
-    while(currentClass != ""){
-        tc = pool->get(currentClass)->get(method);
+            // Search for the method (including the ancestor classes)
+            string currentClass = left->getType()->getClassName();
+            bool methodFound = false;
 
-        // The class doesn't contain the field
-        if(tc.tag == TCNOCONTENT || (tc.tag == TCTYPE && tc.type->kind != TypeMethod))
+            while(currentClass != ""){
+                tc = pool->get(currentClass)->get(method);
 
-            // Looks in its parent
-            currentClass = g_classParentMap[currentClass];
+                // The class doesn't contain the field
+                if(tc.tag == TCNOCONTENT || (tc.tag == TCTYPE && tc.type->kind != TypeMethod))
 
-        else{
-            methodFound = true;
-            break;
+                    // Looks in its parent
+                    currentClass = g_classParentMap[currentClass];
+
+                else{
+                    methodFound = true;
+                    break;
+                }
+            }
+
+            // The method doesnt exist
+            if(!methodFound){
+                methodNotFoundError(method, left->getType()->getClassName());
+                return false;
+            }
+
+            type = tc.type;
+        }
+    } else{
+        type = g_defaultSymbolHandler.getDefaultNonstaticMethodHeader(left->getType(), method);
+
+        if(type == nullptr){
+            typeDoesntContainNonstaticMethodError(left->getType()->toString(), method);
+            return false;
         }
     }
+    
 
-    // The method doesnt exist
-    if(!methodFound){
-        methodNotFoundError(method, left->getType()->getClassName());
-        return false;
-    }
-
-    type = tc.type;
-
-    /*
-
-    This code checks for subclasses, i.e., polymorphism.
-
-    // Up to this point, the method exists. We have to check if it exists
-    // in the child class, so that the child class method is used
-    string actualClassName = left->getType()->getActualClassName();
-
-    // The ID was indeed created by a statement like "Animal a = new Cat()"
-    if(actualClassName != left->getType()->getClassName()){
-        auto methodTypeOnDerivedClass = pool->get(actualClassName)->get(method);
-
-        if(methodTypeOnDerivedClass.tag == TCTYPE)
-            type = methodTypeOnDerivedClass.type;
-    }
-    */
 
     vector<Type*>* methodHeader = type->getMethodHeader();
     int expectedArgs = methodHeader->size() - 1;
