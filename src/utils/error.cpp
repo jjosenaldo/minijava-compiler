@@ -159,6 +159,11 @@ void breakOutsideLoop() {
     cout << "you cannot call a break from outside a loop" << endl;
 }
 
+void methodReturnTypeError(string returned, string expected, string methodName) {
+    errorMsgPrefix();
+    cout << "expected " << expected << " but returned " << returned << " in method " << methodName << endl;
+}
+
 void errorMsgPrefix(){
     cout << "ERROR: ";
 }

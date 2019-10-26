@@ -1,0 +1,22 @@
+class Main{
+    void main(String[] args){
+        int x = 2;
+        int a;
+        Number n = new Number();
+        a = n.two();
+    }
+}
+
+class Number{
+    int two(){
+        return "abc";
+    }
+
+    int three() {
+        return 3;
+    }
+
+    int four() {
+        return 4;
+    }
+}

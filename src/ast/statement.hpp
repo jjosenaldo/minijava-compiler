@@ -122,7 +122,9 @@ class Return : public Statement{
     public:
         Return();
         Return(Expression* optExp);
+        bool process(Symtable* parent, ClassSymtablePool* pool, Program* program);
         void print();
+
 };
 
 class Skip : public Statement {

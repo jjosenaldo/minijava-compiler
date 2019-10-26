@@ -39,6 +39,7 @@ TableContent tableContentNoContent();
 class Symtable{
     protected:
         string className;
+        string methodName;
         Symtable* parent;
         int localId;
         vector<pair<string, TableContent>>* table;
@@ -63,6 +64,10 @@ class Symtable{
         TableContent lookup(string id);
 
         TableContent get(string id);
+
+        void setMethodName(string name);
+
+        string getMethodName();
 
         virtual void print();
 };

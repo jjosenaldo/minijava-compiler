@@ -57,6 +57,13 @@ void Symtable::setLocalId(int id){
     this->localId = id;
 }
 
+string Symtable::getMethodName(){
+    return this->methodName;
+}
+
+void Symtable::setMethodName(string name){
+    this->methodName = name;
+}
 
 TableContent Symtable::lookup(string name){
     Symtable* table = this;
@@ -161,13 +168,14 @@ bool ClassSymtable::processMethodBodies(ClassDeclaration* classDecl, ClassSymtab
         Symtable* methodTable = methodTablePair.second;
         auto method = classDecl->getMethod(methodName);
         auto blockStmt = method->getStatement();
+        methodTable->setMethodName(methodName);
 
         if(blockStmt != nullptr){
             auto stmts = blockStmt->getStatements();
-
-            for(auto stmt : *stmts)
+            for(auto stmt : *stmts){
                 if(!stmt->process(methodTable, pool, program))
                     return false;
+            }
         }
     }
 

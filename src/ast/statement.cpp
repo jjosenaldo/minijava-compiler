@@ -242,6 +242,25 @@ void Return::print(){
     cout << ";";
 }
 
+bool Return::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
+    Type* optExpType = MkTypeNull();
+    if(optExp != nullptr){
+        optExp->process(parent, pool);
+        optExpType = optExp->getType();
+    }
+
+    ClassSymtable* classTable = pool->get(parent->getClassName());
+    TableContent tc = classTable->get(parent->getMethodName());
+    Type* methodReturnType = tc.type->getMethodHeader()->at(0);
+    if(!areCompatibleTypes(optExpType, methodReturnType)){
+        methodReturnTypeError(optExpType->toString(), methodReturnType->toString(), parent->getMethodName());
+        return false;
+    }
+
+   return true;
+}
+
+
 MethodCallExpression::MethodCallExpression(Expression* left, string method, deque<Expression*>* args){
     this->left = left;
     this->method = method;

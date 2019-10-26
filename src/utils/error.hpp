@@ -69,4 +69,6 @@ void callMainMethodError();
 
 void breakOutsideLoop();
 
+void methodReturnTypeError(string returned, string expected, string methodName);
+
 #endif
