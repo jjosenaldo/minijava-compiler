@@ -71,4 +71,6 @@ void breakOutsideLoop();
 
 void methodReturnTypeError(string returned, string expected, string methodName);
 
+void attributeInitValueTypeError(string id, string expected, string actual);
+
 #endif

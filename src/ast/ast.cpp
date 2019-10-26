@@ -177,9 +177,18 @@ void Field::print(){
     cout << ";";
 }
 
-bool Field::process(string className, ClassSymtable* root){
+bool Field::process(string className, ClassSymtable* root, ClassSymtablePool* pool){
     if(root->get(name).tag != TCNOCONTENT){
         multiplyDefinedFieldError(name, className);
+        return false;
+    }
+
+    if(!this->initValue->process(root, pool)){
+        return false;
+    };
+
+    if(!areCompatibleTypes(type, this->initValue->getType())){
+        attributeInitValueTypeError(name, type->toString(), this->initValue->getType()->toString());
         return false;
     }
 
@@ -187,6 +196,7 @@ bool Field::process(string className, ClassSymtable* root){
     tc.tag = TCTYPE;
     tc.type = type;
     root->insert(name, tc);
+
     return true;
 }
 

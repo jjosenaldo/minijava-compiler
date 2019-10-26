@@ -20,7 +20,7 @@ class Parameter;
 class Program{
     private:
         deque<ClassDeclaration*>* declarations;
-    
+
     public:
         Program(deque<ClassDeclaration*>* decls);
 
@@ -36,7 +36,7 @@ class Program{
 };
 
 class Method{
-    private: 
+    private:
         string id;
         Type* returnType;
         deque<Parameter*>* parameters;
@@ -60,7 +60,7 @@ class ClassDeclaration{
         string name;
         string parent;
         vector<Method*>* methods;
-        vector<Field*>* fields;  
+        vector<Field*>* fields;
     public:
         ClassDeclaration(string name);
 
@@ -88,12 +88,12 @@ class Field{
         Type* type;
         string name;
         Expression* initValue;
-    
+
     public:
         Field(Type* type, string name, Expression* initValue);
 
         string getName();
-        bool process(string className, ClassSymtable* root);
+        bool process(string className, ClassSymtable* root, ClassSymtablePool* pool);
         Type* getType();
 
         void print();
@@ -103,7 +103,7 @@ class Parameter{
     private:
         Type* type;
         string name;
-    
+
     public:
         Parameter(Type* type, string name);
 

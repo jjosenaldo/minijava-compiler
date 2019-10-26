@@ -1,0 +1,14 @@
+class Main{
+    void main(String[] args){
+        int x =3;
+        if(2 < 3){
+            int x = 2;
+        }
+    }
+}
+
+class Cat{
+        int a = 2;
+        int b = a;
+        int c = "as";
+}
