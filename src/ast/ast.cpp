@@ -203,15 +203,16 @@ bool Field::process(string className, ClassSymtable* root, ClassSymtablePool* po
         return false;
     }
 
-    if(!this->initValue->process(root, pool)){
-        return false;
-    };
+    if(this->initValue != nullptr){
+        if(!this->initValue->process(root, pool))
+            return false;
 
-    if(!areCompatibleTypes(type, this->initValue->getType())){
-        attributeInitValueTypeError(name, type->toString(), this->initValue->getType()->toString());
-        return false;
+            if(!areCompatibleTypes(type, this->initValue->getType())){
+                attributeInitValueTypeError(name, type->toString(), this->initValue->getType()->toString());
+                return false;
+            }
     }
-
+    
     TableContent tc;
     tc.tag = TCTYPE;
     tc.type = type;
