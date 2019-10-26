@@ -52,6 +52,25 @@ Type* Parameter::getType(){
     return type;
 }
 
+bool Parameter::process(Symtable* parent, ClassSymtablePool* pool) {
+    if(!canBeInstantiated(type, pool))
+        return false;
+
+    if(predefinedId(name) || pool->get(name) != nullptr){
+        classAsVariableNameError(name);
+        return false;
+    }
+
+    if(parent->get(name).tag != TCNOCONTENT) {
+        multipleVariableError(name);
+        return false;
+    }
+
+    parent->insert(name, tableContentFromType(type));
+
+    return true;
+}
+
 string Parameter::getName(){
     return name;
 }
@@ -143,10 +162,9 @@ bool Method::processHeader(string className, ClassSymtable* root, ClassSymtableP
                 delete methodTable;
                 return false;
             }
-            if(!canBeInstantiated(param->getType(), pool))
-                return false;
 
-            methodTable->insert(param->getName(), tableContentFromType(param->getType()));
+            if(!param->process(methodTable, pool))
+                return false;
         }
 
     root->insertMethodTable(methodName, methodTable);
