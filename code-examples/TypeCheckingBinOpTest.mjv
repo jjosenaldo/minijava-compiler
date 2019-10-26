@@ -15,7 +15,10 @@ class Main {
 
 		Animal b = new Animal();
 
-		boolean bool_a = a != b;
+		//boolean bool_a = a != b;
+
+		//int[][] x = {{1,2,3},{2},"c"}; // Need throw an error
+		Animal[][] an = {{new Cat(), new Animal()}, null, {null}};
 		// int_c = int_a * int_b;
 		// int_c = int_a / int_b;
 		// int_c = int_a % int_b;

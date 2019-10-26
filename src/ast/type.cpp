@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <iostream>
 #include "type.hpp"
+#include "symtable.hpp"
 
 using std::cout;
 
@@ -232,29 +233,20 @@ Type* returnTypeUnOp(Type* t1, UnOperator op){
     return nullptr;
 }
 
-// It returns false for method headers
 bool areCompatibleTypes(Type* expected, Type* actual){
     if(expected->kind == TypeInt)
         return actual->kind == TypeInt;
-
     if(expected->kind == TypeVoid)
         return actual->kind == TypeVoid;
-    
     if(expected->kind == TypeNull)
         return actual->kind == TypeNull;
-    
     if(expected->kind == TypeBoolean)
         return actual->kind == TypeBoolean;
-    
-    // TODO: it should check subclassing aswell (maybe it should receive the table pool as argument)
-    if(expected->kind == TypeClass){
-        return actual->kind == TypeClass && expected->getClassName() == actual->getClassName();
-    }
-    
-    if(expected->kind == TypeArray){
-        return actual->kind == TypeArray && areCompatibleTypes(expected->getBaseType(), actual->getBaseType()); 
-    }
-    
+    if(expected->kind == TypeClass)
+        return actual->kind == TypeNull or (actual->kind == TypeClass and isSubclassOf(actual->getClassName(), expected->getClassName()));
+    if(expected->kind == TypeArray)
+        return actual->kind == TypeNull or (actual->kind == TypeArray and areCompatibleTypes(expected->getBaseType(), actual->getBaseType())); 
+    // It returns false for method headers
     return false;
 }
 
@@ -264,26 +256,21 @@ Type* resultingType(Type** types, int n){
         return nullptr;
 
     Type* type = *types;
+    if(type->kind == TypeMethod or type->kind == TypeVoid)
+            return nullptr;
+
     for(int i = 1; i < n; i++) {
         Type *t = *(types+i);
-        if(t->kind == type->kind) {
-            if(type->kind == TypeClass) {
-                // check if one of them is subclass of the other
-                if(false /*t is subclass of type*/)
-                    /* Nothing */;
-                else if(false /*type is subclass of t*/)
-                    type = t;
-                else
-                    return nullptr;
-            }
-        }
-        else if(false /* Check null */)
-            ;
-        else
-            return nullptr
-    }
 
-    return type;
+        if(t->kind == TypeMethod or t->kind == TypeVoid)
+            return nullptr;
+
+        if(areCompatibleTypes(t,type))
+            type = t;
+        else if(!areCompatibleTypes(type,t))
+            return nullptr;
+    }
+    return MkTypeArray(type);
 }
 
 bool typeIsString(Type* type) {
