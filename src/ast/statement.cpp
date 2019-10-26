@@ -246,7 +246,7 @@ void Return::print(){
 }
 
 bool Return::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
-    Type* optExpType = MkTypeNull();
+    Type* optExpType = MkTypeVoid();
     if(optExp != nullptr){
         bool res = optExp->process(parent, pool);
 

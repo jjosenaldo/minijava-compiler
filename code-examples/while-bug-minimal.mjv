@@ -1,0 +1,8 @@
+class Main{
+    void main(String[] args){
+        int a;
+        if(1==1){
+            int b = a;
+        }
+    }
+}
