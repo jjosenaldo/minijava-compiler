@@ -9,7 +9,7 @@ Type::Type(TypeKind kind){
     this->kind = kind;
 }
 
-ClassType::ClassType(string className) {
+ClassType::ClassType(string className) : Type(TypeClass) {
     this->className = className;
 }
 
@@ -208,7 +208,7 @@ Type* returnTypeBinOp(Type* t1, Type* t2, BinOperator op){
                 (t2->kind == TypeNull and t1->kind != TypeInt and t1->kind != TypeBoolean) or         // Null can be compared with any non base type
                 (t1->kind != TypeClass and t1->kind == t2->kind))    // Same type can be compared (ClassTypes must be the same name)
             return MkTypeBoolean();
-        else (t1->kind == TypeClass and t2->kind == TypeClass) { // ClassType can be compared only by Polimorphism
+        else if (t1->kind == TypeClass and t2->kind == TypeClass) { // ClassType can be compared only by Polimorphism
             // subclass test here
             // return MkTypeBoolean();
         }

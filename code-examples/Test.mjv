@@ -2,7 +2,7 @@ class Test {
 	void main(String[] args) {}
 }
 
-class ClassDec extends Parent {
+class ClassDec  {
 	int attribute;
 
 	int mathod(int a, Id b) {

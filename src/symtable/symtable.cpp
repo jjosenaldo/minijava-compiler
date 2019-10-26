@@ -1,12 +1,11 @@
 #include <iostream>
+#include "global.hpp"
 #include "symtable.hpp"
 #include "type.hpp"
 #include "ast.hpp"
 
 using std::cout;
 using std::endl;
-
-unordered_map<string, string> classParentMap = unordered_map<string, string>();
 
 TableContent tableContentFromType(Type* type){
     TableContent tc;
@@ -47,7 +46,7 @@ void Symtable::insert(string id, TableContent content){
 
 void Symtable::insert(Symtable* table){
     table->setLocalId(this->table->size());
-    
+
     TableContent tc;
     tc.tag = TCSYMTABLE;
     tc.symtable = table;
@@ -56,6 +55,14 @@ void Symtable::insert(Symtable* table){
 
 void Symtable::setLocalId(int id){
     this->localId = id;
+}
+
+string Symtable::getMethodName(){
+    return this->methodName;
+}
+
+void Symtable::setMethodName(string name){
+    this->methodName = name;
 }
 
 TableContent Symtable::lookup(string name){
@@ -67,7 +74,7 @@ TableContent Symtable::lookup(string name){
             return tc;
         table = table->getParent();
     }
-    
+
     return tableContentNoContent();
 }
 
@@ -93,6 +100,15 @@ void Symtable::print(){
 
 ClassSymtablePool::ClassSymtablePool(){
     pool = new unordered_map<string, ClassSymtable*>;
+    this->loopBlockFlag = false;
+}
+
+void ClassSymtablePool::setIsLoopBlock(bool is){
+    this->loopBlockFlag = is;
+}
+
+bool ClassSymtablePool::isLoopBlock() {
+    return this->loopBlockFlag;
 }
 
 void ClassSymtablePool::insert(string className, ClassSymtable* table){
@@ -104,7 +120,7 @@ ClassSymtable* ClassSymtablePool::get(string className){
 
     if(it == this->pool->end())
         return nullptr;
-    
+
     else
         return it->second;
 }
@@ -116,7 +132,7 @@ void ClassSymtable::print(){
         printTableContent(entry.second);
         cout << endl;
     }
-    
+
     for(auto it : *methodTables){
         cout << it.first << " : ";
         it.second->print();
@@ -152,14 +168,15 @@ bool ClassSymtable::processMethodBodies(ClassDeclaration* classDecl, ClassSymtab
         Symtable* methodTable = methodTablePair.second;
         auto method = classDecl->getMethod(methodName);
         auto blockStmt = method->getStatement();
+        methodTable->setMethodName(methodName);
 
         if(blockStmt != nullptr){
             auto stmts = blockStmt->getStatements();
-
-            for(auto stmt : *stmts)
+            for(auto stmt : *stmts){
                 if(!stmt->process(methodTable, pool, program))
                     return false;
-        }   
+            }
+        }
     }
 
     return true;
@@ -177,12 +194,12 @@ void printTableContent(TableContent content){
     }
 }
 
-bool processesClassInheritanceHierarchy(deque<ClassDeclaration*>* declarations, ClassSymtablePool* pool){
+bool processesClassInheritanceHierarchy(ClassSymtablePool* pool){
     unordered_map<string, string> unprocClasses;
     unordered_map<string, string> procClasses;
 
-    for(auto decl :*declarations)
-        unprocClasses.emplace(decl->getName(), decl->getParent());
+    for(auto p : g_classParentMap)
+        unprocClasses.emplace(p.first, p.second);
 
     auto itCurrent = unprocClasses.begin();
     string firstInChain = itCurrent->second;
@@ -201,7 +218,7 @@ bool processesClassInheritanceHierarchy(deque<ClassDeclaration*>* declarations, 
 
             if(unprocClasses.empty())
                 return true;
-            
+
             itCurrent = unprocClasses.begin();
             firstInChain = itCurrent->second;
             continue;
@@ -222,7 +239,7 @@ bool processesClassInheritanceHierarchy(deque<ClassDeclaration*>* declarations, 
                 circularInheritanceError(firstInChain);
                 return false;
             }
-            
+
             procClasses.emplace(itCurrent->first, itCurrent->second);
             unprocClasses.erase(itCurrent);
 
@@ -242,8 +259,13 @@ bool processesClassInheritanceHierarchy(deque<ClassDeclaration*>* declarations, 
 }
 bool addClassNamesToPool(Program* program, ClassSymtablePool* pool){
     for(auto classDecl : *program->getDecls()){
+        if(classDecl->getParent() == g_mainClassName){
+            inheritanceFromMainClassError(classDecl->getName());
+            return false;
+        }
+
         string className = classDecl->getName();
-        
+
         if(pool->get(className) != nullptr) {
             multipleClassError(className);
             return false;
@@ -251,7 +273,7 @@ bool addClassNamesToPool(Program* program, ClassSymtablePool* pool){
 
         ClassSymtable* root = new ClassSymtable(className);
         pool->insert(className, root);
-        classParentMap.emplace(className, classDecl->getParent());
+        g_classParentMap.emplace(className, classDecl->getParent());
     }
 
     return true;
@@ -265,7 +287,7 @@ ClassSymtablePool* buildClassSymtablePool(Program* program){
         return nullptr;
     }
 
-    if(!processesClassInheritanceHierarchy(program->getDecls(), pool)) {
+    if(!processesClassInheritanceHierarchy(pool)) {
         delete pool;
         return nullptr;
     }
@@ -277,7 +299,7 @@ ClassSymtablePool* buildClassSymtablePool(Program* program){
 
         // Processes the fields
         auto fields = classDecl->getFields();
-        if(fields != nullptr) 
+        if(fields != nullptr)
             for(auto field : *fields)
                 if(!field->process(className, root)){
                     delete pool;
@@ -307,4 +329,19 @@ ClassSymtablePool* buildClassSymtablePool(Program* program){
     }
 
     return pool;
+}
+
+bool isSubclassOf(string descendant, string ancestor){
+    if(descendant == ancestor)
+        return true;
+
+    string currentParent = g_classParentMap[descendant];
+
+    while(currentParent != ""){
+        if(currentParent == ancestor)
+            return true;
+        currentParent = g_classParentMap[currentParent];
+    }
+
+    return false;
 }

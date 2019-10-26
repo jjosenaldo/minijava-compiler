@@ -1,5 +1,6 @@
 #include <iostream>
 #include "error.hpp"
+#include "global.hpp"
 #include "statement.hpp"
 
 using std::cout;
@@ -16,7 +17,7 @@ VarDec::VarDec(Type* type, string id) : VarDec(type, id, nullptr){}
 void VarDec::print(){
     printType(this->type);
     cout << " " << this->id;
-    
+
     if(this->value != nullptr){
         cout << " = ";
         this->value->print();
@@ -25,10 +26,18 @@ void VarDec::print(){
 }
 
 bool VarDec::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
-    if(type->kind == TypeClass && pool->get(type->getClassName()) == nullptr){
-        classNotDefinedError(type->getClassName());
-        return false;
+    if(type->kind == TypeClass){
+        if(pool->get(type->getClassName()) == nullptr){
+            classNotDefinedError(type->getClassName());
+            return false;
+        }
+
+        if(g_mainClassName == type->getClassName()){
+            instanceOfMainClassError();
+            return false;
+        }
     }
+
 
     if(predefinedId(id) || pool->get(id) != nullptr){
         classAsVariableNameError(id);
@@ -39,11 +48,11 @@ bool VarDec::process(Symtable* parent, ClassSymtablePool* pool, Program* program
         multipleVariableError(id);
         return false;
     }
-    
+
     if(this->value != nullptr){
-        if(!this->value->process(parent, pool, program))
+        if(!this->value->process(parent, pool))
             return false;
-        
+
         if(!areCompatibleTypes(type, this->value->getType())){
             varDeclarationTypeError(id, type->toString(), this->value->getType()->toString());
             return false;
@@ -88,13 +97,11 @@ deque<GenStatement*>* Block::getStatements(){
 
 bool Block::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
     Symtable* table = new Symtable(parent->getClassName());
-
     if(statements != nullptr)
         for(auto stmt : *statements){
             if(!stmt->process(table, pool, program))
                 return false;
         }
-            
 
     table->setParent(parent);
     parent->insert(table);
@@ -150,7 +157,10 @@ While::While(Expression* guard, Statement* statement){
 }
 
 bool While::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
-    return statement->process(parent, pool, program);
+    pool->setIsLoopBlock(true);
+    bool r = statement->process(parent, pool, program);
+    pool->setIsLoopBlock(false);
+    return r;
 }
 
 void While::print(){
@@ -174,15 +184,15 @@ void Assignment::print(){
 
 bool Assignment::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
 
-    if(!lvalue->process(parent, pool, program))
+    if(!lvalue->process(parent, pool))
         return false;
-    
+
     if(!lvalue->isLvalue()){
         notAnLvalueError(lvalue->toString());
         return false;
     }
 
-    if(!rvalue->process(parent, pool, program))
+    if(!rvalue->process(parent, pool))
         return false;
 
     if(!areCompatibleTypes(lvalue->getType(), rvalue->getType())){
@@ -197,9 +207,28 @@ void Continue::print(){
     cout << "continue;";
 }
 
+bool Continue::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
+    if(!pool->isLoopBlock()){
+        breakOutsideLoop();
+        return false;
+    } else {
+        return true;
+    }
+}
+
 void Break::print(){
     cout << "break;";
 }
+
+bool Break::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
+    if(!pool->isLoopBlock()){
+        breakOutsideLoop();
+        return false;
+    } else {
+        return true;
+    }
+}
+
 
 Return::Return() : Return(nullptr) {}
 
@@ -212,6 +241,25 @@ void Return::print(){
     if(optExp != nullptr) {cout << " "; optExp->print();}
     cout << ";";
 }
+
+bool Return::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
+    Type* optExpType = MkTypeNull();
+    if(optExp != nullptr){
+        optExp->process(parent, pool);
+        optExpType = optExp->getType();
+    }
+
+    ClassSymtable* classTable = pool->get(parent->getClassName());
+    TableContent tc = classTable->get(parent->getMethodName());
+    Type* methodReturnType = tc.type->getMethodHeader()->at(0);
+    if(!areCompatibleTypes(optExpType, methodReturnType)){
+        methodReturnTypeError(optExpType->toString(), methodReturnType->toString(), parent->getMethodName());
+        return false;
+    }
+
+   return true;
+}
+
 
 MethodCallExpression::MethodCallExpression(Expression* left, string method, deque<Expression*>* args){
     this->left = left;
@@ -226,7 +274,17 @@ string MethodCallExpression::toString(){
 }
 
 bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* pool, Program* program){
-    bool leftResult = left->process(environment, pool, program);
+    return process(environment, pool);
+}
+
+bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* pool){;
+    if(environment->getClassName() == g_mainClassName){
+        if(method == MAIN_METHOD_NAME){
+            callMainMethodError();
+            return false;
+        }
+    }
+    bool leftResult = left->process(environment, pool);
 
     // The callee expression is not well-formed
     if(!leftResult)
@@ -252,8 +310,8 @@ bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* poo
         if(tc.tag == TCNOCONTENT || (tc.tag == TCTYPE && tc.type->kind != TypeMethod))
 
             // Looks in its parent
-            currentClass = program->getClassDecl(currentClass)->getParent();
-        
+            currentClass = g_classParentMap[currentClass];
+
         else{
             methodFound = true;
             break;
@@ -270,7 +328,7 @@ bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* poo
 
     /*
 
-    This code checks for subclasses, i.e., polymorphism. 
+    This code checks for subclasses, i.e., polymorphism.
 
     // Up to this point, the method exists. We have to check if it exists
     // in the child class, so that the child class method is used
@@ -281,18 +339,18 @@ bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* poo
         auto methodTypeOnDerivedClass = pool->get(actualClassName)->get(method);
 
         if(methodTypeOnDerivedClass.tag == TCTYPE)
-            type = methodTypeOnDerivedClass.type; 
+            type = methodTypeOnDerivedClass.type;
     }
     */
 
     int expectedArgs = type->getMethodHeader()->size() - 1;
-    
+
     if(arguments == nullptr) {
         if(expectedArgs != 0){
             diffNumberOfArgsMethodError(method, 0, expectedArgs);
             return false;
         }
-        
+
         type = (*(type->getMethodHeader()))[0];
         return true;
     }
@@ -303,7 +361,7 @@ bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* poo
     }
 
     for(int i = 0; i < expectedArgs; ++i){
-        if(!  arguments->at(i)->process(environment, pool, program)  )
+        if(!  arguments->at(i)->process(environment, pool)  )
             return false;
 
         if(!areCompatibleTypes(tc.type->getMethodHeader()->at(i+1), arguments->at(i)->getType()  )    ){ // +1 because the first element is the return type
@@ -319,7 +377,7 @@ bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* poo
 void MethodCallExpression::print(){
     left->print();
     cout << "." << method << "(";
-    
+
     if(arguments != nullptr){
         for(auto arg : *arguments) {arg->print();cout << ",";}
     }

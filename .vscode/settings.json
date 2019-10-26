@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "*.y": "c",
+        "iosfwd": "cpp",
+        "unordered_map": "cpp",
+        "iostream": "cpp",
+        "__config": "cpp",
+        "__nullptr": "cpp"
+    }
+}

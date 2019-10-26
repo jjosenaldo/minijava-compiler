@@ -13,7 +13,6 @@ using std::pair;
 using std::string;
 using std::unordered_map;
 
-extern unordered_map<string, string> classParentMap;
 class Program;
 class ClassDeclaration;
 class Symtable;
@@ -40,6 +39,7 @@ TableContent tableContentNoContent();
 class Symtable{
     protected:
         string className;
+        string methodName;
         Symtable* parent;
         int localId;
         vector<pair<string, TableContent>>* table;
@@ -65,6 +65,10 @@ class Symtable{
 
         TableContent get(string id);
 
+        void setMethodName(string name);
+
+        string getMethodName();
+
         virtual void print();
 };
 
@@ -84,7 +88,8 @@ class ClassSymtable : public Symtable{
 class ClassSymtablePool{
     private:
         unordered_map<string, ClassSymtable*>* pool;
-    
+        bool loopBlockFlag;
+
     public:
         ClassSymtablePool();
         void insert(string className, ClassSymtable* table);
@@ -92,6 +97,10 @@ class ClassSymtablePool{
         ClassSymtable* get(string className);
 
         unordered_map<string, ClassSymtable*>* getPool();
+
+        void setIsLoopBlock(bool is);
+
+        bool isLoopBlock();
 
         void print();
 };
@@ -101,8 +110,10 @@ void printTableContent(TableContent content);
 
 bool addClassNamesToPool(Program* program, ClassSymtablePool* pool);
 
-bool processesClassInheritanceHierarchy(deque<ClassDeclaration*>* declarations, ClassSymtablePool* pool);
+bool processesClassInheritanceHierarchy(ClassSymtablePool* pool);
 
 ClassSymtablePool* buildClassSymtablePool(Program* program);
+
+bool isSubclassOf(string descendant, string ancestor);
 
 #endif

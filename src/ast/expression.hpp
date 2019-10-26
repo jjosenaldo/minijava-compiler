@@ -50,7 +50,7 @@ class Expression{
          * @return true         The expression is correct
          * @return false        The expression is not correct
          */
-        virtual bool process(Symtable* environment, ClassSymtablePool* pool, Program* program) = 0;
+        virtual bool process(Symtable* environment, ClassSymtablePool* pool) = 0;
         virtual string toString() = 0;
 };
 
@@ -63,7 +63,7 @@ class BinExpression : public Expression{
     
     public:
         BinExpression(Expression* first, Expression* second, BinOperator op);
-        bool process(Symtable* environment, ClassSymtablePool* pool, Program* program);
+        bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
 };
 
@@ -75,7 +75,7 @@ class UnExpression : public Expression{
 
     public:
         UnExpression(Expression* first, UnOperator op);
-        bool process(Symtable* environment, ClassSymtablePool* pool, Program* program);
+        bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
 };
 
@@ -92,7 +92,7 @@ class AtomExpression : public Expression{
         AtomExpression(Type* type);
         AtomExpression(AtomExpValue val, Type* type);
         AtomExpValue getVal();
-        bool process(Symtable* environment, ClassSymtablePool* pool, Program* program);
+        bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
 };
 
@@ -107,7 +107,7 @@ class ObjExpression : public Expression{
 class ArrayDeclExpression : public ObjExpression{
     public:
         ArrayDeclExpression(Type* type) : ObjExpression(type) {}
-        bool process(Symtable* environment, ClassSymtablePool* pool, Program* program);
+        bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
 };
 
@@ -118,7 +118,7 @@ class NewObjExpression : public ObjExpression{
     
     public:
         NewObjExpression(string id);
-        bool process(Symtable* environment, ClassSymtablePool* pool, Program* program);
+        bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
 };
 
@@ -129,7 +129,7 @@ class IdExpression : public ObjExpression{
     
     public:
         IdExpression(string id);
-        bool process(Symtable* environment, ClassSymtablePool* pool, Program* program);
+        bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
         bool isLvalue();
 };
@@ -141,7 +141,7 @@ class FieldAccessExpression : public ObjExpression{
     
     public:
         FieldAccessExpression(string id);
-        bool process(Symtable* environment, ClassSymtablePool* pool, Program* program);
+        bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
         bool isLvalue();
 };
@@ -149,7 +149,7 @@ class FieldAccessExpression : public ObjExpression{
 // Its type is not known when the tree is being built
 class ThisExpression : public ObjExpression{
     public:
-        bool process(Symtable* environment, ClassSymtablePool* pool, Program* program);
+        bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
 };
 
@@ -160,7 +160,7 @@ class ParenExpression : public ObjExpression{
 
     public:
         ParenExpression(Expression* first);
-        bool process(Symtable* environment, ClassSymtablePool* pool, Program* program);
+        bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
         bool isLvalue();
 };
@@ -170,7 +170,7 @@ class LitArrayExpression : public ObjExpression{
         deque<Expression*>* expressions;
     public:
         LitArrayExpression(deque<Expression*>* exprs);
-        bool process(Symtable* environment, ClassSymtablePool* pool, Program* program);
+        bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
 };
 
@@ -181,7 +181,7 @@ class ArrayAccessExpression : public Expression{
 
     public:
         ArrayAccessExpression(ObjExpression* left, deque<Expression*>* dimensions);
-        bool process(Symtable* environment, ClassSymtablePool* pool, Program* program);
+        bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
         bool isLvalue();
 };
@@ -192,7 +192,7 @@ class NewArrayExpression : public Expression{
     
     public:
         NewArrayExpression(ArrayDeclExpression* decl, deque<Expression*>* dimensions);
-        bool process(Symtable* environment, ClassSymtablePool* pool, Program* program);
+        bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
 };
 

@@ -49,7 +49,7 @@ class VarDec : public GenStatement{
 class Block : public Statement{
     private:
         deque<GenStatement*>* statements;
-    
+
     public:
         Block();
         void addStatement(GenStatement* stmt);
@@ -68,11 +68,11 @@ class ElselessIf : public Statement {
         ElselessIf(Expression* guard, Statement* statement);
         bool process(Symtable* parent, ClassSymtablePool* pool, Program* program);
         void print();
-        
+
 };
 
 class IfElse : public Statement{
-    private: 
+    private:
         Expression* guard;
         Statement* statementIf;
         Statement* statementElse;
@@ -105,11 +105,15 @@ class Assignment : public Statement{
 class Continue : public Statement{
     public:
         void print();
+        bool process(Symtable* parent, ClassSymtablePool* pool, Program* program);
+
 };
 
 class Break : public Statement{
     public:
         void print();
+        bool process(Symtable* parent, ClassSymtablePool* pool, Program* program);
+
 };
 
 class Return : public Statement{
@@ -118,7 +122,9 @@ class Return : public Statement{
     public:
         Return();
         Return(Expression* optExp);
+        bool process(Symtable* parent, ClassSymtablePool* pool, Program* program);
         void print();
+
 };
 
 class Skip : public Statement {
@@ -135,6 +141,7 @@ class MethodCallExpression : public Statement,  public ObjExpression{
 
     public:
         MethodCallExpression(Expression* left, string method, deque<Expression*>* args);
+        bool process(Symtable* environment, ClassSymtablePool* pool);
         bool process(Symtable* environment, ClassSymtablePool* pool, Program* program);
         string toString();
         void print();

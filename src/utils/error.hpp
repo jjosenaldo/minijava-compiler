@@ -59,4 +59,16 @@ void notAnLvalueError(string exp);
 
 void typeError(string expected, string actual);
 
+void instanceOfMainClassError();
+
+void inheritanceFromMainClassError(string id);
+
+void mainMethodNameError(string mainMethod, string otherMethod);
+
+void callMainMethodError();
+
+void breakOutsideLoop();
+
+void methodReturnTypeError(string returned, string expected, string methodName);
+
 #endif

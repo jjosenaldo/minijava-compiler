@@ -26,7 +26,7 @@ void multiplyDefinedFieldError(string id, string className){
 
 void multiplyDefinedParamError(string param, string method, string className){
     errorMsgPrefix();
-    cout << "there are many params named " << param << " in the method " << method << " of the " << className << " class" << endl; 
+    cout << "there are many params named " << param << " in the method " << method << " of the " << className << " class" << endl;
 }
 
 void idNotPredefinedError(string id){
@@ -132,6 +132,36 @@ void typeError(string expected, string actual){
 void notAnLvalueError(string exp){
     errorMsgPrefix();
     cout << "the expression " << exp << " is not a lvalue" << endl;
+}
+
+void instanceOfMainClassError(){
+    errorMsgPrefix();
+    cout << "you cannot create an object with the main class as type" << endl;
+}
+
+void inheritanceFromMainClassError(string id){
+    errorMsgPrefix();
+    cout << "the class " << id << " is inheriting from the main class" << endl;
+}
+
+void mainMethodNameError(string mainMethod, string otherMethod){
+    errorMsgPrefix();
+    cout << "the main method should be called " << mainMethod << ", not " << otherMethod << endl;
+}
+
+void callMainMethodError(){
+    errorMsgPrefix();
+    cout << "you cannot call the main method" << endl;
+}
+
+void breakOutsideLoop() {
+    errorMsgPrefix();
+    cout << "you cannot call a break from outside a loop" << endl;
+}
+
+void methodReturnTypeError(string returned, string expected, string methodName) {
+    errorMsgPrefix();
+    cout << "expected " << expected << " but returned " << returned << " in method " << methodName << endl;
 }
 
 void errorMsgPrefix(){
