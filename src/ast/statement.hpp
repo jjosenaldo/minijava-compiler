@@ -67,6 +67,7 @@ class ElselessIf : public Statement {
     public:
         ElselessIf(Expression* guard, Statement* statement);
         bool process(Symtable* parent, ClassSymtablePool* pool, Program* program);
+        Statement* getStatement();
         void print();
 
 };
@@ -79,6 +80,9 @@ class IfElse : public Statement{
     public:
         IfElse(Expression* guard, Statement* statementIf, Statement* statementElse);
         bool process(Symtable* parent, ClassSymtablePool* pool, Program* program);
+
+        Statement* getStatementIf();
+        Statement* getStatementElse();
         void print();
 };
 
@@ -89,6 +93,7 @@ class While : public Statement{
     public:
         While(Expression* guard, Statement* statement);
         bool process(Symtable* parent, ClassSymtablePool* pool, Program* program);
+        Statement* getStatement();
         void print();
 };
 

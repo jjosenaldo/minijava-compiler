@@ -176,3 +176,8 @@ void attributeInitValueTypeError(string id, string expected, string actual) {
 void errorMsgPrefix(){
     cout << "ERROR: ";
 }
+
+void returnPathError(string methodName) {
+    errorMsgPrefix();
+    cout << "The method " << methodName << " must have a return for all possible flows" << endl;
+}

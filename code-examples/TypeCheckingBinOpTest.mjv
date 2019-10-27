@@ -60,6 +60,37 @@ class Animal {
 	void eat() {
 		//System.print("eat\n");
 	}
+
+	int returnMethod() {
+		return 0;
+	}
+
+	int elselessIfMethod(int a, int b) {
+		if(a == b)
+			return a;
+		return b;
+	}
+
+	int ifElseMethod(int a, int b) {
+		if(a == b)
+			return a;
+		else
+			return b;	
+	}
+
+	int whileMethod(int a, int b) {
+		//int temp;
+
+		//if(b < a)
+		//	temp = b;
+
+		int diff = 0;
+		while(a != b) {
+			//a = a+1;
+			diff = diff+1;
+		}
+		return diff;
+	}
 }
 
 class Cat extends Animal {
@@ -70,3 +101,5 @@ class Cat extends Animal {
 		return true;
 	}
 }
+
+class String { }
