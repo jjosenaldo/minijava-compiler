@@ -307,6 +307,16 @@ void DefaultSymbolHandler::initDefaultMethodsOfClasses(){
     substrHeaderString->push_back(new BasicType(TypeInt));
     substrHeaderString->push_back(new BasicType(TypeInt));
     addDefaultNonstaticMethodOfClass("String", "substring", substrHeaderString);
+
+    vector<Type*>* intToStrHeaderString = new vector<Type*>;
+    intToStrHeaderString->push_back(new ClassType("String"));
+    intToStrHeaderString->push_back(new BasicType(TypeInt));
+    addDefaultStaticMethodOfClass("String", "intToString", intToStrHeaderString);
+
+    vector<Type*>* booleanToStrHeaderString = new vector<Type*>;
+    booleanToStrHeaderString->push_back(new ClassType("String"));
+    booleanToStrHeaderString->push_back(new BasicType(TypeBoolean));
+    addDefaultStaticMethodOfClass("String", "booleanToString", booleanToStrHeaderString);
     
     vector<Type*>* printHeaderSystem = new vector<Type*>;
     printHeaderSystem->push_back(new BasicType(TypeVoid));
