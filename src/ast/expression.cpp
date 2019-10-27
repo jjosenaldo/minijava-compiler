@@ -160,6 +160,10 @@ IdExpression::IdExpression(string id){
 }
 
 string IdExpression::toString(){
+    return getId();
+}
+
+string IdExpression::getId(){
     return id;
 }
 

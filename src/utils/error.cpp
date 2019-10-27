@@ -173,6 +173,37 @@ void attributeInitValueTypeError(string id, string expected, string actual) {
     errorMsgPrefix();
     cout << "you can't initialize attribute (" << id << ") of type " << expected << " with a value of type " << actual << endl;
 }
+
+void nonDefaultClassError(string id){
+    errorMsgPrefix();
+    cout << id << " is not a default class" << endl;
+}
+
+void nonExistingMethodInDefaultClass(string className, string method){
+    errorMsgPrefix();
+    cout << "the default class " << className << " doesn't have a default method called " << method << endl;
+}
+
+void nonstaticMethodOnDefaultClassNotFound(string className, string method){
+    errorMsgPrefix();
+    cout << "the default class " << className << " doesn't have a nonstatic method called " << method << endl;
+}
+
+void typeDoesntContainNonstaticMethodError(string type, string method){
+    errorMsgPrefix();
+    cout << "the type " << type << " doesn't contain a method called " << method << endl;
+}
+
+void classAsFieldNameError(string name){
+    errorMsgPrefix();
+    cout << name << " is a class so it can't be used as an attribute's name" << endl;
+}
+
+void classAsMethodNameError(string methodName){
+    errorMsgPrefix();
+    cout << methodName << " is a class so it can't be used as method's name" << endl;   
+}
+
 void errorMsgPrefix(){
     cout << "ERROR: ";
 }

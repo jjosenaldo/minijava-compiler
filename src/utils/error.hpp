@@ -75,6 +75,18 @@ void methodReturnTypeError(string returned, string expected, string methodName);
 
 void attributeInitValueTypeError(string id, string expected, string actual);
 
+void nonDefaultClassError(string id);
+
+void nonExistingMethodInDefaultClass(string className, string method);
+
+void nonstaticMethodOnDefaultClassNotFound(string className, string method);
+
+void typeDoesntContainNonstaticMethodError(string type, string method);
+
+void classAsFieldNameError(string name);
+
+void classAsMethodNameError(string methodName);
+
 void returnPathError(string methodName);
 
 #endif

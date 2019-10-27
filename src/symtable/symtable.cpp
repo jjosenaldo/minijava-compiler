@@ -21,6 +21,13 @@ TableContent tableContentNoContent(){
     return tc;
 }
 
+Symtable::Symtable(string className, string methodName){
+    this->methodName = methodName;
+    this->className = className;
+    this->parent = nullptr;
+    this->table = new vector<pair<string, TableContent>>;
+}
+
 Symtable::Symtable(string className) : Symtable(className, nullptr){}
 
 Symtable::Symtable(string className, Symtable* parent){
@@ -317,7 +324,7 @@ bool addClassNamesToPool(Program* program, ClassSymtablePool* pool){
 
         string className = classDecl->getName();
 
-        if(pool->get(className) != nullptr) {
+        if(g_defaultSymbolHandler.isDefaultClass(className) ||  pool->get(className) != nullptr) {
             multipleClassError(className);
             return false;
         }
@@ -403,10 +410,15 @@ bool canBeInstantiated(Type* type, ClassSymtablePool* pool) {
         t = t->getBaseType();
 
     if(t->kind == TypeClass) {
-        if(t->getClassName() == "System") {
-            instanceOfForbiddenTypeError("System");
-            return false;
+        if(g_defaultSymbolHandler.isDefaultClass(t->getClassName())){
+            if(g_defaultSymbolHandler.isInstantiatableDefaultType(t->getClassName()))
+                return true;
+            else{
+                instanceOfForbiddenTypeError(t->getClassName());
+                return false;
+            }
         }
+
         if(pool->get(t->getClassName()) == nullptr){
             classNotDefinedError(t->getClassName());
             return false;

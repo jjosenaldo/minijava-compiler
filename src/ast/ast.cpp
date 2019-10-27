@@ -1,6 +1,7 @@
 #include <iostream>
 #include "ast.hpp"
 #include "error.hpp"
+#include "global.hpp"
 
 using std::cout;
 using std::endl;
@@ -135,6 +136,11 @@ void Method::addParam(Parameter* param){
 bool Method::processHeader(string className, ClassSymtable* root, ClassSymtablePool* pool){
     string methodName = id;
 
+    if(pool->get(methodName) != nullptr || g_defaultSymbolHandler.isDefaultClass(methodName)){
+        classAsMethodNameError(methodName);
+        return false;
+    }
+
     if(root->get(methodName).tag != TCNOCONTENT){
         multipleMethodError(className, methodName);
         return false;
@@ -203,15 +209,21 @@ bool Field::process(string className, ClassSymtable* root, ClassSymtablePool* po
         return false;
     }
 
-    if(!this->initValue->process(root, pool)){
-        return false;
-    };
-
-    if(!areCompatibleTypes(type, this->initValue->getType())){
-        attributeInitValueTypeError(name, type->toString(), this->initValue->getType()->toString());
+    if(pool->get(name) != nullptr || g_defaultSymbolHandler.isDefaultClass(name)){
+        classAsFieldNameError(name);
         return false;
     }
 
+    if(this->initValue != nullptr){
+        if(!this->initValue->process(root, pool))
+            return false;
+
+            if(!areCompatibleTypes(type, this->initValue->getType())){
+                attributeInitValueTypeError(name, type->toString(), this->initValue->getType()->toString());
+                return false;
+            }
+    }
+    
     TableContent tc;
     tc.tag = TCTYPE;
     tc.type = type;

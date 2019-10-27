@@ -1,0 +1,7 @@
+class a{
+    void main(String[] args){
+        System.print("oi, eu tenho ");
+        System.print(String.intToString(21));
+        System.print(" anos! e isso é " + String.booleanToString(true));
+    }
+}

@@ -2,10 +2,14 @@
 #define TYPE_HPP
 
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 #include "operator.hpp"
 
 using std::string;
+using std::unordered_map;
+using std::unordered_set;
 using std::vector;
 
 enum BinOperator;
@@ -128,5 +132,27 @@ bool areCompatibleTypes(Type* expected, Type* actual);
 Type* resultingType(Type** types, int n);
 
 bool typeIsString(Type* type);
+
+class DefaultSymbolHandler{
+    private:
+        unordered_map<string, bool> defaultClasses;
+        unordered_map<string, unordered_map<string, MethodType*>> defaultStaticMethodsOfClasses;
+        unordered_map<string, unordered_map<string, MethodType*>> defaultNonstaticMethodsOfClasses;
+        unordered_map<string, MethodType*> defaultNonstaticMethodsOfArrays;
+        void initDefaultClasses();
+        void initDefaultMethodsOfClasses();
+        void initDefaultMethodsOfArrays();
+        void addDefaultNonstaticMethodOfClass(string className, string method, vector<Type*>* args);
+        void addDefaultStaticMethodOfClass(string className, string method, vector<Type*>* args);
+    
+    public:
+        DefaultSymbolHandler();
+        MethodType* getDefaultStaticMethodHeader(Type* type, string method);
+        MethodType* getDefaultStaticMethodHeader(string type, string method);
+        MethodType* getDefaultNonstaticMethodHeader(Type* type, string method);
+        MethodType* getDefaultNonstaticMethodHeader(string type, string method);
+        bool isDefaultClass(string className);
+        bool isInstantiatableDefaultType(string className);
+};
 
 #endif  

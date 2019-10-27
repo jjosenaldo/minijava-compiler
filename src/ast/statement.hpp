@@ -137,6 +137,21 @@ class Skip : public Statement {
         void print();
 };
 
+class StaticMethodCallExpression : public Statement, public ObjExpression{
+    private:
+        string className;
+        string method;
+        deque<Expression*>* arguments;
+
+    public:
+        StaticMethodCallExpression(string className, string method, deque<Expression*>* arguments);
+        bool process(Symtable* environment, ClassSymtablePool* pool);
+        bool process(Symtable* environment, ClassSymtablePool* pool, Program* program);
+        string toString();
+        void print();
+
+};
+
 // Its type is not known when the tree is being built
 class MethodCallExpression : public Statement,  public ObjExpression{
     private:

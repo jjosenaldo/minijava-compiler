@@ -1,10 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdexcept>
 #include <iostream>
 #include "type.hpp"
 #include "symtable.hpp"
 
 using std::cout;
+using std::out_of_range;
 
 Type::Type(TypeKind kind){
     this->kind = kind;
@@ -261,4 +263,116 @@ Type* resultingType(Type** types, int n){
 bool typeIsString(Type* type) {
     return type->kind == TypeClass and
            type->getClassName() == "String";
+}
+
+DefaultSymbolHandler::DefaultSymbolHandler(){
+    initDefaultClasses();
+    initDefaultMethodsOfClasses();
+    initDefaultMethodsOfArrays();
+}
+
+void DefaultSymbolHandler::addDefaultNonstaticMethodOfClass(string className, string method, vector<Type*>* args){
+    MethodType* methodType = new MethodType(args);
+    auto it = defaultNonstaticMethodsOfClasses.find(className);
+
+    if(it == defaultNonstaticMethodsOfClasses.end()){
+        unordered_map<string, MethodType*> newMap;
+        newMap.emplace(method, methodType);
+        defaultNonstaticMethodsOfClasses.emplace(className, newMap);
+    } else{
+        it->second.emplace(method, methodType);
+    }
+}
+
+void DefaultSymbolHandler::addDefaultStaticMethodOfClass(string className, string method, vector<Type*>* args){
+    MethodType* methodType = new MethodType(args);
+    auto it = defaultStaticMethodsOfClasses.find(className);
+
+    if(it == defaultStaticMethodsOfClasses.end()){
+        unordered_map<string, MethodType*> newMap;
+        newMap.emplace(method, methodType);
+        defaultStaticMethodsOfClasses.emplace(className, newMap);
+    } else{
+        it->second.emplace(method, methodType);
+    }
+}
+
+void DefaultSymbolHandler::initDefaultMethodsOfClasses(){
+    vector<Type*>* lengthHeaderString = new vector<Type*>;
+    lengthHeaderString->push_back(new BasicType(TypeInt));
+    addDefaultNonstaticMethodOfClass("String", "length", lengthHeaderString);
+
+    vector<Type*>* substrHeaderString = new vector<Type*>;
+    substrHeaderString->push_back(new ClassType("String"));
+    substrHeaderString->push_back(new BasicType(TypeInt));
+    substrHeaderString->push_back(new BasicType(TypeInt));
+    addDefaultNonstaticMethodOfClass("String", "substring", substrHeaderString);
+
+    vector<Type*>* intToStrHeaderString = new vector<Type*>;
+    intToStrHeaderString->push_back(new ClassType("String"));
+    intToStrHeaderString->push_back(new BasicType(TypeInt));
+    addDefaultStaticMethodOfClass("String", "intToString", intToStrHeaderString);
+
+    vector<Type*>* booleanToStrHeaderString = new vector<Type*>;
+    booleanToStrHeaderString->push_back(new ClassType("String"));
+    booleanToStrHeaderString->push_back(new BasicType(TypeBoolean));
+    addDefaultStaticMethodOfClass("String", "booleanToString", booleanToStrHeaderString);
+    
+    vector<Type*>* printHeaderSystem = new vector<Type*>;
+    printHeaderSystem->push_back(new BasicType(TypeVoid));
+    printHeaderSystem->push_back(new ClassType("String"));
+    addDefaultStaticMethodOfClass("System", "print", printHeaderSystem);
+}
+
+void DefaultSymbolHandler::initDefaultMethodsOfArrays(){
+    vector<Type*>* lengthTypeHeader = new vector<Type*>;
+    lengthTypeHeader->push_back(new BasicType(TypeInt));
+    MethodType* lengthType = new MethodType(lengthTypeHeader);
+    defaultNonstaticMethodsOfArrays.emplace("length",lengthType);
+}
+
+MethodType* DefaultSymbolHandler::getDefaultStaticMethodHeader(string type, string method){
+    ClassType* ct = new ClassType(type);
+    MethodType* returnType = this->getDefaultStaticMethodHeader(ct, method);
+    delete ct;
+    return returnType;
+}
+
+MethodType* DefaultSymbolHandler::getDefaultNonstaticMethodHeader(string type, string method){
+    ClassType* ct = new ClassType(type);
+    MethodType* returnType = this->getDefaultNonstaticMethodHeader(ct, method);
+    delete ct;
+    return returnType;
+}
+
+bool DefaultSymbolHandler::isInstantiatableDefaultType(string className){
+    return defaultClasses.at(className);
+}
+
+MethodType* DefaultSymbolHandler::getDefaultStaticMethodHeader(Type* type, string method){
+    if(type->kind == TypeClass){
+        try {return defaultStaticMethodsOfClasses.at(type->getClassName()).at(method);}
+        catch(out_of_range oor) {return nullptr;}
+    } else if(type->kind == TypeArray){
+       return nullptr;
+    } else return nullptr;
+}
+
+MethodType* DefaultSymbolHandler::getDefaultNonstaticMethodHeader(Type* type, string method){
+    if(type->kind == TypeClass){
+        try {return defaultNonstaticMethodsOfClasses.at(type->getClassName()).at(method);}
+        catch(out_of_range oor) {return nullptr;}
+    } else if(type->kind == TypeArray){
+        try {return defaultNonstaticMethodsOfArrays.at(method);}
+        catch(out_of_range oor) {return nullptr;}
+    } else return nullptr;
+}
+
+void DefaultSymbolHandler::initDefaultClasses(){
+    defaultClasses.emplace("String", true);
+    defaultClasses.emplace("System", false);
+}
+
+bool DefaultSymbolHandler::isDefaultClass(string className){
+    return defaultClasses.find(className) != defaultClasses.end();
 }

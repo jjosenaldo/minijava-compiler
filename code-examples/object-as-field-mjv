@@ -10,3 +10,5 @@ class Dog{
         Cat c = new Cat();
     }
 }
+
+class Cat {} // Comment this for error

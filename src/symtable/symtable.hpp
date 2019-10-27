@@ -48,6 +48,8 @@ class Symtable{
     public:
         Symtable(string className);
 
+        Symtable(string className, string methodName);
+
         Symtable(string className, Symtable* parent);
 
         Symtable* getParent();

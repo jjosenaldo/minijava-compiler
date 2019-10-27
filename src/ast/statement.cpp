@@ -26,10 +26,22 @@ void VarDec::print(){
 }
 
 bool VarDec::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
+    if(type->kind == TypeClass && !g_defaultSymbolHandler.isDefaultClass(type->getClassName())){
+        if(pool->get(type->getClassName()) == nullptr){
+            classNotDefinedError(type->getClassName());
+            return false;
+        }
+
+        if(g_mainClassName == type->getClassName()){
+            instanceOfMainClassError();
+            return false;
+        }
+    }
+
     if(!canBeInstantiated(type, pool))
         return false;
 
-    if(predefinedId(id) || pool->get(id) != nullptr){
+    if(g_defaultSymbolHandler.isDefaultClass(id) || pool->get(id) != nullptr){
         classAsVariableNameError(id);
         return false;
     }
@@ -86,14 +98,15 @@ deque<GenStatement*>* Block::getStatements(){
 }
 
 bool Block::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
-    Symtable* table = new Symtable(parent->getClassName());
+    Symtable* table = new Symtable(parent->getClassName(), parent->getMethodName());
+    table->setParent(parent);
+
     if(statements != nullptr)
         for(auto stmt : *statements){
             if(!stmt->process(table, pool, program))
                 return false;
         }
 
-    table->setParent(parent);
     parent->insert(table);
     return true;
 }
@@ -240,9 +253,13 @@ void Return::print(){
 }
 
 bool Return::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
-    Type* optExpType = MkTypeNull();
+    Type* optExpType = MkTypeVoid();
     if(optExp != nullptr){
-        optExp->process(parent, pool);
+        bool res = optExp->process(parent, pool);
+
+        if(!res)
+            return false;
+        
         optExpType = optExp->getType();
     }
 
@@ -287,60 +304,61 @@ bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* poo
     if(!leftResult)
         return false;
 
-    // The callee expression is not an object
-    if(!left->isObject()){
-        methodCallOnNonobjectError(left->toString());
-        return false;
-    }
+    // The callee expression is an object
+    if(left->isObject()){
+        string className = left->getType()->getClassName();
 
-    ClassSymtable* classTable = pool->get(left->getType()->getClassName());
-    TableContent tc = classTable->get(method);
+        if(g_defaultSymbolHandler.isDefaultClass(className)){
+            MethodType* res = g_defaultSymbolHandler.getDefaultNonstaticMethodHeader(className, method);
 
-    // Search for the method (including the ancestor classes)
-    string currentClass = left->getType()->getClassName();
-    bool methodFound = false;
+            if(res == nullptr){
+                nonstaticMethodOnDefaultClassNotFound(className, method);
+                return false;
+            } else type = res;
+        } else{
+            ClassSymtable* classTable = pool->get(className);
+            TableContent tc = classTable->get(method);
 
-    while(currentClass != ""){
-        tc = pool->get(currentClass)->get(method);
+            // Search for the method (including the ancestor classes)
+            string currentClass = left->getType()->getClassName();
+            bool methodFound = false;
 
-        // The class doesn't contain the field
-        if(tc.tag == TCNOCONTENT || (tc.tag == TCTYPE && tc.type->kind != TypeMethod))
+            while(currentClass != ""){
+                tc = pool->get(currentClass)->get(method);
 
-            // Looks in its parent
-            currentClass = g_classParentMap[currentClass];
+                // The class doesn't contain the field
+                if(tc.tag == TCNOCONTENT || (tc.tag == TCTYPE && tc.type->kind != TypeMethod))
 
-        else{
-            methodFound = true;
-            break;
+                    // Looks in its parent
+                    currentClass = g_classParentMap[currentClass];
+
+                else{
+                    methodFound = true;
+                    break;
+                }
+            }
+
+            // The method doesnt exist
+            if(!methodFound){
+                methodNotFoundError(method, left->getType()->getClassName());
+                return false;
+            }
+
+            type = tc.type;
+        }
+    } else{
+        type = g_defaultSymbolHandler.getDefaultNonstaticMethodHeader(left->getType(), method);
+
+        if(type == nullptr){
+            typeDoesntContainNonstaticMethodError(left->getType()->toString(), method);
+            return false;
         }
     }
 
-    // The method doesnt exist
-    if(!methodFound){
-        methodNotFoundError(method, left->getType()->getClassName());
-        return false;
-    }
 
-    type = tc.type;
 
-    /*
-
-    This code checks for subclasses, i.e., polymorphism.
-
-    // Up to this point, the method exists. We have to check if it exists
-    // in the child class, so that the child class method is used
-    string actualClassName = left->getType()->getActualClassName();
-
-    // The ID was indeed created by a statement like "Animal a = new Cat()"
-    if(actualClassName != left->getType()->getClassName()){
-        auto methodTypeOnDerivedClass = pool->get(actualClassName)->get(method);
-
-        if(methodTypeOnDerivedClass.tag == TCTYPE)
-            type = methodTypeOnDerivedClass.type;
-    }
-    */
-
-    int expectedArgs = type->getMethodHeader()->size() - 1;
+    vector<Type*>* methodHeader = type->getMethodHeader();
+    int expectedArgs = methodHeader->size() - 1;
 
     if(arguments == nullptr) {
         if(expectedArgs != 0){
@@ -348,7 +366,7 @@ bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* poo
             return false;
         }
 
-        type = (*(type->getMethodHeader()))[0];
+        type = methodHeader->at(0);
         return true;
     }
 
@@ -361,13 +379,13 @@ bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* poo
         if(!  arguments->at(i)->process(environment, pool)  )
             return false;
 
-        if(!areCompatibleTypes(tc.type->getMethodHeader()->at(i+1), arguments->at(i)->getType()  )    ){ // +1 because the first element is the return type
-            incompatibleTypesMethodCall(method, i+1, tc.type->getMethodHeader()->at(i+1)->toString(), arguments->at(i)->getType()->toString());
+        if(!areCompatibleTypes(methodHeader->at(i+1), arguments->at(i)->getType()  )    ){ // +1 because the first element is the return type
+            incompatibleTypesMethodCall(method, i+1, methodHeader->at(i+1)->toString(), arguments->at(i)->getType()->toString());
             return false;
         }
     }
 
-    type = tc.type->getMethodHeader()->at(0);
+    type = methodHeader->at(0);
     return true;
 }
 
@@ -381,6 +399,67 @@ void MethodCallExpression::print(){
 
     cout << ");";
 }
+
+StaticMethodCallExpression::StaticMethodCallExpression(string className, string method, deque<Expression*>* arguments){
+    this->className = className;
+    this->method = method;
+    this->arguments = arguments;
+}
+
+bool StaticMethodCallExpression::process(Symtable* environment, ClassSymtablePool* pool){
+    auto methodHeader = g_defaultSymbolHandler.getDefaultStaticMethodHeader(className, method);
+
+    if(methodHeader == nullptr){
+        nonExistingMethodInDefaultClass(className, method);
+        return false;
+    }
+
+    int expectedArgs = methodHeader->getMethodHeader()->size() - 1;
+
+    if(arguments == nullptr) {
+        if(expectedArgs != 0){
+            diffNumberOfArgsMethodError(method, 0, expectedArgs);
+            return false;
+        }
+
+        type = methodHeader->getMethodHeader()->at(0);
+        return true;
+    }
+
+    if(arguments->size() != expectedArgs){
+        diffNumberOfArgsMethodError(method, arguments->size(), expectedArgs);
+        return false;
+    }
+
+    for(int i = 0; i < expectedArgs; ++i){
+        if(!  arguments->at(i)->process(environment, pool)  )
+            return false;
+
+        if(!areCompatibleTypes(methodHeader->getMethodHeader()->at(i+1), arguments->at(i)->getType()  )    ){ // +1 because the first element is the return type
+            incompatibleTypesMethodCall(method, i+1, methodHeader->getMethodHeader()->at(i+1)->toString(), arguments->at(i)->getType()->toString());
+            return false;
+        }
+    }
+
+    type = methodHeader->getMethodHeader()->at(0);
+    return true;
+}
+
+bool StaticMethodCallExpression::process(Symtable* environment, ClassSymtablePool* pool, Program* program){
+    return process(environment, pool);
+}
+
+string StaticMethodCallExpression::toString(){
+    // TODO
+    return "";
+}
+
+void StaticMethodCallExpression::print(){
+    // TODO
+}
+
+
+
 
 void Skip::print(){
     cout << ";";
