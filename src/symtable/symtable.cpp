@@ -273,7 +273,7 @@ bool addClassNamesToPool(Program* program, ClassSymtablePool* pool){
 
         string className = classDecl->getName();
 
-        if(pool->get(className) != nullptr) {
+        if(g_defaultSymbolHandler.isDefaultClass(className) ||  pool->get(className) != nullptr) {
             multipleClassError(className);
             return false;
         }

@@ -194,6 +194,16 @@ void typeDoesntContainNonstaticMethodError(string type, string method){
     cout << "the type " << type << " doesn't contain a method called " << method << endl;
 }
 
+void classAsFieldNameError(string name){
+    errorMsgPrefix();
+    cout << name << " is a class so it can't be used as an attribute's name" << endl;
+}
+
+void classAsMethodNameError(string methodName){
+    errorMsgPrefix();
+    cout << methodName << " is a class so it can't be used as method's name" << endl;   
+}
+
 void errorMsgPrefix(){
     cout << "ERROR: ";
 }

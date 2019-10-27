@@ -1,0 +1,18 @@
+class string{
+    void main(String[] args){
+        int String = 0;
+        String System = "oie";
+    }
+}
+
+class a{
+    int String;
+    bool System;
+
+    void String(){
+
+    }
+
+    int System(int a, int b){}
+
+}

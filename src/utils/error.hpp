@@ -83,4 +83,8 @@ void nonstaticMethodOnDefaultClassNotFound(string className, string method);
 
 void typeDoesntContainNonstaticMethodError(string type, string method);
 
+void classAsFieldNameError(string name);
+
+void classAsMethodNameError(string methodName);
+
 #endif
