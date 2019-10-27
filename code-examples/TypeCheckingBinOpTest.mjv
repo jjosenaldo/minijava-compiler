@@ -58,48 +58,15 @@ class Main {
 
 class Animal {
 	void eat() {
-		//System.print("eat\n");
-	}
-
-	int returnMethod() {
-		return 0;
-	}
-
-	int elselessIfMethod(int a, int b) {
-		if(a == b)
-			return a;
-		return b;
-	}
-
-	int ifElseMethod(int a, int b) {
-		if(a == b)
-			return a;
-		else
-			return b;	
-	}
-
-	int whileMethod(int a, int b) {
-		//int temp;
-
-		//if(b < a)
-		//	temp = b;
-
-		int diff = 0;
-		while(a != b) {
-			//a = a+1;
-			diff = diff+1;
-		}
-		return diff;
+		System.print("eat\n");
 	}
 }
 
 class Cat extends Animal {
 	void eat() {
-
+		System.print("meow\n");	
 	}
 	boolean meow() {
 		return true;
 	}
 }
-
-class String { }
