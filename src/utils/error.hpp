@@ -87,4 +87,6 @@ void classAsFieldNameError(string name);
 
 void classAsMethodNameError(string methodName);
 
+void returnPathError(string methodName);
+
 #endif

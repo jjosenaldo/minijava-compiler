@@ -16,6 +16,7 @@ using std::unordered_map;
 class Program;
 class ClassDeclaration;
 class Symtable;
+class GenStatement;
 
 enum TableContentTag{
     TCTYPE,
@@ -119,5 +120,7 @@ ClassSymtablePool* buildClassSymtablePool(Program* program);
 bool isSubclassOf(string descendant, string ancestor);
 
 bool canBeInstantiated(Type* type, ClassSymtablePool* pool);
+
+bool checkReturnPath(GenStatement* stmt);
 
 #endif

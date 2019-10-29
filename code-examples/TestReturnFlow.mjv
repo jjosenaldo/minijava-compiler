@@ -1,0 +1,40 @@
+class Main {
+	void main(String[] args) {
+
+	}
+}
+
+class TestReturnFlow {
+	int returnMethod() {
+		return 0;
+	}
+
+	int elselessIfMethod(int a, int b) {
+		if(a == b)
+			return a;
+		return b;
+	}
+
+	int ifElseMethod(int a, int b) {
+		if(a == b)
+			return a;
+		else
+			return b;	
+	}
+
+	int whileMethod(int a, int b) {
+		int temp;
+
+		if(b < a)
+			temp = b;
+		else
+			return b-a;
+
+		int diff = 0;
+		while(temp != b) {
+			temp = temp+1;
+			diff = diff+1;
+		}
+		return diff;
+	}
+}

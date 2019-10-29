@@ -3,6 +3,7 @@
 #include "symtable.hpp"
 #include "type.hpp"
 #include "ast.hpp"
+#include "statement.hpp"
 
 using std::cout;
 using std::endl;
@@ -178,15 +179,65 @@ bool ClassSymtable::processMethodBodies(ClassDeclaration* classDecl, ClassSymtab
         methodTable->setMethodName(methodName);
 
         if(blockStmt != nullptr){
+            // Process statements
             auto stmts = blockStmt->getStatements();
             for(auto stmt : *stmts){
                 if(!stmt->process(methodTable, pool, program))
                     return false;
             }
+
+            // Verify return path
+            if(method->getReturnType()->kind != TypeVoid) {
+                if(!checkReturnPath(blockStmt)) {
+                    returnPathError(methodName);
+                    return false;
+                }
+            }
         }
     }
 
     return true;
+}
+
+bool checkReturnPath(GenStatement* stmt) {
+
+    Return* returnCast = dynamic_cast<Return*>(stmt);
+    if(returnCast != nullptr)
+        return true;
+
+    IfElse* ifElseCast = dynamic_cast<IfElse*>(stmt);
+    if(ifElseCast != nullptr)
+        return checkReturnPath(ifElseCast->getStatementIf()) and checkReturnPath(ifElseCast->getStatementElse());
+
+    ElselessIf* elselessIfCast = dynamic_cast<ElselessIf*>(stmt);
+    if(elselessIfCast != nullptr)
+        return checkReturnPath(elselessIfCast->getStatement());
+
+    While* whileCast = dynamic_cast<While*>(stmt);
+    if(whileCast != nullptr)
+        return checkReturnPath(whileCast->getStatement());
+
+    Block* blockCast = dynamic_cast<Block*>(stmt);
+    if(blockCast != nullptr) {
+        for( auto stmt : *(blockCast->getStatements()) ) {
+            if(checkReturnPath(stmt))
+                return true;
+        }
+
+        return false;
+
+        // auto /* deque<GenStatement*>* */ stmts = blockCast->getStatements();
+
+        // auto it = stmts->begin();
+
+        // while(it != stmts->end()) {
+        //     if(checkReturnPath(*it++)) {
+        //         return true;
+        //     }
+        // }
+    }
+
+    return false;
 }
 
 unordered_map<string, Symtable*>* ClassSymtable::getMethodTables(){

@@ -135,6 +135,8 @@ void ElselessIf::print(){
     statement->print();
 }
 
+Statement* ElselessIf::getStatement() { return statement; }
+
 IfElse::IfElse(Expression* guard, Statement* statementIf, Statement* statementElse){
     this->guard = guard;
     this->statementIf = statementIf;
@@ -154,6 +156,9 @@ void IfElse::print(){
     statementElse->print();
 }
 
+Statement* IfElse::getStatementIf() { return statementElse; }
+Statement* IfElse::getStatementElse() { return statementIf; }
+
 While::While(Expression* guard, Statement* statement){
     this->guard = guard;
     this->statement = statement;
@@ -172,6 +177,8 @@ void While::print(){
     cout << ") ";
     statement->print();
 }
+
+Statement* While::getStatement() { return statement; }
 
 Assignment::Assignment(Expression* lvalue, Expression* rvalue){
     this->lvalue = lvalue;
