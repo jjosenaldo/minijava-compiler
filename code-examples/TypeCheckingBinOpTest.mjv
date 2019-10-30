@@ -1,0 +1,72 @@
+class Main {
+	void main(String[] args) {
+		int int_a = 1;
+		int int_b = 1;
+		boolean bool_a = true;
+		boolean bool_b = true;
+		// String str_a = "Oi";
+		// String str_b = "Ola";
+
+		int int_c = int_a + int_b;
+		int_c = int_a - int_b;
+
+		Cat a = new Cat();
+		Animal b = a;
+
+		Animal b1 = new Animal();
+
+		//boolean bool_a = a != b;
+		Animal[][] an = {{new Cat(), new Animal()}, null, {null}};
+
+		boolean bool_x = an == {{new Cat(), new Animal()}, null, {null}};
+		int_c = int_a * int_b;
+		int_c = int_a / int_b;
+		int_c = int_a % int_b;
+
+		// String str_c = str_a + str_b;
+		// str_c = str_a + str_b;
+
+		boolean bool_c = bool_a && bool_b;
+		bool_c = bool_a || bool_b;
+		
+		bool_c = int_a == int_b;
+		bool_c = int_a != int_b;
+		bool_c = int_a < int_b;
+		bool_c = int_a <= int_b;
+		bool_c = int_a > int_b;
+		// bool_c = int_a >= bool_b; // Err
+
+		// bool_c = str_a == str_b;
+		// bool_c = str_a != str_b;
+		// bool_c = str_a < str_b;
+		// bool_c = str_a <= str_b;
+		// bool_c = str_a > str_b;
+		// bool_c = str_a >= str_b;
+
+		boolean bool_d;
+		// bool_d = int_a == null; // Err
+		// bool_c = null != 1; // Err
+		bool_c = an == null;
+		bool_c = null != an;
+
+		int[][] arr_a = new int[4][3];
+
+		int[] arr_b = new int[4];
+		// int b = new int; // Err
+	}
+}
+
+class Animal {
+	void eat() {
+		System.print("eat\n");
+	}
+}
+
+class Cat extends Animal {
+	void eat() {
+		System.print("meow\n");	
+	}
+	boolean meow() {
+		return true;
+	}
+}

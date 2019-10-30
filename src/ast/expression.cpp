@@ -1,35 +1,83 @@
 #include <iostream>
 #include <string>
+#include "ast.hpp"
+#include "global.hpp"
+#include "error.hpp"
 #include "expression.hpp"
 
 using std::cout;
+using std::endl;
 using std::string;
+using std::to_string;
 
-string binOpSymbol(BinOperator op){
-    if(op == OP_MOD) return "%";
-    if(op == OP_GREAT) return ">";
-    if(op == OP_LESS   ) return "<";
-    if(op == OP_GREAT_EQ) return ">=";
-    if(op == OP_LESS_EQ) return "<=";
-    if(op == OP_IS_EQ) return "==";
-    if(op == OP_DIFF) return "!=";
-    if(op == OP_OR) return "||";
-    if(op == OP_AND) return "&&";
-    if(op == OP_PLUS) return "+";
-    if(op == OP_BIN_MINUS) return "-";
-    if(op == OP_TIMES) return "*";
-    if(op == OP_DIV) return "/";
-    return "";
+bool predefinedId(string id){
+    return string(id) == "String";
 }
 
-string unOpSymbol(UnOperator op){
-    if(op == OP_UN_MINUS) return "-";
-    if(op == OP_NOT) return "!";
-    return "";
+Expression::Expression(Type* type){
+    this->type = type;
 }
 
 Type* Expression::getType(){
     return this->type;
+}
+
+bool Expression::isObject(){
+    return this->type->kind == TypeClass;
+}
+
+BinExpression::BinExpression(Expression* first, Expression* second, BinOperator op){
+    this->first = first;
+    this->second = second;
+    this->op = op;
+}
+
+string BinExpression::toString(){
+    return this->first->toString() + " " + binOpSymbol(op) + " " + second->toString();
+}
+
+bool BinExpression::process(Symtable* environment, ClassSymtablePool* pool){
+    bool retFirst = first->process(environment, pool);
+    bool retSecond = second->process(environment, pool);
+
+    if(!retFirst || !retSecond)
+        return false;
+
+    Type* newType = returnTypeBinOp(first->getType(), second->getType(), op);
+
+    if(newType == nullptr){
+        typeErrorBinOp(first->getType()->toString(), second->getType()->toString(), binOpSymbol(op));
+        return false;
+    }
+
+    type = newType;
+    return true;
+}
+
+UnExpression::UnExpression(Expression* first, UnOperator op){
+    this->first = first;
+    this->op = op;
+}
+
+string UnExpression::toString(){
+    return unOpSymbol(op) + first->toString();
+}
+
+bool UnExpression::process(Symtable* environment, ClassSymtablePool* pool){
+    bool retFirst = first->process(environment, pool);
+
+    if(!retFirst)
+        return false;
+
+    Type* newType = returnTypeUnOp(first->getType(), op);
+
+    if(newType == nullptr){
+        typeErrorUnOp(first->getType()->toString(), unOpSymbol(op));
+        return false;
+    }
+
+    type = newType;
+    return true;
 }
 
 AtomExpression::AtomExpression(Type* type){
@@ -41,116 +89,205 @@ AtomExpression::AtomExpression(AtomExpValue val, Type* type){
     this->val = val;
 }
 
-void AtomExpression::print(){
+string AtomExpression::toString(){
     if(this->type == nullptr){
-        cout << "???";
+        return "???";
     } else switch(this->type->kind){
         case TypeNull:
-            cout << "null";break;
+            return "null";
         case TypeInt:
-            cout << this->val.intval;break;
+            return to_string(this->val.intval);
         case TypeVoid:
-            cout << "ERROR: exp of type void";break;
+            return "ERROR: exp of type void";
         case TypeBoolean:
-            cout << this->val.boolval;break;
+            return to_string(this->val.boolval);
         case TypeClass:
-            cout << string(this->val.strval);break;
+            return string(this->val.strval);
         default:
-            cout << "ERROR: invalid type for an atomic expression";
+            return "ERROR: invalid type for an atomic expression";
     }
 }
 
-BinExpression::BinExpression(Expression* first, Expression* second, BinOperator op){
-    this->first = first;
-    this->second = second;
-    this->op = op;
+bool AtomExpression::process(Symtable* environment, ClassSymtablePool* pool){
+    return true;
 }
 
-void BinExpression::print(){
-    this->first->print();
-    cout << " " << binOpSymbol(op) << " ";
-    this->second->print();
+string ArrayDeclExpression::toString(){
+    return "new " + type->toString();
 }
 
-UnExpression::UnExpression(Expression* first, UnOperator op){
-    this->first = first;
-    this->op = op;
+bool ArrayDeclExpression::process(Symtable* environment, ClassSymtablePool* pool){
+    switch(type->kind){
+        case TypeNull:
+            arrayOfInvalidTypeError(type->toString());
+            return false;
+        case TypeMethod:
+            arrayOfInvalidTypeError(type->toString());
+            return false;
+        case TypeVoid:
+            arrayOfInvalidTypeError(type->toString());
+            return false;
+        case TypeClass:
+            if(pool->get(type->getClassName()) == nullptr){
+                classNotDefinedError(type->getClassName());
+                return false;
+            }
+    }
+
+    return true;
 }
 
-void UnExpression::print(){
-    cout << unOpSymbol(op);
-    first->print();
-}
-
-ArrayDeclExpression::ArrayDeclExpression(Type* type){
-    this->type = type;
-}
-
-void ArrayDeclExpression::print(){
-    cout << "new ";
-    printType(type);
-}
-
-NewObjExpression::NewObjExpression(string id, deque<Expression*>* args){
+NewObjExpression::NewObjExpression(string id){
     this->id = id;
-    this->arguments = args;
 }
 
-void NewObjExpression::print(){
-    cout << "new " << id << "(";
-    if(arguments != nullptr) for(auto e : *arguments) {e->print();cout << ",";}
-    cout << ")";
+string NewObjExpression::toString(){
+    return  "new " + id + "( )";
+}
+
+bool NewObjExpression::process(Symtable* environment, ClassSymtablePool* pool){
+    if(pool->get(id) == nullptr){
+        classNotDefinedError(id);
+        return false;
+    }
+
+    type = MkTypeClass(id);
+    return true;
 }
 
 IdExpression::IdExpression(string id){
     this->id = id;
 }
 
-void IdExpression::print(){
-    cout << id;
+string IdExpression::toString(){
+    return getId();
+}
+
+string IdExpression::getId(){
+    return id;
+}
+
+bool IdExpression::process(Symtable* environment, ClassSymtablePool* pool){
+    if(predefinedId(id) || pool->get(id) != nullptr){
+        classAsExpressionError(id);
+        return false;
+    }
+
+    TableContent tc = environment->lookup(id);
+
+    if(tc.tag != TCTYPE){
+        variableNotDefinedError(id);
+        return false;
+    }
+
+    type = tc.type;
+    return true;
+}
+
+bool IdExpression::isLvalue(){
+    return true;
+}
+
+bool FieldAccessExpression::isLvalue(){
+    return true;
 }
 
 FieldAccessExpression::FieldAccessExpression(string id){
     this->id = id;
 }
 
-void FieldAccessExpression::print(){
-    cout << "this." << id;
+string FieldAccessExpression::toString(){
+    return "this." + id;
 }
 
-void ThisExpression::print(){
-    cout << "this";
+bool FieldAccessExpression::process(Symtable* environment, ClassSymtablePool* pool){
+    TableContent tc;
+    string currentClass = environment->getClassName();
+
+    while(currentClass != ""){
+        tc = pool->get(currentClass)->get(id);
+
+        // The class doesn't contain the field
+        if(tc.tag == TCNOCONTENT || (tc.tag == TCTYPE && tc.type->kind == TypeMethod))
+
+            // Looks in its parent
+            currentClass = g_classParentMap[currentClass];
+
+        else{
+            type = tc.type;
+            return true;
+        }
+    }
+
+    fieldNotFoundError(id, environment->getClassName());
+    return false;
 }
 
-MethodCallExpression::MethodCallExpression(Expression* left, string method, deque<Expression*>* args){
-    this->left = left;
-    this->method = method;
-    this->arguments = args;
+string ThisExpression::toString(){
+    return "this";
 }
 
-void MethodCallExpression::print(){
-    left->print();
-    cout << "." << method << "(";
-    if(arguments != nullptr) for(auto e : *arguments){e->print();cout << ",";}
-    cout << ")";
+bool ThisExpression::process(Symtable* environment, ClassSymtablePool* pool){
+    type = MkTypeClass(environment->getClassName());
+    return true;
 }
 
 ParenExpression::ParenExpression(Expression* fst){
     this->first = fst;
 }
 
-void ParenExpression::print(){
-    cout << "("; first->print(); cout << ")";
+string ParenExpression::toString(){
+    return "(" + first->toString() + ")";
+}
+
+bool ParenExpression::isLvalue(){
+    return first->isLvalue();
+}
+
+bool ParenExpression::process(Symtable* environment, ClassSymtablePool* pool){
+    bool retFirst = first->process(environment, pool);
+
+    if(!retFirst)
+        return false;
+
+    type = first->getType();
+    return true;
 }
 
 LitArrayExpression::LitArrayExpression(deque<Expression*>* exprs){
     this->expressions = exprs;
 }
 
-void LitArrayExpression::print(){
-    cout << "{";
-    for(auto e : *expressions){e->print();cout << ",";}
-    cout << "}";
+string LitArrayExpression::toString(){
+    string ans = "{";
+    for(auto e : *expressions) ans += e->toString() + ",";
+    return ans + "}";
+}
+
+bool LitArrayExpression::process(Symtable* environment, ClassSymtablePool* pool){
+    Type** types = new Type*[expressions->size()];
+    bool retExp;
+
+    int i = 0;
+    for(auto exp : *expressions){
+        retExp = exp->process(environment, pool);
+
+        if(!retExp){
+            delete[] types;
+            return false;
+        }
+
+        types[i++] = exp->getType();
+    }
+
+    Type* resType = resultingType(types, expressions->size());
+    delete[] types;
+
+    if(resType == nullptr)
+        return false;
+
+    type = resType;
+    return true;
 }
 
 ArrayAccessExpression::ArrayAccessExpression(ObjExpression* left, deque<Expression*>* dimensions){
@@ -158,7 +295,87 @@ ArrayAccessExpression::ArrayAccessExpression(ObjExpression* left, deque<Expressi
     this->dimensions = dimensions;
 }
 
-void ArrayAccessExpression::print(){
-    left->print();
-    for(auto d : *dimensions){cout << "[";d->print();cout << "]";}
+string ArrayAccessExpression::toString(){
+    string ans = left->toString();
+    for(auto d : *dimensions) ans += "[" + d->toString() + "]";
+    return ans;
 }
+
+bool ArrayAccessExpression::process(Symtable* environment, ClassSymtablePool* pool){
+    bool retLeft = left->process(environment, pool);
+
+    if(!retLeft)
+        return false;
+
+    Type* currentType = left->getType();
+
+    for(auto dim : *dimensions){
+        if(currentType->kind != TypeArray){
+            nonArrayExpressionError(left->toString());
+            return false;
+        }
+
+        bool ret = dim->process(environment, pool);
+
+        if(!ret)
+            return false;
+
+        if(dim->getType()->kind != TypeInt){
+            nonIntArrayDimensionError(dim->toString());
+            return false;
+        }
+
+        currentType = currentType->getBaseType();
+    }
+
+    type = currentType;
+    return true;
+}
+
+bool ArrayAccessExpression::isLvalue(){
+    return true;
+}
+
+NewArrayExpression::NewArrayExpression(ArrayDeclExpression* decl, deque<Expression*>* dimensions){
+    Type* newType = decl->getType();
+
+    for(auto dim : *dimensions)
+        newType = MkTypeArray(newType);
+
+    this->type = newType;
+    this->dimensions = dimensions;
+}
+
+bool NewArrayExpression::process(Symtable* environment, ClassSymtablePool* pool){
+    for(auto dim : *dimensions)
+        if(!dim->process(environment, pool))
+            return false;
+
+    if(type->kind == TypeMethod || type->kind == TypeNull || type->kind == TypeVoid){
+        arrayOfInvalidTypeError(type->toString());
+        return false;
+    }
+
+    if(type->kind == TypeClass){
+        if(predefinedId(type->getClassName()))
+            return true;
+
+        if(pool->get(type->getClassName()) != nullptr)
+            return true;
+
+        classNotDefinedError(type->getClassName());
+        return false;
+    }
+
+    return true;
+}
+
+string NewArrayExpression::toString(){
+    string ans = this->type->toString();
+
+    for(auto dim : *dimensions) ans += "[" + dim->toString() +"]";
+
+    return ans;
+}
+
+#include "ast.hpp"

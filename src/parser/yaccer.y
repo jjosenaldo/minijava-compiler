@@ -6,8 +6,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include "ast.hpp"
-#include "node.hpp"
-#include "symtable-pool.hpp"
+#include "error.hpp"
+#include "global.hpp"
 
 using std::cout;
 using std::endl;
@@ -17,12 +17,6 @@ extern int yylineno;
 void yyerror(const char* s);
 
 void errorMsgPrefix();
-void multipleClassError(char* id);
-void beginScope();
-void endScope();
-
-SymtablePool tablePool;
-Symtable* currentScope;
 
 Program* program;
 %}
@@ -99,9 +93,10 @@ goal : mainclass classdecs {
 } ;
 
 mainclass : CLASS ID '{' VOID ID '(' ID ARR ID ')' '{' blockstmts '}' '}' {
-    Symtable* newTable = new Symtable();
-    tablePool.insert(string($2), newTable);
-    currentScope = newTable;
+    if($5 != MAIN_METHOD_NAME){
+        mainMethodNameError(MAIN_METHOD_NAME, $5);
+        return 1;
+    }
 
     // Parameter
     Type* paramType = MkTypeArray(MkTypeClass($7));
@@ -115,6 +110,7 @@ mainclass : CLASS ID '{' VOID ID '(' ID ARR ID ')' '{' blockstmts '}' '}' {
     mainMethod->addParam(param);
 
     // Class
+    g_mainClassName = $2;
     ClassDeclaration* decl = new ClassDeclaration($2);
     decl->addMethod(mainMethod);
     $$ = decl;
@@ -136,12 +132,6 @@ classdecs : classdec classdecs {
 };
 
 classdec : CLASS ID extendsopt '{' classmembers '}' {
-    Symtable* newTable = new Symtable();
-    if(!tablePool.insert(string($2), newTable)){
-        multipleClassError($2);
-        return 1;
-    }
-
     ClassDeclaration* decl;
 
     if($3 != nullptr)
@@ -160,8 +150,6 @@ classdec : CLASS ID extendsopt '{' classmembers '}' {
     }
     
     $$ = decl;
-
-    currentScope = newTable;
 } ;
 
 classmembers : vardec classmembers {
@@ -273,7 +261,7 @@ blockstmts : vardec blockstmts{
     }
 }
 | {
-    $$ = nullptr;
+    $$ = new Block;
 };
 
 stmt : '{' blockstmts '}' {
@@ -304,7 +292,17 @@ stmt : '{' blockstmts '}' {
     $$ = new Return;
 }
 | expr '.' ID '(' exprlistopt ')'  ';'{
-    $$ = new MethodCall($1, $3, $5);
+    IdExpression* idExpr = dynamic_cast<IdExpression*>($1);
+
+    if(idExpr != nullptr){
+        if(!g_defaultSymbolHandler.isDefaultClass(idExpr->getId())){
+            $$ = new MethodCallExpression($1, $3, $5);
+        } else{
+            $$ = new StaticMethodCallExpression(idExpr->getId(), $3, $5);
+        }
+    } else{
+        $$ = new MethodCallExpression($1, $3, $5);
+    }
 }
 | ';' {
     $$ = new Skip;
@@ -362,8 +360,13 @@ expr : expr '>' expr {
     $$ = new BinExpression($1, $3, OP_MOD);   
 }
 
-| object filledbracks { 
-    $$ = new ArrayAccessExpression($1, $2);
+| object filledbracks {
+    auto arrayDecl = dynamic_cast<ArrayDeclExpression*>($1);
+    if(arrayDecl != nullptr ){
+        $$ = new NewArrayExpression(arrayDecl, $2);
+    } else{
+        $$ = new ArrayAccessExpression($1, $2);
+    }
 }
 
 | LIT_INT {
@@ -400,6 +403,13 @@ expr : expr '>' expr {
 }
 
 | object {
+    // Prevents things like "new int" from being considered expressions
+    auto decl = dynamic_cast<ArrayDeclExpression*>($1);
+    if(decl != nullptr){
+        newTypeIsNotAnExpression(decl->getType()->toString());
+        return 1;
+    }
+
     $$ = $1;
 }
 
@@ -430,8 +440,8 @@ type : type ARR {
 object : NEW type {
     $$ = new ArrayDeclExpression($2);
 }
-| NEW ID '(' exprlistopt ')' {
-    $$ = new NewObjExpression($2, $4);
+| NEW ID '(' ')' {
+    $$ = new NewObjExpression($2);
 } | ID {
     $$ = new IdExpression($1);
 } | THIS_DOT ID {
@@ -439,7 +449,17 @@ object : NEW type {
 } | THIS {
     $$ = new ThisExpression;
 } | expr '.' ID '(' exprlistopt ')' {
-    $$ = new MethodCallExpression($1, $3, $5);
+    IdExpression* idExpr = dynamic_cast<IdExpression*>($1);
+
+    if(idExpr != nullptr){
+        if(!g_defaultSymbolHandler.isDefaultClass(idExpr->getId())){
+            $$ = new MethodCallExpression($1, $3, $5);
+        } else{
+            $$ = new StaticMethodCallExpression(idExpr->getId(), $3, $5);
+        }
+    } else{
+        $$ = new MethodCallExpression($1, $3, $5);
+    }
 } | '(' expr ')' {
     $$ = new ParenExpression($2);
 } | '{' exprlist '}' {
@@ -482,29 +502,13 @@ void yyerror(const char *s) {
     fprintf(stderr, "line: %d: %s\n", yylineno, s);
 }
 
-void errorMsgPrefix(){
-    cout << "ERROR at l." << yylineno << ": ";
-}
-
-void multipleClassError(char* id){
-    errorMsgPrefix();
-    cout << "the class " << id << " was multiply defined!" << endl;
-}
-
-void beginScope(){
-    Symtable* table = new Symtable(currentScope);
-    currentScope = table;
-}
-
-void endScope(){
-    currentScope = currentScope->getParent();
-}
-
 int main(){
-    tablePool = SymtablePool();
     if(yyparse() != 1){
-        // tablePool.print();
-        program->print();
+        // program->print();
+        auto pool = buildClassSymtablePool(program);
+
+        if(pool != nullptr)
+            pool->print();
     }
     return 0;
 }

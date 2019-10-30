@@ -4,11 +4,11 @@ class Main{
     void main(String[] args){
         QuickSort sorter = new QuickSort();
         int[] v = {1,5,3,6,3,845,23,56};
-        sorter.quickSort(v);
+        sorter.quickSort(v, 0, 7);
 
         int i = 0;
         while(i < v.length()){
-            System.println(v[i]);
+            System.print(v[i]);
             i = i+1;
         }
     }

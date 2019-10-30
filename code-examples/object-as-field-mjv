@@ -1,0 +1,14 @@
+class Main{
+    void main(String[] args){
+
+    }
+}
+
+class Dog{
+    Cat friend;
+    void a(){
+        Cat c = new Cat();
+    }
+}
+
+class Cat {} // Comment this for error
