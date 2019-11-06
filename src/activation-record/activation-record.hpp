@@ -15,7 +15,7 @@ class Record
 private:
 	unordered_map<string,Value*> table;
 
-	Record* staticParent;
+	Record* dynamicParent;
 
 	Value* returnVal;
 
@@ -30,7 +30,7 @@ public:
 	void insertVar(string id, int v);
 	void updateVar(string id, Value* v); // TODO: Free old value 
 
-	Record* getStaticParent();
+	Record* getDynamicParent();
 
 	// TODO: Remove after
 	void print() {

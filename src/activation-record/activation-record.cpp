@@ -2,7 +2,7 @@
 
 // Record
 Record::Record(Record *parent) {
-	staticParent = parent;
+	dynamicParent = parent;
 }
 	
 Record::~Record() {}
@@ -24,14 +24,14 @@ Value* Record::lookupVarVal(string id) {
 
 	do{
 		v = currentRecord->getVarVal(id);
-		currentRecord = currentRecord->getStaticParent();
+		currentRecord = currentRecord->getDynamicParent();
 	} while(v == nullptr && currentRecord != nullptr);
 	
 	return v;
 }
 
-Record* Record::getStaticParent(){
-	return staticParent;
+Record* Record::getDynamicParent(){
+	return dynamicParent;
 }
 
 Value* Record::getReturn() {
