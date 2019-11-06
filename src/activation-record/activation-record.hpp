@@ -1,29 +1,14 @@
 #ifndef ACTIVATION_RECORD_HPP
 #define ACTIVATION_RECORD_HPP
+
 #include <unordered_map>
 #include <string>
 #include <stack>
 #include <iostream> // TODO: Remove after
 
+#include "value.hpp"
+
 using namespace std;
-
-class Value
-{
-public:
-	Value() {}
-	~Value() {}
-	virtual int getValue(){return 0;}
-	virtual string toString() = 0;
-};
-
-class IntValue : public Value {
-private:
-	int value;
-public:
-	IntValue(int v) { value = v; }
-	int getValue(){return 0;}
-	string toString() { return to_string(value); }
-};
 
 class Record
 {
