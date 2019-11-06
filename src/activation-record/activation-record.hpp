@@ -29,7 +29,6 @@ public:
 	void insertVar(string id, Value *v);
 	void insertVar(string id, int v);
 	void updateVar(string id, Value* v); // TODO: Free old value 
-	void updateVar(string id, int v) { table[id] = new IntValue(v);}
 
 	Record* getStaticParent();
 
