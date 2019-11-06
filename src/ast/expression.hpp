@@ -65,6 +65,7 @@ class BinExpression : public Expression{
         BinExpression(Expression* first, Expression* second, BinOperator op);
         bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
+        BinOperator getOp();
 };
 
 // Example: !a

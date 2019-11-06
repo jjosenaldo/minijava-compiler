@@ -6,13 +6,16 @@ class Visitor {
 private:
 
 public:
-	void visit(IdExpression exp);
-	void visit(FieldAccessExpression exp);
-	void visit(ThisExpression exp);
-	void visit(ParenExpression exp);
-	void visit(LitArrayExpression exp);
-	void visit(ArrayAccessExpression exp);
-	void visit(NewArrayExpression exp);
+	string visit(IdExpression *exp);
+	string visit(FieldAccessExpression *exp);
+	string visit(AtomExpression *exp);
+	string visit(BinExpression *exp);
+
+	string visit(ThisExpression *exp);
+	string visit(ParenExpression *exp);
+	string visit(LitArrayExpression *exp);
+	string visit(ArrayAccessExpression *exp);
+	string visit(NewArrayExpression *exp);
 }
 
 #endif
