@@ -18,6 +18,22 @@ Value* Record::getVarVal(string id) {
 	return v;
 }
 
+Value* Record::lookupVarVal(string id) { 
+	Value *v = nullptr;
+	Record* currentRecord = this;
+
+	do{
+		v = currentRecord->getVarVal(id);
+		currentRecord = currentRecord->getStaticParent();
+	} while(v == nullptr && currentRecord != nullptr);
+	
+	return v;
+}
+
+Record* Record::getStaticParent(){
+	return staticParent;
+}
+
 Value* Record::getReturn() {
 	return returnVal;
 }
