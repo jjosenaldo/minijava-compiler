@@ -2,7 +2,7 @@
 
 // Record
 Record::Record(Record *parent) {
-	staticParent = parent;
+	dynamicParent = parent;
 }
 	
 Record::~Record() {}
@@ -18,6 +18,22 @@ Value* Record::getVarVal(string id) {
 	return v;
 }
 
+Value* Record::lookupVarVal(string id) { 
+	Value *v = nullptr;
+	Record* currentRecord = this;
+
+	do{
+		v = currentRecord->getVarVal(id);
+		currentRecord = currentRecord->getDynamicParent();
+	} while(v == nullptr && currentRecord != nullptr);
+	
+	return v;
+}
+
+Record* Record::getDynamicParent(){
+	return dynamicParent;
+}
+
 Value* Record::getReturn() {
 	return returnVal;
 }
@@ -27,8 +43,7 @@ void Record::insertVar(string id, Value *v) {
 }
 
 void Record::insertVar(string id, int v) {
-	Value* v1 = new IntValue(v);
-	table[id] = v1;
+	insertVar(id, new IntValue(v));
 }
 
 void Record::updateVar(string id, Value* v) {
