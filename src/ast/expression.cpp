@@ -54,6 +54,18 @@ bool BinExpression::process(Symtable* environment, ClassSymtablePool* pool){
     return true;
 }
 
+Expression* BinOperator::getFirst() {
+    return first;
+}
+
+Expression* BinOperator::getSecond() {
+    return second;
+}
+
+BinOperator BinOperator::getOp() {
+    return op;
+}
+
 UnExpression::UnExpression(Expression* first, UnOperator op){
     this->first = first;
     this->op = op;
@@ -80,6 +92,14 @@ bool UnExpression::process(Symtable* environment, ClassSymtablePool* pool){
     return true;
 }
 
+Expression* UnOperator::getFirst() {
+    return first;
+}
+
+BinOperator UnOperator::getOp() {
+    return op;
+}
+
 AtomExpression::AtomExpression(Type* type){
     this->type = type;
 }
@@ -90,22 +110,17 @@ AtomExpression::AtomExpression(AtomExpValue val, Type* type){
 }
 
 string AtomExpression::toString(){
-    if(this->type == nullptr){
-        return "???";
-    } else switch(this->type->kind){
-        case TypeNull:
+    if(this->type != nullptr) {
+        if(this->type->kind == TypeNull)
             return "null";
-        case TypeInt:
-            return to_string(this->val.intval);
-        case TypeVoid:
-            return "ERROR: exp of type void";
-        case TypeBoolean:
-            return to_string(this->val.boolval);
-        case TypeClass:
-            return string(this->val.strval);
-        default:
-            return "ERROR: invalid type for an atomic expression";
+        if(this->type->kind == TypeInt)
+            return to_string(this->val.intval);;
+        if(this->type->kind == TypeBoolean)
+            return this->val.boolval ? "true" : "false";
+        if(this->type->kind == TypeClass and this->type->getClassName() == "String")
+            return "\"" + string(this->val.strval) + "\"";
     }
+    return "ERROR: invalid type for an atomic expression";
 }
 
 bool AtomExpression::process(Symtable* environment, ClassSymtablePool* pool){
@@ -254,13 +269,22 @@ bool ParenExpression::process(Symtable* environment, ClassSymtablePool* pool){
     return true;
 }
 
+Expression* ParenExpression::getFirst() {
+    return first;
+}
+
 LitArrayExpression::LitArrayExpression(deque<Expression*>* exprs){
     this->expressions = exprs;
 }
 
 string LitArrayExpression::toString(){
     string ans = "{";
-    for(auto e : *expressions) ans += e->toString() + ",";
+    int i = 0;
+    for(auto e : *expressions) 
+        if(++i < expression->size())
+            ans += e->toString() + ",";
+        else
+            ans += e->toString();
     return ans + "}";
 }
 

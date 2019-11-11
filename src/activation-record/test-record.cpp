@@ -14,7 +14,7 @@ int main(int argc, char const *argv[]) {
 
 	rs->top()->insertVar("c", rs->top()->getVarVal("a")); 
 
-	rs->top()->updateVar("a", 2);
+	rs->top()->updateVar("a", 2*c);
 	rs->pop();
 
 	return 0;

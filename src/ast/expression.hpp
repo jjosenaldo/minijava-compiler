@@ -65,6 +65,8 @@ class BinExpression : public Expression{
         BinExpression(Expression* first, Expression* second, BinOperator op);
         bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
+        Expression* getFirst();
+        Expression* getSecond();
         BinOperator getOp();
 };
 
@@ -78,6 +80,8 @@ class UnExpression : public Expression{
         UnExpression(Expression* first, UnOperator op);
         bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
+        Expression* getFirst();
+        BinOperator getOp();
 };
 
 // Example: false
@@ -165,6 +169,7 @@ class ParenExpression : public ObjExpression{
         bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
         bool isLvalue();
+        Expression* getFirst();
 };
 
 class LitArrayExpression : public ObjExpression{
