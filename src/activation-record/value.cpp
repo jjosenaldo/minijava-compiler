@@ -13,3 +13,8 @@ int IntValue::getValue(){
 string IntValue::toString(){
     return to_string(value);
 }
+
+Value* IntValue::operator+(Value *b) {
+	IntValue *ib = dinamic_cast<IntValue*>(b);
+	return new IntValue(a.getInt() + ib->getInt()); // segmentation fault ???
+}
