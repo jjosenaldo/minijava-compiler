@@ -10,8 +10,8 @@ string IntValue::toString(){
     return to_string(value);
 }
 
-Value* IntValue::operator+(Value *b) {
-	IntValue *ib = dynamic_cast<IntValue*>(b);
+Value* IntValue::operator+(Value &b) {
+	IntValue *ib = dynamic_cast<IntValue*>(&b);
 	return new IntValue(this->getInt() + ib->getInt()); // segmentation fault ???
 }
 

@@ -11,7 +11,7 @@ public:
 	Value() {}
 	~Value() {}
 	virtual string toString() = 0;
-	virtual Value* operator+(Value *) = 0;
+	virtual Value* operator+(Value &) = 0;
 };
 
 class IntValue : public Value {
@@ -21,7 +21,7 @@ public:
 	IntValue(int v);
 	int getInt();
 	string toString();
-	Value* operator+(Value *b);
+	Value* operator+(Value &b);
 };
 
 #endif

@@ -49,7 +49,7 @@ using std::cout;
 string Visitor::visit(BinExpression *exp) {
 	string tmp1 = visit(exp->first);
 	string tmp2 = visit(exp->second);
-	cout << TYPE << " _tmp" << this->contTmpVars << " = *" << tmp1 << " " << binOpSymbol(exp->getOp()) << " " << tmp2 << ";\n";
+	cout << TYPE << " _tmp" << this->contTmpVars << " = *" << tmp1 << " " << binOpSymbol(exp->getOp()) << " *" << tmp2 << ";\n";
 	return "_tmp" + to_string(this->contTmpVars++);
 }
 
