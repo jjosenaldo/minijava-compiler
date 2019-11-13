@@ -20,14 +20,14 @@ OBJS = $(OBJ)/activation-record.o $(OBJ)/ast.o $(OBJ)/error.o $(OBJ)/expression.
 
 all: $(BIN)/main.out 
 
-$(BIN)/main.out: $(OBJS)
-	g++ -x c++ $(OBJ)/yaccer.cpp $(OBJ)/lex.yy.c $(OBJS) -ly -ll -o $(BIN)/main.out $(INC) $(FLAGS) 
+$(BIN)/main.out: lexer yaccer $(SRC)/main.cpp $(OBJS)
+	g++ -x c++ $(SRC)/main.cpp $(PARSER_PATH)/yaccer.cpp $(OBJ)/lex.yy.c $(OBJS) -ly -ll -o $(BIN)/main.out $(INC) $(FLAGS) 
 
 lexer: $(PARSER_PATH)/lexer.l 
 	$(LEX) -o $(OBJ)/lex.yy.c $(PARSER_PATH)/lexer.l
 
 yaccer: $(PARSER_PATH)/yaccer.y 
-	$(YACC) -d $(PARSER_PATH)/yaccer.y -o $(OBJ)/yaccer.cpp
+	$(YACC) --defines=$(PARSER_PATH)/yaccer.hpp $(PARSER_PATH)/yaccer.y -o $(PARSER_PATH)/yaccer.cpp
 
 $(OBJ)/activation-record.o: $(CG_PATH)/activation-record.cpp $(CG_PATH)/activation-record.hpp
 	g++ -c -o $(OBJ)/activation-record.o $(CG_PATH)/activation-record.cpp $(INC) $(FLAGS) 
@@ -59,7 +59,7 @@ $(OBJ)/type.o: $(AST_PATH)/type.cpp $(AST_PATH)/type.hpp
 $(OBJ)/value.o: $(CG_PATH)/value.cpp $(CG_PATH)/value.hpp
 	g++ -c -o $(OBJ)/value.o $(CG_PATH)/value.cpp $(INC) $(FLAGS) 
 
-visitor.o: $(CG_PATH)/visitor.cpp $(CG_PATH)/visitor.hpp
+$(OBJ)/visitor.o: $(CG_PATH)/visitor.cpp $(CG_PATH)/visitor.hpp
 	g++ -c -o $(OBJ)/visitor.o $(CG_PATH)/visitor.cpp $(INC) $(FLAGS) 
 
 
