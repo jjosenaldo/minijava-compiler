@@ -8,6 +8,7 @@
 #include "ast.hpp"
 #include "error.hpp"
 #include "global.hpp"
+#include "visitor.hpp" // TODO: remove this
 
 using std::cout;
 using std::endl;
@@ -503,12 +504,19 @@ void yyerror(const char *s) {
 }
 
 int main(){
+    /*
     if(yyparse() != 1){
         // program->print();
         auto pool = buildClassSymtablePool(program);
 
         if(pool != nullptr)
             pool->print();
-    }
+    }*/
+
+    IdExpression* ida = new IdExpression("a");
+    IdExpression* idb = new IdExpression("b");
+    BinExpression* binop = new BinExpression(ida, idb, OP_PLUS);
+    Visitor* visitor = new Visitor;
+    visitor->visit(binop);
     return 0;
 }
