@@ -67,13 +67,12 @@ $(OBJ)/visitor.o: $(CG_PATH)/visitor.cpp $(CG_PATH)/visitor.hpp
 clean:
 	@# @ symbol at beginning indicates that it will not be printed
 	@if [ "$$(ls -A $(OBJ))" ]; then \
-		echo "rm $(OBJ)/*"; \
 		rm $(OBJ)/*; \
 	fi
 	@if [ "$$(ls -A $(BIN))" ]; then \
-		echo "rm $(BIN)/*"; \
 		rm $(BIN)/*; \
 	fi
+	@rm $(PARSER_PATH)/*.cpp $(PARSER_PATH)/*.hpp 
 
 # Run all code examples
 test: $(BIN)/main.out
