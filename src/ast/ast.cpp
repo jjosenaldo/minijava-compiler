@@ -2,6 +2,7 @@
 #include "ast.hpp"
 #include "error.hpp"
 #include "global.hpp"
+#include "static-visitor.cpp"
 
 using std::cout;
 using std::endl;
@@ -214,8 +215,10 @@ bool Field::process(string className, ClassSymtable* root, ClassSymtablePool* po
         return false;
     }
 
+    auto visitor = StaticVisitor(root, pool);
+
     if(this->initValue != nullptr){
-        if(!this->initValue->process(root, pool))
+        if(!this->initValue->accept(visitor))
             return false;
 
             if(!areCompatibleTypes(type, this->initValue->getType())){

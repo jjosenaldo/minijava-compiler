@@ -16,7 +16,7 @@ YACC := bison
 
 INC := -I $(GRAMMAR_PATH) -I $(PARSER_PATH) -I $(SYMTABLE_PATH) -I $(SYMTABLE_PATH) -I $(SYMTABLE_PATH) -I $(AST_PATH) -I $(UTILS_PATH) -I $(CG_PATH)
 
-OBJS = $(OBJ)/activation-record.o $(OBJ)/ast.o $(OBJ)/error.o $(OBJ)/expression.o $(OBJ)/global.o $(OBJ)/operator.o $(OBJ)/statement.o $(OBJ)/symtable.o $(OBJ)/type.o $(OBJ)/value.o $(OBJ)/visitor.o
+OBJS = $(OBJ)/activation-record.o $(OBJ)/ast.o $(OBJ)/error.o $(OBJ)/expression.o $(OBJ)/global.o $(OBJ)/operator.o $(OBJ)/statement.o $(OBJ)/static-visitor.o $(OBJ)/symtable.o $(OBJ)/type.o $(OBJ)/value.o $(OBJ)/visitor.o
 
 all: $(BIN)/main.out 
 
@@ -49,6 +49,9 @@ $(OBJ)/operator.o: $(AST_PATH)/operator.cpp $(AST_PATH)/operator.hpp
 
 $(OBJ)/statement.o: $(AST_PATH)/statement.cpp $(AST_PATH)/statement.hpp
 	g++ -c -o $(OBJ)/statement.o $(AST_PATH)/statement.cpp $(INC) $(FLAGS) 
+
+$(OBJ)/static-visitor.o: $(CG_PATH)/static-visitor.cpp $(CG_PATH)/static-visitor.hpp
+	g++ -c -o $(OBJ)/static-visitor.o $(CG_PATH)/static-visitor.cpp $(INC) $(FLAGS) 
 
 $(OBJ)/symtable.o: $(SYMTABLE_PATH)/symtable.cpp $(SYMTABLE_PATH)/symtable.hpp
 	g++ -c -o $(OBJ)/symtable.o $(SYMTABLE_PATH)/symtable.cpp $(INC) $(FLAGS) 

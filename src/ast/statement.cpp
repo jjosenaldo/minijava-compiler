@@ -2,6 +2,7 @@
 #include "error.hpp"
 #include "global.hpp"
 #include "statement.hpp"
+#include "static-visitor.hpp"
 
 using std::cout;
 using std::endl;
@@ -52,7 +53,9 @@ bool VarDec::process(Symtable* parent, ClassSymtablePool* pool, Program* program
     }
 
     if(this->value != nullptr){
-        if(!this->value->process(parent, pool))
+        auto visitor = StaticVisitor(parent, pool);
+
+        if(!this->value->accept(visitor))
             return false;
 
         if(!areCompatibleTypes(type, this->value->getType())){
@@ -193,8 +196,9 @@ void Assignment::print(){
 }
 
 bool Assignment::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
+    auto visitor = StaticVisitor(parent, pool);
 
-    if(!lvalue->process(parent, pool))
+    if(!lvalue->accept(visitor))
         return false;
 
     if(!lvalue->isLvalue()){
@@ -202,7 +206,7 @@ bool Assignment::process(Symtable* parent, ClassSymtablePool* pool, Program* pro
         return false;
     }
 
-    if(!rvalue->process(parent, pool))
+    if(!rvalue->accept(visitor))
         return false;
 
     if(!areCompatibleTypes(lvalue->getType(), rvalue->getType())){
@@ -255,7 +259,8 @@ void Return::print(){
 bool Return::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
     Type* optExpType = MkTypeVoid();
     if(optExp != nullptr){
-        bool res = optExp->process(parent, pool);
+        auto visitor = StaticVisitor(parent, pool);
+        bool res = optExp->accept(visitor);
 
         if(!res)
             return false;
@@ -298,7 +303,9 @@ bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* poo
             return false;
         }
     }
-    bool leftResult = left->process(environment, pool);
+    
+    auto visitor = StaticVisitor(environment, pool);
+    bool leftResult = left->accept(visitor);
 
     // The callee expression is not well-formed
     if(!leftResult)
@@ -376,7 +383,7 @@ bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* poo
     }
 
     for(int i = 0; i < expectedArgs; ++i){
-        if(!  arguments->at(i)->process(environment, pool)  )
+        if(!  arguments->at(i)->accept(visitor)  )
             return false;
 
         if(!areCompatibleTypes(methodHeader->at(i+1), arguments->at(i)->getType()  )    ){ // +1 because the first element is the return type
@@ -432,7 +439,8 @@ bool StaticMethodCallExpression::process(Symtable* environment, ClassSymtablePoo
     }
 
     for(int i = 0; i < expectedArgs; ++i){
-        if(!  arguments->at(i)->process(environment, pool)  )
+        auto visitor = StaticVisitor(environment, pool);
+        if(!  arguments->at(i)->accept(visitor)  )
             return false;
 
         if(!areCompatibleTypes(methodHeader->getMethodHeader()->at(i+1), arguments->at(i)->getType()  )    ){ // +1 because the first element is the return type
