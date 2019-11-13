@@ -2,7 +2,7 @@
 #include "activation-record.hpp"
 
 #define LOOKUP(x) rs->top()->lookupVarVal(x)
-
+	/*
 int main(int argc, char const *argv[]) {
 	RecordStack *rs = new RecordStack;
 
@@ -14,10 +14,11 @@ int main(int argc, char const *argv[]) {
 	rs->top()->insertVar("a", 2);
 	rs->top()->insertVar("b", LOOKUP("a"));
 	rs->pop();
-	rs->top()->insertVar("c", rs->top()->getVarVal("a")); 
+	rs->top()->insertVar("c", rs->top()->getVarVal("a"));
 
 	rs->top()->updateVar("a", 2*c);
 	rs->pop();
 
 	return 0;
 }
+*/

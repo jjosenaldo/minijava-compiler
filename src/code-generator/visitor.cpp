@@ -49,7 +49,7 @@ using std::cout;
 string Visitor::visit(BinExpression *exp) {
 	string tmp1 = visit(exp->first);
 	string tmp2 = visit(exp->second);
-	cout << TYPE << " _tmp" << this->contTmpVars << " = " << tmp1 << binOpSymbol(exp->getOp()) << " " << tmp2 << ";\n";
+	cout << TYPE << " _tmp" << this->contTmpVars << " = " << tmp1 << " " << binOpSymbol(exp->getOp()) << " " << tmp2 << ";\n";
 	return "_tmp" + to_string(this->contTmpVars++);
 }
 
@@ -58,13 +58,13 @@ string Visitor::visit(Expression *exp) {
 
 	if(bin != nullptr){
 		return visit(bin);
-	} 
+	}
 
 	IdExpression* idExp = dynamic_cast<IdExpression*> (exp);
-	
+
 	if(idExp != nullptr){
 		return visit(idExp);
-	} 
+	}
 
 	return "";
 }
@@ -88,7 +88,7 @@ string Visitor::visit(Expression *exp) {
 // }
 
 string Visitor::visit(IdExpression *exp) {
-	cout << TYPE << " _" << exp->getId() << " = " << RS_LOOKUP(exp->getId())<< ";\n";
+	cout << TYPE << " _" << exp->getId() << " = " << RS_LOOKUP("\"" + exp->getId() + "\"")<< ";\n";
 	return "_"+exp->getId();
 }
 

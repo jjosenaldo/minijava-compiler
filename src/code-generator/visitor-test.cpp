@@ -10,5 +10,5 @@ int main(){
     visitor->visit(binop);
 
 
-    return 42;
+    return 0;
 }
