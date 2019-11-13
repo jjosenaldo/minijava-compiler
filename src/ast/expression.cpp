@@ -54,15 +54,15 @@ bool BinExpression::process(Symtable* environment, ClassSymtablePool* pool){
     return true;
 }
 
-Expression* BinOperator::getFirst() {
+Expression* BinExpression::getFirst() {
     return first;
 }
 
-Expression* BinOperator::getSecond() {
+Expression* BinExpression::getSecond() {
     return second;
 }
 
-BinOperator BinOperator::getOp() {
+BinOperator BinExpression::getOp() {
     return op;
 }
 
@@ -92,11 +92,11 @@ bool UnExpression::process(Symtable* environment, ClassSymtablePool* pool){
     return true;
 }
 
-Expression* UnOperator::getFirst() {
+Expression* UnExpression::getFirst() {
     return first;
 }
 
-BinOperator UnOperator::getOp() {
+UnOperator UnExpression::getOp() {
     return op;
 }
 
@@ -281,7 +281,7 @@ string LitArrayExpression::toString(){
     string ans = "{";
     int i = 0;
     for(auto e : *expressions) 
-        if(++i < expression->size())
+        if(++i < expressions->size())
             ans += e->toString() + ",";
         else
             ans += e->toString();

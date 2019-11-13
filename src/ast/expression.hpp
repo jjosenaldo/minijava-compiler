@@ -13,6 +13,8 @@ using std::deque;
 using std::unordered_map;
 using std::string;
 
+class Visitor;
+
 union AtomExpValue{
     bool boolval;   
     int intval;
@@ -68,6 +70,7 @@ class BinExpression : public Expression{
         Expression* getFirst();
         Expression* getSecond();
         BinOperator getOp();
+        friend class Visitor;
 };
 
 // Example: !a
@@ -81,7 +84,7 @@ class UnExpression : public Expression{
         bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
         Expression* getFirst();
-        BinOperator getOp();
+        UnOperator getOp();
 };
 
 // Example: false
@@ -138,6 +141,7 @@ class IdExpression : public ObjExpression{
         string getId();
         string toString();
         bool isLvalue();
+        friend class Visitor;
 };
 
 // Its type is not known when the tree is being built
