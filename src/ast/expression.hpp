@@ -6,7 +6,6 @@
 #include <unordered_map>
 #include <string>
 #include "operator.hpp"
-#include "static-visitor.hpp"
 #include "symtable.hpp"
 
 using std::cout;
@@ -14,6 +13,7 @@ using std::deque;
 using std::unordered_map;
 using std::string;
 
+class StaticVisitor;
 class Visitor;
 
 union AtomExpValue{
@@ -41,8 +41,8 @@ class Expression{
         virtual Type* getType();
         void print(){cout << toString();}
         bool isObject();
-        virtual bool isLvalue() {return false;}
-        virtual bool accept(StaticVisitor) {return false;}
+        virtual bool isLvalue();
+        virtual bool accept(StaticVisitor&);
         virtual string toString() = 0;
 };
 
@@ -108,7 +108,7 @@ class ObjExpression : public Expression{
         ObjExpression(){}
         ObjExpression(Type* type) : Expression(type){}
 
-        virtual bool accept(StaticVisitor) {return false;}
+        virtual bool accept(StaticVisitor);
 };
 
 // Example: new int

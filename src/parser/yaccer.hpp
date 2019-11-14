@@ -40,10 +40,11 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 25 "./src/parser/yaccer.y" /* yacc.c:1909  */
+#line 26 "./src/parser/yaccer.y" /* yacc.c:1909  */
 
     #include <deque>
     #include "ast.hpp"
+    #include "statement.hpp"
     using std::deque;
 
     struct ClassMember{
@@ -54,7 +55,7 @@ extern int yydebug;
         };
     };
 
-#line 58 "./src/parser/yaccer.hpp" /* yacc.c:1909  */
+#line 59 "./src/parser/yaccer.hpp" /* yacc.c:1909  */
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -100,7 +101,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 39 "./src/parser/yaccer.y" /* yacc.c:1909  */
+#line 41 "./src/parser/yaccer.y" /* yacc.c:1909  */
 
   struct Node* nodePointer;
   char* _str;
@@ -120,7 +121,7 @@ union YYSTYPE
   deque<Expression*>* _exprList;
   Statement* _statement;
 
-#line 124 "./src/parser/yaccer.hpp" /* yacc.c:1909  */
+#line 125 "./src/parser/yaccer.hpp" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

@@ -1,9 +1,10 @@
 #include <iostream>
 #include <string>
 #include "ast.hpp"
-#include "global.hpp"
 #include "error.hpp"
 #include "expression.hpp"
+#include "global.hpp"
+#include "static-visitor.hpp"
 
 using std::cout;
 using std::endl;
@@ -20,6 +21,14 @@ Expression::Expression(Type* type){
 
 Type* Expression::getType(){
     return this->type;
+}
+
+bool Expression::isLvalue(){
+    return false;
+}
+
+bool Expression::accept(StaticVisitor& visitor){
+    return false;
 }
 
 void Expression::setType(Type* other){

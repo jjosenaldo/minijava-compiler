@@ -1,8 +1,8 @@
 #ifndef STATIC_VISITOR_HPP
 #define STATIC_VISITOR_HPP
 
-#include "symtable.hpp"
-
+class Symtable;
+class ClassSymtablePool;
 class BinExpression;
 class UnExpression;
 class AtomExpression;

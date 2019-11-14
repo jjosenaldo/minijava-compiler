@@ -16,7 +16,7 @@ YACC := bison
 
 INC := -I $(GRAMMAR_PATH) -I $(PARSER_PATH) -I $(SYMTABLE_PATH) -I $(SYMTABLE_PATH) -I $(SYMTABLE_PATH) -I $(AST_PATH) -I $(UTILS_PATH) -I $(CG_PATH)
 
-OBJS = $(OBJ)/activation-record.o $(OBJ)/ast.o $(OBJ)/error.o $(OBJ)/expression.o $(OBJ)/global.o $(OBJ)/operator.o $(OBJ)/statement.o $(OBJ)/static-visitor.o $(OBJ)/symtable.o $(OBJ)/type.o $(OBJ)/value.o $(OBJ)/visitor.o
+OBJS = $(OBJ)/static-visitor.o $(OBJ)/ast.o 
 
 all: $(BIN)/main.out 
 

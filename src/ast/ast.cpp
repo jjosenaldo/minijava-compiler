@@ -1,7 +1,9 @@
 #include <iostream>
 #include "ast.hpp"
 #include "error.hpp"
+#include "expression.hpp"
 #include "global.hpp"
+#include "statement.hpp"
 #include "static-visitor.cpp"
 
 using std::cout;

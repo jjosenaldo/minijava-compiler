@@ -1,6 +1,6 @@
-#include "static-visitor.hpp"
 #include "global.hpp"
 #include "expression.hpp"
+#include "static-visitor.hpp"
 
 StaticVisitor::StaticVisitor(Symtable* environment, ClassSymtablePool* pool){
     this->environment = environment;

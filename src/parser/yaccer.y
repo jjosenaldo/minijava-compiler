@@ -8,6 +8,7 @@
 #include "ast.hpp"
 #include "error.hpp"
 #include "global.hpp"
+#include "statement.hpp"
 #include "visitor.hpp" // TODO: remove this
 
 using std::cout;
@@ -25,6 +26,7 @@ Program* program;
 %code requires{
     #include <deque>
     #include "ast.hpp"
+    #include "statement.hpp"
     using std::deque;
 
     struct ClassMember{
