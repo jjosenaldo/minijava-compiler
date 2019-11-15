@@ -108,7 +108,7 @@ class ObjExpression : public Expression{
         ObjExpression(){}
         ObjExpression(Type* type) : Expression(type){}
 
-        virtual bool accept(StaticVisitor);
+        virtual bool accept(StaticVisitor&) = 0;
 };
 
 // Example: new int

@@ -4,7 +4,7 @@
 #include "expression.hpp"
 #include "global.hpp"
 #include "statement.hpp"
-#include "static-visitor.cpp"
+#include "static-visitor.hpp"
 
 using std::cout;
 using std::endl;

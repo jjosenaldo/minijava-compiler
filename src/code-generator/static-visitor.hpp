@@ -1,8 +1,8 @@
 #ifndef STATIC_VISITOR_HPP
 #define STATIC_VISITOR_HPP
 
-class Symtable;
-class ClassSymtablePool;
+#include "symtable.hpp"
+
 class BinExpression;
 class UnExpression;
 class AtomExpression;
@@ -15,6 +15,8 @@ class ParenExpression;
 class LitArrayExpression;
 class ArrayAccessExpression;
 class NewArrayExpression;
+class MethodCallExpression;
+class StaticMethodCallExpression;
 
 class StaticVisitor{
 private:
@@ -35,6 +37,8 @@ public:
     bool visit(LitArrayExpression*);
     bool visit(ArrayAccessExpression*);
     bool visit(NewArrayExpression*);
+    bool visit(StaticMethodCallExpression* exp);
+    bool visit(MethodCallExpression* exp);
 };
 
 #endif

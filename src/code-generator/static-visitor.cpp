@@ -1,6 +1,8 @@
-#include "global.hpp"
 #include "expression.hpp"
+#include "global.hpp"
+#include "statement.hpp"
 #include "static-visitor.hpp"
+#include "type.hpp"
 
 StaticVisitor::StaticVisitor(Symtable* environment, ClassSymtablePool* pool){
     this->environment = environment;
@@ -171,6 +173,157 @@ bool StaticVisitor::visit(LitArrayExpression* exp){
         return false;
 
     exp->setType(resType);
+    return true;
+}
+
+bool StaticVisitor::visit(MethodCallExpression* exp) {
+    auto method = exp->method;
+    auto left = exp->left;
+    auto arguments = exp->arguments;
+
+    Type* type = nullptr;
+    
+    if(environment->getClassName() == g_mainClassName){
+        if(method == MAIN_METHOD_NAME){
+            callMainMethodError();
+            return false;
+        }
+    }
+    
+    auto visitor = StaticVisitor(environment, pool);
+    bool leftResult = left->accept(visitor);
+
+    // The callee expression is not well-formed
+    if(!leftResult)
+        return false;
+
+    // The callee expression is an object
+    if(left->isObject()){
+        string className = left->getType()->getClassName();
+
+        if(g_defaultSymbolHandler.isDefaultClass(className)){
+            MethodType* res = g_defaultSymbolHandler.getDefaultNonstaticMethodHeader(className, method);
+
+            if(res == nullptr){
+                nonstaticMethodOnDefaultClassNotFound(className, method);
+                return false;
+            } else type = res;
+        } else{
+            ClassSymtable* classTable = pool->get(className);
+            TableContent tc = classTable->get(method);
+
+            // Search for the method (including the ancestor classes)
+            string currentClass = left->getType()->getClassName();
+            bool methodFound = false;
+
+            while(currentClass != ""){
+                tc = pool->get(currentClass)->get(method);
+
+                // The class doesn't contain the field
+                if(tc.tag == TCNOCONTENT || (tc.tag == TCTYPE && tc.type->kind != TypeMethod))
+
+                    // Looks in its parent
+                    currentClass = g_classParentMap[currentClass];
+
+                else{
+                    methodFound = true;
+                    break;
+                }
+            }
+
+            // The method doesnt exist
+            if(!methodFound){
+                methodNotFoundError(method, left->getType()->getClassName());
+                return false;
+            }
+
+            type = tc.type;
+        }
+    } else{
+        type = g_defaultSymbolHandler.getDefaultNonstaticMethodHeader(left->getType(), method);
+
+        if(type == nullptr){
+            typeDoesntContainNonstaticMethodError(left->getType()->toString(), method);
+            return false;
+        }
+    }
+
+
+
+    vector<Type*>* methodHeader = type->getMethodHeader();
+    int expectedArgs = methodHeader->size() - 1;
+
+    if(arguments == nullptr) {
+        if(expectedArgs != 0){
+            diffNumberOfArgsMethodError(method, 0, expectedArgs);
+            return false;
+        }
+
+        type = methodHeader->at(0);
+        return true;
+    }
+
+    if(arguments->size() != expectedArgs){
+        diffNumberOfArgsMethodError(method, arguments->size(), expectedArgs);
+        return false;
+    }
+
+    for(int i = 0; i < expectedArgs; ++i){
+        if(!  arguments->at(i)->accept(visitor)  )
+            return false;
+
+        if(!areCompatibleTypes(methodHeader->at(i+1), arguments->at(i)->getType()  )    ){ // +1 because the first element is the return type
+            incompatibleTypesMethodCall(method, i+1, methodHeader->at(i+1)->toString(), arguments->at(i)->getType()->toString());
+            return false;
+        }
+    }
+
+    type = methodHeader->at(0);
+
+    exp->type = type;
+    return true;
+}
+
+bool StaticVisitor::visit(StaticMethodCallExpression* exp){
+    auto method = exp->method;
+    auto className = exp->className;
+    auto methodHeader = g_defaultSymbolHandler.getDefaultStaticMethodHeader(className, method);
+    auto arguments = exp->arguments;
+
+    if(methodHeader == nullptr){
+        nonExistingMethodInDefaultClass(className, method);
+        return false;
+    }
+
+    int expectedArgs = methodHeader->getMethodHeader()->size() - 1;
+
+    if(arguments == nullptr) {
+        if(expectedArgs != 0){
+            diffNumberOfArgsMethodError(method, 0, expectedArgs);
+            return false;
+        }
+
+        exp->setType(methodHeader->getMethodHeader()->at(0));
+        return true;
+    }
+
+    if(arguments->size() != expectedArgs){
+        diffNumberOfArgsMethodError(method, arguments->size(), expectedArgs);
+        return false;
+    }
+
+    for(int i = 0; i < expectedArgs; ++i){
+        auto visitor = StaticVisitor(environment, pool);
+        if(!  arguments->at(i)->accept(visitor)  )
+            return false;
+
+        if(!areCompatibleTypes(methodHeader->getMethodHeader()->at(i+1), arguments->at(i)->getType()  )    ){ // +1 because the first element is the return type
+            incompatibleTypesMethodCall(method, i+1, methodHeader->getMethodHeader()->at(i+1)->toString(), arguments->at(i)->getType()->toString());
+            return false;
+        }
+    }
+
+    exp->setType(methodHeader->getMethodHeader()->at(0));
     return true;
 }
 

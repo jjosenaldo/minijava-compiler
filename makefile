@@ -14,13 +14,13 @@ FLAGS = -Wno-write-strings -g -std=c++11
 LEX := flex
 YACC := bison
 
-INC := -I $(GRAMMAR_PATH) -I $(PARSER_PATH) -I $(SYMTABLE_PATH) -I $(SYMTABLE_PATH) -I $(SYMTABLE_PATH) -I $(AST_PATH) -I $(UTILS_PATH) -I $(CG_PATH)
+INC := -I $(PARSER_PATH) -I $(SYMTABLE_PATH) -I $(SYMTABLE_PATH) -I $(SYMTABLE_PATH) -I $(AST_PATH) -I $(UTILS_PATH) -I $(CG_PATH)
 
-OBJS = $(OBJ)/static-visitor.o $(OBJ)/ast.o 
+OBJS = $(OBJ)/activation-record.o $(OBJ)/ast.o $(OBJ)/error.o $(OBJ)/expression.o $(OBJ)/global.o $(OBJ)/operator.o $(OBJ)/statement.o $(OBJ)/symtable.o $(OBJ)/type.o $(OBJ)/value.o $(OBJ)/static-visitor.o $(OBJ)/visitor.o 
 
 all: $(BIN)/main.out 
 
-$(BIN)/main.out: lexer yaccer $(SRC)/main.cpp $(OBJS)
+$(BIN)/main.out: lexer yaccer $(OBJS) $(SRC)/main.cpp 
 	g++ -x c++ $(SRC)/main.cpp $(PARSER_PATH)/yaccer.cpp $(OBJ)/lex.yy.c $(OBJS) -ly -ll -o $(BIN)/main.out $(INC) $(FLAGS) 
 
 lexer: $(PARSER_PATH)/lexer.l 
