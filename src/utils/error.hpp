@@ -69,7 +69,7 @@ void mainMethodNameError(string mainMethod, string otherMethod);
 
 void callMainMethodError();
 
-void breakOutsideLoop();
+void breakOutsideLoopError();
 
 void methodReturnTypeError(string returned, string expected, string methodName);
 

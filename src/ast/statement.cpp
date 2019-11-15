@@ -26,50 +26,8 @@ void VarDec::print(){
     cout << ";";
 }
 
-bool VarDec::process(Symtable* parent, ClassSymtablePool* pool){
-    if(type->kind == TypeClass && !g_defaultSymbolHandler.isDefaultClass(type->getClassName())){
-        if(pool->get(type->getClassName()) == nullptr){
-            classNotDefinedError(type->getClassName());
-            return false;
-        }
-
-        if(g_mainClassName == type->getClassName()){
-            instanceOfMainClassError();
-            return false;
-        }
-    }
-    
-    if(!canBeInstantiated(type, pool))
-        return false;
-
-    if(g_defaultSymbolHandler.isDefaultClass(id) || pool->get(id) != nullptr){
-        classAsVariableNameError(id);
-        return false;
-    }
-
-    if(parent->get(id).tag != TCNOCONTENT){
-        multipleVariableError(id);
-        return false;
-    }
-
-    if(this->value != nullptr){
-        auto visitor = StaticVisitor(parent, pool);
-
-        if(!this->value->accept(visitor))
-            return false;
-
-        if(!areCompatibleTypes(type, this->value->getType())){
-            varDeclarationTypeError(id, type->toString(), this->value->getType()->toString());
-            return false;
-        }
-
-        if(this->value->getType()->kind == TypeClass)
-            type->setActualClassName(this->value->getType()->getClassName());
-    }
-
-    parent->insert(id, tableContentFromType(type));
-
-    return true;
+bool VarDec::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
 }
 
 Type* VarDec::getType(){
@@ -100,18 +58,8 @@ deque<GenStatement*>* Block::getStatements(){
     return statements;
 }
 
-bool Block::process(Symtable* parent, ClassSymtablePool* pool){
-    Symtable* table = new Symtable(parent->getClassName(), parent->getMethodName());
-    table->setParent(parent);
-
-    if(statements != nullptr)
-        for(auto stmt : *statements){
-            if(!stmt->process(table, pool))
-                return false;
-        }
-
-    parent->insert(table);
-    return true;
+bool Block::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
 }
 
 void Block::print(){
@@ -127,8 +75,8 @@ ElselessIf::ElselessIf(Expression* guard, Statement* statement){
     this->statement = statement;
 }
 
-bool ElselessIf::process(Symtable* parent, ClassSymtablePool* pool){
-    return statement->process(parent, pool);
+bool ElselessIf::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
 }
 
 void ElselessIf::print(){
@@ -146,8 +94,8 @@ IfElse::IfElse(Expression* guard, Statement* statementIf, Statement* statementEl
     this->statementElse = statementElse;
 }
 
-bool IfElse::process(Symtable* parent, ClassSymtablePool* pool){
-    return statementIf->process(parent, pool) && statementElse->process(parent, pool);
+bool IfElse::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
 }
 
 void IfElse::print(){
@@ -167,11 +115,8 @@ While::While(Expression* guard, Statement* statement){
     this->statement = statement;
 }
 
-bool While::process(Symtable* parent, ClassSymtablePool* pool){
-    pool->setIsLoopBlock(true);
-    bool r = statement->process(parent, pool);
-    pool->setIsLoopBlock(false);
-    return r;
+bool While::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
 }
 
 void While::print(){
@@ -195,54 +140,25 @@ void Assignment::print(){
     cout << ";";
 }
 
-bool Assignment::process(Symtable* parent, ClassSymtablePool* pool){
-    auto visitor = StaticVisitor(parent, pool);
-
-    if(!lvalue->accept(visitor))
-        return false;
-
-    if(!lvalue->isLvalue()){
-        notAnLvalueError(lvalue->toString());
-        return false;
-    }
-
-    if(!rvalue->accept(visitor))
-        return false;
-
-    if(!areCompatibleTypes(lvalue->getType(), rvalue->getType())){
-        typeError(lvalue->getType()->toString(), rvalue->getType()->toString());
-        return false;
-    }
-
-    return true;
+bool Assignment::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
 }
 
 void Continue::print(){
     cout << "continue;";
 }
 
-bool Continue::process(Symtable* parent, ClassSymtablePool* pool){
-    if(!pool->isLoopBlock()){
-        breakOutsideLoop();
-        return false;
-    } else {
-        return true;
-    }
+bool Continue::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
 }
 
 void Break::print(){
     cout << "break;";
 }
 
-bool Break::process(Symtable* parent, ClassSymtablePool* pool){
-    if(!pool->isLoopBlock()){
-        breakOutsideLoop();
-        return false;
-    } else {
-        return true;
-    }
+bool Break::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
 }
-
 
 Return::Return() : Return(nullptr) {}
 
@@ -256,27 +172,8 @@ void Return::print(){
     cout << ";";
 }
 
-bool Return::process(Symtable* parent, ClassSymtablePool* pool){
-    Type* optExpType = MkTypeVoid();
-    if(optExp != nullptr){
-        auto visitor = StaticVisitor(parent, pool);
-        bool res = optExp->accept(visitor);
-
-        if(!res)
-            return false;
-        
-        optExpType = optExp->getType();
-    }
-
-    ClassSymtable* classTable = pool->get(parent->getClassName());
-    TableContent tc = classTable->get(parent->getMethodName());
-    Type* methodReturnType = tc.type->getMethodHeader()->at(0);
-    if(!areCompatibleTypes(optExpType, methodReturnType)){
-        methodReturnTypeError(optExpType->toString(), methodReturnType->toString(), parent->getMethodName());
-        return false;
-    }
-
-   return true;
+bool Return::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
 }
 
 
@@ -290,11 +187,6 @@ string MethodCallExpression::toString(){
     string ans = left->toString() + "." + method + "(";
     if(arguments != nullptr) for(auto e : *arguments) ans += e->toString() + ",";
     return ans + ")";
-}
-
-bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* pool){
-    auto visitor = StaticVisitor(environment,pool); 
-    return accept(visitor);
 }
 
 bool MethodCallExpression::accept(StaticVisitor& visitor){
@@ -322,11 +214,6 @@ bool StaticMethodCallExpression::accept(StaticVisitor& visitor){
     return visitor.visit(this);
 }
 
-bool StaticMethodCallExpression::process(Symtable* environment, ClassSymtablePool* pool){
-    auto visitor = StaticVisitor(environment,pool); 
-    return accept(visitor);
-}
-
 string StaticMethodCallExpression::toString(){
     // TODO
     return "";
@@ -338,4 +225,8 @@ void StaticMethodCallExpression::print(){
 
 void Skip::print(){
     cout << ";";
+}
+
+bool Skip::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
 }

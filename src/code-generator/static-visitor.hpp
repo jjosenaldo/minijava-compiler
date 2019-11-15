@@ -17,6 +17,16 @@ class ArrayAccessExpression;
 class NewArrayExpression;
 class MethodCallExpression;
 class StaticMethodCallExpression;
+class VarDec;
+class Block;
+class ElselessIf;
+class IfElse;
+class While;
+class Assignment;
+class Continue;
+class Break;
+class Return;
+class Skip;
 
 class StaticVisitor{
 private:
@@ -25,6 +35,8 @@ private:
 
 public:
     StaticVisitor(Symtable*, ClassSymtablePool*);
+
+    // Expressions
     bool visit(BinExpression*);
     bool visit(UnExpression*);
     bool visit(AtomExpression*);
@@ -37,6 +49,20 @@ public:
     bool visit(LitArrayExpression*);
     bool visit(ArrayAccessExpression*);
     bool visit(NewArrayExpression*);
+
+    // Statements
+    bool visit(VarDec* stmt);
+    bool visit(Block* stmt);
+    bool visit(ElselessIf* stmt);
+    bool visit(IfElse* stmt);
+    bool visit(While* stmt);
+    bool visit(Assignment* stmt);
+    bool visit(Continue* stmt);
+    bool visit(Break* stmt);
+    bool visit(Return* stmt);
+    bool visit(Skip* stmt);
+
+    // Both Expressions and Statements
     bool visit(StaticMethodCallExpression* exp);
     bool visit(MethodCallExpression* exp);
 };

@@ -1,9 +1,10 @@
 #include <iostream>
+#include "ast.hpp"
 #include "global.hpp"
+#include "statement.hpp"
+#include "static-visitor.hpp"
 #include "symtable.hpp"
 #include "type.hpp"
-#include "ast.hpp"
-#include "statement.hpp"
 
 using std::cout;
 using std::endl;
@@ -177,12 +178,13 @@ bool ClassSymtable::processMethodBodies(ClassDeclaration* classDecl, ClassSymtab
         auto method = classDecl->getMethod(methodName);
         auto blockStmt = method->getStatement();
         methodTable->setMethodName(methodName);
+        auto visitor = StaticVisitor(methodTable, pool);
 
         if(blockStmt != nullptr){
             // Process statements
             auto stmts = blockStmt->getStatements();
             for(auto stmt : *stmts){
-                if(!stmt->process(methodTable, pool))
+                if(!stmt->accept(visitor))
                     return false;
             }
 

@@ -13,19 +13,7 @@ class GenStatement{
     public:
         // Will be defined in a derived class
         virtual void print() = 0;
-
-        /**
-         * @brief Does a semantic analysis on the statement.
-         *
-         *        Processes the statement and does semantic analyses. It modifies the symbol table
-         *        and/or typechecks things if needed.
-         *
-         * @param parent    The symbol table of the class that has the statement
-         * @param pool      The pool of all class tables (it may be needed for typechecking)
-         * @return true     The statement doesn't contain any semantic errors
-         * @return false    The statement contains a semantic error
-         */
-        virtual bool process(Symtable* parent, ClassSymtablePool* pool){ return true;}
+        virtual bool accept(StaticVisitor& visitor) = 0;
 };
 
 class Statement : public GenStatement {};
@@ -41,8 +29,10 @@ class VarDec : public GenStatement{
         Type* getType();
         string getId();
         Expression* getExpression();
-        bool process(Symtable* parent, ClassSymtablePool* pool);
+        bool accept(StaticVisitor& visitor);
         void print();
+
+        friend class StaticVisitor;
 };
 
 class Block : public Statement{
@@ -54,8 +44,10 @@ class Block : public Statement{
         void addStatement(GenStatement* stmt);
         void addStatementAtFront(GenStatement* stmt);
         deque<GenStatement*>* getStatements();
-        bool process(Symtable* parent, ClassSymtablePool* pool);
+        bool accept(StaticVisitor& visitor);
         void print();
+
+        friend class StaticVisitor;
 };
 
 class ElselessIf : public Statement {
@@ -65,9 +57,11 @@ class ElselessIf : public Statement {
 
     public:
         ElselessIf(Expression* guard, Statement* statement);
-        bool process(Symtable* parent, ClassSymtablePool* pool);
+        bool accept(StaticVisitor& visitor);
         Statement* getStatement();
         void print();
+
+        friend class StaticVisitor;
 
 };
 
@@ -78,11 +72,13 @@ class IfElse : public Statement{
         Statement* statementElse;
     public:
         IfElse(Expression* guard, Statement* statementIf, Statement* statementElse);
-        bool process(Symtable* parent, ClassSymtablePool* pool);
+        bool accept(StaticVisitor& visitor);
 
         Statement* getStatementIf();
         Statement* getStatementElse();
         void print();
+
+        friend class StaticVisitor;
 };
 
 class While : public Statement{
@@ -91,9 +87,11 @@ class While : public Statement{
         Statement* statement;
     public:
         While(Expression* guard, Statement* statement);
-        bool process(Symtable* parent, ClassSymtablePool* pool);
+        bool accept(StaticVisitor& visitor);
         Statement* getStatement();
         void print();
+
+        friend class StaticVisitor;
 };
 
 class Assignment : public Statement{
@@ -102,21 +100,27 @@ class Assignment : public Statement{
         Expression* rvalue;
     public:
         Assignment(Expression* lvalue, Expression* rvalue);
-        bool process(Symtable* parent, ClassSymtablePool* pool);
+        bool accept(StaticVisitor& visitor);
         void print();
+
+        friend class StaticVisitor;
 };
 
 class Continue : public Statement{
     public:
         void print();
-        bool process(Symtable* parent, ClassSymtablePool* pool);
+        bool accept(StaticVisitor& visitor);
+
+        friend class StaticVisitor;
 
 };
 
 class Break : public Statement{
     public:
         void print();
-        bool process(Symtable* parent, ClassSymtablePool* pool);
+        bool accept(StaticVisitor& visitor);
+
+        friend class StaticVisitor;
 
 };
 
@@ -126,14 +130,18 @@ class Return : public Statement{
     public:
         Return();
         Return(Expression* optExp);
-        bool process(Symtable* parent, ClassSymtablePool* pool);
+        bool accept(StaticVisitor& visitor);
         void print();
+
+        friend class StaticVisitor;
 
 };
 
 class Skip : public Statement {
     public:
         void print();
+        bool accept(StaticVisitor& visitor);
+        friend class StaticVisitor;
 };
 
 class StaticMethodCallExpression : public Statement, public ObjExpression{
@@ -144,7 +152,6 @@ class StaticMethodCallExpression : public Statement, public ObjExpression{
 
     public:
         StaticMethodCallExpression(string className, string method, deque<Expression*>* arguments);
-        bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
         bool accept(StaticVisitor&);
         void print();
@@ -162,16 +169,11 @@ class MethodCallExpression : public Statement,  public ObjExpression{
 
     public:
         MethodCallExpression(Expression* left, string method, deque<Expression*>* args);
-        bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
         bool accept(StaticVisitor&);
         void print();
 
         friend class StaticVisitor;
 };
-
-
-
-#include "ast.hpp"
 
 #endif

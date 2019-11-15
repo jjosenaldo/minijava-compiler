@@ -388,3 +388,153 @@ bool StaticVisitor::visit(NewArrayExpression* exp){
 
     return true;
 }
+
+bool StaticVisitor::visit(VarDec* stmt) {
+    auto id = stmt->id;
+    auto type = stmt->type;
+    auto value = stmt->value;
+
+    if(type->kind == TypeClass && !g_defaultSymbolHandler.isDefaultClass(type->getClassName())){
+        if(pool->get(type->getClassName()) == nullptr){
+            classNotDefinedError(type->getClassName());
+            return false;
+        }
+
+        if(g_mainClassName == type->getClassName()){
+            instanceOfMainClassError();
+            return false;
+        }
+    }
+    
+    if(!canBeInstantiated(type, pool))
+        return false;
+
+    if(g_defaultSymbolHandler.isDefaultClass(id) || pool->get(id) != nullptr){
+        classAsVariableNameError(id);
+        return false;
+    }
+
+    if(environment->get(id).tag != TCNOCONTENT){
+        multipleVariableError(id);
+        return false;
+    }
+
+    if(value != nullptr){
+        if(!value->accept(*this))
+            return false;
+
+        if(!areCompatibleTypes(type, value->getType())){
+            varDeclarationTypeError(id, type->toString(), value->getType()->toString());
+            return false;
+        }
+
+        if(value->getType()->kind == TypeClass)
+            type->setActualClassName(value->getType()->getClassName());
+    }
+
+    environment->insert(id, tableContentFromType(type));
+
+    return true;
+}
+
+bool StaticVisitor::visit(Block* stmt) {
+    auto oldEnvironment = environment;
+    auto statements = stmt->statements;
+    Symtable* table = new Symtable(environment->getClassName(), environment->getMethodName());
+    table->setParent(environment);
+    environment = table;
+
+    if(statements != nullptr)
+        for(auto stmt : *statements){
+            if(!stmt->accept(*this))
+                return false;
+        }
+
+    environment = oldEnvironment;
+    environment->insert(table);
+    return true;
+}
+
+bool StaticVisitor::visit(ElselessIf* stmt) {
+    return stmt->statement->accept(*this);
+}
+
+bool StaticVisitor::visit(IfElse* stmt) {
+    return stmt->statementIf->accept(*this) && stmt->statementElse->accept(*this);
+}
+
+bool StaticVisitor::visit(While* stmt) {
+    pool->setIsLoopBlock(true);
+    bool r = stmt->statement->accept(*this);
+    pool->setIsLoopBlock(false);
+    return r;
+}
+
+bool StaticVisitor::visit(Assignment* stmt) {
+    auto lvalue = stmt->lvalue;
+    auto rvalue = stmt->rvalue;
+
+    if(!lvalue->accept(*this))
+        return false;
+
+    if(!lvalue->isLvalue()){
+        notAnLvalueError(lvalue->toString());
+        return false;
+    }
+
+    if(!rvalue->accept(*this))
+        return false;
+
+    if(!areCompatibleTypes(lvalue->getType(), rvalue->getType())){
+        typeError(lvalue->getType()->toString(), rvalue->getType()->toString());
+        return false;
+    }
+
+    return true;
+}
+
+bool StaticVisitor::visit(Continue* stmt) {
+    if(!pool->isLoopBlock()){
+        breakOutsideLoopError();
+        return false;
+    } else {
+        return true;
+    }
+}
+
+bool StaticVisitor::visit(Break* stmt) {
+    if(!pool->isLoopBlock()){
+        breakOutsideLoopError();
+        return false;
+    } else {
+        return true;
+    }
+}
+
+bool StaticVisitor::visit(Return* stmt) {
+    auto optExp = stmt->optExp;
+
+    Type* optExpType = MkTypeVoid();
+    if(optExp != nullptr){
+        bool res = optExp->accept(*this);
+
+        if(!res)
+            return false;
+        
+        optExpType = optExp->getType();
+    }
+
+    ClassSymtable* classTable = pool->get(environment->getClassName());
+    TableContent tc = classTable->get(environment->getMethodName());
+    Type* methodReturnType = tc.type->getMethodHeader()->at(0);
+    if(!areCompatibleTypes(optExpType, methodReturnType)){
+        methodReturnTypeError(optExpType->toString(), methodReturnType->toString(), environment->getMethodName());
+        return false;
+    }
+
+   return true;
+}
+
+bool StaticVisitor::visit(Skip* stmt){
+    return true;
+}
