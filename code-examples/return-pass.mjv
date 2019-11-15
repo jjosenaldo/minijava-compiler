@@ -14,7 +14,7 @@ class Animal{
 
 class Cat extends Animal{
     int meow(){
-
+        return 1;
     }
 
     void eat(){
