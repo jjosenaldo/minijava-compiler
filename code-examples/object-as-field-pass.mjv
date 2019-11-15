@@ -11,4 +11,4 @@ class Dog{
     }
 }
 
-class Cat {} // Comment this for error
+class Cat {} 
