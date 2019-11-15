@@ -90,6 +90,9 @@ bool StaticVisitor::visit(NewObjExpression* exp) {
 }
 
 bool StaticVisitor::visit(IdExpression* exp){
+    std::cout << "VISITING ";
+    exp->print();
+    std::cout << "\n"; 
     string id = exp->id;
 
     if(predefinedId(id) || pool->get(id) != nullptr){
@@ -104,7 +107,12 @@ bool StaticVisitor::visit(IdExpression* exp){
         return false;
     }
 
+    std::cout << "TYPE: " << "\n";
+    std::cout << tc.type->toString() << "\n";
+
     exp->setType(tc.type);
+    std::cout << "AFTER setType: " << "\n";
+    std::cout << exp->getType()->toString() << "\n";
     return true;
 }
 

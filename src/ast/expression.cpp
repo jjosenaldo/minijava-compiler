@@ -32,7 +32,7 @@ bool Expression::accept(StaticVisitor& visitor){
 }
 
 void Expression::setType(Type* other){
-    this->type = type;
+    this->type = other;
 }
 
 bool Expression::isObject(){
@@ -146,7 +146,9 @@ string IdExpression::getId(){
 }
 
 bool IdExpression::accept(StaticVisitor& visitor){
-    return visitor.visit(this);
+    visitor.visit(this);
+    std::cout << type->toString() << " " << "iha" << std::endl;
+    return true;
 }
 
 bool IdExpression::isLvalue(){

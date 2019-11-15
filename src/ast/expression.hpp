@@ -37,8 +37,8 @@ class Expression{
         Expression(){}
         Expression(Type* type);
         virtual void setType(Type* other);
+        Type* getType();
         virtual ~Expression() {}
-        virtual Type* getType();
         void print(){cout << toString();}
         bool isObject();
         virtual bool isLvalue();
@@ -65,24 +65,6 @@ class BinExpression : public Expression{
         friend class Visitor;
 };
 
-// Example: !a
-class UnExpression : public Expression{
-    private:
-        Expression* first;
-        UnOperator op;
-
-    public:
-        UnExpression(Expression* first, UnOperator op);
-        
-        string toString();
-        Expression* getFirst();
-        UnOperator getOp();
-
-        bool accept(StaticVisitor&);
-        friend class StaticVisitor;
-        friend class Visitor;
-};
-
 // Example: false
 //,         52
 //          "oi"
@@ -103,6 +85,24 @@ class AtomExpression : public Expression{
         friend class Visitor;
 };
 
+// Example: !a
+class UnExpression : public Expression{
+    private:
+        Expression* first;
+        UnOperator op;
+
+    public:
+        UnExpression(Expression* first, UnOperator op);
+        
+        string toString();
+        Expression* getFirst();
+        UnOperator getOp();
+
+        bool accept(StaticVisitor&);
+        friend class StaticVisitor;
+        friend class Visitor;
+};
+
 class ObjExpression : public Expression{
     public:
         ObjExpression(){}
@@ -116,20 +116,6 @@ class ObjExpression : public Expression{
 class ArrayDeclExpression : public ObjExpression{
     public:
         ArrayDeclExpression(Type* type) : ObjExpression(type) {}
-        string toString();
-
-        bool accept(StaticVisitor&);
-        friend class StaticVisitor;
-        friend class Visitor;
-};
-
-// Example: new Cat()
-class NewObjExpression : public ObjExpression{
-    private:
-        string id;
-    
-    public:
-        NewObjExpression(string id);
         string toString();
 
         bool accept(StaticVisitor&);
@@ -222,6 +208,20 @@ class NewArrayExpression : public Expression{
     public:
         NewArrayExpression(ArrayDeclExpression* decl, deque<Expression*>* dimensions);
         string toString();
+        bool accept(StaticVisitor&);
+        friend class StaticVisitor;
+        friend class Visitor;
+};
+
+// Example: new Cat()
+class NewObjExpression : public ObjExpression{
+    private:
+        string id;
+    
+    public:
+        NewObjExpression(string id);
+        string toString();
+
         bool accept(StaticVisitor&);
         friend class StaticVisitor;
         friend class Visitor;

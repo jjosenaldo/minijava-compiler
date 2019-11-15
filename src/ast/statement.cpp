@@ -54,7 +54,7 @@ bool VarDec::process(Symtable* parent, ClassSymtablePool* pool){
 
     if(this->value != nullptr){
         auto visitor = StaticVisitor(parent, pool);
-
+        std::cout << id << std::endl;
         if(!this->value->accept(visitor))
             return false;
 
@@ -196,10 +196,19 @@ void Assignment::print(){
 }
 
 bool Assignment::process(Symtable* parent, ClassSymtablePool* pool){
+    lvalue->print();
+    std::cout << " = ";
+    rvalue->print();
+    std::cout << "\n";
+    pool->print();
+    std::cout << "\n";
     auto visitor = StaticVisitor(parent, pool);
 
     if(!lvalue->accept(visitor))
         return false;
+
+    std::cout << "Type attributed: " << "\n";
+    std::cout << lvalue->getType()->toString() << std::endl;
 
     if(!lvalue->isLvalue()){
         notAnLvalueError(lvalue->toString());
