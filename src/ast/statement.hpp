@@ -22,11 +22,10 @@ class GenStatement{
          *
          * @param parent    The symbol table of the class that has the statement
          * @param pool      The pool of all class tables (it may be needed for typechecking)
-         * @param program   The AST representing the program
          * @return true     The statement doesn't contain any semantic errors
          * @return false    The statement contains a semantic error
          */
-        virtual bool process(Symtable* parent, ClassSymtablePool* pool, Program* program){ return true;}
+        virtual bool process(Symtable* parent, ClassSymtablePool* pool){ return true;}
 };
 
 class Statement : public GenStatement {};
@@ -42,7 +41,7 @@ class VarDec : public GenStatement{
         Type* getType();
         string getId();
         Expression* getExpression();
-        bool process(Symtable* parent, ClassSymtablePool* pool, Program* program);
+        bool process(Symtable* parent, ClassSymtablePool* pool);
         void print();
 };
 
@@ -55,7 +54,7 @@ class Block : public Statement{
         void addStatement(GenStatement* stmt);
         void addStatementAtFront(GenStatement* stmt);
         deque<GenStatement*>* getStatements();
-        bool process(Symtable* parent, ClassSymtablePool* pool, Program* program);
+        bool process(Symtable* parent, ClassSymtablePool* pool);
         void print();
 };
 
@@ -66,7 +65,7 @@ class ElselessIf : public Statement {
 
     public:
         ElselessIf(Expression* guard, Statement* statement);
-        bool process(Symtable* parent, ClassSymtablePool* pool, Program* program);
+        bool process(Symtable* parent, ClassSymtablePool* pool);
         Statement* getStatement();
         void print();
 
@@ -79,7 +78,7 @@ class IfElse : public Statement{
         Statement* statementElse;
     public:
         IfElse(Expression* guard, Statement* statementIf, Statement* statementElse);
-        bool process(Symtable* parent, ClassSymtablePool* pool, Program* program);
+        bool process(Symtable* parent, ClassSymtablePool* pool);
 
         Statement* getStatementIf();
         Statement* getStatementElse();
@@ -92,7 +91,7 @@ class While : public Statement{
         Statement* statement;
     public:
         While(Expression* guard, Statement* statement);
-        bool process(Symtable* parent, ClassSymtablePool* pool, Program* program);
+        bool process(Symtable* parent, ClassSymtablePool* pool);
         Statement* getStatement();
         void print();
 };
@@ -103,21 +102,21 @@ class Assignment : public Statement{
         Expression* rvalue;
     public:
         Assignment(Expression* lvalue, Expression* rvalue);
-        bool process(Symtable* parent, ClassSymtablePool* pool, Program* program);
+        bool process(Symtable* parent, ClassSymtablePool* pool);
         void print();
 };
 
 class Continue : public Statement{
     public:
         void print();
-        bool process(Symtable* parent, ClassSymtablePool* pool, Program* program);
+        bool process(Symtable* parent, ClassSymtablePool* pool);
 
 };
 
 class Break : public Statement{
     public:
         void print();
-        bool process(Symtable* parent, ClassSymtablePool* pool, Program* program);
+        bool process(Symtable* parent, ClassSymtablePool* pool);
 
 };
 
@@ -127,7 +126,7 @@ class Return : public Statement{
     public:
         Return();
         Return(Expression* optExp);
-        bool process(Symtable* parent, ClassSymtablePool* pool, Program* program);
+        bool process(Symtable* parent, ClassSymtablePool* pool);
         void print();
 
 };
@@ -145,7 +144,7 @@ class StaticMethodCallExpression : public Statement, public ObjExpression{
 
     public:
         StaticMethodCallExpression(string className, string method, deque<Expression*>* arguments);
-        bool process(Symtable* environment, ClassSymtablePool* pool, Program* program);
+        bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
         bool accept(StaticVisitor&);
         void print();
@@ -163,7 +162,7 @@ class MethodCallExpression : public Statement,  public ObjExpression{
 
     public:
         MethodCallExpression(Expression* left, string method, deque<Expression*>* args);
-        bool process(Symtable* environment, ClassSymtablePool* pool, Program* program);
+        bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
         bool accept(StaticVisitor&);
         void print();

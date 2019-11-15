@@ -26,7 +26,7 @@ void VarDec::print(){
     cout << ";";
 }
 
-bool VarDec::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
+bool VarDec::process(Symtable* parent, ClassSymtablePool* pool){
     if(type->kind == TypeClass && !g_defaultSymbolHandler.isDefaultClass(type->getClassName())){
         if(pool->get(type->getClassName()) == nullptr){
             classNotDefinedError(type->getClassName());
@@ -38,7 +38,7 @@ bool VarDec::process(Symtable* parent, ClassSymtablePool* pool, Program* program
             return false;
         }
     }
-
+    
     if(!canBeInstantiated(type, pool))
         return false;
 
@@ -100,13 +100,13 @@ deque<GenStatement*>* Block::getStatements(){
     return statements;
 }
 
-bool Block::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
+bool Block::process(Symtable* parent, ClassSymtablePool* pool){
     Symtable* table = new Symtable(parent->getClassName(), parent->getMethodName());
     table->setParent(parent);
 
     if(statements != nullptr)
         for(auto stmt : *statements){
-            if(!stmt->process(table, pool, program))
+            if(!stmt->process(table, pool))
                 return false;
         }
 
@@ -127,8 +127,8 @@ ElselessIf::ElselessIf(Expression* guard, Statement* statement){
     this->statement = statement;
 }
 
-bool ElselessIf::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
-    return statement->process(parent, pool, program);
+bool ElselessIf::process(Symtable* parent, ClassSymtablePool* pool){
+    return statement->process(parent, pool);
 }
 
 void ElselessIf::print(){
@@ -146,8 +146,8 @@ IfElse::IfElse(Expression* guard, Statement* statementIf, Statement* statementEl
     this->statementElse = statementElse;
 }
 
-bool IfElse::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
-    return statementIf->process(parent, pool, program) && statementElse->process(parent, pool, program);
+bool IfElse::process(Symtable* parent, ClassSymtablePool* pool){
+    return statementIf->process(parent, pool) && statementElse->process(parent, pool);
 }
 
 void IfElse::print(){
@@ -167,9 +167,9 @@ While::While(Expression* guard, Statement* statement){
     this->statement = statement;
 }
 
-bool While::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
+bool While::process(Symtable* parent, ClassSymtablePool* pool){
     pool->setIsLoopBlock(true);
-    bool r = statement->process(parent, pool, program);
+    bool r = statement->process(parent, pool);
     pool->setIsLoopBlock(false);
     return r;
 }
@@ -195,7 +195,7 @@ void Assignment::print(){
     cout << ";";
 }
 
-bool Assignment::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
+bool Assignment::process(Symtable* parent, ClassSymtablePool* pool){
     auto visitor = StaticVisitor(parent, pool);
 
     if(!lvalue->accept(visitor))
@@ -221,7 +221,7 @@ void Continue::print(){
     cout << "continue;";
 }
 
-bool Continue::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
+bool Continue::process(Symtable* parent, ClassSymtablePool* pool){
     if(!pool->isLoopBlock()){
         breakOutsideLoop();
         return false;
@@ -234,7 +234,7 @@ void Break::print(){
     cout << "break;";
 }
 
-bool Break::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
+bool Break::process(Symtable* parent, ClassSymtablePool* pool){
     if(!pool->isLoopBlock()){
         breakOutsideLoop();
         return false;
@@ -256,7 +256,7 @@ void Return::print(){
     cout << ";";
 }
 
-bool Return::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
+bool Return::process(Symtable* parent, ClassSymtablePool* pool){
     Type* optExpType = MkTypeVoid();
     if(optExp != nullptr){
         auto visitor = StaticVisitor(parent, pool);
@@ -292,7 +292,7 @@ string MethodCallExpression::toString(){
     return ans + ")";
 }
 
-bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* pool, Program* program){
+bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* pool){
     auto visitor = StaticVisitor(environment,pool); 
     return accept(visitor);
 }
@@ -322,7 +322,7 @@ bool StaticMethodCallExpression::accept(StaticVisitor& visitor){
     return visitor.visit(this);
 }
 
-bool StaticMethodCallExpression::process(Symtable* environment, ClassSymtablePool* pool, Program* program){
+bool StaticMethodCallExpression::process(Symtable* environment, ClassSymtablePool* pool){
     auto visitor = StaticVisitor(environment,pool); 
     return accept(visitor);
 }

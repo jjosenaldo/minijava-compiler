@@ -182,7 +182,7 @@ bool ClassSymtable::processMethodBodies(ClassDeclaration* classDecl, ClassSymtab
             // Process statements
             auto stmts = blockStmt->getStatements();
             for(auto stmt : *stmts){
-                if(!stmt->process(methodTable, pool, program))
+                if(!stmt->process(methodTable, pool))
                     return false;
             }
 

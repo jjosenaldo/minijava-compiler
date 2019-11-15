@@ -366,7 +366,7 @@ bool StaticVisitor::visit(NewArrayExpression* exp){
     auto type = exp->type;
 
     for(auto dim : *dimensions)
-        if(dim->accept(*this))
+        if(!dim->accept(*this))
             return false;
 
     if(type->kind == TypeMethod || type->kind == TypeNull || type->kind == TypeVoid){
