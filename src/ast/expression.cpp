@@ -146,9 +146,7 @@ string IdExpression::getId(){
 }
 
 bool IdExpression::accept(StaticVisitor& visitor){
-    visitor.visit(this);
-    std::cout << type->toString() << " " << "iha" << std::endl;
-    return true;
+    return visitor.visit(this);
 }
 
 bool IdExpression::isLvalue(){
