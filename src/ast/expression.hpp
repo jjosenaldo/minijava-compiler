@@ -176,6 +176,7 @@ class ParenExpression : public ObjExpression{
         bool isLvalue();
         Expression* getFirst();
         bool accept(StaticVisitor&);
+        string accept(CodeVisitor&);
         friend class StaticVisitor;
         friend class CodeVisitor;
 };

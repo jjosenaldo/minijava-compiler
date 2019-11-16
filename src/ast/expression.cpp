@@ -206,6 +206,10 @@ bool ParenExpression::accept(StaticVisitor& visitor){
     return visitor.visit(this);
 }
 
+string ParenExpression::accept(CodeVisitor& visitor){
+    return visitor.visit(this);
+}
+
 Expression* ParenExpression::getFirst() {
     return first;
 }

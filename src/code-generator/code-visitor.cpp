@@ -88,9 +88,9 @@ string CodeVisitor::visit(IdExpression *exp) {
 // 	return ""; //"r.getInstance()->";
 // }
 
-// string CodeVisitor::visit(ParenExpression *exp) {
-// 	return "(" + visit(exp->getFirst()) + ")";
-// }
+string CodeVisitor::visit(ParenExpression *exp) {
+	return exp->first->accept(*this);
+}
 
 // // TODO: Permitir adiocionar um array literal no registro de ativação
 // string CodeVisitor::visit(LitArrayExpression *exp) {
