@@ -354,6 +354,8 @@ ClassSymtablePool* buildClassSymtablePool(Program* program){
 
     // Processes each class
     for(auto classDecl : *program->getDecls()){
+        auto visitor = StaticVisitor(nullptr, pool);
+
         string className = classDecl->getName();
         ClassSymtable* root = pool->get(className);
 
@@ -361,13 +363,12 @@ ClassSymtablePool* buildClassSymtablePool(Program* program){
         auto fields = classDecl->getFields();
         if(fields != nullptr)
             for(auto field : *fields)
-                if(!field->process(className, root, pool)){
+                if(!visitor.visit(field, root, className)){
                     delete pool;
                     return nullptr;
                 }
 
         // Processes the method headers
-        auto visitor = StaticVisitor(nullptr, pool);
         auto methods = classDecl->getMethods();
         if(methods != nullptr){
             for(auto method : *methods)

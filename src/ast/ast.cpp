@@ -162,37 +162,6 @@ void Field::print(){
     cout << ";";
 }
 
-bool Field::process(string className, ClassSymtable* root, ClassSymtablePool* pool){
-    if(root->get(name).tag != TCNOCONTENT){
-        multiplyDefinedFieldError(name, className);
-        return false;
-    }
-
-    if(pool->get(name) != nullptr || g_defaultSymbolHandler.isDefaultClass(name)){
-        classAsFieldNameError(name);
-        return false;
-    }
-
-    auto visitor = StaticVisitor(root, pool);
-
-    if(this->initValue != nullptr){
-        if(!this->initValue->accept(visitor))
-            return false;
-
-            if(!areCompatibleTypes(type, this->initValue->getType())){
-                attributeInitValueTypeError(name, type->toString(), this->initValue->getType()->toString());
-                return false;
-            }
-    }
-    
-    TableContent tc;
-    tc.tag = TCTYPE;
-    tc.type = type;
-    root->insert(name, tc);
-
-    return true;
-}
-
 ClassDeclaration::ClassDeclaration(string name) : ClassDeclaration(name, "") {}
 
 ClassDeclaration::ClassDeclaration(string name, string parent){

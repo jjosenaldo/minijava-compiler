@@ -585,3 +585,36 @@ bool StaticVisitor::visitMethodHeader(Method* method, ClassSymtable* root, strin
     root->insertMethodTable(methodName, methodTable);
     return true;
 }
+
+bool StaticVisitor::visit(Field* field, ClassSymtable* root, string className) {
+    auto type = field->type;
+    auto name = field->name;
+    auto initValue = field->initValue;
+
+    if(root->get(name).tag != TCNOCONTENT){
+        multiplyDefinedFieldError(name, className);
+        return false;
+    }
+
+    if(pool->get(name) != nullptr || g_defaultSymbolHandler.isDefaultClass(name)){
+        classAsFieldNameError(name);
+        return false;
+    }
+
+    if(initValue != nullptr){
+        if(!initValue->accept(*this))
+            return false;
+
+            if(!areCompatibleTypes(type, initValue->getType())){
+                attributeInitValueTypeError(name, type->toString(), initValue->getType()->toString());
+                return false;
+            }
+    }
+    
+    TableContent tc;
+    tc.tag = TCTYPE;
+    tc.type = type;
+    root->insert(name, tc);
+
+    return true;
+}

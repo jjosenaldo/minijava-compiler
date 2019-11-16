@@ -95,10 +95,11 @@ class Field{
         Field(Type* type, string name, Expression* initValue);
 
         string getName();
-        bool process(string className, ClassSymtable* root, ClassSymtablePool* pool);
         Type* getType();
 
         void print();
+
+        friend class StaticVisitor;
 };
 
 class Parameter{

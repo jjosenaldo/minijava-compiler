@@ -28,6 +28,7 @@ class Break;
 class Return;
 class Skip;
 class Method;
+class Field;
 
 class StaticVisitor{
 private:
@@ -69,6 +70,7 @@ public:
 
     // Other AST elements
     bool visitMethodHeader(Method* method, ClassSymtable* root, string className);
+    bool visit(Field* field, ClassSymtable* root, string className);
 };
 
 #endif
