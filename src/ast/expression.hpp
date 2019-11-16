@@ -101,6 +101,7 @@ class UnExpression : public Expression{
         UnOperator getOp();
 
         bool accept(StaticVisitor&);
+        string accept(CodeVisitor&);
         friend class StaticVisitor;
         friend class CodeVisitor;
 };

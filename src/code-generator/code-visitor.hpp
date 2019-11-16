@@ -29,7 +29,7 @@ public:
 
 	// Expressions
 	string visit(BinExpression *exp);
-	// string visit(UnExpression *exp);
+	string visit(UnExpression *exp);
 	// string visit(AtomExpression *exp);
 	// string visit(ArrayDeclExpression *exp);
 	// string visit(NewObjExpression *exp);

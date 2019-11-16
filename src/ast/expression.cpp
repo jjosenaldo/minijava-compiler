@@ -79,6 +79,10 @@ string UnExpression::toString(){
     return unOpSymbol(op) + first->toString();
 }
 
+string UnExpression::accept(CodeVisitor& visitor){
+    return visitor.visit(this);
+}
+
 bool UnExpression::accept(StaticVisitor& visitor){
     return visitor.visit(this);
 }

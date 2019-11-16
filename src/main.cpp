@@ -18,8 +18,14 @@ int main(){
 
     IdExpression* ida = new IdExpression("a");
     IdExpression* idb = new IdExpression("b");
-    BinExpression* binop = new BinExpression(ida, idb, OP_PLUS);
+    IdExpression* idc = new IdExpression("c");
+    IdExpression* idd = new IdExpression("d");
+    BinExpression* binopAB = new BinExpression(ida, idb, OP_PLUS);
+    BinExpression* binopABC = new BinExpression(binopAB, idc, OP_PLUS);
+    BinExpression* binopABCD = new BinExpression(binopABC, idd, OP_PLUS);
+    UnExpression* binopABCDminus = new UnExpression(binopABCD, OP_UN_MINUS);
+
     CodeVisitor visitor;
-    visitor.visit(binop);
+    visitor.visit(binopABCDminus);
     return 0;
 }

@@ -53,9 +53,11 @@ string CodeVisitor::visit(BinExpression *exp) {
 	return "_tmp" + to_string(this->contTmpVars++);
 }
 
-// string CodeVisitor::visit(UnExpression *exp) {
-// 	return unOpSymbol(exp->getOp()) + visit(exp->getFirst());
-// }
+string CodeVisitor::visit(UnExpression *exp) {
+	string tmp1 = exp->first->accept(*this);
+	cout << TYPE << " _tmp" << this->contTmpVars << " = " << unOpSymbol(exp->op) << " *" << tmp1 << ";\n";
+	return "_tmp" + to_string(this->contTmpVars++) ;
+}
 
 // string CodeVisitor::visit(AtomExpression *exp) {
 // 	return exp->toString();
