@@ -122,6 +122,10 @@ bool AtomExpression::accept(StaticVisitor& visitor){
     return visitor.visit(this);
 }
 
+string AtomExpression::accept(CodeVisitor& visitor){
+    return visitor.visit(this);
+}
+
 string ArrayDeclExpression::toString(){
     return "new " + type->toString();
 }

@@ -25,8 +25,12 @@ int main(){
     BinExpression* binopABCD = new BinExpression(binopABC, idd, OP_PLUS);
     UnExpression* binopABCDminus = new UnExpression(binopABCD, OP_UN_MINUS);
     ParenExpression* paren = new ParenExpression(binopABCDminus);
+    AtomExpValue aev;
+    aev.intval = 42;
+    AtomExpression* fortytwo = new AtomExpression(aev, MkTypeInt());
+    BinExpression* fortytwoPlusParen = new BinExpression(fortytwo, paren, OP_PLUS);
 
     CodeVisitor visitor;
-    std::cout << visitor.visit(paren) << "\n";
+    std::cout << visitor.visit(fortytwoPlusParen) << "\n";
     return 0;
 }

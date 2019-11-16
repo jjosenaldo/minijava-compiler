@@ -59,9 +59,13 @@ string CodeVisitor::visit(UnExpression *exp) {
 	return "_tmp" + to_string(this->contTmpVars++) ;
 }
 
-// string CodeVisitor::visit(AtomExpression *exp) {
-// 	return exp->toString();
-// }
+// TODO: implement the remaining atomic expressions
+string CodeVisitor::visit(AtomExpression *exp) {
+	if(exp->type->kind == TypeInt)
+		cout << TYPE << " _tmp" << this->contTmpVars << " = new IntValue(" << exp->val.intval << ")\n";
+
+	return "_tmp" + to_string(this->contTmpVars++);
+}
 
 // // TODO: Declarar memória dinâmica no registro de ativação
 // string CodeVisitor::visit(ArrayDeclExpression *exp) {
