@@ -9,7 +9,6 @@
 #include "error.hpp"
 #include "global.hpp"
 #include "statement.hpp"
-#include "visitor.hpp" // TODO: remove this
 
 using std::cout;
 using std::endl;

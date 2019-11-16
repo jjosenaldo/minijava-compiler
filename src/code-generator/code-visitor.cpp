@@ -1,4 +1,4 @@
-#include "visitor.hpp"// Statements
+#include "code-visitor.hpp"// Statements
 #include "operator.hpp"
 #include <algorithm>
 
@@ -46,14 +46,14 @@ using std::cout;
 // string visit(Skip *stmt);
 
 // Expressions
-string Visitor::visit(BinExpression *exp) {
+string CodeVisitor::visit(BinExpression *exp) {
 	string tmp1 = visit(exp->first);
 	string tmp2 = visit(exp->second);
 	cout << TYPE << " _tmp" << this->contTmpVars << " = *" << tmp1 << " " << binOpSymbol(exp->getOp()) << " *" << tmp2 << ";\n";
 	return "_tmp" + to_string(this->contTmpVars++);
 }
 
-string Visitor::visit(Expression *exp) {
+string CodeVisitor::visit(Expression *exp) {
 	BinExpression* bin = dynamic_cast<BinExpression*> (exp);
 
 	if(bin != nullptr){
@@ -69,54 +69,54 @@ string Visitor::visit(Expression *exp) {
 	return "";
 }
 
-// string Visitor::visit(UnExpression *exp) {
+// string CodeVisitor::visit(UnExpression *exp) {
 // 	return unOpSymbol(exp->getOp()) + visit(exp->getFirst());
 // }
 
-// string Visitor::visit(AtomExpression *exp) {
+// string CodeVisitor::visit(AtomExpression *exp) {
 // 	return exp->toString();
 // }
 
 // // TODO: Declarar memória dinâmica no registro de ativação
-// string Visitor::visit(ArrayDeclExpression *exp) {
+// string CodeVisitor::visit(ArrayDeclExpression *exp) {
 // 	return "";
 // }
 
 // // TODO: Declarar memória dinâmica no registro de ativação
-// string Visitor::visit(NewObjExpression *exp) {
+// string CodeVisitor::visit(NewObjExpression *exp) {
 // 	return "";
 // }
 
-string Visitor::visit(IdExpression *exp) {
+string CodeVisitor::visit(IdExpression *exp) {
 	cout << TYPE << " _" << exp->getId() << " = " << RS_LOOKUP("\"" + exp->getId() + "\"")<< ";\n";
 	return "_"+exp->getId();
 }
 
 // // TODO: Pegar referência para a classe em que o código está sendo executado (caso não seja um método estático)
-// string Visitor::visit(FieldAccessExpression *exp) {
+// string CodeVisitor::visit(FieldAccessExpression *exp) {
 // 	return "";//RS_TOP + "getInstance()->query(\""+exp.getId()+"\")";
 // }
 
 // // TODO: Pegar referência para a classe em que o código está sendo executado (caso não seja um método estático)
-// string Visitor::visit(ThisExpression *exp) {
+// string CodeVisitor::visit(ThisExpression *exp) {
 // 	return ""; //"r.getInstance()->";
 // }
 
-// string Visitor::visit(ParenExpression *exp) {
+// string CodeVisitor::visit(ParenExpression *exp) {
 // 	return "(" + visit(exp->getFirst()) + ")";
 // }
 
 // // TODO: Permitir adiocionar um array literal no registro de ativação
-// string Visitor::visit(LitArrayExpression *exp) {
+// string CodeVisitor::visit(LitArrayExpression *exp) {
 // 	return "";
 // }
 
 // // TODO: Decidir como acessar posições de um vetor
-// string Visitor::visit(ArrayAccessExpression *exp) {
+// string CodeVisitor::visit(ArrayAccessExpression *exp) {
 // 	return "";
 // }
 
 // // TODO: Decidir como declarar dinâmicamente um array
-// string Visitor::visit(NewArrayExpression *exp) {
+// string CodeVisitor::visit(NewArrayExpression *exp) {
 // 	return "";
 // }

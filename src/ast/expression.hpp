@@ -14,7 +14,7 @@ using std::unordered_map;
 using std::string;
 
 class StaticVisitor;
-class Visitor;
+class CodeVisitor;
 
 union AtomExpValue{
     bool boolval;   
@@ -62,7 +62,7 @@ class BinExpression : public Expression{
 
         bool accept(StaticVisitor&);
         friend class StaticVisitor;
-        friend class Visitor;
+        friend class CodeVisitor;
 };
 
 // Example: false
@@ -82,7 +82,7 @@ class AtomExpression : public Expression{
 
         bool accept(StaticVisitor&);
         friend class StaticVisitor;
-        friend class Visitor;
+        friend class CodeVisitor;
 };
 
 // Example: !a
@@ -100,7 +100,7 @@ class UnExpression : public Expression{
 
         bool accept(StaticVisitor&);
         friend class StaticVisitor;
-        friend class Visitor;
+        friend class CodeVisitor;
 };
 
 class ObjExpression : public Expression{
@@ -120,7 +120,7 @@ class ArrayDeclExpression : public ObjExpression{
 
         bool accept(StaticVisitor&);
         friend class StaticVisitor;
-        friend class Visitor;
+        friend class CodeVisitor;
 };
 
 // Its type is not known when the tree is being built
@@ -135,7 +135,7 @@ class IdExpression : public ObjExpression{
         bool isLvalue();
         bool accept(StaticVisitor&);
         friend class StaticVisitor;
-        friend class Visitor;
+        friend class CodeVisitor;
 };
 
 // Its type is not known when the tree is being built
@@ -149,7 +149,7 @@ class FieldAccessExpression : public ObjExpression{
         bool isLvalue();
         bool accept(StaticVisitor&);
         friend class StaticVisitor;
-        friend class Visitor;
+        friend class CodeVisitor;
 };
 
 // Its type is not known when the tree is being built
@@ -158,7 +158,7 @@ class ThisExpression : public ObjExpression{
         string toString();
         bool accept(StaticVisitor&);
         friend class StaticVisitor;
-        friend class Visitor;
+        friend class CodeVisitor;
 };
 
 // Example: (a)
@@ -173,7 +173,7 @@ class ParenExpression : public ObjExpression{
         Expression* getFirst();
         bool accept(StaticVisitor&);
         friend class StaticVisitor;
-        friend class Visitor;
+        friend class CodeVisitor;
 };
 
 class LitArrayExpression : public ObjExpression{
@@ -184,7 +184,7 @@ class LitArrayExpression : public ObjExpression{
         string toString();
         bool accept(StaticVisitor&);
         friend class StaticVisitor;
-        friend class Visitor;
+        friend class CodeVisitor;
 };
 
 class ArrayAccessExpression : public Expression{
@@ -198,7 +198,7 @@ class ArrayAccessExpression : public Expression{
         bool isLvalue();
         bool accept(StaticVisitor&);
         friend class StaticVisitor;
-        friend class Visitor;
+        friend class CodeVisitor;
 };
 
 class NewArrayExpression : public Expression{
@@ -210,7 +210,7 @@ class NewArrayExpression : public Expression{
         string toString();
         bool accept(StaticVisitor&);
         friend class StaticVisitor;
-        friend class Visitor;
+        friend class CodeVisitor;
 };
 
 // Example: new Cat()
@@ -224,7 +224,7 @@ class NewObjExpression : public ObjExpression{
 
         bool accept(StaticVisitor&);
         friend class StaticVisitor;
-        friend class Visitor;
+        friend class CodeVisitor;
 };
 
 #endif

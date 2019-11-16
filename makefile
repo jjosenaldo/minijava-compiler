@@ -16,7 +16,7 @@ YACC := bison
 
 INC := -I $(PARSER_PATH) -I $(SYMTABLE_PATH) -I $(SYMTABLE_PATH) -I $(SYMTABLE_PATH) -I $(AST_PATH) -I $(UTILS_PATH) -I $(CG_PATH)
 
-OBJS = $(OBJ)/activation-record.o $(OBJ)/ast.o $(OBJ)/error.o $(OBJ)/expression.o $(OBJ)/global.o $(OBJ)/operator.o $(OBJ)/statement.o $(OBJ)/symtable.o $(OBJ)/type.o $(OBJ)/value.o $(OBJ)/static-visitor.o $(OBJ)/visitor.o 
+OBJS = $(OBJ)/activation-record.o $(OBJ)/ast.o $(OBJ)/code-visitor.o $(OBJ)/error.o $(OBJ)/expression.o $(OBJ)/global.o $(OBJ)/operator.o $(OBJ)/statement.o $(OBJ)/symtable.o $(OBJ)/type.o $(OBJ)/value.o $(OBJ)/static-visitor.o  
 
 all: $(BIN)/main.out 
 
@@ -34,6 +34,9 @@ $(OBJ)/activation-record.o: $(CG_PATH)/activation-record.cpp $(CG_PATH)/activati
 
 $(OBJ)/ast.o: $(AST_PATH)/ast.cpp $(AST_PATH)/ast.hpp
 	g++ -c -o $(OBJ)/ast.o $(AST_PATH)/ast.cpp $(INC) $(FLAGS) 
+
+$(OBJ)/code-visitor.o: $(CG_PATH)/code-visitor.cpp $(CG_PATH)/code-visitor.hpp
+	g++ -c -o $(OBJ)/code-visitor.o $(CG_PATH)/code-visitor.cpp $(INC) $(FLAGS) 
 
 $(OBJ)/error.o: $(UTILS_PATH)/error.cpp $(UTILS_PATH)/error.hpp
 	g++ -c -o $(OBJ)/error.o $(UTILS_PATH)/error.cpp $(INC) $(FLAGS) 
@@ -61,9 +64,6 @@ $(OBJ)/type.o: $(AST_PATH)/type.cpp $(AST_PATH)/type.hpp
 
 $(OBJ)/value.o: $(CG_PATH)/value.cpp $(CG_PATH)/value.hpp
 	g++ -c -o $(OBJ)/value.o $(CG_PATH)/value.cpp $(INC) $(FLAGS) 
-
-$(OBJ)/visitor.o: $(CG_PATH)/visitor.cpp $(CG_PATH)/visitor.hpp
-	g++ -c -o $(OBJ)/visitor.o $(CG_PATH)/visitor.cpp $(INC) $(FLAGS) 
 
 
 # Clean project

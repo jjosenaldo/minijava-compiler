@@ -40,7 +40,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 26 "./src/parser/yaccer.y" /* yacc.c:1909  */
+#line 25 "./src/parser/yaccer.y" /* yacc.c:1909  */
 
     #include <deque>
     #include "ast.hpp"
@@ -101,7 +101,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 41 "./src/parser/yaccer.y" /* yacc.c:1909  */
+#line 40 "./src/parser/yaccer.y" /* yacc.c:1909  */
 
   struct Node* nodePointer;
   char* _str;

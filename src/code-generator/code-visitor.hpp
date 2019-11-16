@@ -1,12 +1,12 @@
-#ifndef VISITOR_HPP
-#define VISITOR_HPP
+#ifndef CODE_VISITOR_HPP
+#define CODE_VISITOR_HPP
 
 #include "ast.hpp"
 #include "error.hpp"
 #include "expression.hpp"
 #include "symtable.hpp"
 
-class Visitor {
+class CodeVisitor {
 private:
 	int contTmpVars = 0;
 
