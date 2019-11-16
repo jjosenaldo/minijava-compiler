@@ -114,8 +114,9 @@ class Parameter{
 
         string getName();
 
-        bool process(Symtable* parent, ClassSymtablePool* pool);
         void print();
+        
+        friend class StaticVisitor;
 };
 
 #endif

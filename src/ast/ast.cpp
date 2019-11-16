@@ -56,25 +56,6 @@ Type* Parameter::getType(){
     return type;
 }
 
-bool Parameter::process(Symtable* parent, ClassSymtablePool* pool) {
-    if(!canBeInstantiated(type, pool))
-        return false;
-
-    if(predefinedId(name) || pool->get(name) != nullptr){
-        classAsVariableNameError(name);
-        return false;
-    }
-
-    if(parent->get(name).tag != TCNOCONTENT) {
-        multipleVariableError(name);
-        return false;
-    }
-
-    parent->insert(name, tableContentFromType(type));
-
-    return true;
-}
-
 string Parameter::getName(){
     return name;
 }

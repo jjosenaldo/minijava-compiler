@@ -567,6 +567,7 @@ bool StaticVisitor::visitMethodHeader(Method* method, ClassSymtable* root, strin
     root->insert(methodName, tcMethodType);
 
     Symtable* methodTable = new Symtable(className, root);
+    environment = methodTable;
 
     // Adds the method params
     auto params = parameters;
@@ -578,7 +579,7 @@ bool StaticVisitor::visitMethodHeader(Method* method, ClassSymtable* root, strin
                 return false;
             }
 
-            if(!param->process(methodTable, pool))
+            if(!this->visit(param))
                 return false;
         }
 
@@ -615,6 +616,28 @@ bool StaticVisitor::visit(Field* field, ClassSymtable* root, string className) {
     tc.tag = TCTYPE;
     tc.type = type;
     root->insert(name, tc);
+
+    return true;
+}
+
+bool StaticVisitor::visit(Parameter* param) {
+    auto type = param->type;
+    auto name = param->name;
+
+    if(!canBeInstantiated(type, pool))
+        return false;
+
+    if(predefinedId(name) || pool->get(name) != nullptr){
+        classAsVariableNameError(name);
+        return false;
+    }
+
+    if(environment->get(name).tag != TCNOCONTENT) {
+        multipleVariableError(name);
+        return false;
+    }
+
+    environment->insert(name, tableContentFromType(type));
 
     return true;
 }
