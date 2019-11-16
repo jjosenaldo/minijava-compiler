@@ -47,26 +47,10 @@ using std::cout;
 
 // Expressions
 string CodeVisitor::visit(BinExpression *exp) {
-	string tmp1 = visit(exp->first);
-	string tmp2 = visit(exp->second);
+	string tmp1 = exp->first->accept(*this);
+	string tmp2 = exp->second->accept(*this);
 	cout << TYPE << " _tmp" << this->contTmpVars << " = *" << tmp1 << " " << binOpSymbol(exp->getOp()) << " *" << tmp2 << ";\n";
 	return "_tmp" + to_string(this->contTmpVars++);
-}
-
-string CodeVisitor::visit(Expression *exp) {
-	BinExpression* bin = dynamic_cast<BinExpression*> (exp);
-
-	if(bin != nullptr){
-		return visit(bin);
-	}
-
-	IdExpression* idExp = dynamic_cast<IdExpression*> (exp);
-
-	if(idExp != nullptr){
-		return visit(idExp);
-	}
-
-	return "";
 }
 
 // string CodeVisitor::visit(UnExpression *exp) {

@@ -43,6 +43,7 @@ class Expression{
         bool isObject();
         virtual bool isLvalue();
         virtual bool accept(StaticVisitor&);
+        virtual string accept(CodeVisitor&) {return "ERROR";} // TODO: implement this for all subclasses
         virtual string toString() = 0;
 };
 
@@ -61,6 +62,7 @@ class BinExpression : public Expression{
         BinOperator getOp();
 
         bool accept(StaticVisitor&);
+        string accept(CodeVisitor&);
         friend class StaticVisitor;
         friend class CodeVisitor;
 };
@@ -134,6 +136,7 @@ class IdExpression : public ObjExpression{
         string toString();
         bool isLvalue();
         bool accept(StaticVisitor&);
+        string accept(CodeVisitor&);
         friend class StaticVisitor;
         friend class CodeVisitor;
 };

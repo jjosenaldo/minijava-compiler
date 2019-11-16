@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include "ast.hpp"
+#include "code-visitor.hpp"
 #include "error.hpp"
 #include "expression.hpp"
 #include "global.hpp"
@@ -50,6 +51,10 @@ string BinExpression::toString(){
 }
 
 bool BinExpression::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
+}
+
+string BinExpression::accept(CodeVisitor& visitor){
     return visitor.visit(this);
 }
 
@@ -146,6 +151,10 @@ string IdExpression::getId(){
 }
 
 bool IdExpression::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
+}
+
+string IdExpression::accept(CodeVisitor& visitor){
     return visitor.visit(this);
 }
 

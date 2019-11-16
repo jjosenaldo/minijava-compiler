@@ -28,7 +28,6 @@ public:
 	// string visit(MethodCallExpression *exp);
 
 	// Expressions
-	string visit(Expression *exp);
 	string visit(BinExpression *exp);
 	// string visit(UnExpression *exp);
 	// string visit(AtomExpression *exp);
