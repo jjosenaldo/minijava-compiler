@@ -5,14 +5,15 @@
 #include "error.hpp"
 #include "expression.hpp"
 #include "symtable.hpp"
+#include "statement.hpp"
 
 class CodeVisitor {
 private:
-	int contTmpVars = 0;
+	unsigned long int contTmpVars = 0u;
 
 public:
 	// Statements
-	// string visit(VarDec *stmt);
+	void visit(VarDec *stmt);
 	// string visit(Block *stmt);
 	// string visit(ElselessIf *stmt);
 	// string visit(IfElse *stmt);

@@ -10,13 +10,17 @@ using std::cout;
 
 #define RS string("rs->")
 #define RS_TOP string("rs->top()->")
-#define RS_LOOKUP(x) string(RS+"lookupVarVal(" + x + ")")
+#define RS_LOOKUP(x) string(RS_TOP+"lookupVarVal(" + x + ")")
 #define TYPE string("Value*")
+#define INSERTVAR(x,y) string("insertVar(\"" + x + "\"," + y + ")")
 
 // Statements
-// string visit(VarDec *stmt){
-// 	return RS_TOP + "insertVar("+ exp->getId() + "," + visit(expr->getExpression()) +");\n";
-// }
+void CodeVisitor::visit(VarDec *vardec){
+	cout << "{\n";
+	string tmp_var = vardec->value->accept(*this);
+	cout << RS_TOP + INSERTVAR(vardec->id, tmp_var) + ";\n";
+	cout << "}\n";
+}
 
 // string visit(Block *stmt) {
 // 	string res = RS + "createRecord();\n";

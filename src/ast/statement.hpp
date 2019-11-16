@@ -33,6 +33,7 @@ class VarDec : public GenStatement{
         void print();
 
         friend class StaticVisitor;
+        friend class CodeVisitor;
 };
 
 class Block : public Statement{
