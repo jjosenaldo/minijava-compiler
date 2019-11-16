@@ -16,6 +16,7 @@ class ClassDeclaration;
 class Expression;
 class Field;
 class Parameter;
+class StaticVisitor;
 
 class Program{
     private:
@@ -51,8 +52,9 @@ class Method{
         deque<Parameter*>* getParameters();
         Block* getStatement();
         void addParam(Parameter* param);
-        bool processHeader(string className, ClassSymtable* root, ClassSymtablePool* pool);
         void print();
+
+        friend class StaticVisitor;
 };
 
 class ClassDeclaration{

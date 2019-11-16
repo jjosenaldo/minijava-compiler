@@ -1,3 +1,4 @@
+#include "ast.hpp"
 #include "expression.hpp"
 #include "global.hpp"
 #include "statement.hpp"
@@ -536,5 +537,51 @@ bool StaticVisitor::visit(Return* stmt) {
 }
 
 bool StaticVisitor::visit(Skip* stmt){
+    return true;
+}
+
+bool StaticVisitor::visitMethodHeader(Method* method, ClassSymtable* root, string className){
+    string methodName = method->id;
+    auto returnType = method->returnType;
+    auto parameters = method->parameters;
+
+    if(pool->get(methodName) != nullptr || g_defaultSymbolHandler.isDefaultClass(methodName)){
+        classAsMethodNameError(methodName);
+        return false;
+    }
+
+    if(root->get(methodName).tag != TCNOCONTENT){
+        multipleMethodError(className, methodName);
+        return false;
+    }
+
+    if(returnType->kind == TypeClass & pool->get(returnType->getClassName()) == nullptr){
+        classNotDefinedError(returnType->getClassName());
+        return false;
+    }
+
+    // Adds the method name
+    TableContent tcMethodType;
+    tcMethodType.tag = TCTYPE;
+    tcMethodType.type = method->getType();
+    root->insert(methodName, tcMethodType);
+
+    Symtable* methodTable = new Symtable(className, root);
+
+    // Adds the method params
+    auto params = parameters;
+    if(params != nullptr)
+        for(auto param : *params){
+            if(methodTable->get(param->getName()).tag != TCNOCONTENT){
+                multiplyDefinedParamError(param->getName(), methodName, className);
+                delete methodTable;
+                return false;
+            }
+
+            if(!param->process(methodTable, pool))
+                return false;
+        }
+
+    root->insertMethodTable(methodName, methodTable);
     return true;
 }

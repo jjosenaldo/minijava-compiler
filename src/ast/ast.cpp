@@ -136,50 +136,6 @@ void Method::addParam(Parameter* param){
     this->parameters->push_back(param);
 }
 
-bool Method::processHeader(string className, ClassSymtable* root, ClassSymtablePool* pool){
-    string methodName = id;
-
-    if(pool->get(methodName) != nullptr || g_defaultSymbolHandler.isDefaultClass(methodName)){
-        classAsMethodNameError(methodName);
-        return false;
-    }
-
-    if(root->get(methodName).tag != TCNOCONTENT){
-        multipleMethodError(className, methodName);
-        return false;
-    }
-
-    if(returnType->kind == TypeClass & pool->get(returnType->getClassName()) == nullptr){
-        classNotDefinedError(returnType->getClassName());
-        return false;
-    }
-
-    // Adds the method name
-    TableContent tcMethodType;
-    tcMethodType.tag = TCTYPE;
-    tcMethodType.type = this->getType();
-    root->insert(methodName, tcMethodType);
-
-    Symtable* methodTable = new Symtable(className, root);
-
-    // Adds the method params
-    auto params = parameters;
-    if(params != nullptr)
-        for(auto param : *params){
-            if(methodTable->get(param->getName()).tag != TCNOCONTENT){
-                multiplyDefinedParamError(param->getName(), methodName, className);
-                delete methodTable;
-                return false;
-            }
-
-            if(!param->process(methodTable, pool))
-                return false;
-        }
-
-    root->insertMethodTable(methodName, methodTable);
-    return true;
-}
-
 Field::Field(Type* type, string name, Expression* initValue){
     this->type = type;
     this->name = name;

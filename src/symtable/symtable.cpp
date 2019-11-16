@@ -367,10 +367,11 @@ ClassSymtablePool* buildClassSymtablePool(Program* program){
                 }
 
         // Processes the method headers
+        auto visitor = StaticVisitor(nullptr, pool);
         auto methods = classDecl->getMethods();
         if(methods != nullptr){
             for(auto method : *methods)
-                if(!method->processHeader(className, root, pool)){
+                if(!visitor.visitMethodHeader(method, root, className)){
                     delete pool;
                     return nullptr;
                 }

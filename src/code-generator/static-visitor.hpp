@@ -27,6 +27,7 @@ class Continue;
 class Break;
 class Return;
 class Skip;
+class Method;
 
 class StaticVisitor{
 private:
@@ -65,6 +66,9 @@ public:
     // Both Expressions and Statements
     bool visit(StaticMethodCallExpression* exp);
     bool visit(MethodCallExpression* exp);
+
+    // Other AST elements
+    bool visitMethodHeader(Method* method, ClassSymtable* root, string className);
 };
 
 #endif
