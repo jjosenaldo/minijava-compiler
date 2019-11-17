@@ -14,6 +14,7 @@ class GenStatement{
         // Will be defined in a derived class
         virtual void print() = 0;
         virtual bool accept(StaticVisitor& visitor) = 0;
+        virtual string accept(CodeVisitor&) = 0;
 };
 
 class Statement : public GenStatement {};
@@ -30,6 +31,7 @@ class VarDec : public GenStatement{
         string getId();
         Expression* getExpression();
         bool accept(StaticVisitor& visitor);
+        string accept(CodeVisitor&);
         void print();
 
         friend class StaticVisitor;
@@ -46,9 +48,11 @@ class Block : public Statement{
         void addStatementAtFront(GenStatement* stmt);
         deque<GenStatement*>* getStatements();
         bool accept(StaticVisitor& visitor);
+        string accept(CodeVisitor&);
         void print();
 
         friend class StaticVisitor;
+        friend class CodeVisitor;
 };
 
 class ElselessIf : public Statement {
@@ -59,11 +63,11 @@ class ElselessIf : public Statement {
     public:
         ElselessIf(Expression* guard, Statement* statement);
         bool accept(StaticVisitor& visitor);
+        string accept(CodeVisitor&);
         Statement* getStatement();
         void print();
-
         friend class StaticVisitor;
-
+        friend class CodeVisitor;
 };
 
 class IfElse : public Statement{
@@ -74,12 +78,14 @@ class IfElse : public Statement{
     public:
         IfElse(Expression* guard, Statement* statementIf, Statement* statementElse);
         bool accept(StaticVisitor& visitor);
+        string accept(CodeVisitor&);
 
         Statement* getStatementIf();
         Statement* getStatementElse();
         void print();
 
         friend class StaticVisitor;
+        friend class CodeVisitor;
 };
 
 class While : public Statement{
@@ -89,10 +95,12 @@ class While : public Statement{
     public:
         While(Expression* guard, Statement* statement);
         bool accept(StaticVisitor& visitor);
+        string accept(CodeVisitor&);
         Statement* getStatement();
         void print();
 
         friend class StaticVisitor;
+        friend class CodeVisitor;
 };
 
 class Assignment : public Statement{
@@ -102,27 +110,31 @@ class Assignment : public Statement{
     public:
         Assignment(Expression* lvalue, Expression* rvalue);
         bool accept(StaticVisitor& visitor);
+        string accept(CodeVisitor&);
         void print();
 
         friend class StaticVisitor;
+        friend class CodeVisitor;
 };
 
 class Continue : public Statement{
     public:
         void print();
         bool accept(StaticVisitor& visitor);
+        string accept(CodeVisitor&);
 
         friend class StaticVisitor;
-
+        friend class CodeVisitor;
 };
 
 class Break : public Statement{
     public:
         void print();
         bool accept(StaticVisitor& visitor);
+        string accept(CodeVisitor&);
 
         friend class StaticVisitor;
-
+        friend class CodeVisitor;
 };
 
 class Return : public Statement{
@@ -132,17 +144,21 @@ class Return : public Statement{
         Return();
         Return(Expression* optExp);
         bool accept(StaticVisitor& visitor);
+        string accept(CodeVisitor&);
         void print();
 
         friend class StaticVisitor;
-
+        friend class CodeVisitor;
 };
 
 class Skip : public Statement {
     public:
         void print();
         bool accept(StaticVisitor& visitor);
+        string accept(CodeVisitor&);
+
         friend class StaticVisitor;
+        friend class CodeVisitor;
 };
 
 class StaticMethodCallExpression : public Statement, public ObjExpression{
@@ -155,10 +171,11 @@ class StaticMethodCallExpression : public Statement, public ObjExpression{
         StaticMethodCallExpression(string className, string method, deque<Expression*>* arguments);
         string toString();
         bool accept(StaticVisitor&);
+        string accept(CodeVisitor&);
         void print();
 
         friend class StaticVisitor;
-
+        friend class CodeVisitor;
 };
 
 // Its type is not known when the tree is being built
@@ -172,9 +189,11 @@ class MethodCallExpression : public Statement,  public ObjExpression{
         MethodCallExpression(Expression* left, string method, deque<Expression*>* args);
         string toString();
         bool accept(StaticVisitor&);
+        string accept(CodeVisitor&);
         void print();
 
         friend class StaticVisitor;
+        friend class CodeVisitor;
 };
 
 #endif

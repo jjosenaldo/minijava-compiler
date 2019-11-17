@@ -43,7 +43,7 @@ class Expression{
         bool isObject();
         virtual bool isLvalue();
         virtual bool accept(StaticVisitor&);
-        virtual string accept(CodeVisitor&) {return "ERROR";} // TODO: implement this for all subclasses
+        virtual string accept(CodeVisitor&) {return "ERROR";}; // TODO: implement this for all subclasses
         virtual string toString() = 0;
 };
 

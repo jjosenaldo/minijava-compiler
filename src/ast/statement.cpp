@@ -3,6 +3,7 @@
 #include "global.hpp"
 #include "statement.hpp"
 #include "static-visitor.hpp"
+#include "code-visitor.hpp"
 
 using std::cout;
 using std::endl;
@@ -27,6 +28,10 @@ void VarDec::print(){
 }
 
 bool VarDec::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
+}
+
+string VarDec::accept(CodeVisitor &visitor) {
     return visitor.visit(this);
 }
 
@@ -62,6 +67,10 @@ bool Block::accept(StaticVisitor& visitor){
     return visitor.visit(this);
 }
 
+string Block::accept(CodeVisitor &visitor) {
+    return visitor.visit(this);
+}
+
 void Block::print(){
     cout << "{ ";
     for(auto stmt : *this->statements){
@@ -76,6 +85,10 @@ ElselessIf::ElselessIf(Expression* guard, Statement* statement){
 }
 
 bool ElselessIf::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
+}
+
+string ElselessIf::accept(CodeVisitor &visitor) {
     return visitor.visit(this);
 }
 
@@ -98,6 +111,10 @@ bool IfElse::accept(StaticVisitor& visitor){
     return visitor.visit(this);
 }
 
+string IfElse::accept(CodeVisitor &visitor) {
+    return visitor.visit(this);
+}
+
 void IfElse::print(){
     cout << "if(";
     guard->print();
@@ -117,6 +134,10 @@ While::While(Expression* guard, Statement* statement){
 
 bool While::accept(StaticVisitor& visitor){
     return visitor.visit(this);
+}
+
+string While::accept(CodeVisitor &visitor) {
+    visitor.visit(this);
 }
 
 void While::print(){
@@ -144,6 +165,10 @@ bool Assignment::accept(StaticVisitor& visitor){
     return visitor.visit(this);
 }
 
+string Assignment::accept(CodeVisitor &visitor) {
+    return visitor.visit(this);
+}
+
 void Continue::print(){
     cout << "continue;";
 }
@@ -152,11 +177,19 @@ bool Continue::accept(StaticVisitor& visitor){
     return visitor.visit(this);
 }
 
+string Continue::accept(CodeVisitor &visitor) {
+    return visitor.visit(this);
+}
+
 void Break::print(){
     cout << "break;";
 }
 
 bool Break::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
+}
+
+string Break::accept(CodeVisitor &visitor) {
     return visitor.visit(this);
 }
 
@@ -176,6 +209,9 @@ bool Return::accept(StaticVisitor& visitor){
     return visitor.visit(this);
 }
 
+string Return::accept(CodeVisitor &visitor) {
+    return visitor.visit(this);
+}
 
 MethodCallExpression::MethodCallExpression(Expression* left, string method, deque<Expression*>* args){
     this->left = left;
@@ -190,6 +226,10 @@ string MethodCallExpression::toString(){
 }
 
 bool MethodCallExpression::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
+}
+
+string MethodCallExpression::accept(CodeVisitor &visitor) {
     return visitor.visit(this);
 }
 
@@ -214,12 +254,16 @@ bool StaticMethodCallExpression::accept(StaticVisitor& visitor){
     return visitor.visit(this);
 }
 
+string StaticMethodCallExpression::accept(CodeVisitor &visitor) {
+    return visitor.visit(this);
+}
+
 string StaticMethodCallExpression::toString(){
     // TODO
     return "";
 }
 
-void StaticMethodCallExpression::print(){
+void StaticMethodCallExpression::print() {
     // TODO
 }
 
@@ -228,5 +272,9 @@ void Skip::print(){
 }
 
 bool Skip::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
+}
+
+string Skip::accept(CodeVisitor &visitor) {
     return visitor.visit(this);
 }
