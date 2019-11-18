@@ -14,10 +14,22 @@ using std::cout;
 #define RS_LOOKUP(x) string(RS_TOP+"lookupVarVal(" + x + ")")
 #define TYPE string("Value*")
 #define INSERTVAR(x,y) string("insertVar(\"" + x + "\"," + y + ")")
-#define CREATERECORD string(RS_TOP + "createRecord();")
-#define POPRECORD string(RS_TOP + "pop();")
+#define CREATERECORD string(RS + "createRecord();")
+#define POPRECORD string(RS + "pop();")
 #define GOTO(label) "goto " + string(label)
-#define IFNOT_GOTO(guard, label) string("if(!" + guard + ")" + GOTO(label))
+#define IFNOT_GOTO(guard, label) string("if(!" + guard + ") " + GOTO(label))
+
+void CodeVisitor::resetCountTmpVars() {
+    this->countTmpVars = 0;
+}
+
+unsigned long int CodeVisitor::getNewCountTmpVars() {
+    return this->countTmpVars++;
+}
+
+unsigned long int CodeVisitor::getNewCountLabels() {
+    return this->countLabels++;
+}
 
 // AST base
 
@@ -28,11 +40,13 @@ string CodeVisitor::visit(Program *program) {
     return "";
 }
 
+// TODO
 string CodeVisitor::visit(Method *method) {
     method->statement->accept(*this);
     return "";
 }
 
+// TODO
 string CodeVisitor::visit(ClassDeclaration *classdec) {
     for(auto &e : *(classdec->methods))
         e->accept(*this);
@@ -45,16 +59,14 @@ string CodeVisitor::visit(VarDec *vardec){
     string tmp_var = vardec->value->accept(*this);
     cout << RS_TOP + INSERTVAR(vardec->id, tmp_var) + ";\n";
     cout << "}\n";
-
-    return ""; // Dumb value?
+    resetCountTmpVars();
+    return "";
 }
 
 string CodeVisitor::visit(Block *block) {
     cout << CREATERECORD << "\n";
-    //cout << "{\n";
     for(auto &e : *(block->statements))
         e->accept(*this);
-    //cout << "}\n";
     cout << POPRECORD << "\n";
 
     return ""; // Dumb value?
@@ -77,19 +89,23 @@ string CodeVisitor::visit(ElselessIf *elselessIf) {
             <lab>:
     */
 
+    cout << "{\n";
+    string lab = "l" + to_string(getNewCountLabels());
+
     // Solve guard
     string tmp_guard = elselessIf->guard->accept(*this);
 
     // Test guard
-    cout << IFNOT_GOTO(tmp_guard, "<lab>") << ";\n"; // TODO: Change label here
+    cout << IFNOT_GOTO(tmp_guard, lab) << ";\n";
 
     // Visit statement
     elselessIf->statement->accept(*this);
 
     // End if
-    cout << "<lab>:\n"; // TODO: Change label here
+    cout << lab << ":\n";
+    cout << "}\n";
 
-    return ""; // Dumb value?
+    return "";
 }
 
 // TODO: Solve unique label problem
@@ -207,22 +223,27 @@ string CodeVisitor::visit(MethodCallExpression *exp) { return ""; }       // TOD
 string CodeVisitor::visit(BinExpression *exp) {
     string tmp1 = exp->first->accept(*this);
     string tmp2 = exp->second->accept(*this);
-    cout << TYPE << " _tmp" << this->contTmpVars << " = *" << tmp1 << " " << binOpSymbol(exp->getOp()) << " *" << tmp2 << ";\n";
-    return "_tmp" + to_string(this->contTmpVars++);
+
+    string tmp = "_tmp" + to_string(this->getNewCountTmpVars());
+    cout << TYPE << " " << tmp << " = *" << tmp1 << " " << binOpSymbol(exp->getOp()) << " *" << tmp2 << ";\n";
+    return tmp;
 }
 
 string CodeVisitor::visit(UnExpression *exp) {
     string tmp1 = exp->first->accept(*this);
-    cout << TYPE << " _tmp" << this->contTmpVars << " = " << unOpSymbol(exp->op) << " *" << tmp1 << ";\n";
-    return "_tmp" + to_string(this->contTmpVars++) ;
+
+    string tmp = "_tmp" + to_string(this->getNewCountTmpVars());
+    cout << TYPE << " " << tmp << " = " << unOpSymbol(exp->op) << " *" << tmp1 << ";\n";
+    return tmp;
 }
 
 // TODO: implement the remaining atomic expressions
 string CodeVisitor::visit(AtomExpression *exp) {
-    if(exp->type->kind == TypeInt)
-        cout << TYPE << " _tmp" << this->contTmpVars << " = new IntValue(" << exp->val.intval << ")\n";
+    string tmp = "_tmp" + to_string(this->getNewCountTmpVars());
 
-    return "_tmp" + to_string(this->contTmpVars++);
+    if(exp->type->kind == TypeInt)
+        cout << TYPE << " " << tmp << " = new IntValue(" << exp->val.intval << ")\n";
+    return tmp;
 }
 
 // // TODO: Declarar memória dinâmica no registro de ativação

@@ -11,7 +11,13 @@ class Method;
 
 class CodeVisitor {
 private:
-	unsigned long int contTmpVars = 0u;
+	unsigned long int countTmpVars = 0u;
+	unsigned long int countLabels = 0u;
+
+	void resetCountTmpVars();
+	unsigned long int getNewCountTmpVars();
+
+	unsigned long int getNewCountLabels();
 
 public:
 	// AST base
