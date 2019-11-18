@@ -1,0 +1,7 @@
+class Main {
+	void main(String []args) {
+		int a = 1;
+		int b = 1+a;
+		boolean c = a<b;
+	}
+}

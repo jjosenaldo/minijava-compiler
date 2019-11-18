@@ -10,14 +10,35 @@ string IntValue::toString(){
     return to_string(value);
 }
 
-// TODO: implement concatenation of strings
-Value* IntValue::operator+(Value &b) {
-	IntValue *ib = dynamic_cast<IntValue*>(&b);
-	return new IntValue(this->getInt() + ib->getInt()); 
+int IntValue::getInt() const {
+    return this->value;
 }
 
-// TODO: implement unary operators (namely, ! and unary -)
+string IntValue::getClassName(){
+    return "IntValue";
+}
 
-int IntValue::getInt() {
+BoolValue::BoolValue(bool v){
+    value = v;
+}
+
+string BoolValue::toString(){
+    return value ? "true" :  "false";
+}
+
+bool BoolValue::getBool() const {
     return this->value;
+}
+
+string BoolValue::getClassName(){
+    return "BoolValue";
+}
+
+// TODO: implement string concatenation (it'll need a cast)
+IntValue* operator+(const Value& v1, const Value& v2){
+    return new IntValue(v1.getInt() + v2.getInt());
+}
+
+BoolValue* operator<(const Value& v1, const Value& v2){
+	return new BoolValue(v1.getInt() < v2.getInt());
 }
