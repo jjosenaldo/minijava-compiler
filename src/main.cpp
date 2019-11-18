@@ -3,6 +3,7 @@
 
 // Included to test:
 #include "expression.hpp"
+#include "code-generator.hpp"
 #include "code-visitor.hpp"
 #include "operator.hpp"
 #include "statement.hpp"
@@ -41,6 +42,11 @@ void test() {
     }
 }
 
+void testGenerateWholeCode(){
+    CodeGenerator cg = CodeGenerator();
+    cg.generateCode(program);
+}
+
 int main() {
     
     if(yyparse() != 1){
@@ -48,17 +54,8 @@ int main() {
         auto pool = buildClassSymtablePool(program);
 
         if(pool != nullptr)
-            //pool->print();
-            std::cout << "1\n";
-        else 
-            std::cout << "0\n";
+            testGenerateWholeCode();        
     }
-
-    CodeVisitor visitor;
-
-    visitor.visit(program);
-
-    //test();
 
     return 0;
 }

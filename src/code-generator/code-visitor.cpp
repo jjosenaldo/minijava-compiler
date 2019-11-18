@@ -245,7 +245,7 @@ string CodeVisitor::visit(AtomExpression *exp) {
     string tmp = getNewTmpVar();
 
     if(exp->type->kind == TypeInt)
-        cout << TYPE << " " << tmp << " = new IntValue(" << exp->val.intval << ")\n";
+        cout << TYPE << " " << tmp << " = new IntValue(" << exp->val.intval << ");\n";
     return tmp;
 }
 

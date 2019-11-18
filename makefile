@@ -16,7 +16,7 @@ YACC := bison
 
 INC := -I $(PARSER_PATH) -I $(SYMTABLE_PATH) -I $(SYMTABLE_PATH) -I $(SYMTABLE_PATH) -I $(AST_PATH) -I $(UTILS_PATH) -I $(CG_PATH)
 
-OBJS = $(OBJ)/activation-record.o $(OBJ)/ast.o $(OBJ)/code-visitor.o $(OBJ)/error.o $(OBJ)/expression.o $(OBJ)/global.o $(OBJ)/operator.o $(OBJ)/statement.o $(OBJ)/symtable.o $(OBJ)/type.o $(OBJ)/value.o $(OBJ)/static-visitor.o  
+OBJS = $(OBJ)/activation-record.o $(OBJ)/ast.o $(OBJ)/code-generator.o $(OBJ)/code-visitor.o $(OBJ)/error.o $(OBJ)/expression.o $(OBJ)/global.o $(OBJ)/operator.o $(OBJ)/statement.o $(OBJ)/symtable.o $(OBJ)/type.o $(OBJ)/value.o $(OBJ)/static-visitor.o  
 
 all: $(BIN)/main.out 
 
@@ -34,6 +34,9 @@ $(OBJ)/activation-record.o: $(CG_PATH)/activation-record.cpp $(CG_PATH)/activati
 
 $(OBJ)/ast.o: $(AST_PATH)/ast.cpp $(AST_PATH)/ast.hpp
 	g++ -c -o $(OBJ)/ast.o $(AST_PATH)/ast.cpp $(INC) $(FLAGS) 
+
+$(OBJ)/code-generator.o: $(CG_PATH)/code-generator.cpp $(CG_PATH)/code-generator.hpp
+	g++ -c -o $(OBJ)/code-generator.o $(CG_PATH)/code-generator.cpp $(INC) $(FLAGS) 
 
 $(OBJ)/code-visitor.o: $(CG_PATH)/code-visitor.cpp $(CG_PATH)/code-visitor.hpp
 	g++ -c -o $(OBJ)/code-visitor.o $(CG_PATH)/code-visitor.cpp $(INC) $(FLAGS) 
