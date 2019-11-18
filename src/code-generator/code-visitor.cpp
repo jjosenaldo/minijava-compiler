@@ -13,7 +13,7 @@ using std::cout;
 #define RS_TOP string("rs->top()->")
 #define RS_LOOKUP(x) string(RS_TOP+"lookupVarVal(" + x + ")")
 #define TYPE string("Value*")
-#define CREATERECORD string(RS + "createRecord();")
+#define CREATERECORD(b_label, e_label) string(RS + "createRecord(&&" + b_label + ", &&" + e_label + ");")
 #define POPRECORD string(RS + "pop();")
 #define GOTO(label) "goto " + string(label)
 #define IFNOT_GOTO(guard, label) string("if(!" + guard + ") " + GOTO(label))
@@ -33,7 +33,7 @@ string CodeVisitor::getNewLabel() {
 }
 
 // AST base
-// TODO: 
+// TODO:
 string CodeVisitor::visit(Program *program) {
     for(auto &e : *(program->declarations))
         e->accept(*this);
@@ -64,7 +64,7 @@ string CodeVisitor::visit(VarDec *vardec){
 }
 
 string CodeVisitor::visit(Block *block) {
-    cout << CREATERECORD << "\n";
+    cout << CREATERECORD("nullptr", "nullptr") << "\n";
     for(auto &e : *(block->statements))
         e->accept(*this);
     cout << POPRECORD << "\n";
@@ -74,11 +74,11 @@ string CodeVisitor::visit(Block *block) {
 
 string CodeVisitor::visit(ElselessIf *elselessIf) {
     /* Code generaton example:
-    
+
         MiniJava Code:
             if(<guard>)
                 <stmt>
-        
+
         Generated C++ code:
             Value* tmp = <guard>;
             if(!tmp) goto <lab>;
@@ -107,13 +107,13 @@ string CodeVisitor::visit(ElselessIf *elselessIf) {
 
 string CodeVisitor::visit(IfElse *ifElse) {
     /* Code generaton example:
-    
+
         MiniJava Code:
             if(<guard>)
                 <stmt1>
             else
                 <stmt2>
-        
+
         Generated C++ code:
             Value* tmp = <guard>;
             if(!tmp) goto <lab1>;
@@ -154,14 +154,14 @@ string CodeVisitor::visit(IfElse *ifElse) {
 
 string CodeVisitor::visit(While *whilestmt) {
     /* Code generaton example:
-    
+
         MiniJava Code:
             while(<guard>)
                 <stmt>
-        
+
         Generated C++ code:
             {
-                <lab1>: 
+                <lab1>:
                 Value* tmp = <guard>;
                 if(!tmp) goto <lab2>;
                 <stmt1>
@@ -172,6 +172,8 @@ string CodeVisitor::visit(While *whilestmt) {
 
     string lab1 = getNewLabel();
     string lab2 = getNewLabel();
+
+    cout << CREATERECORD(lab1, lab2) << "\n";
 
     cout << "{\n";
     cout << lab1 << ":\n";
@@ -190,7 +192,9 @@ string CodeVisitor::visit(While *whilestmt) {
 
     cout << lab2 << ":\n";
 
-    cout << "}\n"; 
+    cout << "}\n";
+
+    cout << POPRECORD << "\n";
 
     return "";
 }
@@ -198,10 +202,10 @@ string CodeVisitor::visit(While *whilestmt) {
 // TODO: Implement after
 string CodeVisitor::visit(Assignment *assign) {
     /* Code generaton example:
-    
+
         MiniJava Code:
             a = <exp>;
-        
+
         Generated C++ code:
             Value *tmp = <expr>;
             rs->top()->update("a", tmp);
@@ -212,10 +216,15 @@ string CodeVisitor::visit(Assignment *assign) {
     //cout << UPDATEVAR(*(assign->lvalue), tmp_rvalue) << ";\n";
     cout << tmp_rvalue << "\nTODO: Solve lvalue problem\n";
     cout << "}\n";
-    return ""; 
+    return "";
 }
 
-string CodeVisitor::visit(Continue *stmt) { return ""; }   // TODO: Implement after
+string CodeVisitor::visit(Continue *stmt) {
+    string tmp = getNewTmpVar();
+    cout << "void* " + tmp + " = rs->searchContinue(); \n";
+    cout << GOTO("*" + tmp) << ";\n";
+}
+
 string CodeVisitor::visit(Break *stmt) { return ""; }      // TODO: Implement after
 string CodeVisitor::visit(Return *stmt) { return ""; }     // TODO: Implement after
 string CodeVisitor::visit(Skip *stmt) { return ""; }       // TODO: Implement after

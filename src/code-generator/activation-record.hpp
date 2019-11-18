@@ -10,7 +10,7 @@
 using namespace std;
 
 //  ================= Class Diagram =================
-// 
+//
 //    +--------+
 //    |        |
 //    v        |
@@ -38,8 +38,12 @@ private:
 
 	Value* returnVal;
 
+	void* b_label;
+
+	void* e_label;
+
 public:
-	Record(Record* parent);
+	Record(Record* parent, void* b_label, void* e_label);
 	~Record();
 
 	Value* getVarVal(string id);
@@ -47,7 +51,10 @@ public:
 	Value* getReturn();
 	void insertVar(string id, Value *v);
 	void insertVar(string id, int v);
-	void updateVar(string id, Value* v); // TODO: Free old value 
+	void updateVar(string id, Value* v); // TODO: Free old value
+	void* gete_label();
+	void* getb_label();
+
 
 	Record* getDynamicParent();
 
@@ -55,7 +62,7 @@ public:
 	void print() {
 		cout << "{\n";
 		for(auto &e : table)
-			cout << "\t" << e.first << ", " << (e.second == nullptr ? "nullptr" : e.second->toString()) << endl; 
+			cout << "\t" << e.first << ", " << (e.second == nullptr ? "nullptr" : e.second->toString()) << endl;
 		cout << "}\n";
 	}
 };
@@ -65,7 +72,7 @@ class RecordClass
 public:
 	RecordClass();
 	~RecordClass();
-	
+
 };
 
 class RecordStack
@@ -75,9 +82,12 @@ class RecordStack
 public:
 	RecordStack();
 	~RecordStack();
-	void createRecord();
+	void createRecord(void* b_label = nullptr, void* e_label = nullptr);
 	Record* top();
 	void pop();
+	void* searchContinue();
+	void* searchBreak();
+
 };
 
 #endif
