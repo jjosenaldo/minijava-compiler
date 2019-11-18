@@ -13,11 +13,12 @@ using std::cout;
 #define RS_TOP string("rs->top()->")
 #define RS_LOOKUP(x) string(RS_TOP+"lookupVarVal(" + x + ")")
 #define TYPE string("Value*")
-#define INSERTVAR(x,y) string("insertVar(\"" + x + "\"," + y + ")")
 #define CREATERECORD string(RS + "createRecord();")
 #define POPRECORD string(RS + "pop();")
 #define GOTO(label) "goto " + string(label)
 #define IFNOT_GOTO(guard, label) string("if(!" + guard + ") " + GOTO(label))
+#define UPDATEVAR(lvalue, rvalue) string(RS_TOP + "update(\"" + lvalue + "\"," + rvalue + ")")
+#define INSERTVAR(x,y) string("insertVar(\"" + x + "\"," + y + ")")
 
 void CodeVisitor::resetCountTmpVars() {
     this->countTmpVars = 0;
@@ -71,9 +72,6 @@ string CodeVisitor::visit(Block *block) {
     return "";
 }
 
-// TODO: Solve unique label problem
-// Sugestion: each line has a unique name (l<line_number>)
-// For example, line 3 has a label named l3
 string CodeVisitor::visit(ElselessIf *elselessIf) {
     /* Code generaton example:
     
@@ -107,9 +105,6 @@ string CodeVisitor::visit(ElselessIf *elselessIf) {
     return "";
 }
 
-// TODO: Solve unique label problem
-// Sugestion: each line has a unique name (l<line_number>)
-// For example, line 3 has a label named l3
 string CodeVisitor::visit(IfElse *ifElse) {
     /* Code generaton example:
     
@@ -157,8 +152,6 @@ string CodeVisitor::visit(IfElse *ifElse) {
     return "";
 }
 
-
-// TODO: Solve unique label problem. See visit(ElselessIf&);
 string CodeVisitor::visit(While *whilestmt) {
     /* Code generaton example:
     
@@ -177,30 +170,33 @@ string CodeVisitor::visit(While *whilestmt) {
             }
     */
 
+    string lab1 = getNewLabel();
+    string lab2 = getNewLabel();
+
     cout << "{\n";
-    cout << "<lab1>" << ":\n"; // TODO: Change label here
-    
+    cout << lab1 << ":\n";
+
     // Solve guard
     string tmp_guard = whilestmt->guard->accept(*this);
 
     // Test guard
-    cout << IFNOT_GOTO(tmp_guard, "<lab2>") << ";\n"; // TODO: Change label here
+    cout << IFNOT_GOTO(tmp_guard, lab2) << ";\n";
 
     // Visit statement
     whilestmt->statement->accept(*this);
 
     // Goto begin while
-    cout << GOTO("<lab1>") << ";\n"; // TODO: Change label here
+    cout << GOTO(lab1) << ";\n";
 
-    cout << "<lab2>" << ":\n"; // TODO: Change label here
+    cout << lab2 << ":\n";
 
     cout << "}\n"; 
 
-    return ""; // Dumb value?
+    return "";
 }
 
 // TODO: Implement after
-string CodeVisitor::visit(Assignment *stmt) {
+string CodeVisitor::visit(Assignment *assign) {
     /* Code generaton example:
     
         MiniJava Code:
@@ -211,7 +207,12 @@ string CodeVisitor::visit(Assignment *stmt) {
             rs->top()->update("a", tmp);
     */
 
-    return ""; // Dumb value?
+    cout << "{\n";
+    string tmp_rvalue = assign->rvalue->accept(*this);
+    //cout << UPDATEVAR(*(assign->lvalue), tmp_rvalue) << ";\n";
+    cout << tmp_rvalue << "\nTODO: Solve lvalue problem\n";
+    cout << "}\n";
+    return ""; 
 }
 
 string CodeVisitor::visit(Continue *stmt) { return ""; }   // TODO: Implement after
@@ -249,46 +250,46 @@ string CodeVisitor::visit(AtomExpression *exp) {
     return tmp;
 }
 
-// // TODO: Declarar memória dinâmica no registro de ativação
-// string CodeVisitor::visit(ArrayDeclExpression *exp) {
-//  return "";
-// }
+// TODO: Declarar memória dinâmica no registro de ativação
+string CodeVisitor::visit(ArrayDeclExpression *exp) {
+ return "";
+}
 
-// // TODO: Declarar memória dinâmica no registro de ativação
-// string CodeVisitor::visit(NewObjExpression *exp) {
-//  return "";
-// }
+// TODO: Declarar memória dinâmica no registro de ativação
+string CodeVisitor::visit(NewObjExpression *exp) {
+ return "";
+}
 
 string CodeVisitor::visit(IdExpression *exp) {
     cout << TYPE << " _" << exp->getId() << " = " << RS_LOOKUP("\"" + exp->getId() + "\"")<< ";\n";
     return "_"+exp->getId();
 }
 
-// // TODO: Pegar referência para a classe em que o código está sendo executado (caso não seja um método estático)
-// string CodeVisitor::visit(FieldAccessExpression *exp) {
-//  return "";//RS_TOP + "getInstance()->query(\""+exp.getId()+"\")";
-// }
+// TODO: Pegar referência para a classe em que o código está sendo executado (caso não seja um método estático)
+string CodeVisitor::visit(FieldAccessExpression *exp) {
+ return "";//RS_TOP + "getInstance()->query(\""+exp.getId()+"\")";
+}
 
-// // TODO: Pegar referência para a classe em que o código está sendo executado (caso não seja um método estático)
-// string CodeVisitor::visit(ThisExpression *exp) {
-//  return ""; //"r.getInstance()->";
-// }
+// TODO: Pegar referência para a classe em que o código está sendo executado (caso não seja um método estático)
+string CodeVisitor::visit(ThisExpression *exp) {
+ return ""; //"r.getInstance()->";
+}
 
 string CodeVisitor::visit(ParenExpression *exp) {
     return exp->first->accept(*this);
 }
 
-// // TODO: Permitir adiocionar um array literal no registro de ativação
-// string CodeVisitor::visit(LitArrayExpression *exp) {
-//  return "";
-// }
+// TODO: Permitir adiocionar um array literal no registro de ativação
+string CodeVisitor::visit(LitArrayExpression *exp) {
+ return "";
+}
 
-// // TODO: Decidir como acessar posições de um vetor
-// string CodeVisitor::visit(ArrayAccessExpression *exp) {
-//  return "";
-// }
+// TODO: Decidir como acessar posições de um vetor
+string CodeVisitor::visit(ArrayAccessExpression *exp) {
+ return "";
+}
 
-// // TODO: Decidir como declarar dinâmicamente um array
-// string CodeVisitor::visit(NewArrayExpression *exp) {
-//  return "";
-// }
+// TODO: Decidir como declarar dinâmicamente um array
+string CodeVisitor::visit(NewArrayExpression *exp) {
+ return "";
+}
