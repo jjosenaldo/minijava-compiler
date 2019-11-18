@@ -13,7 +13,7 @@ using std::cout;
 #define RS_TOP string("rs->top()->")
 #define RS_LOOKUP(x) string(RS_TOP+"lookupVarVal(" + x + ")")
 #define TYPE string("Value*")
-#define CREATERECORD(b_label, e_label) string(RS + "createRecord(&&" + b_label + ", &&" + e_label + ");")
+#define CREATERECORD(b_label, e_label) string(RS + "createRecord(" + b_label + "," + e_label + ");")
 #define POPRECORD string(RS + "pop();")
 #define GOTO(label) "goto " + string(label)
 #define IFNOT_GOTO(guard, label) string("if(!" + guard + ") " + GOTO(label))
@@ -173,7 +173,7 @@ string CodeVisitor::visit(While *whilestmt) {
     string lab1 = getNewLabel();
     string lab2 = getNewLabel();
 
-    cout << CREATERECORD(lab1, lab2) << "\n";
+    cout << CREATERECORD("&&"+ lab1, "&&"+lab2) << "\n";
 
     cout << "{\n";
     cout << lab1 << ":\n";
@@ -214,7 +214,7 @@ string CodeVisitor::visit(Assignment *assign) {
     cout << "{\n";
     string tmp_rvalue = assign->rvalue->accept(*this);
     //cout << UPDATEVAR(*(assign->lvalue), tmp_rvalue) << ";\n";
-    cout << tmp_rvalue << "\nTODO: Solve lvalue problem\n";
+    cout << "cout << \"\\n TODO: Solve lvalue problem\\n\"\n";
     cout << "}\n";
     return "";
 }
@@ -223,6 +223,7 @@ string CodeVisitor::visit(Continue *stmt) {
     string tmp = getNewTmpVar();
     cout << "void* " + tmp + " = rs->searchContinue(); \n";
     cout << GOTO("*" + tmp) << ";\n";
+    return "";
 }
 
 string CodeVisitor::visit(Break *stmt) { return ""; }      // TODO: Implement after
