@@ -15,9 +15,8 @@ private:
 	unsigned long int countLabels = 0u;
 
 	void resetCountTmpVars();
-	unsigned long int getNewCountTmpVars();
-
-	unsigned long int getNewCountLabels();
+	string getNewTmpVar();
+	string getNewLabel();
 
 public:
 	// AST base
@@ -45,17 +44,15 @@ public:
 	string visit(BinExpression*);
 	string visit(UnExpression*);
 	string visit(AtomExpression*);
-	// string visit(ArrayDeclExpression*);
-	// string visit(NewObjExpression*);
+	string visit(ArrayDeclExpression*);
+	string visit(NewObjExpression*);
 	string visit(IdExpression*);
-	// string visit(FieldAccessExpression*);
-	// string visit(ThisExpression*);
+	string visit(FieldAccessExpression*);
+	string visit(ThisExpression*);
 	string visit(ParenExpression*);
-	// string visit(LitArrayExpression*);
-	// string visit(ArrayAccessExpression*);
-	// string visit(NewArrayExpression*);
-
-	
+	string visit(LitArrayExpression*);
+	string visit(ArrayAccessExpression*);
+	string visit(NewArrayExpression*);
 };
 
 #endif
