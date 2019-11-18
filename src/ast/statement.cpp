@@ -137,7 +137,7 @@ bool While::accept(StaticVisitor& visitor){
 }
 
 string While::accept(CodeVisitor &visitor) {
-    visitor.visit(this);
+    return visitor.visit(this);
 }
 
 void While::print(){
