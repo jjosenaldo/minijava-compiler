@@ -5,6 +5,7 @@
 #include "global.hpp"
 #include "statement.hpp"
 #include "static-visitor.hpp"
+#include "code-visitor.hpp"
 
 using std::cout;
 using std::endl;
@@ -117,6 +118,10 @@ void Method::addParam(Parameter* param){
     this->parameters->push_back(param);
 }
 
+string Method::accept(CodeVisitor &visitor) {
+    return visitor.visit(this);
+}
+
 Field::Field(Type* type, string name, Expression* initValue){
     this->type = type;
     this->name = name;
@@ -193,4 +198,8 @@ vector<Field*>* ClassDeclaration::getFields(){
 Method* ClassDeclaration::getMethod(string methodName){
     for(Method* method : *methods) if(method->getId() == methodName) return method;
     return nullptr;
+}
+
+string ClassDeclaration::accept(CodeVisitor &visitor) {
+    return visitor.visit(this);
 }

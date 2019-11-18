@@ -7,40 +7,47 @@
 #include "symtable.hpp"
 #include "statement.hpp"
 
+class Method;
+
 class CodeVisitor {
 private:
 	unsigned long int contTmpVars = 0u;
 
 public:
+	// AST base
+	string visit(Program*);
+	string visit(Method*);
+	string visit(ClassDeclaration*);
+
 	// Statements
-	string visit(VarDec *stmt);
-	string visit(Block *stmt);
-	string visit(ElselessIf *stmt);
-	string visit(IfElse *stmt);
-	string visit(While *stmt);
-	string visit(Assignment *stmt);
-	string visit(Continue *stmt);
-	string visit(Break *stmt);
-	string visit(Return *stmt);
-	string visit(Skip *stmt);
+	string visit(VarDec*);
+	string visit(Block*);
+	string visit(ElselessIf*);
+	string visit(IfElse*);
+	string visit(While*);
+	string visit(Assignment*);
+	string visit(Continue*);
+	string visit(Break*);
+	string visit(Return*);
+	string visit(Skip*);
 
 	// Estas classes são statements e expressions?
-	string visit(StaticMethodCallExpression *exp);
-	string visit(MethodCallExpression *exp);
+	string visit(StaticMethodCallExpression*);
+	string visit(MethodCallExpression*);
 
 	// Expressions
-	string visit(BinExpression *exp);
-	string visit(UnExpression *exp);
-	string visit(AtomExpression *exp);
-	// string visit(ArrayDeclExpression *exp);
-	// string visit(NewObjExpression *exp);
-	string visit(IdExpression *exp);
-	// string visit(FieldAccessExpression *exp);
-	// string visit(ThisExpression *exp);
-	string visit(ParenExpression *exp);
-	// string visit(LitArrayExpression *exp);
-	// string visit(ArrayAccessExpression *exp);
-	// string visit(NewArrayExpression *exp);
+	string visit(BinExpression*);
+	string visit(UnExpression*);
+	string visit(AtomExpression*);
+	// string visit(ArrayDeclExpression*);
+	// string visit(NewObjExpression*);
+	string visit(IdExpression*);
+	// string visit(FieldAccessExpression*);
+	// string visit(ThisExpression*);
+	string visit(ParenExpression*);
+	// string visit(LitArrayExpression*);
+	// string visit(ArrayAccessExpression*);
+	// string visit(NewArrayExpression*);
 
 	
 };

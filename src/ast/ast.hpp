@@ -17,6 +17,7 @@ class Expression;
 class Field;
 class Parameter;
 class StaticVisitor;
+class CodeVisitor;
 
 class Program{
     private:
@@ -34,6 +35,8 @@ class Program{
         ClassDeclaration* getClassDecl(string className);
 
         void print();
+
+        friend class CodeVisitor;
 };
 
 class Method{
@@ -54,7 +57,10 @@ class Method{
         void addParam(Parameter* param);
         void print();
 
+        string accept(CodeVisitor&);
+
         friend class StaticVisitor;
+        friend class CodeVisitor;
 };
 
 class ClassDeclaration{
@@ -83,6 +89,10 @@ class ClassDeclaration{
         Method* getMethod(string methodName);
 
         void print();
+
+        string accept(CodeVisitor&);
+
+        friend class CodeVisitor;
 };
 
 class Field{

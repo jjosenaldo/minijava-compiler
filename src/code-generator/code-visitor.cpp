@@ -1,6 +1,7 @@
 #include "code-visitor.hpp"// Statements
 #include "operator.hpp"
 #include <algorithm>
+#include <deque>
 
 #include <iostream>
 
@@ -13,10 +14,30 @@ using std::cout;
 #define RS_LOOKUP(x) string(RS_TOP+"lookupVarVal(" + x + ")")
 #define TYPE string("Value*")
 #define INSERTVAR(x,y) string("insertVar(\"" + x + "\"," + y + ")")
-#define CREATERECORD string(RS_TOP + "createRecord()")
+#define CREATERECORD string(RS_TOP + "createRecord();")
+#define POPRECORD string(RS_TOP + "pop();")
 #define GOTO(label) "goto " + string(label)
 #define IFNOT_GOTO(guard, label) string("if(!" + guard + ")" + GOTO(label))
 
+// AST base
+
+// TODO: 
+string CodeVisitor::visit(Program *program) {
+    for(auto &e : *(program->declarations))
+        e->accept(*this);
+    return "";
+}
+
+string CodeVisitor::visit(Method *method) {
+    method->statement->accept(*this);
+    return "";
+}
+
+string CodeVisitor::visit(ClassDeclaration *classdec) {
+    for(auto &e : *(classdec->methods))
+        e->accept(*this);
+    return "";
+}
 
 // Statements
 string CodeVisitor::visit(VarDec *vardec){
@@ -30,10 +51,11 @@ string CodeVisitor::visit(VarDec *vardec){
 
 string CodeVisitor::visit(Block *block) {
     cout << CREATERECORD << "\n";
-    cout << "{\n";
+    //cout << "{\n";
     for(auto &e : *(block->statements))
         e->accept(*this);
-    cout << "}\n";
+    //cout << "}\n";
+    cout << POPRECORD << "\n";
 
     return ""; // Dumb value?
 }

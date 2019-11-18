@@ -43,18 +43,22 @@ void test() {
 
 int main() {
     
-    // if(yyparse() != 1){
-    //     // program->print();
-    //     auto pool = buildClassSymtablePool(program);
+    if(yyparse() != 1){
+        // program->print();
+        auto pool = buildClassSymtablePool(program);
 
-    //     if(pool != nullptr)
-    //         //pool->print();
-    //         std::cout << "1\n";
-    //     else 
-    //         std::cout << "0\n";
-    // }
+        if(pool != nullptr)
+            //pool->print();
+            std::cout << "1\n";
+        else 
+            std::cout << "0\n";
+    }
 
-    test();
+    CodeVisitor visitor;
+
+    visitor.visit(program);
+
+    //test();
 
     return 0;
 }
