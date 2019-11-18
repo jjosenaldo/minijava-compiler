@@ -23,16 +23,15 @@ void CodeVisitor::resetCountTmpVars() {
     this->countTmpVars = 0;
 }
 
-unsigned long int CodeVisitor::getNewCountTmpVars() {
-    return this->countTmpVars++;
+string CodeVisitor::getNewTmpVar() {
+    return "tmp" + to_string(this->countTmpVars++);
 }
 
-unsigned long int CodeVisitor::getNewCountLabels() {
-    return this->countLabels++;
+string CodeVisitor::getNewLabel() {
+    return "l" + to_string(this->countLabels++);
 }
 
 // AST base
-
 // TODO: 
 string CodeVisitor::visit(Program *program) {
     for(auto &e : *(program->declarations))
@@ -56,8 +55,8 @@ string CodeVisitor::visit(ClassDeclaration *classdec) {
 // Statements
 string CodeVisitor::visit(VarDec *vardec){
     cout << "{\n";
-    string tmp_var = vardec->value->accept(*this);
-    cout << RS_TOP + INSERTVAR(vardec->id, tmp_var) + ";\n";
+    string tmp = vardec->value->accept(*this);
+    cout << RS_TOP + INSERTVAR(vardec->id, tmp) + ";\n";
     cout << "}\n";
     resetCountTmpVars();
     return "";
@@ -69,7 +68,7 @@ string CodeVisitor::visit(Block *block) {
         e->accept(*this);
     cout << POPRECORD << "\n";
 
-    return ""; // Dumb value?
+    return "";
 }
 
 // TODO: Solve unique label problem
@@ -90,7 +89,7 @@ string CodeVisitor::visit(ElselessIf *elselessIf) {
     */
 
     cout << "{\n";
-    string lab = "l" + to_string(getNewCountLabels());
+    string lab = getNewLabel();
 
     // Solve guard
     string tmp_guard = elselessIf->guard->accept(*this);
@@ -131,27 +130,31 @@ string CodeVisitor::visit(IfElse *ifElse) {
 
     */
 
+    string lab1 = getNewLabel();
+    string lab2 = getNewLabel();
+
+    cout << "{\n";
     // Solve guard
     string tmp_guard = ifElse->guard->accept(*this);
 
     // Test guard
-    cout << IFNOT_GOTO(tmp_guard, "<lab1>") << ";\n"; // TODO: Change label here
+    cout << IFNOT_GOTO(tmp_guard, lab1) << ";\n";
 
     // Visit first statement
     ifElse->statementIf->accept(*this);
 
     // Goto second label
-    cout << GOTO("<lab2>") << ";\n"; // TODO: Change label here
+    cout << GOTO(lab2) << ";\n";
 
     // Begin else
-    cout << "<lab1>:\n"; // TODO: Change label here
+    cout << lab1 + ":\n";
 
     // Visit second statement
     ifElse->statementElse->accept(*this);
 
-    cout << "<lab2>:\n"; // TODO: Change label here
-
-    return ""; // Dumb value?
+    cout << lab2 + ":\n";
+    cout << "}\n";
+    return "";
 }
 
 
@@ -224,7 +227,7 @@ string CodeVisitor::visit(BinExpression *exp) {
     string tmp1 = exp->first->accept(*this);
     string tmp2 = exp->second->accept(*this);
 
-    string tmp = "_tmp" + to_string(this->getNewCountTmpVars());
+    string tmp = getNewTmpVar();
     cout << TYPE << " " << tmp << " = *" << tmp1 << " " << binOpSymbol(exp->getOp()) << " *" << tmp2 << ";\n";
     return tmp;
 }
@@ -232,14 +235,14 @@ string CodeVisitor::visit(BinExpression *exp) {
 string CodeVisitor::visit(UnExpression *exp) {
     string tmp1 = exp->first->accept(*this);
 
-    string tmp = "_tmp" + to_string(this->getNewCountTmpVars());
+    string tmp = getNewTmpVar();
     cout << TYPE << " " << tmp << " = " << unOpSymbol(exp->op) << " *" << tmp1 << ";\n";
     return tmp;
 }
 
 // TODO: implement the remaining atomic expressions
 string CodeVisitor::visit(AtomExpression *exp) {
-    string tmp = "_tmp" + to_string(this->getNewCountTmpVars());
+    string tmp = getNewTmpVar();
 
     if(exp->type->kind == TypeInt)
         cout << TYPE << " " << tmp << " = new IntValue(" << exp->val.intval << ")\n";

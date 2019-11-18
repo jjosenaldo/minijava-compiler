@@ -15,9 +15,8 @@ private:
 	unsigned long int countLabels = 0u;
 
 	void resetCountTmpVars();
-	unsigned long int getNewCountTmpVars();
-
-	unsigned long int getNewCountLabels();
+	string getNewTmpVar();
+	string getNewLabel();
 
 public:
 	// AST base
