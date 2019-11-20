@@ -335,7 +335,18 @@ string CodeVisitor::visit(ParenExpression *exp) {
 
 // TODO: Permitir adiocionar um array literal no registro de ativação
 string CodeVisitor::visit(LitArrayExpression *exp) {
- return "";
+    string litArrTempVar = getNewTmpVar();
+    string arrValTempVar = getNewTmpVar();
+
+    cout << TYPE << "* " << litArrTempVar << " = new " << TYPE << "[" << exp->expressions->size()  << "];\n";
+
+    for(int i = 0; i != exp->expressions->size(); ++i){
+        string tmpExpVar = exp->expressions->at(i)->accept(*this);
+        cout << litArrTempVar << "[" << i << "] = " << tmpExpVar << ";\n";
+    }
+
+    cout << TYPE << " " << arrValTempVar << " = new ArrayValue(" << litArrTempVar << ");\n";
+    return arrValTempVar;
 }
 
 // TODO: Decidir como acessar posições de um vetor

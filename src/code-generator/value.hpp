@@ -54,6 +54,18 @@ public:
 	string getClassName();
 };
 
+class ArrayValue : public Value{
+private:
+	Value** value;
+
+public:
+	ArrayValue(Value** v);
+	Value** getArray() const;
+
+	string toString();
+	string getClassName(); 
+};
+
 IntValue* operator+(const Value& v1, const Value& v2);
 BoolValue* operator<(const Value& v1, const Value& v2);
 

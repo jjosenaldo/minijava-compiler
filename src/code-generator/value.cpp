@@ -50,6 +50,23 @@ string StringValue::getClassName(){
     return "StringValue";
 }
 
+ArrayValue::ArrayValue(Value** v){
+    value = v;
+}
+
+Value** ArrayValue::getArray() const{
+    return value;
+}
+
+string ArrayValue::toString(){
+    // TODO
+    return "";
+}
+
+string ArrayValue::getClassName(){
+    return "ArrayValue";
+}
+
 // TODO: implement string concatenation (it'll need a cast)
 IntValue* operator+(const Value& v1, const Value& v2){
     return new IntValue(v1.getInt() + v2.getInt());
@@ -58,3 +75,5 @@ IntValue* operator+(const Value& v1, const Value& v2){
 BoolValue* operator<(const Value& v1, const Value& v2){
 	return new BoolValue(v1.getInt() < v2.getInt());
 }
+
+
