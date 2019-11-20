@@ -65,6 +65,7 @@ RecordStack::RecordStack() {}
 
 RecordStack::~RecordStack() {}
 
+// TODO: Transformar em escopo estático
 void RecordStack::createRecord(void* b_label, void* e_label) {
 	Record* parent = records.empty() ? nullptr : records.top();
 	records.push(new Record(parent, b_label, e_label));

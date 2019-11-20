@@ -13,10 +13,11 @@ public:
 	~Value() {}
 	virtual string getClassName() = 0;
 	virtual string toString() = 0;
-
 	virtual int getInt() const {return 0;}
 	virtual bool getBool() const {return false;}
 };
+
+
 
 class IntValue : public Value {
 private:
@@ -28,8 +29,8 @@ public:
 	string toString();
 	string getClassName();
 
-	friend BoolValue* operator<(const Value& v1, const Value& v2);
-	friend IntValue* operator+(const Value& v1, const Value& v2);
+	friend Value* operator<(const Value& v1, const Value& v2);
+	friend Value* operator+(const Value& v1, const Value& v2);
 };
 
 class BoolValue : public Value{
@@ -54,7 +55,27 @@ public:
 	string getClassName();
 };
 
-IntValue* operator+(const Value& v1, const Value& v2);
-BoolValue* operator<(const Value& v1, const Value& v2);
+// int operators
+Value* operator-(const Value& v1, const Value& v2);
+Value* operator-(const Value& v1);
+Value* operator*(const Value& v1, const Value& v2);
+Value* operator/(const Value& v1, const Value& v2);
+Value* operator%(const Value& v1, const Value& v2);
+
+// int and String operators
+Value* operator+(const Value& v1, const Value& v2);
+Value* operator<(const Value& v1, const Value& v2);
+Value* operator<=(const Value& v1, const Value& v2);
+Value* operator>(const Value& v1, const Value& v2);
+Value* operator>=(const Value& v1, const Value& v2);
+
+// boolean operators
+Value* operator!(const Value& v1);
+Value* operator||(const Value& v1, const Value& v2);
+Value* operator&&(const Value& v1, const Value& v2);
+
+// all types operators
+Value* operator==(const Value& v1, const Value& v2);
+Value* operator!=(const Value& v1, const Value& v2);
 
 #endif
