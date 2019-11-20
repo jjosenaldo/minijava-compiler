@@ -1,9 +1,10 @@
-#include "code-visitor.hpp"// Statements
-#include "operator.hpp"
 #include <algorithm>
 #include <deque>
-
 #include <iostream>
+#include "code-visitor.hpp"
+
+#include "global.hpp"
+#include "operator.hpp"
 
 using std::to_string;
 using std::cout;
@@ -230,7 +231,16 @@ string CodeVisitor::visit(Break *stmt) { return ""; }      // TODO: Implement af
 string CodeVisitor::visit(Return *stmt) { return ""; }     // TODO: Implement after
 string CodeVisitor::visit(Skip *stmt) { return ""; }       // TODO: Implement after
 
-string CodeVisitor::visit(StaticMethodCallExpression *exp) { return ""; } // TODO: Implement after
+string CodeVisitor::visit(StaticMethodCallExpression *exp) { 
+    if(exp->className == "System"){
+        if(exp->method == "print"){
+            string argVarName = exp->arguments->at(0)->accept(*this);
+            std::cout << "cout << " << argVarName << " << endl;\n";
+        }
+    }
+    return "";
+}
+
 string CodeVisitor::visit(MethodCallExpression *exp) { return ""; }       // TODO: Implement after
 
 // Expressions
@@ -257,6 +267,29 @@ string CodeVisitor::visit(AtomExpression *exp) {
 
     if(exp->type->kind == TypeInt)
         cout << TYPE << " " << tmp << " = new IntValue(" << exp->val.intval << ");\n";
+    else if(exp->type->kind == TypeBoolean)
+        cout << TYPE << " " << tmp << " = new BoolValue(" << exp->val.boolval << ");\n";
+    else {
+        string toBePrinted = "\"";
+        int it = 0;
+        while(exp->val.strval[it] != '\0'){
+            if(exp->val.strval[it] == '\\')
+                toBePrinted += "\\\\";
+            else if(exp->val.strval[it] == '\n')
+                toBePrinted += "\\n";
+            else if(exp->val.strval[it] == '\t')
+                toBePrinted += "\\t";
+            else if(exp->val.strval[it] == '\"')
+                toBePrinted += "\\\"";
+            else
+                toBePrinted += exp->val.strval[it];
+            ++it;
+        }
+
+        toBePrinted += "\"";
+        cout << TYPE << " " << tmp << " = new StringValue(" << toBePrinted << ");\n";
+    }
+        
     return tmp;
 }
 

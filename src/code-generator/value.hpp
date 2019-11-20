@@ -43,6 +43,17 @@ public:
 	string getClassName();
 };
 
+class StringValue : public Value{
+private:
+	string value;
+public:
+	StringValue(string v);
+	string getString() const;
+
+	string toString();
+	string getClassName();
+};
+
 IntValue* operator+(const Value& v1, const Value& v2);
 BoolValue* operator<(const Value& v1, const Value& v2);
 

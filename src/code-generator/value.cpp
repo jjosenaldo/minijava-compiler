@@ -34,6 +34,22 @@ string BoolValue::getClassName(){
     return "BoolValue";
 }
 
+StringValue::StringValue(string v){
+    this->value = v;
+}
+
+string StringValue::getString() const{
+    return value;
+}
+
+string StringValue::toString(){
+    return getString();
+}
+
+string StringValue::getClassName(){
+    return "StringValue";
+}
+
 // TODO: implement string concatenation (it'll need a cast)
 IntValue* operator+(const Value& v1, const Value& v2){
     return new IntValue(v1.getInt() + v2.getInt());
