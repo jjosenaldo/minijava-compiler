@@ -231,12 +231,22 @@ string CodeVisitor::visit(Break *stmt) { return ""; }      // TODO: Implement af
 string CodeVisitor::visit(Return *stmt) { return ""; }     // TODO: Implement after
 string CodeVisitor::visit(Skip *stmt) { return ""; }       // TODO: Implement after
 
-string CodeVisitor::visit(StaticMethodCallExpression *exp) { 
+string CodeVisitor::visit(StaticMethodCallExpression *exp) {
     if(exp->className == "System"){
         if(exp->method == "print"){
-            string argVarName = exp->arguments->at(0)->accept(*this);
-            std::cout << "cout << " << argVarName << " << endl;\n";
+            std::cout << "{\n";
+            string argFirstVar =  exp->arguments->at(0)->accept(*this);
+            std::cout << "cout << " << argFirstVar << "->toString() << endl;\n";
+            std::cout << "}\n";
         }
+    } else if(exp->className == "String"){
+        // string tmp = getNewTmpVar();
+
+        // if(exp->method == "intToString"){
+        //     std:
+        // } else if(exp->method == "booleanToString"){
+
+        // }
     }
     return "";
 }

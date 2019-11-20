@@ -16,6 +16,6 @@ class Main {
 			int b = 3;
 		}
 
-		System.print("oie    \"fulano\"   ");
+		System.print("oie    \"fulano\"   " + ", tudo bom?");
 	}
 }
