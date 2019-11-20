@@ -238,15 +238,16 @@ string CodeVisitor::visit(StaticMethodCallExpression *exp) {
             string argFirstVar =  exp->arguments->at(0)->accept(*this);
             std::cout << "cout << " << argFirstVar << "->toString() << endl;\n";
             std::cout << "}\n";
+            resetCountTmpVars();
         }
     } else if(exp->className == "String"){
-        // string tmp = getNewTmpVar();
+        string argFirstVar =  exp->arguments->at(0)->accept(*this);
+        string tmp = getNewTmpVar();
 
-        // if(exp->method == "intToString"){
-        //     std:
-        // } else if(exp->method == "booleanToString"){
-
-        // }
+        if(exp->method == "intToString" || exp->method == "booleanToString"){
+            std::cout << TYPE << " " << tmp << " = new StringValue( " << argFirstVar << "->toString()" <<  ");\n";
+            return tmp;
+        }
     }
     return "";
 }
@@ -278,7 +279,7 @@ string CodeVisitor::visit(AtomExpression *exp) {
     if(exp->type->kind == TypeInt)
         cout << TYPE << " " << tmp << " = new IntValue(" << exp->val.intval << ");\n";
     else if(exp->type->kind == TypeBoolean)
-        cout << TYPE << " " << tmp << " = new BoolValue(" << exp->val.boolval << ");\n";
+        cout << TYPE << " " << tmp << " = new BoolValue(" << (exp->val.boolval ? "true" :  "false") << ");\n";
     else {
         string toBePrinted = "\"";
         int it = 0;
@@ -299,7 +300,7 @@ string CodeVisitor::visit(AtomExpression *exp) {
         toBePrinted += "\"";
         cout << TYPE << " " << tmp << " = new StringValue(" << toBePrinted << ");\n";
     }
-        
+    
     return tmp;
 }
 
