@@ -55,6 +55,7 @@ public:
 	string getClassName();
 };
 
+<<<<<<< HEAD
 // int operators
 Value* operator-(const Value& v1, const Value& v2);
 Value* operator-(const Value& v1);
@@ -77,5 +78,21 @@ Value* operator&&(const Value& v1, const Value& v2);
 // all types operators
 Value* operator==(const Value& v1, const Value& v2);
 Value* operator!=(const Value& v1, const Value& v2);
+=======
+class ArrayValue : public Value{
+private:
+	Value** value;
+
+public:
+	ArrayValue(Value** v);
+	Value** getArray() const;
+
+	string toString();
+	string getClassName(); 
+};
+
+IntValue* operator+(const Value& v1, const Value& v2);
+BoolValue* operator<(const Value& v1, const Value& v2);
+>>>>>>> 09ab67c3e4b886cc21c306ac71c6775715be044c
 
 #endif

@@ -76,7 +76,6 @@ Record* RecordStack::top() {
 }
 
 void RecordStack::pop() {
-	records.top()->print(); // TODO: Remover after
 	records.pop();
 }
 

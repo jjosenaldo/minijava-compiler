@@ -231,11 +231,22 @@ string CodeVisitor::visit(Break *stmt) { return ""; }      // TODO: Implement af
 string CodeVisitor::visit(Return *stmt) { return ""; }     // TODO: Implement after
 string CodeVisitor::visit(Skip *stmt) { return ""; }       // TODO: Implement after
 
-string CodeVisitor::visit(StaticMethodCallExpression *exp) { 
+string CodeVisitor::visit(StaticMethodCallExpression *exp) {
     if(exp->className == "System"){
         if(exp->method == "print"){
-            string argVarName = exp->arguments->at(0)->accept(*this);
-            std::cout << "cout << " << argVarName << " << endl;\n";
+            std::cout << "{\n";
+            string argFirstVar =  exp->arguments->at(0)->accept(*this);
+            std::cout << "cout << " << argFirstVar << "->toString() << endl;\n";
+            std::cout << "}\n";
+            resetCountTmpVars();
+        }
+    } else if(exp->className == "String"){
+        string argFirstVar =  exp->arguments->at(0)->accept(*this);
+        string tmp = getNewTmpVar();
+
+        if(exp->method == "intToString" || exp->method == "booleanToString"){
+            std::cout << TYPE << " " << tmp << " = new StringValue( " << argFirstVar << "->toString()" <<  ");\n";
+            return tmp;
         }
     }
     return "";
@@ -268,7 +279,7 @@ string CodeVisitor::visit(AtomExpression *exp) {
     if(exp->type->kind == TypeInt)
         cout << TYPE << " " << tmp << " = new IntValue(" << exp->val.intval << ");\n";
     else if(exp->type->kind == TypeBoolean)
-        cout << TYPE << " " << tmp << " = new BoolValue(" << exp->val.boolval << ");\n";
+        cout << TYPE << " " << tmp << " = new BoolValue(" << (exp->val.boolval ? "true" :  "false") << ");\n";
     else {
         string toBePrinted = "\"";
         int it = 0;
@@ -289,7 +300,7 @@ string CodeVisitor::visit(AtomExpression *exp) {
         toBePrinted += "\"";
         cout << TYPE << " " << tmp << " = new StringValue(" << toBePrinted << ");\n";
     }
-        
+    
     return tmp;
 }
 
@@ -324,7 +335,18 @@ string CodeVisitor::visit(ParenExpression *exp) {
 
 // TODO: Permitir adiocionar um array literal no registro de ativação
 string CodeVisitor::visit(LitArrayExpression *exp) {
- return "";
+    string litArrTempVar = getNewTmpVar();
+    string arrValTempVar = getNewTmpVar();
+
+    cout << TYPE << "* " << litArrTempVar << " = new " << TYPE << "[" << exp->expressions->size()  << "];\n";
+
+    for(int i = 0; i != exp->expressions->size(); ++i){
+        string tmpExpVar = exp->expressions->at(i)->accept(*this);
+        cout << litArrTempVar << "[" << i << "] = " << tmpExpVar << ";\n";
+    }
+
+    cout << TYPE << " " << arrValTempVar << " = new ArrayValue(" << litArrTempVar << ");\n";
+    return arrValTempVar;
 }
 
 // TODO: Decidir como acessar posições de um vetor

@@ -50,6 +50,7 @@ string StringValue::getClassName(){
     return "StringValue";
 }
 
+<<<<<<< HEAD
 // int and String operators
 Value* operator+(const Value& v1, const Value& v2) {
     const IntValue* i1 = dynamic_cast<const IntValue*>(&v1);
@@ -149,6 +150,28 @@ Value* operator||(const Value& v1, const Value& v2) {
         return new BoolValue(b1->getBool() || b2->getBool());
     
     throw "Invalid operands between operator ||";
+=======
+ArrayValue::ArrayValue(Value** v){
+    value = v;
+}
+
+Value** ArrayValue::getArray() const{
+    return value;
+}
+
+string ArrayValue::toString(){
+    // TODO
+    return "";
+}
+
+string ArrayValue::getClassName(){
+    return "ArrayValue";
+}
+
+// TODO: implement string concatenation (it'll need a cast)
+IntValue* operator+(const Value& v1, const Value& v2){
+    return new IntValue(v1.getInt() + v2.getInt());
+>>>>>>> 09ab67c3e4b886cc21c306ac71c6775715be044c
 }
 
 Value* operator&&(const Value& v1, const Value& v2) {
@@ -161,7 +184,11 @@ Value* operator&&(const Value& v1, const Value& v2) {
     throw "Invalid operands between operator &&";
 }
 
+<<<<<<< HEAD
 // all types operators
 // TODO: Do it for all Types (waiting for ClassValue)
 Value* operator==(const Value& v1, const Value& v2) { return nullptr; }
 Value* operator!=(const Value& v1, const Value& v2) { return nullptr; }
+=======
+
+>>>>>>> 09ab67c3e4b886cc21c306ac71c6775715be044c

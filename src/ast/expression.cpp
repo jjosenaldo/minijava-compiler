@@ -237,6 +237,10 @@ bool LitArrayExpression::accept(StaticVisitor& visitor){
     return visitor.visit(this);
 }
 
+string LitArrayExpression::accept(CodeVisitor& visitor){
+    return visitor.visit(this);
+}
+
 ArrayAccessExpression::ArrayAccessExpression(ObjExpression* left, deque<Expression*>* dimensions){
     this->left = left;
     this->dimensions = dimensions;

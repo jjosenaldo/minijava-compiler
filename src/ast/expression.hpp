@@ -189,6 +189,7 @@ class LitArrayExpression : public ObjExpression{
         LitArrayExpression(deque<Expression*>* exprs);
         string toString();
         bool accept(StaticVisitor&);
+        string accept(CodeVisitor&);
         friend class StaticVisitor;
         friend class CodeVisitor;
 };
