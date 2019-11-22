@@ -2,7 +2,10 @@
 #define VALUE_HPP
 
 #include <string>
+#include <unordered_map>
+
 using std::string;
+using std::unordered_map;
 
 enum EnumValue{
     EV_IntValue,
@@ -125,14 +128,14 @@ public:
 	friend BoolValue* operator!=(const Val& v1, const Val& v2);
 };
 
-// class ClassValue : public Value {
-// private:
-// 	map<string, Value*> fields;
-// 	string classname;
-// public:
-// 	ClassValue();
-// 	~ClassValue();
-// };
+class ClassValue : public Value {
+private:
+	string actualClassName;
+	string apparentClassName;
+public:
+	ClassValue();
+	~ClassValue();
+};
 
 class ArrayValue : public Value{
 private:

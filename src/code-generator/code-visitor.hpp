@@ -23,6 +23,8 @@ public:
 	string visit(Program*);
 	string visit(Method*);
 	string visit(ClassDeclaration*);
+	string visitClassDeclarationFields(ClassDeclaration *classDec);
+	string visitClassDeclarationsFields(Program* program);
 
 	// Statements
 	string visit(VarDec*);

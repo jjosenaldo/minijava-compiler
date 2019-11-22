@@ -78,6 +78,8 @@ string ArrayValue::getClassName(){
 
 ArrayValue::ArrayValue(int* dims, int n, EnumValue ev) : ArrayValue(dims,1,n,ev){}
 
+// TODO: are we allowed to use loops here? if we are not, then we should use
+// goto's or something similar
 ArrayValue::ArrayValue(int* dims, int i, int n, EnumValue ev){
     this->value = new Value*[dims[i-1]];
     if(i == n){

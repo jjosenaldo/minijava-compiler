@@ -2,12 +2,19 @@
 #define CODE_GENERATOR_HPP  
 
 #include "ast.hpp"
+#include "code-visitor.hpp"
 
 class CodeGenerator{
+    private:
+        CodeVisitor codeVisitor;
+        Program* program;
+        void generateClassDecls();
+
     public:
-        void generateCode(Program* program);
+        CodeGenerator(Program* program);
+        void generateCode();
         void generatePreamble();
-        void generateMainMethod(Program* program);
+        void generateMainMethod();
 };
 
 

@@ -43,8 +43,8 @@ void test() {
 }
 
 void testGenerateWholeCode(){
-    CodeGenerator cg = CodeGenerator();
-    cg.generateCode(program);
+    CodeGenerator cg = CodeGenerator(program);
+    cg.generateCode();
 }
 
 int main() {

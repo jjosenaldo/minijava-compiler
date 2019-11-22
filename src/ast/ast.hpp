@@ -13,6 +13,7 @@ using std::vector;
 
 class Block;
 class ClassDeclaration;
+class CodeGenerator;
 class Expression;
 class Field;
 class Parameter;
@@ -37,6 +38,7 @@ class Program{
         void print();
 
         friend class CodeVisitor;
+        friend class CodeGenerator;
 };
 
 class Method{
@@ -93,6 +95,7 @@ class ClassDeclaration{
         string accept(CodeVisitor&);
 
         friend class CodeVisitor;
+        friend class StaticVisitor;
 };
 
 class Field{
@@ -110,6 +113,7 @@ class Field{
         void print();
 
         friend class StaticVisitor;
+        friend class CodeVisitor;
 };
 
 class Parameter{

@@ -9,9 +9,14 @@ using std::string;
 
 #define TAB string("    ")
 
-void CodeGenerator::generateCode(Program* program){
+CodeGenerator::CodeGenerator(Program* program){
+    codeVisitor = CodeVisitor();
+    this->program = program;
+}
+
+void CodeGenerator::generateCode(){
     generatePreamble();
-    generateMainMethod(program);
+    generateMainMethod();
 }
 
 void CodeGenerator::generatePreamble(){
@@ -22,9 +27,12 @@ void CodeGenerator::generatePreamble(){
     // usings 
     cout << "using std::cout;" << endl;
     cout << "using std::endl;" << endl;
+
+    // class declarations
+    generateClassDecls();
 }
 
-void CodeGenerator::generateMainMethod(Program* program){
+void CodeGenerator::generateMainMethod(){
     cout << "int main(){" << endl;
 
     // Declares the activation record stack
@@ -35,4 +43,8 @@ void CodeGenerator::generateMainMethod(Program* program){
 
     cout << "return 0;" << endl;
     cout << "}" << endl;
+}
+
+void CodeGenerator::generateClassDecls(){
+    codeVisitor.visitClassDeclarationsFields(program);
 }

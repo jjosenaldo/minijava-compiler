@@ -54,6 +54,30 @@ string CodeVisitor::visit(ClassDeclaration *classdec) {
     return "";
 }
 
+string CodeVisitor::visitClassDeclarationsFields(Program* program){
+    for(auto decl : *(program->declarations))
+        visitClassDeclarationFields(decl);
+    return "";
+}
+
+string CodeVisitor::visitClassDeclarationFields(ClassDeclaration* classDec){
+    cout << "struct " << classDec->name << " : ClassValue ";
+    if(classDec->parent != "") cout << " , " << classDec->parent;
+    cout << "{\n";
+    for(auto field : *(classDec->fields)){
+        // TODO: put the right type
+        cout << "int " << field->name;
+
+        // TODO: deal with fields that have initial value
+        // if(field->initValue != nullptr) doSomething
+
+        cout << ";\n";
+    }
+    cout << "};\n";
+
+    return "";
+}
+
 // Statements
 string CodeVisitor::visit(VarDec *vardec){
     cout << "{\n";
