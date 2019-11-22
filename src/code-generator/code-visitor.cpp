@@ -333,28 +333,51 @@ string CodeVisitor::visit(ParenExpression *exp) {
     return exp->first->accept(*this);
 }
 
-// TODO: Permitir adiocionar um array literal no registro de ativação
+
+// TODO: literal multidimensional arrays
 string CodeVisitor::visit(LitArrayExpression *exp) {
     string litArrTempVar = getNewTmpVar();
     string arrValTempVar = getNewTmpVar();
+    int n = exp->expressions->size();
 
-    cout << TYPE << "* " << litArrTempVar << " = new " << TYPE << "[" << exp->expressions->size()  << "];\n";
+    cout << TYPE << "* " << litArrTempVar << " = new " << TYPE << "[" << n  << "];\n";
 
-    for(int i = 0; i != exp->expressions->size(); ++i){
+    for(int i = 0; i != n; ++i){
         string tmpExpVar = exp->expressions->at(i)->accept(*this);
         cout << litArrTempVar << "[" << i << "] = " << tmpExpVar << ";\n";
     }
 
-    cout << TYPE << " " << arrValTempVar << " = new ArrayValue(" << litArrTempVar << ");\n";
+    cout << TYPE << " " << arrValTempVar << " = new ArrayValue(" << litArrTempVar << "," << n << ");\n";
     return arrValTempVar;
 }
 
 // TODO: Decidir como acessar posições de um vetor
 string CodeVisitor::visit(ArrayAccessExpression *exp) {
- return "";
+    auto lvalue = exp->left->accept(*this);
+    string dimAccesses =  "";
+
+    for(auto dim : *(exp->dimensions)){
+        auto tmpVarDim = dim->accept(*this);
+        dimAccesses += "[" + tmpVarDim + "->getInt()" + "]";
+    }
+
+    auto returnTmpVar = getNewTmpVar();
+    cout << TYPE << " " << returnTmpVar << " = " << "(*" << lvalue << ")" << dimAccesses << ";\n";
+    return returnTmpVar;
 }
 
-// TODO: Decidir como declarar dinâmicamente um array
 string CodeVisitor::visit(NewArrayExpression *exp) {
- return "";
+    auto n = exp->dimensions->size();
+    auto varDimsName = getNewTmpVar();
+    cout << "int* " << varDimsName << " = new int[" << n << "];\n";
+
+    for(int i = 0; i < n; ++i){
+        auto dimVarName = exp->dimensions->at(i)->accept(*this);
+        cout << varDimsName << "[" << i << "] = " << dimVarName << "->getInt();\n";
+    }
+
+    string arrVarName = getNewTmpVar();
+
+    cout << TYPE << " " << arrVarName << " = new ArrayValue(" << varDimsName << ","<<n<<", \"a\");\n";
+    return arrVarName;
 }

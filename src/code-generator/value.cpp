@@ -1,9 +1,13 @@
 #include "value.hpp"
-
+#include <iostream>
 using std::to_string;
 
 IntValue::IntValue(int v){
     value = v;
+}
+
+IntValue::IntValue(){
+    value = 0;
 }
 
 string IntValue::toString(){
@@ -50,7 +54,42 @@ string StringValue::getClassName(){
     return "StringValue";
 }
 
-<<<<<<< HEAD
+ArrayValue::ArrayValue(Value** v, int n){
+    value = v;
+    this->n = n;
+}
+
+Value** ArrayValue::getArray() const{
+    return value;
+}
+
+string ArrayValue::toString(){
+    // TODO
+    return "";
+}
+
+string ArrayValue::getClassName(){
+    return "ArrayValue";
+}
+
+ArrayValue::ArrayValue(int* dims, int n, string ctor) : ArrayValue(dims,1,n,ctor){}
+
+ArrayValue::ArrayValue(int* dims, int i, int n, string ctor){
+    // std::cout << "value = new Value*[" << dims[i-1] << "]\n";
+    this->value = new Value*[dims[i-1]];
+    if(i == n){
+        for(int j = 0; j < dims[i-1]; ++j){ 
+            // std::cout << "value[" << j << "] = new IntValue()\n";
+            this->value[j] = new IntValue();
+        }
+    } else{
+        for(int j = 0; j < dims[i-1]; ++j) {
+            // std::cout << "value[" << j << "] = new ArrayValue(blah," << (i+1) << "," << n << "," << ctor << ")" << std::endl;
+            this->value[j] = new ArrayValue(dims, i+1,n,ctor);
+        }
+    }
+}
+
 // int and String operators
 Value* operator+(const Value& v1, const Value& v2) {
     const IntValue* i1 = dynamic_cast<const IntValue*>(&v1);
@@ -150,28 +189,6 @@ Value* operator||(const Value& v1, const Value& v2) {
         return new BoolValue(b1->getBool() || b2->getBool());
     
     throw "Invalid operands between operator ||";
-=======
-ArrayValue::ArrayValue(Value** v){
-    value = v;
-}
-
-Value** ArrayValue::getArray() const{
-    return value;
-}
-
-string ArrayValue::toString(){
-    // TODO
-    return "";
-}
-
-string ArrayValue::getClassName(){
-    return "ArrayValue";
-}
-
-// TODO: implement string concatenation (it'll need a cast)
-IntValue* operator+(const Value& v1, const Value& v2){
-    return new IntValue(v1.getInt() + v2.getInt());
->>>>>>> 09ab67c3e4b886cc21c306ac71c6775715be044c
 }
 
 Value* operator&&(const Value& v1, const Value& v2) {
@@ -184,11 +201,13 @@ Value* operator&&(const Value& v1, const Value& v2) {
     throw "Invalid operands between operator &&";
 }
 
-<<<<<<< HEAD
+Value* Value::operator[](const int i){
+    ArrayValue* arr = dynamic_cast<ArrayValue*>(this);
+    return (arr->value)[i];
+}
+
 // all types operators
 // TODO: Do it for all Types (waiting for ClassValue)
 Value* operator==(const Value& v1, const Value& v2) { return nullptr; }
 Value* operator!=(const Value& v1, const Value& v2) { return nullptr; }
-=======
 
->>>>>>> 09ab67c3e4b886cc21c306ac71c6775715be044c

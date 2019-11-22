@@ -113,6 +113,7 @@ class ObjExpression : public Expression{
         ObjExpression(Type* type) : Expression(type){}
 
         virtual bool accept(StaticVisitor&) = 0;
+        virtual string accept(CodeVisitor&) {return "";} // TODO: implement in subclasses
 };
 
 // Example: new int
@@ -204,6 +205,7 @@ class ArrayAccessExpression : public Expression{
         string toString();
         bool isLvalue();
         bool accept(StaticVisitor&);
+        string accept(CodeVisitor&);
         friend class StaticVisitor;
         friend class CodeVisitor;
 };
@@ -216,6 +218,7 @@ class NewArrayExpression : public Expression{
         NewArrayExpression(ArrayDeclExpression* decl, deque<Expression*>* dimensions);
         string toString();
         bool accept(StaticVisitor&);
+        string accept(CodeVisitor&);
         friend class StaticVisitor;
         friend class CodeVisitor;
 };

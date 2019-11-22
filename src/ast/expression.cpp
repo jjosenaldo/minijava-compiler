@@ -256,6 +256,10 @@ bool ArrayAccessExpression::accept(StaticVisitor& visitor){
     return visitor.visit(this);
 }
 
+string ArrayAccessExpression::accept(CodeVisitor& visitor){
+    return visitor.visit(this);
+}
+
 bool ArrayAccessExpression::isLvalue(){
     return true;
 }
@@ -271,6 +275,10 @@ NewArrayExpression::NewArrayExpression(ArrayDeclExpression* decl, deque<Expressi
 }
 
 bool NewArrayExpression::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
+}
+
+string NewArrayExpression::accept(CodeVisitor& visitor){
     return visitor.visit(this);
 }
 

@@ -9,12 +9,13 @@ class BoolValue;
 class Value
 {
 public:
-	Value() {}
 	~Value() {}
 	virtual string getClassName() = 0;
 	virtual string toString() = 0;
 	virtual int getInt() const {return 0;}
 	virtual bool getBool() const {return false;}
+
+	Value* operator[](const int i);
 };
 
 
@@ -23,6 +24,7 @@ class IntValue : public Value {
 private:
 	int value;
 public:
+	IntValue();
 	IntValue(int v);
 	int getInt() const;
 	
@@ -55,7 +57,23 @@ public:
 	string getClassName();
 };
 
-<<<<<<< HEAD
+class ArrayValue : public Value{
+private:
+	Value** value;
+	int n;
+	ArrayValue(int* dims, int i, int n, string ctor);
+
+public:
+	ArrayValue(Value** v, int n);
+	ArrayValue(int* dims, int n, string ctor);
+	Value** getArray() const;
+
+	string toString();
+	string getClassName(); 
+
+	friend class Value;
+};
+
 // int operators
 Value* operator-(const Value& v1, const Value& v2);
 Value* operator-(const Value& v1);
@@ -78,21 +96,5 @@ Value* operator&&(const Value& v1, const Value& v2);
 // all types operators
 Value* operator==(const Value& v1, const Value& v2);
 Value* operator!=(const Value& v1, const Value& v2);
-=======
-class ArrayValue : public Value{
-private:
-	Value** value;
-
-public:
-	ArrayValue(Value** v);
-	Value** getArray() const;
-
-	string toString();
-	string getClassName(); 
-};
-
-IntValue* operator+(const Value& v1, const Value& v2);
-BoolValue* operator<(const Value& v1, const Value& v2);
->>>>>>> 09ab67c3e4b886cc21c306ac71c6775715be044c
 
 #endif
