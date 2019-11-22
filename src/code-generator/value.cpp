@@ -102,124 +102,80 @@ ArrayValue::ArrayValue(int* dims, int i, int n, EnumValue ev){
     }
 }
 
+
+// int operators
+IntValue* operator-(const IntValue& v1, const IntValue& v2) {
+    return new IntValue(v1.value - v2.value);
+}
+
+IntValue* operator-(const IntValue& v1) {
+    return new IntValue(-v1.value);
+}
+
+IntValue* operator*(const IntValue& v1, const IntValue& v2) {
+    return new IntValue(v1.value * v2.value);
+}
+
+IntValue* operator/(const IntValue& v1, const IntValue& v2) {
+    return new IntValue(v1.value / v2.value);
+}
+
+IntValue* operator%(const IntValue& v1, const IntValue& v2) {
+    return new IntValue(v1.value % v2.value);
+}
+
 // int and String operators
-Value* operator+(const Value& v1, const Value& v2) {
-    const IntValue* i1 = dynamic_cast<const IntValue*>(&v1);
-    const IntValue* i2 = dynamic_cast<const IntValue*>(&v2);
-
-    if(i1 != nullptr and i2 != nullptr)
-        return new IntValue(i1->getInt() + i2->getInt());
-
-    const StringValue* s1 = dynamic_cast<const StringValue*>(&v1);
-    const StringValue* s2 = dynamic_cast<const StringValue*>(&v2);
-
-    if(s1 != nullptr and s2 != nullptr)
-        return new StringValue(s1->getString() + s2->getString());
-    
-    throw "Invalid operands between operator +";
+template<typename Val>
+Val* operator+(const Val& v1, const Val& v2) {
+    return new Val(v1.value + v2.value);
 }
 
-Value* operator<(const Value& v1, const Value& v2) {
-    const IntValue* i1 = dynamic_cast<const IntValue*>(&v1);
-    const IntValue* i2 = dynamic_cast<const IntValue*>(&v2);
-
-    if(i1 != nullptr and i2 != nullptr)
-        return new BoolValue(i1->getInt() < i2->getInt());
-
-    const StringValue* s1 = dynamic_cast<const StringValue*>(&v1);
-    const StringValue* s2 = dynamic_cast<const StringValue*>(&v2);
-
-    if(s1 != nullptr and s2 != nullptr)
-        return new BoolValue(s1->getString() < s2->getString());
-    
-    throw "Invalid operands between operator <";
+template<typename Val>
+BoolValue* operator<(const Val& v1, const Val& v2) {
+    return new BoolValue(v1.value < v2.value);
 }
 
-Value* operator<=(const Value& v1, const Value& v2) {
-    const IntValue* i1 = dynamic_cast<const IntValue*>(&v1);
-    const IntValue* i2 = dynamic_cast<const IntValue*>(&v2);
-
-    if(i1 != nullptr and i2 != nullptr)
-        return new BoolValue(i1->getInt() <= i2->getInt());
-
-    const StringValue* s1 = dynamic_cast<const StringValue*>(&v1);
-    const StringValue* s2 = dynamic_cast<const StringValue*>(&v2);
-
-    if(s1 != nullptr and s2 != nullptr)
-        return new BoolValue(s1->getString() <= s2->getString());
-    
-    throw "Invalid operands between operator <=";
+template<typename Val>
+BoolValue* operator<=(const Val& v1, const Val& v2) {
+    return new BoolValue(v1.value <= v2.value);
 }
 
-Value* operator>(const Value& v1, const Value& v2) {
-    const IntValue* i1 = dynamic_cast<const IntValue*>(&v1);
-    const IntValue* i2 = dynamic_cast<const IntValue*>(&v2);
-
-    if(i1 != nullptr and i2 != nullptr)
-        return new BoolValue(i1->getInt() > i2->getInt());
-
-    const StringValue* s1 = dynamic_cast<const StringValue*>(&v1);
-    const StringValue* s2 = dynamic_cast<const StringValue*>(&v2);
-
-    if(s1 != nullptr and s2 != nullptr)
-        return new BoolValue(s1->getString() > s2->getString());
-    
-    throw "Invalid operands between operator >";
+template<typename Val>
+BoolValue* operator>(const Val& v1, const Val& v2) {
+    return new BoolValue(v1.value > v2.value);
 }
 
-Value* operator>=(const Value& v1, const Value& v2) {
-    const IntValue* i1 = dynamic_cast<const IntValue*>(&v1);
-    const IntValue* i2 = dynamic_cast<const IntValue*>(&v2);
-
-    if(i1 != nullptr and i2 != nullptr)
-        return new BoolValue(i1->getInt() >= i2->getInt());
-
-    const StringValue* s1 = dynamic_cast<const StringValue*>(&v1);
-    const StringValue* s2 = dynamic_cast<const StringValue*>(&v2);
-
-    if(s1 != nullptr and s2 != nullptr)
-        return new BoolValue(s1->getString() >= s2->getString());
-    
-    throw "Invalid operands between operator >=";
+template<typename Val>
+BoolValue* operator>=(const Val& v1, const Val& v2) {
+    return new BoolValue(v1.value >= v2.value);
 }
 
 // boolean operators
-Value* operator!(const Value& v1) {
-    const BoolValue* b1 = dynamic_cast<const BoolValue*>(&v1);
-
-    if(b1 != nullptr)
-        return new BoolValue(!b1->getBool());
-
-    throw "Invalid operand in operator !";
+BoolValue* operator!(const BoolValue& v1) {
+    return new BoolValue(!v1.value);
 }
 
-Value* operator||(const Value& v1, const Value& v2) {
-    const BoolValue* b1 = dynamic_cast<const BoolValue*>(&v1);
-    const BoolValue* b2 = dynamic_cast<const BoolValue*>(&v2);
-
-    if(b1 != nullptr and b2 != nullptr)
-        return new BoolValue(b1->getBool() || b2->getBool());
-    
-    throw "Invalid operands between operator ||";
+BoolValue* operator||(const BoolValue& v1, const BoolValue& v2) {
+    return new BoolValue(v1.value || v2.value);
 }
 
-Value* operator&&(const Value& v1, const Value& v2) {
-    const BoolValue* b1 = dynamic_cast<const BoolValue*>(&v1);
-    const BoolValue* b2 = dynamic_cast<const BoolValue*>(&v2);
-
-    if(b1 != nullptr and b2 != nullptr)
-        return new BoolValue(b1->getBool() && b2->getBool());
-    
-    throw "Invalid operands between operator &&";
+BoolValue* operator&&(const BoolValue& v1, const BoolValue& v2) {
+    return new BoolValue(v1.value && v2.value);
 }
 
+// array operators
 Value* Value::operator[](const int i){
     ArrayValue* arr = dynamic_cast<ArrayValue*>(this);
     return (arr->value)[i];
 }
 
 // all types operators
-// TODO: Do it for all Types (waiting for ClassValue)
-Value* operator==(const Value& v1, const Value& v2) { return nullptr; }
-Value* operator!=(const Value& v1, const Value& v2) { return nullptr; }
+template<typename Val>
+BoolValue* operator==(const Val& v1, const Val& v2) {
+    return new BoolValue(v1.value == v2.value);
+}
 
+template<typename Val>
+BoolValue* operator!=(const Val& v1, const Val& v2) {
+    return new BoolValue(v1.value != v2.value);
+}
