@@ -19,3 +19,9 @@ class Main {
 		System.print("eu so feio?  " + (String.booleanToString(true)));
 	}
 }
+
+class Test {
+	void method(String str) {
+		System.print("Meu nome é " + str + "\n");
+	}
+}

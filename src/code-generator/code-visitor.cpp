@@ -36,14 +36,28 @@ string CodeVisitor::getNewLabel() {
 // AST base
 // TODO:
 string CodeVisitor::visit(Program *program) {
-    for(auto &e : *(program->declarations))
-        e->accept(*this);
+    auto main_class = program->declarations->begin();
+
+    for(auto it = ++(program->declarations->begin()); it != program->declarations->end(); it++)
+        (**it).accept(*this);
+
+    (**main_class).accept(*this);
+    // for(auto &e : *(program->declarations))
+    //     e->accept(*this);
     return "";
 }
 
 // TODO
 string CodeVisitor::visit(Method *method) {
+    string start = getNewLabel();
+    cout << start << ": {\n";
     method->statement->accept(*this);
+    string tmpReturn = getNewTmpVar();
+    cout << "void* " << tmpReturn << " = " << RS_TOP << "getReturnLabel();\n";
+    cout << RS << "pop();\n";
+    cout << GOTO(tmpReturn) << ";\n";
+    cout << "}\n";
+    resetCountTmpVars();
     return "";
 }
 
@@ -276,7 +290,10 @@ string CodeVisitor::visit(StaticMethodCallExpression *exp) {
     return "";
 }
 
-string CodeVisitor::visit(MethodCallExpression *exp) { return ""; }       // TODO: Implement after
+// TODO: Implement after
+string CodeVisitor::visit(MethodCallExpression *exp) {
+    return "";
+}
 
 // Expressions
 string CodeVisitor::visit(BinExpression *exp) {
