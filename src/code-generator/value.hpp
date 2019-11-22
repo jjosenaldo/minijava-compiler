@@ -2,8 +2,15 @@
 #define VALUE_HPP
 
 #include <string>
-
 using std::string;
+
+enum EnumValue{
+    EV_IntValue,
+    EV_StringValue,
+    EV_BoolValue,
+    EV_ArrayValue
+};
+
 class BoolValue;
 
 class Value
@@ -39,6 +46,7 @@ class BoolValue : public Value{
 private:
 	bool value;
 public:
+	BoolValue();
 	BoolValue(bool v);
 	bool getBool() const;
 
@@ -50,6 +58,7 @@ class StringValue : public Value{
 private:
 	string value;
 public:
+	StringValue();
 	StringValue(string v);
 	string getString() const;
 
@@ -61,11 +70,11 @@ class ArrayValue : public Value{
 private:
 	Value** value;
 	int n;
-	ArrayValue(int* dims, int i, int n, string ctor);
+	ArrayValue(int* dims, int i, int n, EnumValue ev);
 
 public:
 	ArrayValue(Value** v, int n);
-	ArrayValue(int* dims, int n, string ctor);
+	ArrayValue(int* dims, int n, EnumValue ev);
 	Value** getArray() const;
 
 	string toString();

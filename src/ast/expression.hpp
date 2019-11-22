@@ -212,6 +212,7 @@ class ArrayAccessExpression : public Expression{
 
 class NewArrayExpression : public Expression{
     private:
+        Type* baseType;
         deque<Expression*>* dimensions;
     
     public:

@@ -378,6 +378,16 @@ string CodeVisitor::visit(NewArrayExpression *exp) {
 
     string arrVarName = getNewTmpVar();
 
-    cout << TYPE << " " << arrVarName << " = new ArrayValue(" << varDimsName << ","<<n<<", \"a\");\n";
+    cout << TYPE << " " << arrVarName << " = new ArrayValue(" << varDimsName << ","<<n << ",";
+    switch(exp->baseType->kind){
+        case TypeInt: cout << "EV_IntValue";break;
+        case TypeBoolean: cout << "EV_BoolValue";break;
+        case TypeClass:
+            if(exp->baseType->toString() == "String") cout << "EV_StringValue";
+            else /* TODO */;
+            break;
+    }
+
+    cout << ");\n";
     return arrVarName;
 }

@@ -22,6 +22,8 @@ string IntValue::getClassName(){
     return "IntValue";
 }
 
+BoolValue::BoolValue() : BoolValue(false){}
+
 BoolValue::BoolValue(bool v){
     value = v;
 }
@@ -37,6 +39,8 @@ bool BoolValue::getBool() const {
 string BoolValue::getClassName(){
     return "BoolValue";
 }
+
+StringValue::StringValue() : StringValue(""){}
 
 StringValue::StringValue(string v){
     this->value = v;
@@ -72,20 +76,28 @@ string ArrayValue::getClassName(){
     return "ArrayValue";
 }
 
-ArrayValue::ArrayValue(int* dims, int n, string ctor) : ArrayValue(dims,1,n,ctor){}
+ArrayValue::ArrayValue(int* dims, int n, EnumValue ev) : ArrayValue(dims,1,n,ev){}
 
-ArrayValue::ArrayValue(int* dims, int i, int n, string ctor){
-    // std::cout << "value = new Value*[" << dims[i-1] << "]\n";
+ArrayValue::ArrayValue(int* dims, int i, int n, EnumValue ev){
     this->value = new Value*[dims[i-1]];
     if(i == n){
         for(int j = 0; j < dims[i-1]; ++j){ 
-            // std::cout << "value[" << j << "] = new IntValue()\n";
-            this->value[j] = new IntValue();
+            // TODO: ClassValue
+            switch(ev){
+                case EnumValue::EV_IntValue:
+                    this->value[j] = new IntValue();
+                    break;
+                case EnumValue::EV_StringValue:
+                    this->value[j] = new StringValue();
+                    break;
+                case EnumValue::EV_BoolValue:
+                    this->value[j] = new BoolValue();
+                    break;
+            }
         }
     } else{
         for(int j = 0; j < dims[i-1]; ++j) {
-            // std::cout << "value[" << j << "] = new ArrayValue(blah," << (i+1) << "," << n << "," << ctor << ")" << std::endl;
-            this->value[j] = new ArrayValue(dims, i+1,n,ctor);
+            this->value[j] = new ArrayValue(dims, i+1,n,ev);
         }
     }
 }

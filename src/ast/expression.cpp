@@ -265,6 +265,7 @@ bool ArrayAccessExpression::isLvalue(){
 }
 
 NewArrayExpression::NewArrayExpression(ArrayDeclExpression* decl, deque<Expression*>* dimensions){
+    baseType = decl->getType(); 
     Type* newType = decl->getType();
 
     for(auto dim : *dimensions)
