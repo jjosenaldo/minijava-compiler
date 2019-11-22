@@ -8,6 +8,7 @@
 #include "ast.hpp"
 #include "error.hpp"
 #include "global.hpp"
+#include "statement.hpp"
 
 using std::cout;
 using std::endl;
@@ -24,6 +25,7 @@ Program* program;
 %code requires{
     #include <deque>
     #include "ast.hpp"
+    #include "statement.hpp"
     using std::deque;
 
     struct ClassMember{
@@ -500,15 +502,4 @@ filledbracks : filledbracks '[' expr ']'  {
 
 void yyerror(const char *s) {
     fprintf(stderr, "line: %d: %s\n", yylineno, s);
-}
-
-int main(){
-    if(yyparse() != 1){
-        // program->print();
-        auto pool = buildClassSymtablePool(program);
-
-        if(pool != nullptr)
-            pool->print();
-    }
-    return 0;
 }

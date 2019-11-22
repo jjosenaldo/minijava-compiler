@@ -2,6 +2,8 @@
 #include "error.hpp"
 #include "global.hpp"
 #include "statement.hpp"
+#include "static-visitor.hpp"
+#include "code-visitor.hpp"
 
 using std::cout;
 using std::endl;
@@ -25,48 +27,12 @@ void VarDec::print(){
     cout << ";";
 }
 
-bool VarDec::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
-    if(type->kind == TypeClass && !g_defaultSymbolHandler.isDefaultClass(type->getClassName())){
-        if(pool->get(type->getClassName()) == nullptr){
-            classNotDefinedError(type->getClassName());
-            return false;
-        }
+bool VarDec::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
+}
 
-        if(g_mainClassName == type->getClassName()){
-            instanceOfMainClassError();
-            return false;
-        }
-    }
-
-    if(!canBeInstantiated(type, pool))
-        return false;
-
-    if(g_defaultSymbolHandler.isDefaultClass(id) || pool->get(id) != nullptr){
-        classAsVariableNameError(id);
-        return false;
-    }
-
-    if(parent->get(id).tag != TCNOCONTENT){
-        multipleVariableError(id);
-        return false;
-    }
-
-    if(this->value != nullptr){
-        if(!this->value->process(parent, pool))
-            return false;
-
-        if(!areCompatibleTypes(type, this->value->getType())){
-            varDeclarationTypeError(id, type->toString(), this->value->getType()->toString());
-            return false;
-        }
-
-        if(this->value->getType()->kind == TypeClass)
-            type->setActualClassName(this->value->getType()->getClassName());
-    }
-
-    parent->insert(id, tableContentFromType(type));
-
-    return true;
+string VarDec::accept(CodeVisitor &visitor) {
+    return visitor.visit(this);
 }
 
 Type* VarDec::getType(){
@@ -97,18 +63,12 @@ deque<GenStatement*>* Block::getStatements(){
     return statements;
 }
 
-bool Block::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
-    Symtable* table = new Symtable(parent->getClassName(), parent->getMethodName());
-    table->setParent(parent);
+bool Block::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
+}
 
-    if(statements != nullptr)
-        for(auto stmt : *statements){
-            if(!stmt->process(table, pool, program))
-                return false;
-        }
-
-    parent->insert(table);
-    return true;
+string Block::accept(CodeVisitor &visitor) {
+    return visitor.visit(this);
 }
 
 void Block::print(){
@@ -124,8 +84,12 @@ ElselessIf::ElselessIf(Expression* guard, Statement* statement){
     this->statement = statement;
 }
 
-bool ElselessIf::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
-    return statement->process(parent, pool, program);
+bool ElselessIf::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
+}
+
+string ElselessIf::accept(CodeVisitor &visitor) {
+    return visitor.visit(this);
 }
 
 void ElselessIf::print(){
@@ -143,8 +107,12 @@ IfElse::IfElse(Expression* guard, Statement* statementIf, Statement* statementEl
     this->statementElse = statementElse;
 }
 
-bool IfElse::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
-    return statementIf->process(parent, pool, program) && statementElse->process(parent, pool, program);
+bool IfElse::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
+}
+
+string IfElse::accept(CodeVisitor &visitor) {
+    return visitor.visit(this);
 }
 
 void IfElse::print(){
@@ -164,11 +132,12 @@ While::While(Expression* guard, Statement* statement){
     this->statement = statement;
 }
 
-bool While::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
-    pool->setIsLoopBlock(true);
-    bool r = statement->process(parent, pool, program);
-    pool->setIsLoopBlock(false);
-    return r;
+bool While::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
+}
+
+string While::accept(CodeVisitor &visitor) {
+    return visitor.visit(this);
 }
 
 void While::print(){
@@ -192,53 +161,37 @@ void Assignment::print(){
     cout << ";";
 }
 
-bool Assignment::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
+bool Assignment::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
+}
 
-    if(!lvalue->process(parent, pool))
-        return false;
-
-    if(!lvalue->isLvalue()){
-        notAnLvalueError(lvalue->toString());
-        return false;
-    }
-
-    if(!rvalue->process(parent, pool))
-        return false;
-
-    if(!areCompatibleTypes(lvalue->getType(), rvalue->getType())){
-        typeError(lvalue->getType()->toString(), rvalue->getType()->toString());
-        return false;
-    }
-
-    return true;
+string Assignment::accept(CodeVisitor &visitor) {
+    return visitor.visit(this);
 }
 
 void Continue::print(){
     cout << "continue;";
 }
 
-bool Continue::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
-    if(!pool->isLoopBlock()){
-        breakOutsideLoop();
-        return false;
-    } else {
-        return true;
-    }
+bool Continue::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
+}
+
+string Continue::accept(CodeVisitor &visitor) {
+    return visitor.visit(this);
 }
 
 void Break::print(){
     cout << "break;";
 }
 
-bool Break::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
-    if(!pool->isLoopBlock()){
-        breakOutsideLoop();
-        return false;
-    } else {
-        return true;
-    }
+bool Break::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
 }
 
+string Break::accept(CodeVisitor &visitor) {
+    return visitor.visit(this);
+}
 
 Return::Return() : Return(nullptr) {}
 
@@ -252,28 +205,13 @@ void Return::print(){
     cout << ";";
 }
 
-bool Return::process(Symtable* parent, ClassSymtablePool* pool, Program* program){
-    Type* optExpType = MkTypeVoid();
-    if(optExp != nullptr){
-        bool res = optExp->process(parent, pool);
-
-        if(!res)
-            return false;
-        
-        optExpType = optExp->getType();
-    }
-
-    ClassSymtable* classTable = pool->get(parent->getClassName());
-    TableContent tc = classTable->get(parent->getMethodName());
-    Type* methodReturnType = tc.type->getMethodHeader()->at(0);
-    if(!areCompatibleTypes(optExpType, methodReturnType)){
-        methodReturnTypeError(optExpType->toString(), methodReturnType->toString(), parent->getMethodName());
-        return false;
-    }
-
-   return true;
+bool Return::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
 }
 
+string Return::accept(CodeVisitor &visitor) {
+    return visitor.visit(this);
+}
 
 MethodCallExpression::MethodCallExpression(Expression* left, string method, deque<Expression*>* args){
     this->left = left;
@@ -287,106 +225,12 @@ string MethodCallExpression::toString(){
     return ans + ")";
 }
 
-bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* pool, Program* program){
-    return process(environment, pool);
+bool MethodCallExpression::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
 }
 
-bool MethodCallExpression::process(Symtable* environment, ClassSymtablePool* pool){;
-    if(environment->getClassName() == g_mainClassName){
-        if(method == MAIN_METHOD_NAME){
-            callMainMethodError();
-            return false;
-        }
-    }
-    bool leftResult = left->process(environment, pool);
-
-    // The callee expression is not well-formed
-    if(!leftResult)
-        return false;
-
-    // The callee expression is an object
-    if(left->isObject()){
-        string className = left->getType()->getClassName();
-
-        if(g_defaultSymbolHandler.isDefaultClass(className)){
-            MethodType* res = g_defaultSymbolHandler.getDefaultNonstaticMethodHeader(className, method);
-
-            if(res == nullptr){
-                nonstaticMethodOnDefaultClassNotFound(className, method);
-                return false;
-            } else type = res;
-        } else{
-            ClassSymtable* classTable = pool->get(className);
-            TableContent tc = classTable->get(method);
-
-            // Search for the method (including the ancestor classes)
-            string currentClass = left->getType()->getClassName();
-            bool methodFound = false;
-
-            while(currentClass != ""){
-                tc = pool->get(currentClass)->get(method);
-
-                // The class doesn't contain the field
-                if(tc.tag == TCNOCONTENT || (tc.tag == TCTYPE && tc.type->kind != TypeMethod))
-
-                    // Looks in its parent
-                    currentClass = g_classParentMap[currentClass];
-
-                else{
-                    methodFound = true;
-                    break;
-                }
-            }
-
-            // The method doesnt exist
-            if(!methodFound){
-                methodNotFoundError(method, left->getType()->getClassName());
-                return false;
-            }
-
-            type = tc.type;
-        }
-    } else{
-        type = g_defaultSymbolHandler.getDefaultNonstaticMethodHeader(left->getType(), method);
-
-        if(type == nullptr){
-            typeDoesntContainNonstaticMethodError(left->getType()->toString(), method);
-            return false;
-        }
-    }
-
-
-
-    vector<Type*>* methodHeader = type->getMethodHeader();
-    int expectedArgs = methodHeader->size() - 1;
-
-    if(arguments == nullptr) {
-        if(expectedArgs != 0){
-            diffNumberOfArgsMethodError(method, 0, expectedArgs);
-            return false;
-        }
-
-        type = methodHeader->at(0);
-        return true;
-    }
-
-    if(arguments->size() != expectedArgs){
-        diffNumberOfArgsMethodError(method, arguments->size(), expectedArgs);
-        return false;
-    }
-
-    for(int i = 0; i < expectedArgs; ++i){
-        if(!  arguments->at(i)->process(environment, pool)  )
-            return false;
-
-        if(!areCompatibleTypes(methodHeader->at(i+1), arguments->at(i)->getType()  )    ){ // +1 because the first element is the return type
-            incompatibleTypesMethodCall(method, i+1, methodHeader->at(i+1)->toString(), arguments->at(i)->getType()->toString());
-            return false;
-        }
-    }
-
-    type = methodHeader->at(0);
-    return true;
+string MethodCallExpression::accept(CodeVisitor &visitor) {
+    return visitor.visit(this);
 }
 
 void MethodCallExpression::print(){
@@ -406,47 +250,12 @@ StaticMethodCallExpression::StaticMethodCallExpression(string className, string 
     this->arguments = arguments;
 }
 
-bool StaticMethodCallExpression::process(Symtable* environment, ClassSymtablePool* pool){
-    auto methodHeader = g_defaultSymbolHandler.getDefaultStaticMethodHeader(className, method);
-
-    if(methodHeader == nullptr){
-        nonExistingMethodInDefaultClass(className, method);
-        return false;
-    }
-
-    int expectedArgs = methodHeader->getMethodHeader()->size() - 1;
-
-    if(arguments == nullptr) {
-        if(expectedArgs != 0){
-            diffNumberOfArgsMethodError(method, 0, expectedArgs);
-            return false;
-        }
-
-        type = methodHeader->getMethodHeader()->at(0);
-        return true;
-    }
-
-    if(arguments->size() != expectedArgs){
-        diffNumberOfArgsMethodError(method, arguments->size(), expectedArgs);
-        return false;
-    }
-
-    for(int i = 0; i < expectedArgs; ++i){
-        if(!  arguments->at(i)->process(environment, pool)  )
-            return false;
-
-        if(!areCompatibleTypes(methodHeader->getMethodHeader()->at(i+1), arguments->at(i)->getType()  )    ){ // +1 because the first element is the return type
-            incompatibleTypesMethodCall(method, i+1, methodHeader->getMethodHeader()->at(i+1)->toString(), arguments->at(i)->getType()->toString());
-            return false;
-        }
-    }
-
-    type = methodHeader->getMethodHeader()->at(0);
-    return true;
+bool StaticMethodCallExpression::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
 }
 
-bool StaticMethodCallExpression::process(Symtable* environment, ClassSymtablePool* pool, Program* program){
-    return process(environment, pool);
+string StaticMethodCallExpression::accept(CodeVisitor &visitor) {
+    return visitor.visit(this);
 }
 
 string StaticMethodCallExpression::toString(){
@@ -454,13 +263,18 @@ string StaticMethodCallExpression::toString(){
     return "";
 }
 
-void StaticMethodCallExpression::print(){
+void StaticMethodCallExpression::print() {
     // TODO
 }
 
-
-
-
 void Skip::print(){
     cout << ";";
+}
+
+bool Skip::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
+}
+
+string Skip::accept(CodeVisitor &visitor) {
+    return visitor.visit(this);
 }

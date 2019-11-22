@@ -1,9 +1,11 @@
 #include <iostream>
 #include <string>
 #include "ast.hpp"
-#include "global.hpp"
+#include "code-visitor.hpp"
 #include "error.hpp"
 #include "expression.hpp"
+#include "global.hpp"
+#include "static-visitor.hpp"
 
 using std::cout;
 using std::endl;
@@ -22,6 +24,18 @@ Type* Expression::getType(){
     return this->type;
 }
 
+bool Expression::isLvalue(){
+    return false;
+}
+
+bool Expression::accept(StaticVisitor& visitor){
+    return false;
+}
+
+void Expression::setType(Type* other){
+    this->type = other;
+}
+
 bool Expression::isObject(){
     return this->type->kind == TypeClass;
 }
@@ -36,22 +50,24 @@ string BinExpression::toString(){
     return this->first->toString() + " " + binOpSymbol(op) + " " + second->toString();
 }
 
-bool BinExpression::process(Symtable* environment, ClassSymtablePool* pool){
-    bool retFirst = first->process(environment, pool);
-    bool retSecond = second->process(environment, pool);
+bool BinExpression::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
+}
 
-    if(!retFirst || !retSecond)
-        return false;
+string BinExpression::accept(CodeVisitor& visitor){
+    return visitor.visit(this);
+}
 
-    Type* newType = returnTypeBinOp(first->getType(), second->getType(), op);
+Expression* BinExpression::getFirst() {
+    return first;
+}
 
-    if(newType == nullptr){
-        typeErrorBinOp(first->getType()->toString(), second->getType()->toString(), binOpSymbol(op));
-        return false;
-    }
+Expression* BinExpression::getSecond() {
+    return second;
+}
 
-    type = newType;
-    return true;
+BinOperator BinExpression::getOp() {
+    return op;
 }
 
 UnExpression::UnExpression(Expression* first, UnOperator op){
@@ -63,21 +79,20 @@ string UnExpression::toString(){
     return unOpSymbol(op) + first->toString();
 }
 
-bool UnExpression::process(Symtable* environment, ClassSymtablePool* pool){
-    bool retFirst = first->process(environment, pool);
+string UnExpression::accept(CodeVisitor& visitor){
+    return visitor.visit(this);
+}
 
-    if(!retFirst)
-        return false;
+bool UnExpression::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
+}
 
-    Type* newType = returnTypeUnOp(first->getType(), op);
+Expression* UnExpression::getFirst() {
+    return first;
+}
 
-    if(newType == nullptr){
-        typeErrorUnOp(first->getType()->toString(), unOpSymbol(op));
-        return false;
-    }
-
-    type = newType;
-    return true;
+UnOperator UnExpression::getOp() {
+    return op;
 }
 
 AtomExpression::AtomExpression(Type* type){
@@ -90,51 +105,33 @@ AtomExpression::AtomExpression(AtomExpValue val, Type* type){
 }
 
 string AtomExpression::toString(){
-    if(this->type == nullptr){
-        return "???";
-    } else switch(this->type->kind){
-        case TypeNull:
+    if(this->type != nullptr) {
+        if(this->type->kind == TypeNull)
             return "null";
-        case TypeInt:
-            return to_string(this->val.intval);
-        case TypeVoid:
-            return "ERROR: exp of type void";
-        case TypeBoolean:
-            return to_string(this->val.boolval);
-        case TypeClass:
-            return string(this->val.strval);
-        default:
-            return "ERROR: invalid type for an atomic expression";
+        if(this->type->kind == TypeInt)
+            return to_string(this->val.intval);;
+        if(this->type->kind == TypeBoolean)
+            return this->val.boolval ? "true" : "false";
+        if(this->type->kind == TypeClass and this->type->getClassName() == "String")
+            return "\"" + string(this->val.strval) + "\"";
     }
+    return "ERROR: invalid type for an atomic expression";
 }
 
-bool AtomExpression::process(Symtable* environment, ClassSymtablePool* pool){
-    return true;
+bool AtomExpression::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
+}
+
+string AtomExpression::accept(CodeVisitor& visitor){
+    return visitor.visit(this);
 }
 
 string ArrayDeclExpression::toString(){
     return "new " + type->toString();
 }
 
-bool ArrayDeclExpression::process(Symtable* environment, ClassSymtablePool* pool){
-    switch(type->kind){
-        case TypeNull:
-            arrayOfInvalidTypeError(type->toString());
-            return false;
-        case TypeMethod:
-            arrayOfInvalidTypeError(type->toString());
-            return false;
-        case TypeVoid:
-            arrayOfInvalidTypeError(type->toString());
-            return false;
-        case TypeClass:
-            if(pool->get(type->getClassName()) == nullptr){
-                classNotDefinedError(type->getClassName());
-                return false;
-            }
-    }
-
-    return true;
+bool ArrayDeclExpression::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
 }
 
 NewObjExpression::NewObjExpression(string id){
@@ -145,14 +142,8 @@ string NewObjExpression::toString(){
     return  "new " + id + "( )";
 }
 
-bool NewObjExpression::process(Symtable* environment, ClassSymtablePool* pool){
-    if(pool->get(id) == nullptr){
-        classNotDefinedError(id);
-        return false;
-    }
-
-    type = MkTypeClass(id);
-    return true;
+bool NewObjExpression::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
 }
 
 IdExpression::IdExpression(string id){
@@ -167,21 +158,12 @@ string IdExpression::getId(){
     return id;
 }
 
-bool IdExpression::process(Symtable* environment, ClassSymtablePool* pool){
-    if(predefinedId(id) || pool->get(id) != nullptr){
-        classAsExpressionError(id);
-        return false;
-    }
+bool IdExpression::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
+}
 
-    TableContent tc = environment->lookup(id);
-
-    if(tc.tag != TCTYPE){
-        variableNotDefinedError(id);
-        return false;
-    }
-
-    type = tc.type;
-    return true;
+string IdExpression::accept(CodeVisitor& visitor){
+    return visitor.visit(this);
 }
 
 bool IdExpression::isLvalue(){
@@ -200,36 +182,16 @@ string FieldAccessExpression::toString(){
     return "this." + id;
 }
 
-bool FieldAccessExpression::process(Symtable* environment, ClassSymtablePool* pool){
-    TableContent tc;
-    string currentClass = environment->getClassName();
-
-    while(currentClass != ""){
-        tc = pool->get(currentClass)->get(id);
-
-        // The class doesn't contain the field
-        if(tc.tag == TCNOCONTENT || (tc.tag == TCTYPE && tc.type->kind == TypeMethod))
-
-            // Looks in its parent
-            currentClass = g_classParentMap[currentClass];
-
-        else{
-            type = tc.type;
-            return true;
-        }
-    }
-
-    fieldNotFoundError(id, environment->getClassName());
-    return false;
+bool FieldAccessExpression::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
 }
 
 string ThisExpression::toString(){
     return "this";
 }
 
-bool ThisExpression::process(Symtable* environment, ClassSymtablePool* pool){
-    type = MkTypeClass(environment->getClassName());
-    return true;
+bool ThisExpression::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
 }
 
 ParenExpression::ParenExpression(Expression* fst){
@@ -244,14 +206,16 @@ bool ParenExpression::isLvalue(){
     return first->isLvalue();
 }
 
-bool ParenExpression::process(Symtable* environment, ClassSymtablePool* pool){
-    bool retFirst = first->process(environment, pool);
+bool ParenExpression::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
+}
 
-    if(!retFirst)
-        return false;
+string ParenExpression::accept(CodeVisitor& visitor){
+    return visitor.visit(this);
+}
 
-    type = first->getType();
-    return true;
+Expression* ParenExpression::getFirst() {
+    return first;
 }
 
 LitArrayExpression::LitArrayExpression(deque<Expression*>* exprs){
@@ -260,34 +224,21 @@ LitArrayExpression::LitArrayExpression(deque<Expression*>* exprs){
 
 string LitArrayExpression::toString(){
     string ans = "{";
-    for(auto e : *expressions) ans += e->toString() + ",";
+    int i = 0;
+    for(auto e : *expressions) 
+        if(++i < expressions->size())
+            ans += e->toString() + ",";
+        else
+            ans += e->toString();
     return ans + "}";
 }
 
-bool LitArrayExpression::process(Symtable* environment, ClassSymtablePool* pool){
-    Type** types = new Type*[expressions->size()];
-    bool retExp;
+bool LitArrayExpression::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
+}
 
-    int i = 0;
-    for(auto exp : *expressions){
-        retExp = exp->process(environment, pool);
-
-        if(!retExp){
-            delete[] types;
-            return false;
-        }
-
-        types[i++] = exp->getType();
-    }
-
-    Type* resType = resultingType(types, expressions->size());
-    delete[] types;
-
-    if(resType == nullptr)
-        return false;
-
-    type = resType;
-    return true;
+string LitArrayExpression::accept(CodeVisitor& visitor){
+    return visitor.visit(this);
 }
 
 ArrayAccessExpression::ArrayAccessExpression(ObjExpression* left, deque<Expression*>* dimensions){
@@ -301,35 +252,12 @@ string ArrayAccessExpression::toString(){
     return ans;
 }
 
-bool ArrayAccessExpression::process(Symtable* environment, ClassSymtablePool* pool){
-    bool retLeft = left->process(environment, pool);
+bool ArrayAccessExpression::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
+}
 
-    if(!retLeft)
-        return false;
-
-    Type* currentType = left->getType();
-
-    for(auto dim : *dimensions){
-        if(currentType->kind != TypeArray){
-            nonArrayExpressionError(left->toString());
-            return false;
-        }
-
-        bool ret = dim->process(environment, pool);
-
-        if(!ret)
-            return false;
-
-        if(dim->getType()->kind != TypeInt){
-            nonIntArrayDimensionError(dim->toString());
-            return false;
-        }
-
-        currentType = currentType->getBaseType();
-    }
-
-    type = currentType;
-    return true;
+string ArrayAccessExpression::accept(CodeVisitor& visitor){
+    return visitor.visit(this);
 }
 
 bool ArrayAccessExpression::isLvalue(){
@@ -337,6 +265,7 @@ bool ArrayAccessExpression::isLvalue(){
 }
 
 NewArrayExpression::NewArrayExpression(ArrayDeclExpression* decl, deque<Expression*>* dimensions){
+    baseType = decl->getType(); 
     Type* newType = decl->getType();
 
     for(auto dim : *dimensions)
@@ -346,28 +275,12 @@ NewArrayExpression::NewArrayExpression(ArrayDeclExpression* decl, deque<Expressi
     this->dimensions = dimensions;
 }
 
-bool NewArrayExpression::process(Symtable* environment, ClassSymtablePool* pool){
-    for(auto dim : *dimensions)
-        if(!dim->process(environment, pool))
-            return false;
+bool NewArrayExpression::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
+}
 
-    if(type->kind == TypeMethod || type->kind == TypeNull || type->kind == TypeVoid){
-        arrayOfInvalidTypeError(type->toString());
-        return false;
-    }
-
-    if(type->kind == TypeClass){
-        if(predefinedId(type->getClassName()))
-            return true;
-
-        if(pool->get(type->getClassName()) != nullptr)
-            return true;
-
-        classNotDefinedError(type->getClassName());
-        return false;
-    }
-
-    return true;
+string NewArrayExpression::accept(CodeVisitor& visitor){
+    return visitor.visit(this);
 }
 
 string NewArrayExpression::toString(){

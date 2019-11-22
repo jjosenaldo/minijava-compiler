@@ -4,18 +4,21 @@
 #include <deque>
 #include <string>
 #include <vector>
-#include "statement.hpp"
 #include "symtable.hpp"
 #include "type.hpp"
-#include "expression.hpp"
 
 using std::deque;
 using std::string;
 using std::vector;
 
+class Block;
 class ClassDeclaration;
+class CodeGenerator;
+class Expression;
 class Field;
 class Parameter;
+class StaticVisitor;
+class CodeVisitor;
 
 class Program{
     private:
@@ -33,6 +36,9 @@ class Program{
         ClassDeclaration* getClassDecl(string className);
 
         void print();
+
+        friend class CodeVisitor;
+        friend class CodeGenerator;
 };
 
 class Method{
@@ -51,8 +57,12 @@ class Method{
         deque<Parameter*>* getParameters();
         Block* getStatement();
         void addParam(Parameter* param);
-        bool processHeader(string className, ClassSymtable* root, ClassSymtablePool* pool);
         void print();
+
+        string accept(CodeVisitor&);
+
+        friend class StaticVisitor;
+        friend class CodeVisitor;
 };
 
 class ClassDeclaration{
@@ -81,6 +91,11 @@ class ClassDeclaration{
         Method* getMethod(string methodName);
 
         void print();
+
+        string accept(CodeVisitor&);
+
+        friend class CodeVisitor;
+        friend class StaticVisitor;
 };
 
 class Field{
@@ -93,10 +108,12 @@ class Field{
         Field(Type* type, string name, Expression* initValue);
 
         string getName();
-        bool process(string className, ClassSymtable* root, ClassSymtablePool* pool);
         Type* getType();
 
         void print();
+
+        friend class StaticVisitor;
+        friend class CodeVisitor;
 };
 
 class Parameter{
@@ -111,8 +128,9 @@ class Parameter{
 
         string getName();
 
-        bool process(Symtable* parent, ClassSymtablePool* pool);
         void print();
+        
+        friend class StaticVisitor;
 };
 
 #endif

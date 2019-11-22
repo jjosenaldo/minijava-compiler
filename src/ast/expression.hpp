@@ -13,6 +13,9 @@ using std::deque;
 using std::unordered_map;
 using std::string;
 
+class StaticVisitor;
+class CodeVisitor;
+
 union AtomExpValue{
     bool boolval;   
     int intval;
@@ -33,24 +36,14 @@ class Expression{
     public:
         Expression(){}
         Expression(Type* type);
+        virtual void setType(Type* other);
+        Type* getType();
         virtual ~Expression() {}
-        virtual Type* getType();
         void print(){cout << toString();}
         bool isObject();
-        virtual bool isLvalue() {return false;}
-
-        /**
-         * @brief Checks if the expression is correct, and sets its type.
-         *        
-         *        Checks if the expression doesn't contain errors such as type errors and references to undefined ids. If it's
-         *        correct, then its type is set.
-         * 
-         * @param environment   The current scope
-         * @param pool          The pool of class tables (needed for looking for class names)
-         * @return true         The expression is correct
-         * @return false        The expression is not correct
-         */
-        virtual bool process(Symtable* environment, ClassSymtablePool* pool) = 0;
+        virtual bool isLvalue();
+        virtual bool accept(StaticVisitor&);
+        virtual string accept(CodeVisitor&) {return "ERROR";}; // TODO: implement this for all subclasses
         virtual string toString() = 0;
 };
 
@@ -63,20 +56,15 @@ class BinExpression : public Expression{
     
     public:
         BinExpression(Expression* first, Expression* second, BinOperator op);
-        bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
-};
+        Expression* getFirst();
+        Expression* getSecond();
+        BinOperator getOp();
 
-// Example: !a
-class UnExpression : public Expression{
-    private:
-        Expression* first;
-        UnOperator op;
-
-    public:
-        UnExpression(Expression* first, UnOperator op);
-        bool process(Symtable* environment, ClassSymtablePool* pool);
-        string toString();
+        bool accept(StaticVisitor&);
+        string accept(CodeVisitor&);
+        friend class StaticVisitor;
+        friend class CodeVisitor;
 };
 
 // Example: false
@@ -92,14 +80,40 @@ class AtomExpression : public Expression{
         AtomExpression(Type* type);
         AtomExpression(AtomExpValue val, Type* type);
         AtomExpValue getVal();
-        bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
+
+        bool accept(StaticVisitor&);
+        string accept(CodeVisitor&);
+        friend class StaticVisitor;
+        friend class CodeVisitor;
+};
+
+// Example: !a
+class UnExpression : public Expression{
+    private:
+        Expression* first;
+        UnOperator op;
+
+    public:
+        UnExpression(Expression* first, UnOperator op);
+        
+        string toString();
+        Expression* getFirst();
+        UnOperator getOp();
+
+        bool accept(StaticVisitor&);
+        string accept(CodeVisitor&);
+        friend class StaticVisitor;
+        friend class CodeVisitor;
 };
 
 class ObjExpression : public Expression{
     public:
         ObjExpression(){}
         ObjExpression(Type* type) : Expression(type){}
+
+        virtual bool accept(StaticVisitor&) = 0;
+        virtual string accept(CodeVisitor&) {return "";} // TODO: implement in subclasses
 };
 
 // Example: new int
@@ -107,19 +121,11 @@ class ObjExpression : public Expression{
 class ArrayDeclExpression : public ObjExpression{
     public:
         ArrayDeclExpression(Type* type) : ObjExpression(type) {}
-        bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
-};
 
-// Example: new Cat()
-class NewObjExpression : public ObjExpression{
-    private:
-        string id;
-    
-    public:
-        NewObjExpression(string id);
-        bool process(Symtable* environment, ClassSymtablePool* pool);
-        string toString();
+        bool accept(StaticVisitor&);
+        friend class StaticVisitor;
+        friend class CodeVisitor;
 };
 
 // Its type is not known when the tree is being built
@@ -129,10 +135,13 @@ class IdExpression : public ObjExpression{
     
     public:
         IdExpression(string id);
-        bool process(Symtable* environment, ClassSymtablePool* pool);
         string getId();
         string toString();
         bool isLvalue();
+        bool accept(StaticVisitor&);
+        string accept(CodeVisitor&);
+        friend class StaticVisitor;
+        friend class CodeVisitor;
 };
 
 // Its type is not known when the tree is being built
@@ -142,16 +151,20 @@ class FieldAccessExpression : public ObjExpression{
     
     public:
         FieldAccessExpression(string id);
-        bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
         bool isLvalue();
+        bool accept(StaticVisitor&);
+        friend class StaticVisitor;
+        friend class CodeVisitor;
 };
 
 // Its type is not known when the tree is being built
 class ThisExpression : public ObjExpression{
     public:
-        bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
+        bool accept(StaticVisitor&);
+        friend class StaticVisitor;
+        friend class CodeVisitor;
 };
 
 // Example: (a)
@@ -161,9 +174,13 @@ class ParenExpression : public ObjExpression{
 
     public:
         ParenExpression(Expression* first);
-        bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
         bool isLvalue();
+        Expression* getFirst();
+        bool accept(StaticVisitor&);
+        string accept(CodeVisitor&);
+        friend class StaticVisitor;
+        friend class CodeVisitor;
 };
 
 class LitArrayExpression : public ObjExpression{
@@ -171,8 +188,11 @@ class LitArrayExpression : public ObjExpression{
         deque<Expression*>* expressions;
     public:
         LitArrayExpression(deque<Expression*>* exprs);
-        bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
+        bool accept(StaticVisitor&);
+        string accept(CodeVisitor&);
+        friend class StaticVisitor;
+        friend class CodeVisitor;
 };
 
 class ArrayAccessExpression : public Expression{
@@ -182,19 +202,40 @@ class ArrayAccessExpression : public Expression{
 
     public:
         ArrayAccessExpression(ObjExpression* left, deque<Expression*>* dimensions);
-        bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
         bool isLvalue();
+        bool accept(StaticVisitor&);
+        string accept(CodeVisitor&);
+        friend class StaticVisitor;
+        friend class CodeVisitor;
 };
 
 class NewArrayExpression : public Expression{
     private:
+        Type* baseType;
         deque<Expression*>* dimensions;
     
     public:
         NewArrayExpression(ArrayDeclExpression* decl, deque<Expression*>* dimensions);
-        bool process(Symtable* environment, ClassSymtablePool* pool);
         string toString();
+        bool accept(StaticVisitor&);
+        string accept(CodeVisitor&);
+        friend class StaticVisitor;
+        friend class CodeVisitor;
+};
+
+// Example: new Cat()
+class NewObjExpression : public ObjExpression{
+    private:
+        string id;
+    
+    public:
+        NewObjExpression(string id);
+        string toString();
+
+        bool accept(StaticVisitor&);
+        friend class StaticVisitor;
+        friend class CodeVisitor;
 };
 
 #endif

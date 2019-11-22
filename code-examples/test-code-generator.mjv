@@ -1,0 +1,21 @@
+class Main {
+	void main(String []args) {
+		/*int a = 0;
+		
+		if(a < 1)
+			a = 2;
+		else
+			a = 4;
+
+		if(a < 2)
+			a = 4;
+		
+		while(a > 0) {
+			a = a-1;
+			continue;
+			int b = 3;
+		}*/
+
+		System.print("eu so feio?  " + (String.booleanToString(true)));
+	}
+}

@@ -1,9 +1,10 @@
 #include <iostream>
+#include "ast.hpp"
 #include "global.hpp"
+#include "statement.hpp"
+#include "static-visitor.hpp"
 #include "symtable.hpp"
 #include "type.hpp"
-#include "ast.hpp"
-#include "statement.hpp"
 
 using std::cout;
 using std::endl;
@@ -177,12 +178,13 @@ bool ClassSymtable::processMethodBodies(ClassDeclaration* classDecl, ClassSymtab
         auto method = classDecl->getMethod(methodName);
         auto blockStmt = method->getStatement();
         methodTable->setMethodName(methodName);
+        auto visitor = StaticVisitor(methodTable, pool);
 
         if(blockStmt != nullptr){
             // Process statements
             auto stmts = blockStmt->getStatements();
             for(auto stmt : *stmts){
-                if(!stmt->process(methodTable, pool, program))
+                if(!stmt->accept(visitor))
                     return false;
             }
 
@@ -352,6 +354,8 @@ ClassSymtablePool* buildClassSymtablePool(Program* program){
 
     // Processes each class
     for(auto classDecl : *program->getDecls()){
+        auto visitor = StaticVisitor(nullptr, pool);
+
         string className = classDecl->getName();
         ClassSymtable* root = pool->get(className);
 
@@ -359,7 +363,7 @@ ClassSymtablePool* buildClassSymtablePool(Program* program){
         auto fields = classDecl->getFields();
         if(fields != nullptr)
             for(auto field : *fields)
-                if(!field->process(className, root, pool)){
+                if(!visitor.visit(field, root, className)){
                     delete pool;
                     return nullptr;
                 }
@@ -368,7 +372,7 @@ ClassSymtablePool* buildClassSymtablePool(Program* program){
         auto methods = classDecl->getMethods();
         if(methods != nullptr){
             for(auto method : *methods)
-                if(!method->processHeader(className, root, pool)){
+                if(!visitor.visitMethodHeader(method, root, className)){
                     delete pool;
                     return nullptr;
                 }

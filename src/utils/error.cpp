@@ -159,7 +159,7 @@ void callMainMethodError(){
     cout << "you cannot call the main method" << endl;
 }
 
-void breakOutsideLoop() {
+void breakOutsideLoopError() {
     errorMsgPrefix();
     cout << "you cannot call a break from outside a loop" << endl;
 }

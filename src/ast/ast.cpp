@@ -1,7 +1,11 @@
 #include <iostream>
 #include "ast.hpp"
 #include "error.hpp"
+#include "expression.hpp"
 #include "global.hpp"
+#include "statement.hpp"
+#include "static-visitor.hpp"
+#include "code-visitor.hpp"
 
 using std::cout;
 using std::endl;
@@ -51,25 +55,6 @@ void Parameter::print(){
 
 Type* Parameter::getType(){
     return type;
-}
-
-bool Parameter::process(Symtable* parent, ClassSymtablePool* pool) {
-    if(!canBeInstantiated(type, pool))
-        return false;
-
-    if(predefinedId(name) || pool->get(name) != nullptr){
-        classAsVariableNameError(name);
-        return false;
-    }
-
-    if(parent->get(name).tag != TCNOCONTENT) {
-        multipleVariableError(name);
-        return false;
-    }
-
-    parent->insert(name, tableContentFromType(type));
-
-    return true;
 }
 
 string Parameter::getName(){
@@ -133,48 +118,8 @@ void Method::addParam(Parameter* param){
     this->parameters->push_back(param);
 }
 
-bool Method::processHeader(string className, ClassSymtable* root, ClassSymtablePool* pool){
-    string methodName = id;
-
-    if(pool->get(methodName) != nullptr || g_defaultSymbolHandler.isDefaultClass(methodName)){
-        classAsMethodNameError(methodName);
-        return false;
-    }
-
-    if(root->get(methodName).tag != TCNOCONTENT){
-        multipleMethodError(className, methodName);
-        return false;
-    }
-
-    if(returnType->kind == TypeClass & pool->get(returnType->getClassName()) == nullptr){
-        classNotDefinedError(returnType->getClassName());
-        return false;
-    }
-
-    // Adds the method name
-    TableContent tcMethodType;
-    tcMethodType.tag = TCTYPE;
-    tcMethodType.type = this->getType();
-    root->insert(methodName, tcMethodType);
-
-    Symtable* methodTable = new Symtable(className, root);
-
-    // Adds the method params
-    auto params = parameters;
-    if(params != nullptr)
-        for(auto param : *params){
-            if(methodTable->get(param->getName()).tag != TCNOCONTENT){
-                multiplyDefinedParamError(param->getName(), methodName, className);
-                delete methodTable;
-                return false;
-            }
-
-            if(!param->process(methodTable, pool))
-                return false;
-        }
-
-    root->insertMethodTable(methodName, methodTable);
-    return true;
+string Method::accept(CodeVisitor &visitor) {
+    return visitor.visit(this);
 }
 
 Field::Field(Type* type, string name, Expression* initValue){
@@ -201,35 +146,6 @@ void Field::print(){
     }
 
     cout << ";";
-}
-
-bool Field::process(string className, ClassSymtable* root, ClassSymtablePool* pool){
-    if(root->get(name).tag != TCNOCONTENT){
-        multiplyDefinedFieldError(name, className);
-        return false;
-    }
-
-    if(pool->get(name) != nullptr || g_defaultSymbolHandler.isDefaultClass(name)){
-        classAsFieldNameError(name);
-        return false;
-    }
-
-    if(this->initValue != nullptr){
-        if(!this->initValue->process(root, pool))
-            return false;
-
-            if(!areCompatibleTypes(type, this->initValue->getType())){
-                attributeInitValueTypeError(name, type->toString(), this->initValue->getType()->toString());
-                return false;
-            }
-    }
-    
-    TableContent tc;
-    tc.tag = TCTYPE;
-    tc.type = type;
-    root->insert(name, tc);
-
-    return true;
 }
 
 ClassDeclaration::ClassDeclaration(string name) : ClassDeclaration(name, "") {}
@@ -282,4 +198,8 @@ vector<Field*>* ClassDeclaration::getFields(){
 Method* ClassDeclaration::getMethod(string methodName){
     for(Method* method : *methods) if(method->getId() == methodName) return method;
     return nullptr;
+}
+
+string ClassDeclaration::accept(CodeVisitor &visitor) {
+    return visitor.visit(this);
 }
