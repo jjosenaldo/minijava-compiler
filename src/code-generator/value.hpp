@@ -13,6 +13,23 @@ enum EnumValue{
 
 class BoolValue;
 
+/*
+	Suggested solution:
+
+	template<typename T>
+	class Value {
+		...
+
+		vitual T getValue() = 0;
+	}
+
+	class IntValue : public Value<int> {
+		...
+
+		int getValue() { return value; }
+	}
+*/
+
 class Value
 {
 public:
