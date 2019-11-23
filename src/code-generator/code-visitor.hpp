@@ -9,10 +9,16 @@
 
 #include <vector>
 #include <string>
+#include <unordered_map>
 
 using std::string;
 using std::vector;
+using std::unordered_map;
+using std::pair;
+using std::make_pair;
 
+
+#include <cstdlib>
 class Method;
 
 class CodeVisitor {
@@ -24,14 +30,52 @@ private:
 	string getNewTmpVar();
 	string getNewLabel();
 
-	// TODO: return formal params
+	unordered_map<
+		string, // className
+		unordered_map<
+			string, // methodName
+			pair<
+				string, // label
+				vector<string> // parameters' names
+			>
+		>
+	> *methodsInfo;
+
+	// TODO: Solve problem described in Trello (Polimorphism)
 	vector<string> getRealParams(string className, string methodName) {
-		return vector<string>();
+		return methodsInfo->at(className).at(methodName).second;
+
+		// for(auto &classDec : *program->declarations) {
+		// 	if(classDec->name == className) {
+		// 		for(auto &method : *classDec->methods) {
+		// 			if(method->id == methodName) {
+		// 				for(auto &params : *method->parameters) {
+		// 					ans.add(params->name);
+		// 				}
+		// 			}
+		// 		}	
+		// 	}
+		// }
+		//return ans;
 	}
 	
-	// TODO: return label to method
+	// TODO: Solve problem described in Trello (Polimorphism)
 	string getMethodLabel(string className, string methodName) {
-		return "";
+		return methodsInfo->at(className).at(methodName).first;
+	}
+
+	void initMethodsInfo(Program* program) {
+		methodsInfo = new unordered_map<string, unordered_map<string, pair<string,vector<string>>>>();
+		for(auto &classDec : *program->declarations) {
+			unordered_map< string, pair<string, vector<string>> > methods;
+			for(auto &method : *classDec->methods) {
+				vector<string> vec;
+				for(auto &params : *method->parameters)
+					vec.push_back(params->name);
+				methods.insert( make_pair(method->id, make_pair(getNewLabel(), vec)) );
+			}
+			methodsInfo->insert(make_pair(classDec->name, methods));
+		}
 	}
 
 public:

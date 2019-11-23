@@ -146,6 +146,11 @@ bool NewObjExpression::accept(StaticVisitor& visitor){
     return visitor.visit(this);
 }
 
+
+string NewObjExpression::accept(CodeVisitor& visitor){
+    return visitor.visit(this);
+}
+
 IdExpression::IdExpression(string id){
     this->id = id;
 }

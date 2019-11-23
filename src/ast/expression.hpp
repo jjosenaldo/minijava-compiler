@@ -234,6 +234,8 @@ class NewObjExpression : public ObjExpression{
         string toString();
 
         bool accept(StaticVisitor&);
+        string accept(CodeVisitor&);
+
         friend class StaticVisitor;
         friend class CodeVisitor;
 };

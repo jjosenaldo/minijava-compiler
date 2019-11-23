@@ -8,6 +8,7 @@
 
 using std::to_string;
 using std::cout;
+using std::endl;
 
 
 #define RS string("rs->")
@@ -19,7 +20,7 @@ using std::cout;
 #define GOTO(label) "goto " + string(label)
 #define IFNOT_GOTO(guard, label) string("if(!" + guard + ") " + GOTO(label))
 #define UPDATEVAR(lvalue, rvalue) string(RS_TOP + "update(\"" + lvalue + "\"," + rvalue + ")")
-#define INSERTVAR(x,y) string("insertVar(\"" + x + "\"," + y + ")")
+#define INSERTVAR(x,y) string("insertVar(\"" + x + "\"," + y + ");")
 
 void CodeVisitor::resetCountTmpVars() {
     this->countTmpVars = 0;
@@ -33,25 +34,30 @@ string CodeVisitor::getNewLabel() {
     return "l" + to_string(this->countLabels++);
 }
 
-// AST base
-// TODO:
 string CodeVisitor::visit(Program *program) {
+    // initMethodInfo
+    initMethodsInfo(program);
     
-    auto main_class = program->declarations->begin();
-    for(auto it = ++(program->declarations->begin()); it != program->declarations->end(); it++)
-        (**it).accept(*this);
-    (**main_class).accept(*this);
+    // Create a new record to main method
+    string end_label = getNewLabel();
+    cout << CREATERECORD("nullptr", "nullptr", "&&" + end_label) << endl;
+
+    for(auto classdec : *program->declarations)
+        classdec->accept(*this);
+
+    cout << end_label << ":" << endl;
+
+    // auto main_class = program->declarations->begin();
+    // (**main_class).accept(*this);
+
+    // for(auto it = ++(program->declarations->begin()); it != program->declarations->end(); it++)
+    //     (**it).accept(*this);
+    
     return "";
 }
 
 string CodeVisitor::visit(Method *method) {
-    // Start label
-    string start = getNewLabel();
-    cout << start << ": {\n";
-
-    // Create a record
-    cout << CREATERECORD("nullptr","nullptr","nullptr") << "\n";
-
+    cout << "{\n";
     // Generate block code
     method->statement->accept(*this);
 
@@ -71,8 +77,10 @@ string CodeVisitor::visit(Method *method) {
 
 // TODO
 string CodeVisitor::visit(ClassDeclaration *classdec) {
-    for(auto &e : *(classdec->methods))
-        e->accept(*this);
+    for(auto &method : *(classdec->methods)) {
+        cout << this->getMethodLabel(classdec->name, method->id) << ": ";
+        method->accept(*this);
+    }
     return "";
 }
 
@@ -104,7 +112,7 @@ string CodeVisitor::visitClassDeclarationFields(ClassDeclaration* classDec){
 string CodeVisitor::visit(VarDec *vardec){
     cout << "{\n";
     string tmp = vardec->value->accept(*this);
-    cout << RS_TOP + INSERTVAR(vardec->id, tmp) + ";\n";
+    cout << RS_TOP + INSERTVAR(vardec->id, tmp) + "\n";
     cout << "}\n";
     resetCountTmpVars();
     return "";
@@ -299,25 +307,25 @@ string CodeVisitor::visit(StaticMethodCallExpression *exp) {
 }
 
 string CodeVisitor::visit(MethodCallExpression *call) {
-    // TODO: Get formal parameters' names (consulting symtable?)
-    string className = call->getType()->getClassName();
+    // Get formal parameters' names
+    string className = call->left->getType()->getClassName();
     vector<string> formal_params = this->getRealParams(className, call->method);
     
     // Get return label
     string end_label = getNewLabel();
 
-    // Create a new record (TODO: insert return label in the record)
+    // Create a new record
     cout << "{\n" << CREATERECORD("nullptr","nullptr","&&" + end_label) << "\n";
 
     // Assign real parameters to formal parameters inserting then in the new record
     auto it = call->arguments->begin();
     for (auto &e : formal_params) {
         string tmpVar = (**(it++)).accept(*this);
-        cout << INSERTVAR(e, tmpVar);
+        cout << RS_TOP << INSERTVAR(e, tmpVar) << endl;
     }
 
     string tmp_label = this->getMethodLabel(className, call->method);
-    cout << GOTO("*" + tmp_label) << ";\n";
+    cout << GOTO(tmp_label) << ";\n";
     cout << "}\n";
 
     cout << end_label << ":\n";
@@ -376,12 +384,16 @@ string CodeVisitor::visit(AtomExpression *exp) {
 
 // TODO: Declarar memória dinâmica no registro de ativação
 string CodeVisitor::visit(ArrayDeclExpression *exp) {
+    cout << "// ArrayDeclExpression\n";
  return "";
 }
 
 // TODO: Declarar memória dinâmica no registro de ativação
 string CodeVisitor::visit(NewObjExpression *exp) {
- return "";
+    // Dummy Solution
+    string tmp = getNewTmpVar();
+    cout << TYPE << " " << tmp << " = rs->allocate(" << exp->getType()->toString() << "());\n";
+    return tmp;
 }
 
 string CodeVisitor::visit(IdExpression *exp) {
@@ -391,11 +403,13 @@ string CodeVisitor::visit(IdExpression *exp) {
 
 // TODO: Pegar referência para a classe em que o código está sendo executado (caso não seja um método estático)
 string CodeVisitor::visit(FieldAccessExpression *exp) {
+    cout << "// FieldAccessExpression\n";
  return "";//RS_TOP + "getInstance()->query(\""+exp.getId()+"\")";
 }
 
 // TODO: Pegar referência para a classe em que o código está sendo executado (caso não seja um método estático)
 string CodeVisitor::visit(ThisExpression *exp) {
+    cout << "// ThisExpression\n";
  return ""; //"r.getInstance()->";
 }
 
