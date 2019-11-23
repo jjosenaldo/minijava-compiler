@@ -14,7 +14,7 @@ using std::cout;
 #define RS_TOP string("rs->top()->")
 #define RS_LOOKUP(x) string(RS_TOP+"lookupVarVal(" + x + ")")
 #define TYPE string("Value*")
-#define CREATERECORD(b_label, e_label) string(RS + "createRecord(" + b_label + "," + e_label + ");")
+#define CREATERECORD(b_label, e_label, returnLabel) string(RS + "createRecord(" + b_label + "," + e_label + "," + returnLabel + ");")
 #define POPRECORD string(RS + "pop();")
 #define GOTO(label) "goto " + string(label)
 #define IFNOT_GOTO(guard, label) string("if(!" + guard + ") " + GOTO(label))
@@ -36,26 +36,34 @@ string CodeVisitor::getNewLabel() {
 // AST base
 // TODO:
 string CodeVisitor::visit(Program *program) {
+    
     auto main_class = program->declarations->begin();
-
     for(auto it = ++(program->declarations->begin()); it != program->declarations->end(); it++)
         (**it).accept(*this);
-
     (**main_class).accept(*this);
-    // for(auto &e : *(program->declarations))
-    //     e->accept(*this);
     return "";
 }
 
-// TODO
 string CodeVisitor::visit(Method *method) {
+    // Start label
     string start = getNewLabel();
     cout << start << ": {\n";
+
+    // Create a record
+    cout << CREATERECORD("nullptr","nullptr","nullptr") << "\n";
+
+    // Generate block code
     method->statement->accept(*this);
+
+    // Get a temp var containing the label to last method call point
     string tmpReturn = getNewTmpVar();
     cout << "void* " << tmpReturn << " = " << RS_TOP << "getReturnLabel();\n";
-    cout << RS << "pop();\n";
-    cout << GOTO(tmpReturn) << ";\n";
+
+    // Pop the record
+    cout << POPRECORD << "\n";
+
+    // Goto last method call point
+    cout << GOTO("*" + tmpReturn) << ";\n";
     cout << "}\n";
     resetCountTmpVars();
     return "";
@@ -103,7 +111,7 @@ string CodeVisitor::visit(VarDec *vardec){
 }
 
 string CodeVisitor::visit(Block *block) {
-    cout << CREATERECORD("nullptr", "nullptr") << "\n";
+    cout << CREATERECORD("nullptr", "nullptr","nullptr") << "\n";
     for(auto &e : *(block->statements))
         e->accept(*this);
     cout << POPRECORD << "\n";
@@ -212,7 +220,7 @@ string CodeVisitor::visit(While *whilestmt) {
     string lab1 = getNewLabel();
     string lab2 = getNewLabel();
 
-    cout << CREATERECORD("&&"+ lab1, "&&"+lab2) << "\n";
+    cout << CREATERECORD("&&"+ lab1,"&&"+lab2,"nullptr") << "\n";
 
     cout << "{\n";
     cout << lab1 << ":\n";
@@ -290,8 +298,29 @@ string CodeVisitor::visit(StaticMethodCallExpression *exp) {
     return "";
 }
 
-// TODO: Implement after
-string CodeVisitor::visit(MethodCallExpression *exp) {
+string CodeVisitor::visit(MethodCallExpression *call) {
+    // TODO: Get formal parameters' names (consulting symtable?)
+    string className = call->getType()->getClassName();
+    vector<string> formal_params = this->getRealParams(className, call->method);
+    
+    // Get return label
+    string end_label = getNewLabel();
+
+    // Create a new record (TODO: insert return label in the record)
+    cout << "{\n" << CREATERECORD("nullptr","nullptr","&&" + end_label) << "\n";
+
+    // Assign real parameters to formal parameters inserting then in the new record
+    auto it = call->arguments->begin();
+    for (auto &e : formal_params) {
+        string tmpVar = (**(it++)).accept(*this);
+        cout << INSERTVAR(e, tmpVar);
+    }
+
+    string tmp_label = this->getMethodLabel(className, call->method);
+    cout << GOTO("*" + tmp_label) << ";\n";
+    cout << "}\n";
+
+    cout << end_label << ":\n";
     return "";
 }
 

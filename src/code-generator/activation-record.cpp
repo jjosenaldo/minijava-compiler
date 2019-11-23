@@ -1,9 +1,10 @@
 #include "activation-record.hpp"
 
 // Record
-Record::Record(Record *parent, void* b_label, void* e_label) {
+Record::Record(Record *parent, void* b_label, void* e_label, void* returnLabel) {
 	this->b_label = b_label;
 	this->e_label = e_label;
+	this->returnLabel = returnLabel;
 	dynamicParent = parent;
 }
 
@@ -60,15 +61,19 @@ void* Record::getb_label(){
 	return this->b_label;
 }
 
+void* Record::getReturnLabel() {
+	return this->returnLabel;
+}
+
 // RecordStack
 RecordStack::RecordStack() {}
 
 RecordStack::~RecordStack() {}
 
 // TODO: Transformar em escopo estático
-void RecordStack::createRecord(void* b_label, void* e_label) {
+void RecordStack::createRecord(void* b_label, void* e_label, void* returnLabel) {
 	Record* parent = records.empty() ? nullptr : records.top();
-	records.push(new Record(parent, b_label, e_label));
+	records.push(new Record(parent, b_label, e_label, returnLabel));
 }
 
 Record* RecordStack::top() {

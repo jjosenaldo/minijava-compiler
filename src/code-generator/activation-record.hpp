@@ -41,9 +41,10 @@ private:
 	void* b_label;
 
 	void* e_label;
+	void* returnLabel;
 
 public:
-	Record(Record* parent, void* b_label, void* e_label);
+	Record(Record* parent, void* b_label, void* e_label, void* returnLabel);
 	~Record();
 
 	Value* getVarVal(string id);
@@ -54,6 +55,7 @@ public:
 	void updateVar(string id, Value* v); // TODO: Free old value
 	void* gete_label();
 	void* getb_label();
+	void* getReturnLabel();
 
 
 	Record* getDynamicParent();
@@ -82,7 +84,7 @@ class RecordStack
 public:
 	RecordStack();
 	~RecordStack();
-	void createRecord(void* b_label = nullptr, void* e_label = nullptr);
+	void createRecord(void* b_label = nullptr, void* e_label = nullptr, void* returnLabel = nullptr);
 	Record* top();
 	void pop();
 	void* searchContinue();

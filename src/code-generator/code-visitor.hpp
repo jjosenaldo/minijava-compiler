@@ -7,6 +7,12 @@
 #include "symtable.hpp"
 #include "statement.hpp"
 
+#include <vector>
+#include <string>
+
+using std::string;
+using std::vector;
+
 class Method;
 
 class CodeVisitor {
@@ -17,6 +23,16 @@ private:
 	void resetCountTmpVars();
 	string getNewTmpVar();
 	string getNewLabel();
+
+	// TODO: return formal params
+	vector<string> getRealParams(string className, string methodName) {
+		return vector<string>();
+	}
+	
+	// TODO: return label to method
+	string getMethodLabel(string className, string methodName) {
+		return "";
+	}
 
 public:
 	// AST base
