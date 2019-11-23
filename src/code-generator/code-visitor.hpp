@@ -42,24 +42,13 @@ private:
 	> *methodsInfo;
 
 	// TODO: Solve problem described in Trello (Polimorphism)
+	// See TODO in visit(MethodCallExpression*)
 	vector<string> getRealParams(string className, string methodName) {
 		return methodsInfo->at(className).at(methodName).second;
-
-		// for(auto &classDec : *program->declarations) {
-		// 	if(classDec->name == className) {
-		// 		for(auto &method : *classDec->methods) {
-		// 			if(method->id == methodName) {
-		// 				for(auto &params : *method->parameters) {
-		// 					ans.add(params->name);
-		// 				}
-		// 			}
-		// 		}	
-		// 	}
-		// }
-		//return ans;
 	}
 	
 	// TODO: Solve problem described in Trello (Polimorphism)
+	// See TODO in visit(MethodCallExpression*)
 	string getMethodLabel(string className, string methodName) {
 		return methodsInfo->at(className).at(methodName).first;
 	}
@@ -98,7 +87,7 @@ public:
 	string visit(Return*);
 	string visit(Skip*);
 
-	// Estas classes são statements e expressions?
+	// Statements and Expressions
 	string visit(StaticMethodCallExpression*);
 	string visit(MethodCallExpression*);
 

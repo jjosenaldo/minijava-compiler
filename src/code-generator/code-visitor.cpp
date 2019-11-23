@@ -308,6 +308,8 @@ string CodeVisitor::visit(StaticMethodCallExpression *exp) {
 
 string CodeVisitor::visit(MethodCallExpression *call) {
     // Get formal parameters' names
+
+    // TODO: If you pass the subclass name here, it can solve the polimorphism problem
     string className = call->left->getType()->getClassName();
     vector<string> formal_params = this->getRealParams(className, call->method);
     
