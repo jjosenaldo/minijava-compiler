@@ -94,6 +94,11 @@ string CodeVisitor::visitClassDeclarationFields(ClassDeclaration* classDec){
     cout << "struct " << classDec->name << " : ClassValue ";
     if(classDec->parent != "") cout << " , " << classDec->parent;
     cout << "{\n";
+
+    // Generate constructor
+    cout << classDec->name << "() : ClassValue( \"" << classDec->name << "\"){}\n";
+
+    // Generate fields
     for(auto field : *(classDec->fields)){
         // TODO: put the right type
         cout << "int " << field->name;
@@ -352,7 +357,7 @@ string CodeVisitor::visit(UnExpression *exp) {
     return tmp;
 }
 
-// TODO: implement the remaining atomic expressions
+// TODO: implement the remaining atomic expressions (TypeNull is missing)
 string CodeVisitor::visit(AtomExpression *exp) {
     string tmp = getNewTmpVar();
 
@@ -394,7 +399,7 @@ string CodeVisitor::visit(ArrayDeclExpression *exp) {
 string CodeVisitor::visit(NewObjExpression *exp) {
     // Dummy Solution
     string tmp = getNewTmpVar();
-    cout << TYPE << " " << tmp << " = rs->allocate(" << exp->getType()->toString() << "());\n";
+    cout << TYPE << " " << tmp << " = new " << exp->getType()->toString() << "();\n";
     return tmp;
 }
 

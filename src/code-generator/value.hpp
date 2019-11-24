@@ -35,12 +35,15 @@ class BoolValue;
 
 class Value
 {
+protected:
+	string className;
+
 public:
 	~Value() {}
-	virtual string getClassName() = 0;
-	virtual string toString() = 0;
+	virtual string toString() {return "";}
 	virtual int getInt() const {return 0;}
 	virtual bool getBool() const {return false;}
+	string getClassName(){return className;}
 
 	Value* operator[](const int i);
 };
@@ -54,7 +57,6 @@ public:
 	int getInt() const;
 	
 	string toString();
-	string getClassName();
 
 	friend IntValue* operator-(const IntValue& v1, const IntValue& v2);
 	friend IntValue* operator-(const IntValue& v1);
@@ -88,7 +90,6 @@ public:
 	bool getBool() const;
 
 	string toString();
-	string getClassName();
 
 	friend BoolValue* operator!(const BoolValue& v1);
 	friend BoolValue* operator||(const BoolValue& v1, const BoolValue& v2);
@@ -109,7 +110,6 @@ public:
 	string getString() const;
 
 	string toString();
-	string getClassName();
 
 	template<typename Val>
 	friend Val* operator+(const Val& v1, const Val& v2);
@@ -133,7 +133,7 @@ private:
 	string actualClassName;
 	string apparentClassName;
 public:
-	ClassValue();
+	ClassValue(string className);
 	~ClassValue();
 };
 
@@ -149,7 +149,6 @@ public:
 	Value** getArray() const;
 
 	string toString();
-	string getClassName();
 
 	friend class Value;
 

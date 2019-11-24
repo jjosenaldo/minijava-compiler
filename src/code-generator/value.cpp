@@ -4,11 +4,10 @@ using std::to_string;
 
 IntValue::IntValue(int v){
     value = v;
+    className = "IntValue";
 }
 
-IntValue::IntValue(){
-    value = 0;
-}
+IntValue::IntValue() : IntValue(0){}
 
 string IntValue::toString(){
     return to_string(value);
@@ -18,14 +17,11 @@ int IntValue::getInt() const {
     return this->value;
 }
 
-string IntValue::getClassName(){
-    return "IntValue";
-}
-
 BoolValue::BoolValue() : BoolValue(false){}
 
 BoolValue::BoolValue(bool v){
     value = v;
+    className = "BoolValue";
 }
 
 string BoolValue::toString(){
@@ -36,14 +32,11 @@ bool BoolValue::getBool() const {
     return this->value;
 }
 
-string BoolValue::getClassName(){
-    return "BoolValue";
-}
-
 StringValue::StringValue() : StringValue(""){}
 
 StringValue::StringValue(string v){
     this->value = v;
+    className = "StringValue";
 }
 
 string StringValue::getString() const{
@@ -54,13 +47,10 @@ string StringValue::toString(){
     return getString();
 }
 
-string StringValue::getClassName(){
-    return "StringValue";
-}
-
 ArrayValue::ArrayValue(Value** v, int n){
     value = v;
     this->n = n;
+    className = "ArrayValue";
 }
 
 Value** ArrayValue::getArray() const{
@@ -72,15 +62,15 @@ string ArrayValue::toString(){
     return "";
 }
 
-string ArrayValue::getClassName(){
-    return "ArrayValue";
-}
-
 ArrayValue::ArrayValue(int* dims, int n, EnumValue ev) : ArrayValue(dims,1,n,ev){}
 
 // TODO: are we allowed to use loops here? if we are not, then we should use
 // goto's or something similar
 ArrayValue::ArrayValue(int* dims, int i, int n, EnumValue ev){
+    // TODO: put this constructor in a separate recursive method so that this assignment
+    // doesn't get executed every single time
+    className = "ArrayValue";
+
     this->value = new Value*[dims[i-1]];
     if(i == n){
         for(int j = 0; j < dims[i-1]; ++j){ 
@@ -102,6 +92,10 @@ ArrayValue::ArrayValue(int* dims, int i, int n, EnumValue ev){
             this->value[j] = new ArrayValue(dims, i+1,n,ev);
         }
     }
+}
+
+ClassValue::ClassValue(string className){
+    this->className = className;
 }
 
 

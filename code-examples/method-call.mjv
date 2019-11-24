@@ -1,12 +1,12 @@
 class Main{
     void main(String[] args){
         Cat c = new Cat();
-        c.foo();
+        c.foo(1);
     }
 }
 
 class Cat{
-    void foo(){
-
+    void foo(int a){
+        System.print(String.intToString(a));
     }
 }
