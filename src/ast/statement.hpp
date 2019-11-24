@@ -187,6 +187,7 @@ class MethodCallExpression : public Statement,  public ObjExpression{
 
     public:
         MethodCallExpression(Expression* left, string method, deque<Expression*>* args);
+        MethodCallExpression(Expression* left, string method);
         string toString();
         bool accept(StaticVisitor&);
         string accept(CodeVisitor&);

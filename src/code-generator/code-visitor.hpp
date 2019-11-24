@@ -55,11 +55,11 @@ private:
 
 	void initMethodsInfo(Program* program) {
 		methodsInfo = new unordered_map<string, unordered_map<string, pair<string,vector<string>>>>();
-		for(auto &classDec : *program->declarations) {
+		for(auto &classDec : *(program->declarations)) {
 			unordered_map< string, pair<string, vector<string>> > methods;
-			for(auto &method : *classDec->methods) {
+			for(auto &method : *(classDec->methods)) {
 				vector<string> vec;
-				for(auto &params : *method->parameters)
+				for(auto &params : *(method->parameters))
 					vec.push_back(params->name);
 				methods.insert( make_pair(method->id, make_pair(getNewLabel(), vec)) );
 			}

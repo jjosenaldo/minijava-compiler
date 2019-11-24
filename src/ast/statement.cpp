@@ -213,6 +213,8 @@ string Return::accept(CodeVisitor &visitor) {
     return visitor.visit(this);
 }
 
+MethodCallExpression::MethodCallExpression(Expression* left, string method) : MethodCallExpression(left, method, new deque<Expression*>){}
+
 MethodCallExpression::MethodCallExpression(Expression* left, string method, deque<Expression*>* args){
     this->left = left;
     this->method = method;
