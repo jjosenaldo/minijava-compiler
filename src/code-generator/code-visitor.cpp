@@ -448,6 +448,7 @@ string CodeVisitor::visit(ArrayAccessExpression *exp) {
     return returnTmpVar;
 }
 
+// TODO: arrays of classes
 string CodeVisitor::visit(NewArrayExpression *exp) {
     auto n = exp->dimensions->size();
     auto varDimsName = getNewTmpVar();
@@ -474,7 +475,6 @@ string CodeVisitor::visit(NewArrayExpression *exp) {
     return arrVarName;
 }
 
-// TODO: arrays
 string typeToValueString(Type* t){
     BasicType* bt = dynamic_cast<BasicType*>(t);
     if(bt != nullptr){
@@ -485,9 +485,13 @@ string typeToValueString(Type* t){
         }
     }
 
-    ClassType* ct = dynamic_cast<ClassType*>(ct);
+    ClassType* ct = dynamic_cast<ClassType*>(t);
     if(ct != nullptr)
         return ct->getClassName();
+
+    ArrayType* at = dynamic_cast<ArrayType*>(t);
+    if(at != nullptr)
+        return "ArrayValue";
 
     return "";
 }
