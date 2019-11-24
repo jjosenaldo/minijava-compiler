@@ -58,8 +58,12 @@ Value** ArrayValue::getArray() const{
 }
 
 string ArrayValue::toString(){
-    // TODO
-    return "";
+    string res = "{";
+
+    for(int i = 0; i < n; ++i)
+        res += value[i]->toString();
+
+    return res+"}";
 }
 
 ArrayValue::ArrayValue(int* dims, int n, EnumValue ev) : ArrayValue(dims,1,n,ev){}
