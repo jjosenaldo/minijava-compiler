@@ -68,8 +68,8 @@ string ArrayValue::toString(){
 
 ArrayValue::ArrayValue(int* dims, int n, EnumValue ev, Value* ctor ()) : ArrayValue(dims,1,n,ev,ctor){}
 
-// TODO: are we allowed to use loops here? if we are not, then we should use
-// goto's or something similar
+// TODO: are we allowed to use loops here? if we are not, then we should use goto's or something similar
+// TODO: remove that "ev" arg and only use the ctor! =)
 ArrayValue::ArrayValue(int* dims, int i, int n, EnumValue ev, Value* ctor ()){
     // TODO: put this constructor in a separate recursive method so that this assignment
     // doesn't get executed every single time
