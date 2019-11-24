@@ -261,12 +261,16 @@ string StaticMethodCallExpression::accept(CodeVisitor &visitor) {
 }
 
 string StaticMethodCallExpression::toString(){
-    // TODO
-    return "";
+    string ret = className + "." + method + "(";
+    if(arguments == nullptr || arguments->size() == 0)
+        ret += ")";
+    else 
+        for(auto arg : *arguments) ret += arg->toString()+",";
+    return ret;
 }
 
 void StaticMethodCallExpression::print() {
-    // TODO
+    cout << toString() << ";";
 }
 
 void Skip::print(){

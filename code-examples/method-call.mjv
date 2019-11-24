@@ -6,6 +6,10 @@ class Main{
 }
 
 class Cat{
+    void foo2(){
+        System.print("socorro");
+    }
+
     void foo(int a){
         System.print(String.intToString(a));
     }

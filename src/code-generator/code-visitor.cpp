@@ -395,9 +395,7 @@ string CodeVisitor::visit(ArrayDeclExpression *exp) {
  return "";
 }
 
-// TODO: Declarar memória dinâmica no registro de ativação
 string CodeVisitor::visit(NewObjExpression *exp) {
-    // Dummy Solution
     string tmp = getNewTmpVar();
     cout << TYPE << " " << tmp << " = new " << exp->getType()->toString() << "();\n";
     return tmp;
