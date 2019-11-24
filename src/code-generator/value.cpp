@@ -105,7 +105,7 @@ ClassValue::ClassValue(string className){
 }
 
 void ClassValue::set(string field, Value* value){
-    this->fields->emplace(field, value);
+    (*this->fields)[field] = value;
 }
 
 Value* ClassValue::get(string field){

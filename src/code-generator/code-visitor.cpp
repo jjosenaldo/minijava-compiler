@@ -330,6 +330,7 @@ string CodeVisitor::visit(StaticMethodCallExpression *exp) {
 }
 
 string CodeVisitor::visit(MethodCallExpression *call) {
+    cout << "{\n";
     // Get formal parameters' names
 
     // TODO: If you pass the subclass name here, it can solve the polimorphism problem
@@ -356,6 +357,7 @@ string CodeVisitor::visit(MethodCallExpression *call) {
     cout << GOTO(tmp_label) << ";\n";
     cout << "}\n";
 
+    cout << "}\n";
     cout << end_label << ":\n";
     return "";
 }
