@@ -433,7 +433,6 @@ string CodeVisitor::visit(LitArrayExpression *exp) {
     return arrValTempVar;
 }
 
-// TODO: Decidir como acessar posições de um vetor
 string CodeVisitor::visit(ArrayAccessExpression *exp) {
     auto lvalue = exp->left->accept(*this);
     string dimAccesses =  "";
