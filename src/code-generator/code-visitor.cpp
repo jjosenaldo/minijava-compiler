@@ -97,13 +97,18 @@ string CodeVisitor::visitClassDeclarationsFields(Program* program){
     return "";
 }
 
+// TODO: implement inheritance 
+// TODO: do not create methods for the Main class at all
 string CodeVisitor::visitClassDeclarationFields(ClassDeclaration* classDec){
     cout << "struct " << classDec->name << " : ClassValue ";
-    if(classDec->parent != "") cout << " , " << classDec->parent; // TODO: implement inheritance in other way
     cout << "{\n";
 
     // Generate constructor
-    cout << classDec->name << "() : ClassValue( \"" << classDec->name << "\"){\n";
+    cout << classDec->name << "() : ClassValue( \"" << classDec->name << "\"){\ninitFields();\n}\n";
+
+    // Generate initFields method
+    // TODO: arrays
+    cout << "void initFields(){\n";
     for(auto field : *(classDec->fields)){
         if(field->initValue != nullptr) {
             auto initVal = field->initValue->accept(*this);
@@ -111,7 +116,12 @@ string CodeVisitor::visitClassDeclarationFields(ClassDeclaration* classDec){
         } else 
             cout << "fields->emplace(\"" << field->name  << "\", new " << typeToValueString(field->type) << ");\n";
     }
-    cout << "}\n";
+    cout << "\n}\n";
+
+    // Generate newObj method
+    cout << "static Value* new" << classDec->name << "(){\n";
+    cout << classDec->name << "* c = new " << classDec->name << "();\n";
+    cout << "c->initFields();\nreturn c;\n}\n";
     
     cout << "};\n";
 
@@ -460,7 +470,6 @@ string CodeVisitor::visit(ArrayAccessExpression *exp) {
     return returnTmpVar;
 }
 
-// TODO: arrays of classes
 string CodeVisitor::visit(NewArrayExpression *exp) {
     auto n = exp->dimensions->size();
     auto varDimsName = getNewTmpVar();
@@ -479,7 +488,7 @@ string CodeVisitor::visit(NewArrayExpression *exp) {
         case TypeBoolean: cout << "EV_BoolValue";break;
         case TypeClass:
             if(exp->baseType->toString() == "String") cout << "EV_StringValue";
-            else /* TODO */;
+            else cout << "EV_ClassValue, " << exp->baseType->toString() << "::new" << exp->baseType->toString();
             break;
     }
 

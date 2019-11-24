@@ -12,6 +12,8 @@ class Main{
         /* Assignment to THIS fields */
         Person mySelf = new Person();
         mySelf.setAge(42);
+        Person[] ps = new Person[2];
+        ps[0].setAge(5);
     }
 }
 
@@ -20,7 +22,7 @@ class Person{
     int money = -1-1+1;
 
     void setAge(int newAge){
-        /*this.yearsOfAge = newAge;*/
+        this.yearsOfAge = newAge;
         int a = this.yearsOfAge;
         System.print(String.intToString(newAge)); 
         System.print(String.intToString(a)); 

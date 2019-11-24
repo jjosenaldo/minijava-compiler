@@ -48,9 +48,9 @@ string StringValue::toString(){
 }
 
 ArrayValue::ArrayValue(Value** v, int n){
-    value = v;
+    this->value = v;
     this->n = n;
-    className = "ArrayValue";
+    this->className = "ArrayValue";
 }
 
 Value** ArrayValue::getArray() const{
@@ -66,19 +66,18 @@ string ArrayValue::toString(){
     return res+"}";
 }
 
-ArrayValue::ArrayValue(int* dims, int n, EnumValue ev) : ArrayValue(dims,1,n,ev){}
+ArrayValue::ArrayValue(int* dims, int n, EnumValue ev, Value* ctor ()) : ArrayValue(dims,1,n,ev,ctor){}
 
 // TODO: are we allowed to use loops here? if we are not, then we should use
 // goto's or something similar
-ArrayValue::ArrayValue(int* dims, int i, int n, EnumValue ev){
+ArrayValue::ArrayValue(int* dims, int i, int n, EnumValue ev, Value* ctor ()){
     // TODO: put this constructor in a separate recursive method so that this assignment
     // doesn't get executed every single time
-    className = "ArrayValue";
+    this->className = "ArrayValue";
 
     this->value = new Value*[dims[i-1]];
     if(i == n){
         for(int j = 0; j < dims[i-1]; ++j){ 
-            // TODO: ClassValue
             switch(ev){
                 case EnumValue::EV_IntValue:
                     this->value[j] = new IntValue();
@@ -89,6 +88,8 @@ ArrayValue::ArrayValue(int* dims, int i, int n, EnumValue ev){
                 case EnumValue::EV_BoolValue:
                     this->value[j] = new BoolValue();
                     break;
+                case EnumValue::EV_ClassValue:
+                    this->value[j] = ctor();
             }
         }
     } else{

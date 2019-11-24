@@ -11,7 +11,8 @@ enum EnumValue{
     EV_IntValue,
     EV_StringValue,
     EV_BoolValue,
-    EV_ArrayValue
+    EV_ArrayValue,
+	EV_ClassValue
 };
 
 class BoolValue;
@@ -123,6 +124,8 @@ public:
 	Value* get(string field);
 	void set(string field, Value* value);
 
+	virtual void initFields() {}
+
 	friend Value* operator==(const Value& v1, const Value& v2);
 	friend Value* operator!=(const Value& v1, const Value& v2);
 };
@@ -131,11 +134,11 @@ class ArrayValue : public Value{
 private:
 	Value** value;
 	int n;
-	ArrayValue(int* dims, int i, int n, EnumValue ev);
+	ArrayValue(int* dims, int i, int n, EnumValue ev, Value* ctor() = nullptr);
 
 public:
 	ArrayValue(Value** v, int n);
-	ArrayValue(int* dims, int n, EnumValue ev);
+	ArrayValue(int* dims, int n, EnumValue ev, Value* ctor() = nullptr);
 	Value** getArray() const;
 
 	string toString();
