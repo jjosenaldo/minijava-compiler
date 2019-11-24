@@ -113,12 +113,16 @@ public:
 };
 
 class ClassValue : public Value {
-private:
+protected:
 	string actualClassName;
 	string apparentClassName;
+	unordered_map<string, Value*>* fields;
 public:
 	ClassValue(string className);
 	~ClassValue();
+
+	Value* get(string field);
+	void set(string field, Value* value);
 
 	friend Value* operator==(const Value& v1, const Value& v2);
 	friend Value* operator!=(const Value& v1, const Value& v2);

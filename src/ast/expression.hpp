@@ -63,6 +63,7 @@ class BinExpression : public Expression{
 
         bool accept(StaticVisitor&);
         string accept(CodeVisitor&);
+        
         friend class StaticVisitor;
         friend class CodeVisitor;
 };
@@ -84,6 +85,7 @@ class AtomExpression : public Expression{
 
         bool accept(StaticVisitor&);
         string accept(CodeVisitor&);
+
         friend class StaticVisitor;
         friend class CodeVisitor;
 };
@@ -103,6 +105,7 @@ class UnExpression : public Expression{
 
         bool accept(StaticVisitor&);
         string accept(CodeVisitor&);
+
         friend class StaticVisitor;
         friend class CodeVisitor;
 };
@@ -138,8 +141,10 @@ class IdExpression : public ObjExpression{
         string getId();
         string toString();
         bool isLvalue();
+
         bool accept(StaticVisitor&);
         string accept(CodeVisitor&);
+
         friend class StaticVisitor;
         friend class CodeVisitor;
 };
@@ -153,7 +158,10 @@ class FieldAccessExpression : public ObjExpression{
         FieldAccessExpression(string id);
         string toString();
         bool isLvalue();
+
         bool accept(StaticVisitor&);
+        string accept(CodeVisitor&);
+
         friend class StaticVisitor;
         friend class CodeVisitor;
 };
@@ -162,7 +170,9 @@ class FieldAccessExpression : public ObjExpression{
 class ThisExpression : public ObjExpression{
     public:
         string toString();
+
         bool accept(StaticVisitor&);
+
         friend class StaticVisitor;
         friend class CodeVisitor;
 };
@@ -177,8 +187,10 @@ class ParenExpression : public ObjExpression{
         string toString();
         bool isLvalue();
         Expression* getFirst();
+
         bool accept(StaticVisitor&);
         string accept(CodeVisitor&);
+
         friend class StaticVisitor;
         friend class CodeVisitor;
 };
@@ -189,8 +201,10 @@ class LitArrayExpression : public ObjExpression{
     public:
         LitArrayExpression(deque<Expression*>* exprs);
         string toString();
+
         bool accept(StaticVisitor&);
         string accept(CodeVisitor&);
+
         friend class StaticVisitor;
         friend class CodeVisitor;
 };
@@ -204,8 +218,10 @@ class ArrayAccessExpression : public Expression{
         ArrayAccessExpression(ObjExpression* left, deque<Expression*>* dimensions);
         string toString();
         bool isLvalue();
+
         bool accept(StaticVisitor&);
         string accept(CodeVisitor&);
+        
         friend class StaticVisitor;
         friend class CodeVisitor;
 };
@@ -218,8 +234,10 @@ class NewArrayExpression : public Expression{
     public:
         NewArrayExpression(ArrayDeclExpression* decl, deque<Expression*>* dimensions);
         string toString();
+
         bool accept(StaticVisitor&);
         string accept(CodeVisitor&);
+
         friend class StaticVisitor;
         friend class CodeVisitor;
 };

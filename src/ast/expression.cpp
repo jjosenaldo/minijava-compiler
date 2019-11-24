@@ -191,6 +191,10 @@ bool FieldAccessExpression::accept(StaticVisitor& visitor){
     return visitor.visit(this);
 }
 
+string FieldAccessExpression::accept(CodeVisitor& visitor){
+    return visitor.visit(this);
+}
+
 string ThisExpression::toString(){
     return "this";
 }

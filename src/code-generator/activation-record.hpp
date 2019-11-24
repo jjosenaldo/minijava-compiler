@@ -37,6 +37,7 @@ private:
 	Record* dynamicParent;
 	Record* staticParent;
 	Value* returnVal;
+	ClassValue* currentObject;
 
 	void* b_label;
 
@@ -44,9 +45,11 @@ private:
 	void* returnLabel;
 
 public:
+	Record(Record* staticParent, Record* dynamicParent, void* b_label, void* e_label, void* returnLabel, ClassValue* currentObject);
 	Record(Record* staticParent, Record* dynamicParent, void* b_label, void* e_label, void* returnLabel);
 
 	// Sets both parents to be the same record
+	Record(Record* parent, void* b_label, void* e_label, void* returnLabel, ClassValue* currentObject);
 	Record(Record* parent, void* b_label, void* e_label, void* returnLabel);
 	~Record();
 
@@ -54,6 +57,7 @@ public:
 	Value* lookupStatic(string id);
 	Value* lookupDynamic(string id);
 	Value* getReturn();
+	ClassValue* getCurrentObject();
 	void insertVar(string id, Value *v);
 	void insertVar(string id, int v);
 	void updateStatic(string id, Value* v);
@@ -97,7 +101,7 @@ class RecordStack
 public:
 	RecordStack();
 	~RecordStack();
-	void createRecord(void* b_label = nullptr, void* e_label = nullptr, void* returnLabel = nullptr);
+	void createRecord(void* b_label = nullptr, void* e_label = nullptr, void* returnLabel = nullptr, ClassValue* currentObject = nullptr);
 	Record* top();
 	void pop();
 	void* searchContinue();

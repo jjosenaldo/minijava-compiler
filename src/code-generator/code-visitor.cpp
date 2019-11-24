@@ -1,10 +1,11 @@
 #include <algorithm>
 #include <deque>
 #include <iostream>
-#include "code-visitor.hpp"
 
+#include "code-visitor.hpp"
 #include "global.hpp"
 #include "operator.hpp"
+#include "value.hpp"
 
 using std::to_string;
 using std::cout;
@@ -15,12 +16,18 @@ using std::endl;
 #define RS_TOP string("rs->top()->")
 #define LOOKUP_DYN(x) string(RS_TOP+"lookupDynamic(" + x + ")")
 #define TYPE string("Value*")
-#define CREATERECORD(b_label, e_label, returnLabel) string(RS + "createRecord(" + b_label + "," + e_label + "," + returnLabel + ");")
+#define CREATERECORD(b_label, e_label, returnLabel, currentObject) \
+    string(RS + "createRecord(" + b_label + "," + e_label + "," + returnLabel + "," + currentObject + ");")
+#define CREATERECORD_CAST_OBJ(b_label, e_label, returnLabel, currentObject) \
+    string(RS + "createRecord(" + b_label + "," + e_label + "," + returnLabel + ",dynamic_cast<ClassValue*>(" + currentObject + "));")
 #define POPRECORD string(RS + "pop();")
 #define GOTO(label) "goto " + string(label)
 #define IFNOT_GOTO(guard, label) string("if(!" + guard + "->getBool()) " + GOTO(label))
-#define UPDATE_STATIC(lvalue, rvalue) string(RS_TOP + "updateStatic(\"" + lvalue + "\"," + rvalue + ")")
+#define UPDATE_STATIC(lvalue, rvalue) string(RS_TOP + "updateStatic(\"" + lvalue + "\"," + rvalue + ");")
 #define INSERTVAR(x,y) string("insertVar(\"" + x + "\"," + y + ");")
+#define CURRENT_OBJ string(RS_TOP + "getCurrentObject()")
+#define UPDATE_CURRENT_OBJ_FIELD(field, rvalue)  \
+    string(CURRENT_OBJ + "->set(" + field + ", " + rvalue + ");")
 
 void CodeVisitor::resetCountTmpVars() {
     this->countTmpVars = 0;
@@ -40,7 +47,7 @@ string CodeVisitor::visit(Program *program) {
     
     // Create a new record to main method
     string end_label = getNewLabel();
-    cout << CREATERECORD("nullptr", "nullptr", "&&" + end_label) << endl;
+    cout << CREATERECORD("nullptr", "nullptr", "&&" + end_label, "nullptr") << endl;
 
     for(auto classdec : *program->declarations)
         classdec->accept(*this);
@@ -123,7 +130,7 @@ string CodeVisitor::visit(VarDec *vardec){
 }
 
 string CodeVisitor::visit(Block *block) {
-    cout << CREATERECORD("nullptr", "nullptr","nullptr") << "\n";
+    cout << CREATERECORD("nullptr", "nullptr","nullptr", CURRENT_OBJ) << "\n";
     for(auto &e : *(block->statements))
         e->accept(*this);
     cout << POPRECORD << "\n";
@@ -232,7 +239,7 @@ string CodeVisitor::visit(While *whilestmt) {
     string lab1 = getNewLabel();
     string lab2 = getNewLabel();
 
-    cout << CREATERECORD("&&"+ lab1,"&&"+lab2,"nullptr") << "\n";
+    cout << CREATERECORD("&&"+ lab1,"&&"+lab2,"nullptr", CURRENT_OBJ) << "\n";
 
     cout << "{\n";
     cout << lab1 << ":\n";
@@ -269,9 +276,12 @@ string CodeVisitor::visit(Assignment *assign){
 
     IdExpression* ie = dynamic_cast<IdExpression*>(assign->lvalue);
     if(ie != nullptr)
-        cout << UPDATE_STATIC(ie->id, tmp_rvalue) << ";\n";
+        cout << UPDATE_STATIC(ie->id, tmp_rvalue) << "\n";
     else{
-        cout << "eita\n";
+        FieldAccessExpression* fae = dynamic_cast<FieldAccessExpression*>(assign->lvalue);
+        if(fae != nullptr)
+            cout << UPDATE_CURRENT_OBJ_FIELD("\""+fae->id+"\"", tmp_rvalue) << "\n";
+        else /* TODO */ ;
     }
 
     cout << "}\n";
@@ -320,8 +330,11 @@ string CodeVisitor::visit(MethodCallExpression *call) {
     // Get return label
     string end_label = getNewLabel();
 
+    // Processes the "lvalue"
+    string tmpLvalueVarName = call->left->accept(*this);
+
     // Create a new record
-    cout << "{\n" << CREATERECORD("nullptr","nullptr","&&" + end_label) << "\n";
+    cout << "{\n" << CREATERECORD_CAST_OBJ("nullptr","nullptr","&&" + end_label, tmpLvalueVarName) << "\n";
 
     // Assign real parameters to formal parameters inserting then in the new record
     auto it = call->arguments->begin();
@@ -401,8 +414,9 @@ string CodeVisitor::visit(IdExpression *exp) {
 
 // TODO: Pegar referência para a classe em que o código está sendo executado (caso não seja um método estático)
 string CodeVisitor::visit(FieldAccessExpression *exp) {
-    cout << "// FieldAccessExpression\n";
- return "";//RS_TOP + "getInstance()->query(\""+exp.getId()+"\")";
+    auto tmp = getNewTmpVar();
+    cout << TYPE << " " <<  tmp << " = " << CURRENT_OBJ << "->get(\"" << exp->id << "\");\n";
+    return tmp;
 }
 
 // TODO: Pegar referência para a classe em que o código está sendo executado (caso não seja um método estático)

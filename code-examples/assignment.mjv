@@ -1,5 +1,6 @@
 class Main{
     void main(String[] args){
+        /* Assignment to local variables */
         int a = 1;
         System.print(String.intToString(a));
         {
@@ -7,5 +8,20 @@ class Main{
             System.print(String.intToString(a));
         }
         System.print(String.intToString(a));
+
+        /* Assignment to THIS fields */
+        Person mySelf = new Person();
+        mySelf.setAge(42);
+    }
+}
+
+class Person{
+    int yearsOfAge;
+
+    void setAge(int newAge){
+        this.yearsOfAge = newAge;
+        int a = this.yearsOfAge;
+        System.print(String.intToString(newAge)); 
+        System.print(String.intToString(a)); 
     }
 }

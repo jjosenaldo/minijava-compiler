@@ -1,17 +1,28 @@
 #include "activation-record.hpp"
 
 Record::Record(Record *parent, void* b_label, void* e_label, void* returnLabel) :
-	Record(parent,parent, b_label, e_label, returnLabel) {}
+	Record(parent,parent, b_label, e_label, returnLabel, nullptr) {}
 
-Record::Record(Record *staticParent, Record* dynamicParent, void* b_label, void* e_label, void* returnLabel){
+Record::Record(Record *parent, void* b_label, void* e_label, void* returnLabel, ClassValue* currentObject) :
+	Record(parent,parent, b_label, e_label, returnLabel, currentObject) {}
+
+Record::Record(Record *staticParent, Record* dynamicParent, void* b_label, void* e_label, void* returnLabel) : 
+	Record(staticParent, dynamicParent, b_label, e_label, returnLabel, nullptr){}
+
+Record::Record(Record *staticParent, Record* dynamicParent, void* b_label, void* e_label, void* returnLabel, ClassValue* currentObject){
 	this->b_label = b_label;
 	this->e_label = e_label;
 	this->returnLabel = returnLabel;
 	this->dynamicParent = dynamicParent;
 	this->staticParent = staticParent;
+	this->currentObject = currentObject;
 }
 
 Record::~Record() {}
+
+ClassValue* Record::getCurrentObject(){
+	return currentObject;
+}
 
 bool Record::isMethodBlock(){
 	return !(returnLabel == nullptr);
@@ -103,10 +114,10 @@ RecordStack::RecordStack() {}
 RecordStack::~RecordStack() {}
 
 // TODO: Transformar em escopo estático
-void RecordStack::createRecord(void* b_label, void* e_label, void* returnLabel) {
+void RecordStack::createRecord(void* b_label, void* e_label, void* returnLabel, ClassValue* currentObject) {
 	Record* dynamicParent = records.empty() ? nullptr : records.top();
 	Record* staticParent = returnLabel == nullptr ? dynamicParent : nullptr ;
-	records.push(new Record(staticParent, dynamicParent , b_label, e_label, returnLabel));
+	records.push(new Record(staticParent, dynamicParent , b_label, e_label, returnLabel,currentObject));
 }
 
 Record* RecordStack::top() {

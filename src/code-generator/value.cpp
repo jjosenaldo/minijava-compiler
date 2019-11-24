@@ -99,7 +99,16 @@ ArrayValue::ArrayValue(int* dims, int i, int n, EnumValue ev){
 }
 
 ClassValue::ClassValue(string className){
+    this->fields = new unordered_map<string, Value*>;
     this->className = className;
+}
+
+void ClassValue::set(string field, Value* value){
+    this->fields->emplace(field, value);
+}
+
+Value* ClassValue::get(string field){
+    return this->fields->at(field);
 }
 
 // array operators
