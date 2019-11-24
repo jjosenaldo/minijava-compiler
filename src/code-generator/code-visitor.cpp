@@ -18,7 +18,7 @@ using std::endl;
 #define CREATERECORD(b_label, e_label, returnLabel) string(RS + "createRecord(" + b_label + "," + e_label + "," + returnLabel + ");")
 #define POPRECORD string(RS + "pop();")
 #define GOTO(label) "goto " + string(label)
-#define IFNOT_GOTO(guard, label) string("if(!" + guard + ") " + GOTO(label))
+#define IFNOT_GOTO(guard, label) string("if(!" + guard + "->getBool()) " + GOTO(label))
 #define UPDATEVAR(lvalue, rvalue) string(RS_TOP + "update(\"" + lvalue + "\"," + rvalue + ")")
 #define INSERTVAR(x,y) string("insertVar(\"" + x + "\"," + y + ");")
 
@@ -100,8 +100,7 @@ string CodeVisitor::visitClassDeclarationFields(ClassDeclaration* classDec){
 
     // Generate fields
     for(auto field : *(classDec->fields)){
-        // TODO: put the right type
-        cout << "int " << field->name;
+        cout << typeToValueString(field->type) << "* " << field->name;
 
         // TODO: deal with fields that have initial value
         // if(field->initValue != nullptr) doSomething
@@ -159,7 +158,7 @@ string CodeVisitor::visit(ElselessIf *elselessIf) {
     elselessIf->statement->accept(*this);
 
     // End if
-    cout << lab << ":\n";
+    cout << lab << ":;\n";
     cout << "}\n";
 
     return "";
@@ -389,12 +388,6 @@ string CodeVisitor::visit(AtomExpression *exp) {
     return tmp;
 }
 
-// TODO: Declarar memória dinâmica no registro de ativação
-string CodeVisitor::visit(ArrayDeclExpression *exp) {
-    cout << "// ArrayDeclExpression\n";
- return "";
-}
-
 string CodeVisitor::visit(NewObjExpression *exp) {
     string tmp = getNewTmpVar();
     cout << TYPE << " " << tmp << " = new " << exp->getType()->toString() << "();\n";
@@ -479,4 +472,22 @@ string CodeVisitor::visit(NewArrayExpression *exp) {
 
     cout << ");\n";
     return arrVarName;
+}
+
+// TODO: arrays
+string typeToValueString(Type* t){
+    BasicType* bt = dynamic_cast<BasicType*>(t);
+    if(bt != nullptr){
+        switch(bt->kind){
+            case TypeInt: return "IntValue";
+            case TypeBoolean: return "BoolValue";
+            return "";
+        }
+    }
+
+    ClassType* ct = dynamic_cast<ClassType*>(ct);
+    if(ct != nullptr)
+        return ct->getClassName();
+
+    return "";
 }

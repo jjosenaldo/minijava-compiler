@@ -95,7 +95,6 @@ public:
 	string visit(BinExpression*);
 	string visit(UnExpression*);
 	string visit(AtomExpression*);
-	string visit(ArrayDeclExpression*);
 	string visit(NewObjExpression*);
 	string visit(IdExpression*);
 	string visit(FieldAccessExpression*);
@@ -105,5 +104,7 @@ public:
 	string visit(ArrayAccessExpression*);
 	string visit(NewArrayExpression*);
 };
+
+string typeToValueString(Type* t);
 
 #endif
