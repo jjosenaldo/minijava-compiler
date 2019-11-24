@@ -99,21 +99,20 @@ string CodeVisitor::visitClassDeclarationsFields(Program* program){
 
 string CodeVisitor::visitClassDeclarationFields(ClassDeclaration* classDec){
     cout << "struct " << classDec->name << " : ClassValue ";
-    if(classDec->parent != "") cout << " , " << classDec->parent;
+    if(classDec->parent != "") cout << " , " << classDec->parent; // TODO: implement inheritance in other way
     cout << "{\n";
 
     // Generate constructor
-    cout << classDec->name << "() : ClassValue( \"" << classDec->name << "\"){}\n";
-
-    // Generate fields
+    cout << classDec->name << "() : ClassValue( \"" << classDec->name << "\"){\n";
     for(auto field : *(classDec->fields)){
-        cout << typeToValueString(field->type) << "* " << field->name;
-
-        // TODO: deal with fields that have initial value
-        // if(field->initValue != nullptr) doSomething
-
-        cout << ";\n";
+        if(field->initValue != nullptr) {
+            auto initVal = field->initValue->accept(*this);
+            cout << "fields->emplace(\"" << field->name  << "\"," << initVal << ");\n";
+        } else 
+            cout << "fields->emplace(\"" << field->name  << "\", new " << typeToValueString(field->type) << ");\n";
     }
+    cout << "}\n";
+    
     cout << "};\n";
 
     return "";

@@ -17,11 +17,13 @@ class Main{
 
 class Person{
     int yearsOfAge;
+    int money = -1-1+1;
 
     void setAge(int newAge){
-        this.yearsOfAge = newAge;
+        /*this.yearsOfAge = newAge;*/
         int a = this.yearsOfAge;
         System.print(String.intToString(newAge)); 
         System.print(String.intToString(a)); 
+        System.print(String.intToString(this.money));
     }
 }

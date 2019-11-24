@@ -119,7 +119,6 @@ protected:
 	unordered_map<string, Value*>* fields;
 public:
 	ClassValue(string className);
-	~ClassValue();
 
 	Value* get(string field);
 	void set(string field, Value* value);
