@@ -5,10 +5,15 @@ Record::Record(Record *parent, void* b_label, void* e_label, void* returnLabel) 
 	this->b_label = b_label;
 	this->e_label = e_label;
 	this->returnLabel = returnLabel;
-	dynamicParent = parent;
+	this->dynamicParent = parent;
+	this->staticParent = parent;
 }
 
 Record::~Record() {}
+
+bool Record::isMethodBlock(){
+	return !(returnLabel == nullptr);
+}
 
 Value* Record::getVarVal(string id) {
 	Value *v;
@@ -21,7 +26,19 @@ Value* Record::getVarVal(string id) {
 	return v;
 }
 
-Value* Record::lookupVarVal(string id) {
+Value* Record::lookupStatic(string id) {
+	Value *v = nullptr;
+	Record* currentRecord = this;
+
+	do{
+		v = currentRecord->getVarVal(id);
+		currentRecord = currentRecord->getStaticParent();
+	} while(v == nullptr && currentRecord != nullptr);
+
+	return v;
+}
+
+Value* Record::lookupDynamic(string id) {
 	Value *v = nullptr;
 	Record* currentRecord = this;
 
@@ -37,6 +54,10 @@ Record* Record::getDynamicParent(){
 	return dynamicParent;
 }
 
+Record* Record::getStaticParent(){
+	return staticParent;
+}
+
 Value* Record::getReturn() {
 	return returnVal;
 }
@@ -49,8 +70,17 @@ void Record::insertVar(string id, int v) {
 	insertVar(id, new IntValue(v));
 }
 
-void Record::updateVar(string id, Value* v) {
-	table[id] = v;
+void Record::updateStatic(string id, Value* newValue) {
+	Record* currentRecord = this;
+	Value *v = currentRecord->getVarVal(id);
+
+	while(v == nullptr && currentRecord != nullptr){
+		currentRecord = currentRecord->getStaticParent();
+		v = currentRecord->getVarVal(id);
+	}
+
+	delete currentRecord->table[id];
+	currentRecord->table[id] = newValue;
 }
 
 void* Record::gete_label(){

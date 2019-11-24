@@ -13,13 +13,13 @@ using std::endl;
 
 #define RS string("rs->")
 #define RS_TOP string("rs->top()->")
-#define RS_LOOKUP(x) string(RS_TOP+"lookupVarVal(" + x + ")")
+#define LOOKUP_DYN(x) string(RS_TOP+"lookupDynamic(" + x + ")")
 #define TYPE string("Value*")
 #define CREATERECORD(b_label, e_label, returnLabel) string(RS + "createRecord(" + b_label + "," + e_label + "," + returnLabel + ");")
 #define POPRECORD string(RS + "pop();")
 #define GOTO(label) "goto " + string(label)
 #define IFNOT_GOTO(guard, label) string("if(!" + guard + "->getBool()) " + GOTO(label))
-#define UPDATEVAR(lvalue, rvalue) string(RS_TOP + "update(\"" + lvalue + "\"," + rvalue + ")")
+#define UPDATE_STATIC(lvalue, rvalue) string(RS_TOP + "updateStatic(\"" + lvalue + "\"," + rvalue + ")")
 #define INSERTVAR(x,y) string("insertVar(\"" + x + "\"," + y + ");")
 
 void CodeVisitor::resetCountTmpVars() {
@@ -258,22 +258,22 @@ string CodeVisitor::visit(While *whilestmt) {
     return "";
 }
 
-// TODO: Implement after
-string CodeVisitor::visit(Assignment *assign) {
-    /* Code generaton example:
-
-        MiniJava Code:
-            a = <exp>;
-
-        Generated C++ code:
-            Value *tmp = <expr>;
-            rs->top()->update("a", tmp);
-    */
-
+// Assignments allowed:
+//     a = <exp>
+//     a[i_1]...[i_n] = <exp>
+//     this.a = <exp>
+string CodeVisitor::visit(Assignment *assign){    
+    // a = <exp>
     cout << "{\n";
     string tmp_rvalue = assign->rvalue->accept(*this);
-    //cout << UPDATEVAR(*(assign->lvalue), tmp_rvalue) << ";\n";
-    cout << "cout << \"\\n TODO: Solve lvalue problem\\n\"\n";
+
+    IdExpression* ie = dynamic_cast<IdExpression*>(assign->lvalue);
+    if(ie != nullptr)
+        cout << UPDATE_STATIC(ie->id, tmp_rvalue) << ";\n";
+    else{
+        cout << "eita\n";
+    }
+
     cout << "}\n";
     return "";
 }
@@ -395,7 +395,7 @@ string CodeVisitor::visit(NewObjExpression *exp) {
 }
 
 string CodeVisitor::visit(IdExpression *exp) {
-    cout << TYPE << " _" << exp->getId() << " = " << RS_LOOKUP("\"" + exp->getId() + "\"")<< ";\n";
+    cout << TYPE << " _" << exp->getId() << " = " << LOOKUP_DYN("\"" + exp->getId() + "\"")<< ";\n";
     return "_"+exp->getId();
 }
 

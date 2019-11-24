@@ -1,0 +1,11 @@
+class Main{
+    void main(String[] args){
+        int a = 1;
+        System.print(String.intToString(a));
+        {
+            a = 2;
+            System.print(String.intToString(a));
+        }
+        System.print(String.intToString(a));
+    }
+}

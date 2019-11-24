@@ -35,7 +35,7 @@ private:
 	unordered_map<string,Value*> table;
 
 	Record* dynamicParent;
-
+	Record* staticParent;
 	Value* returnVal;
 
 	void* b_label;
@@ -44,20 +44,30 @@ private:
 	void* returnLabel;
 
 public:
-	Record(Record* parent, void* b_label, void* e_label, void* returnLabel);
+	Record(Record* dynamicParent, void* b_label, void* e_label, void* returnLabel);
 	~Record();
 
 	Value* getVarVal(string id);
-	Value* lookupVarVal(string id);
+	Value* lookupStatic(string id);
+	Value* lookupDynamic(string id);
 	Value* getReturn();
 	void insertVar(string id, Value *v);
 	void insertVar(string id, int v);
-	void updateVar(string id, Value* v); // TODO: Free old value
+	void updateStatic(string id, Value* v);
 	void* gete_label();
 	void* getb_label();
 	void* getReturnLabel();
+	
+	/**
+	 * @brief Checks if the block contained in the record is a regular block or is the statement
+	 * list of a method
+	 * 
+	 * @return true 
+	 * @return false 
+	 */
+	bool isMethodBlock();
 
-
+	Record* getStaticParent();
 	Record* getDynamicParent();
 
 	// TODO: Remove after
