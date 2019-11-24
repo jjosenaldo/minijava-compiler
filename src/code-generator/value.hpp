@@ -58,27 +58,20 @@ public:
 	
 	string toString();
 
-	friend IntValue* operator-(const IntValue& v1, const IntValue& v2);
-	friend IntValue* operator-(const IntValue& v1);
-	friend IntValue* operator*(const IntValue& v1, const IntValue& v2);
-	friend IntValue* operator/(const IntValue& v1, const IntValue& v2);
-	friend IntValue* operator%(const IntValue& v1, const IntValue& v2);
+	friend Value* operator-(const Value& v1, const Value& v2);
+	friend Value* operator-(const Value& v1);
+	friend Value* operator*(const Value& v1, const Value& v2);
+	friend Value* operator/(const Value& v1, const Value& v2);
+	friend Value* operator%(const Value& v1, const Value& v2);
 
-	template<typename Val>
-	friend Val* operator+(const Val& v1, const Val& v2);
-	template<typename Val>
-	friend Val* operator<(const Val& v1, const Val& v2);
-	template<typename Val>
-	friend Val* operator<=(const Val& v1, const Val& v2);
-	template<typename Val>
-	friend Val* operator>(const Val& v1, const Val& v2);
-	template<typename Val>
-	friend Val* operator>=(const Val& v1, const Val& v2);
+	friend Value* operator+(const Value& v1, const Value& v2);
+	friend Value* operator<(const Value& v1, const Value& v2);
+	friend Value* operator<=(const Value& v1, const Value& v2);
+	friend Value* operator>(const Value& v1, const Value& v2);
+	friend Value* operator>=(const Value& v1, const Value& v2);
 
-	template<typename Val>
-	friend BoolValue* operator==(const Val& v1, const Val& v2);
-	template<typename Val>
-	friend BoolValue* operator!=(const Val& v1, const Val& v2);
+	friend Value* operator==(const Value& v1, const Value& v2);
+	friend Value* operator!=(const Value& v1, const Value& v2);
 };
 
 class BoolValue : public Value {
@@ -91,14 +84,12 @@ public:
 
 	string toString();
 
-	friend BoolValue* operator!(const BoolValue& v1);
-	friend BoolValue* operator||(const BoolValue& v1, const BoolValue& v2);
-	friend BoolValue* operator&&(const BoolValue& v1, const BoolValue& v2);
+	friend Value* operator!(const Value& v1);
+	friend Value* operator||(const BoolValue& v1, const BoolValue& v2);
+	friend Value* operator&&(const BoolValue& v1, const BoolValue& v2);
 
-	template<typename Val>
-	friend BoolValue* operator==(const Val& v1, const Val& v2);
-	template<typename Val>
-	friend BoolValue* operator!=(const Val& v1, const Val& v2);
+	friend Value* operator==(const Value& v1, const Value& v2);
+	friend Value* operator!=(const Value& v1, const Value& v2);
 };
 
 class StringValue : public Value {
@@ -111,21 +102,14 @@ public:
 
 	string toString();
 
-	template<typename Val>
-	friend Val* operator+(const Val& v1, const Val& v2);
-	template<typename Val>
-	friend Val* operator<(const Val& v1, const Val& v2);
-	template<typename Val>
-	friend Val* operator<=(const Val& v1, const Val& v2);
-	template<typename Val>
-	friend Val* operator>(const Val& v1, const Val& v2);
-	template<typename Val>
-	friend Val* operator>=(const Val& v1, const Val& v2);
+	friend Value* operator+(const Value& v1, const Value& v2);
+	friend Value* operator<(const Value& v1, const Value& v2);
+	friend Value* operator<=(const Value& v1, const Value& v2);
+	friend Value* operator>(const Value& v1, const Value& v2);
+	friend Value* operator>=(const Value& v1, const Value& v2);
 
-	template<typename Val>
-	friend BoolValue* operator==(const Val& v1, const Val& v2);
-	template<typename Val>
-	friend BoolValue* operator!=(const Val& v1, const Val& v2);
+	friend Value* operator==(const Value& v1, const Value& v2);
+	friend Value* operator!=(const Value& v1, const Value& v2);
 };
 
 class ClassValue : public Value {
@@ -135,6 +119,9 @@ private:
 public:
 	ClassValue(string className);
 	~ClassValue();
+
+	friend Value* operator==(const Value& v1, const Value& v2);
+	friend Value* operator!=(const Value& v1, const Value& v2);
 };
 
 class ArrayValue : public Value{
@@ -152,10 +139,34 @@ public:
 
 	friend class Value;
 
-	template<typename Val>
-	friend BoolValue* operator==(const Val& v1, const Val& v2);
-	template<typename Val>
-	friend BoolValue* operator!=(const Val& v1, const Val& v2);
+	friend Value* operator==(const Value& v1, const Value& v2);
+	friend Value* operator!=(const Value& v1, const Value& v2);
 };
+
+// int
+Value* operator-(const Value& v1, const Value& v2);
+Value* operator-(const Value& v1);
+Value* operator*(const Value& v1, const Value& v2);
+Value* operator/(const Value& v1, const Value& v2);
+Value* operator%(const Value& v1, const Value& v2);
+
+// String and int
+Value* operator+(const Value& v1, const Value& v2);
+Value* operator<(const Value& v1, const Value& v2);
+Value* operator<=(const Value& v1, const Value& v2);
+Value* operator>(const Value& v1, const Value& v2);
+Value* operator>=(const Value& v1, const Value& v2);
+// bool
+Value* operator!(const Value& v1);
+Value* operator||(const BoolValue& v1, const BoolValue& v2);
+Value* operator&&(const BoolValue& v1, const BoolValue& v2);
+
+// all
+// TODO implement after (Don't forget str == nullptr)
+Value* operator==(const Value& v1, const Value& v2);
+
+// TODO implement after (Don't forget str == nullptr)
+Value* operator!=(const Value& v1, const Value& v2);
+
 
 #endif
