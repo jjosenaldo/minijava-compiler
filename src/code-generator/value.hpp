@@ -59,6 +59,8 @@ public:
 	
 	string toString();
 
+	static Value* newInt(){return new IntValue();}
+
 	friend Value* operator-(const Value& v1, const Value& v2);
 	friend Value* operator-(const Value& v1);
 	friend Value* operator*(const Value& v1, const Value& v2);
@@ -85,6 +87,8 @@ public:
 
 	string toString();
 
+	static Value* newBool(){return new BoolValue();}
+
 	friend Value* operator!(const Value& v1);
 	friend Value* operator||(const BoolValue& v1, const BoolValue& v2);
 	friend Value* operator&&(const BoolValue& v1, const BoolValue& v2);
@@ -102,6 +106,8 @@ public:
 	string getString() const;
 
 	string toString();
+
+	static Value* newInt(){return new StringValue();}
 
 	friend Value* operator+(const Value& v1, const Value& v2);
 	friend Value* operator<(const Value& v1, const Value& v2);
@@ -134,11 +140,11 @@ class ArrayValue : public Value{
 private:
 	Value** value;
 	int n;
-	ArrayValue(int* dims, int i, int n, EnumValue ev, Value* ctor() = nullptr);
+	ArrayValue(int* dims, int i, int n, Value* ctor() = nullptr);
 
 public:
 	ArrayValue(Value** v, int n);
-	ArrayValue(int* dims, int n, EnumValue ev, Value* ctor() = nullptr);
+	ArrayValue(int* dims, int n, Value* ctor() = nullptr);
 	Value** getArray() const;
 
 	string toString();

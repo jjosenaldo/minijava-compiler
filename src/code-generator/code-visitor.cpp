@@ -486,11 +486,11 @@ string CodeVisitor::visit(NewArrayExpression *exp) {
 
     cout << TYPE << " " << arrVarName << " = new ArrayValue(" << varDimsName << ","<<n << ",";
     switch(exp->baseType->kind){
-        case TypeInt: cout << "EV_IntValue";break;
-        case TypeBoolean: cout << "EV_BoolValue";break;
+        case TypeInt: cout << "IntValue::newInt";break;
+        case TypeBoolean: cout << "BoolValue::newBool";break;
         case TypeClass:
-            if(exp->baseType->toString() == "String") cout << "EV_StringValue";
-            else cout << "EV_ClassValue, " << exp->baseType->toString() << "::new" << exp->baseType->toString();
+            if(exp->baseType->toString() == "String") cout << "StringValue::newString";
+            else cout << exp->baseType->toString() << "::new" << exp->baseType->toString();
             break;
     }
 

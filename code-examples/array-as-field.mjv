@@ -1,0 +1,9 @@
+class Main{
+    void main(String[] args){
+        
+    }
+}
+
+class Array{
+    int[] arrayOfInts;
+}

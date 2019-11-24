@@ -66,37 +66,24 @@ string ArrayValue::toString(){
     return res+"}";
 }
 
-ArrayValue::ArrayValue(int* dims, int n, EnumValue ev, Value* ctor ()) : ArrayValue(dims,1,n,ev,ctor){}
+ArrayValue::ArrayValue(int* dims, int n, Value* ctor ()) : ArrayValue(dims,1,n,ctor){}
 
 // TODO: are we allowed to use loops here? if we are not, then we should use goto's or something similar
 // TODO: remove that "ev" arg and only use the ctor! =)
-ArrayValue::ArrayValue(int* dims, int i, int n, EnumValue ev, Value* ctor ()){
+ArrayValue::ArrayValue(int* dims, int i, int n, Value* ctor ()){
     // TODO: put this constructor in a separate recursive method so that this assignment
     // doesn't get executed every single time
     this->className = "ArrayValue";
 
     this->value = new Value*[dims[i-1]];
-    if(i == n){
-        for(int j = 0; j < dims[i-1]; ++j){ 
-            switch(ev){
-                case EnumValue::EV_IntValue:
-                    this->value[j] = new IntValue();
-                    break;
-                case EnumValue::EV_StringValue:
-                    this->value[j] = new StringValue();
-                    break;
-                case EnumValue::EV_BoolValue:
-                    this->value[j] = new BoolValue();
-                    break;
-                case EnumValue::EV_ClassValue:
-                    this->value[j] = ctor();
-            }
-        }
-    } else{
-        for(int j = 0; j < dims[i-1]; ++j) {
-            this->value[j] = new ArrayValue(dims, i+1,n,ev);
-        }
-    }
+    if(i == n)
+        for(int j = 0; j < dims[i-1]; ++j)
+            this->value[j] = ctor();
+    else
+        for(int j = 0; j < dims[i-1]; ++j) 
+            this->value[j] = new ArrayValue(dims, i+1,n,ctor);
+        
+    
 }
 
 ClassValue::ClassValue(string className){
