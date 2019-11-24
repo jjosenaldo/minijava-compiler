@@ -44,7 +44,10 @@ private:
 	void* returnLabel;
 
 public:
-	Record(Record* dynamicParent, void* b_label, void* e_label, void* returnLabel);
+	Record(Record* staticParent, Record* dynamicParent, void* b_label, void* e_label, void* returnLabel);
+
+	// Sets both parents to be the same record
+	Record(Record* parent, void* b_label, void* e_label, void* returnLabel);
 	~Record();
 
 	Value* getVarVal(string id);
