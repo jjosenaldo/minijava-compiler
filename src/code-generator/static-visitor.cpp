@@ -457,10 +457,26 @@ bool StaticVisitor::visit(Block* stmt) {
 }
 
 bool StaticVisitor::visit(ElselessIf* stmt) {
+    if(!stmt->guard->accept(*this))
+        return false;
+    
+    if(stmt->guard->getType()->kind != TypeBoolean){
+        notBooleanGuardError();
+        return false;
+    }
+    
     return stmt->statement->accept(*this);
 }
 
 bool StaticVisitor::visit(IfElse* stmt) {
+    if(!stmt->guard->accept(*this))
+        return false;
+    
+    if(stmt->guard->getType()->kind != TypeBoolean){
+        notBooleanGuardError();
+        return false;
+    }
+
     return stmt->statementIf->accept(*this) && stmt->statementElse->accept(*this);
 }
 

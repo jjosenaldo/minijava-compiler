@@ -269,7 +269,7 @@ Value* operator!(const Value& v1) {
     throw "Invalid type!\n";
 }
 
-Value* operator||(const BoolValue& v1, const BoolValue& v2) {
+Value* operator||(const Value& v1, const Value& v2) {
     const BoolValue* b1 = dynamic_cast<const BoolValue*>(&v1);
     const BoolValue* b2 = dynamic_cast<const BoolValue*>(&v2);
     if(b1 != nullptr and b2 != nullptr)
@@ -277,7 +277,7 @@ Value* operator||(const BoolValue& v1, const BoolValue& v2) {
     throw "Invalid type!\n";
 }
 
-Value* operator&&(const BoolValue& v1, const BoolValue& v2) {
+Value* operator&&(const Value& v1, const Value& v2) {
     const BoolValue* b1 = dynamic_cast<const BoolValue*>(&v1);
     const BoolValue* b2 = dynamic_cast<const BoolValue*>(&v2);
     if(b1 != nullptr and b2 != nullptr)
