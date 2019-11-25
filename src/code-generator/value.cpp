@@ -9,6 +9,10 @@ IntValue::IntValue(int v){
 
 IntValue::IntValue() : IntValue(0){}
 
+Value* IntValue::copy(){
+    return new IntValue(value);
+}
+
 string IntValue::toString(){
     return to_string(value);
 }
@@ -18,6 +22,10 @@ int IntValue::getInt() const {
 }
 
 BoolValue::BoolValue() : BoolValue(false){}
+
+Value* BoolValue::copy(){
+    return new BoolValue(value);
+}
 
 BoolValue::BoolValue(bool v){
     value = v;
@@ -37,6 +45,10 @@ StringValue::StringValue() : StringValue(""){}
 StringValue::StringValue(string v){
     this->value = v;
     className = "StringValue";
+}
+
+Value* StringValue::copy(){
+    return new StringValue(value);
 }
 
 string StringValue::getString() const{
