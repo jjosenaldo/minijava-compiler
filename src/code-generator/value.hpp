@@ -182,11 +182,7 @@ Value* operator||(const BoolValue& v1, const BoolValue& v2);
 Value* operator&&(const BoolValue& v1, const BoolValue& v2);
 
 // all
-// TODO implement after (Don't forget str == nullptr)
 Value* operator==(const Value& v1, const Value& v2);
-
-// TODO implement after (Don't forget str == nullptr)
 Value* operator!=(const Value& v1, const Value& v2);
-
 
 #endif
