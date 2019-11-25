@@ -4,12 +4,13 @@ class Main{
     void main(String[] args){
         BubbleSort sorter = new BubbleSort();
         int[] v = {1,5,3,6,3,845,23,56};
+
         int a;
         sorter.sort(v);
         int b;
 
         int i = 0;
-        while (i < 8){
+        while (i < (v.length())){
             System.print(String.intToString(v[i]));
             System.print("\n");
             int a = v[i];
@@ -19,13 +20,14 @@ class Main{
 }
 
 class BubbleSort {
+    
     void sort(int[] vetor) {
         boolean troca = true;
         int aux;
         while (troca) {
             troca = false;
             int i = 0;
-            while (i < (8-1)) {
+            while (i < (vetor.length()-1)) {
                 if (vetor[i] > vetor[i + 1]) {
                     aux = vetor[i];
                     vetor[i] = vetor[i + 1];
@@ -36,4 +38,5 @@ class BubbleSort {
             }
         }
     }
+    
 }

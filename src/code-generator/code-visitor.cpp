@@ -415,6 +415,18 @@ string CodeVisitor::visit(StaticMethodCallExpression *exp)
 // TODO: implement the predefined nonstatic methods (namely: <array>.length(), <string>.length() and <string>.substring())
 string CodeVisitor::visit(MethodCallExpression *call)
 {
+    // Processes the "lvalue"
+    string tmpLvalueVarName = call->left->accept(*this);
+
+    // Return tmp variable
+    string tmpReturn = getNewTmpVar();
+
+    // <array>.length()
+    if(call->left->getType()->kind == TypeArray && call->method == "length"){
+        out << TYPE << " " << tmpReturn << " = new IntValue(dynamic_cast<ArrayValue*>(" <<  tmpLvalueVarName << ")->getN());\n";
+        return tmpReturn;
+    }
+
     out << "{\n";
     // Get formal parameters' names
 
@@ -425,8 +437,7 @@ string CodeVisitor::visit(MethodCallExpression *call)
     // Get return label
     string end_label = getNewLabel();
 
-    // Processes the "lvalue"
-    string tmpLvalueVarName = call->left->accept(*this);
+    
 
     // Checks if the lvalue is a null thing
     out << "if(dynamic_cast<NullValue*>(" << tmpLvalueVarName << ") != nullptr){\n";
@@ -457,7 +468,7 @@ string CodeVisitor::visit(MethodCallExpression *call)
 
     out << "}\n";
     out << end_label << ":\n";
-    string tmpReturn = getNewTmpVar();
+    
     out << TYPE << " " << tmpReturn << " = rs->top()->getReturnValue();\n";
     // Pop the record
     out << POPRECORD << "\n";

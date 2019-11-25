@@ -151,9 +151,10 @@ private:
 public:
 	ArrayValue(Value** v, int n);
 	ArrayValue(int* dims, int n, Value* ctor() = nullptr);
-	Value** getArray() const;
 
+	Value** getArray() const;
 	void setAt(int* dims, int n, Value* newVal);
+	int getN();
 
 	string toString();
 

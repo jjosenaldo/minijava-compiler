@@ -80,6 +80,10 @@ void ArrayValue::setAt(int* dims, int i, int n, Value* newVal, ArrayValue* curre
         setAt(dims, i+1, n, newVal, dynamic_cast<ArrayValue*>(this->value[dims[i]]));
 }
 
+int ArrayValue::getN(){
+    return n;
+}
+
 string ArrayValue::toString(){
     string res = "{";
 

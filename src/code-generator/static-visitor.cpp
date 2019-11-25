@@ -465,6 +465,14 @@ bool StaticVisitor::visit(IfElse* stmt) {
 }
 
 bool StaticVisitor::visit(While* stmt) {
+    if(!stmt->guard->accept(*this))
+        return false;
+    
+    if(stmt->guard->getType()->kind != TypeBoolean){
+        notBooleanGuardError();
+        return false;
+    }
+
     pool->setIsLoopBlock(true);
     bool r = stmt->statement->accept(*this);
     pool->setIsLoopBlock(false);
