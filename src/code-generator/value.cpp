@@ -68,7 +68,6 @@ string ArrayValue::toString(){
 
 ArrayValue::ArrayValue(int* dims, int n, Value* ctor ()) : ArrayValue(dims,1,n,ctor){}
 
-// TODO: are we allowed to use loops here? if we are not, then we should use goto's or something similar
 ArrayValue::ArrayValue(int* dims, int i, int n, Value* ctor ()){
     // TODO: put this constructor in a separate recursive method so that this assignment
     // doesn't get executed every single time
@@ -257,7 +256,6 @@ Value* operator&&(const BoolValue& v1, const BoolValue& v2) {
 }
 
 // all
-// TODO: implement comparation of classes
 Value* operator==(const Value& v1, const Value& v2) {
     const IntValue* i1 = dynamic_cast<const IntValue*>(&v1);
     const IntValue* i2 = dynamic_cast<const IntValue*>(&v2);
@@ -274,11 +272,10 @@ Value* operator==(const Value& v1, const Value& v2) {
     if(b1 != nullptr and b2 != nullptr)
         return new BoolValue(b1->value == b2->value);
 
-    // TODO
-    // const ClassValue* c1 = dynamic_cast<const ClassValue*>(&v1);
-    // const ClassValue* c2 = dynamic_cast<const ClassValue*>(&v2);
-    // if(c1 != nullptr and c2 != nullptr)
-    //     return new BoolValue(c1->value == c2->value);
+    const ClassValue* c1 = dynamic_cast<const ClassValue*>(&v1);
+    const ClassValue* c2 = dynamic_cast<const ClassValue*>(&v2);
+    if(c1 != nullptr and c2 != nullptr)
+        return new BoolValue(c1 == c2);
 
     const ArrayValue* a1 = dynamic_cast<const ArrayValue*>(&v1);
     const ArrayValue* a2 = dynamic_cast<const ArrayValue*>(&v2);
@@ -298,31 +295,5 @@ Value* operator==(const Value& v1, const Value& v2) {
 }
 
 Value* operator!=(const Value& v1, const Value& v2) {
-   /* const IntValue* i1 = dynamic_cast<const IntValue*>(&v1);
-    const IntValue* i2 = dynamic_cast<const IntValue*>(&v2);
-    if(i1 != nullptr and i2 != nullptr)
-        return new BoolValue(i1->value != i2->value);
-
-    const StringValue* s1 = dynamic_cast<const StringValue*>(&v1);
-    const StringValue* s2 = dynamic_cast<const StringValue*>(&v2);
-    if(s1 != nullptr and s2 != nullptr)
-        return new BoolValue(s1->value != s2->value);
-
-    const BoolValue* b1 = dynamic_cast<const BoolValue*>(&v1);
-    const BoolValue* b2 = dynamic_cast<const BoolValue*>(&v2);
-    if(b1 != nullptr and b2 != nullptr)
-        return new BoolValue(b1->value != b2->value);
-
-    // const ClassValue* c1 = dynamic_cast<const ClassValue*>(&v1);
-    // const ClassValue* c2 = dynamic_cast<const ClassValue*>(&v2);
-    // if(c1 != nullptr and c2 != nullptr)
-    //     return new BoolValue(c1->value == c2->value);
-
-    const ArrayValue* a1 = dynamic_cast<const ArrayValue*>(&v1);
-    const ArrayValue* a2 = dynamic_cast<const ArrayValue*>(&v2);
-    if(a1 != nullptr and a2 != nullptr)
-        return new BoolValue(a1->value != a2->value);
-    
-    throw "Invalid type!\n";*/
     return !*(v1 == v2);
 }
