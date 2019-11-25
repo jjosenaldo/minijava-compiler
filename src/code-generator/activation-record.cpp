@@ -1,21 +1,22 @@
 #include "activation-record.hpp"
 
-Record::Record(Record *parent, void* b_label, void* e_label, void* returnLabel) :
-	Record(parent,parent, b_label, e_label, returnLabel, nullptr) {}
+Record::Record(Record *parent, void* b_label, void* e_label, void* methodCallPosLabel, Value*& returnVal) :
+	Record(parent,parent, b_label, e_label, methodCallPosLabel, nullptr, returnVal) {}
 
-Record::Record(Record *parent, void* b_label, void* e_label, void* returnLabel, ClassValue* currentObject) :
-	Record(parent,parent, b_label, e_label, returnLabel, currentObject) {}
+Record::Record(Record *parent, void* b_label, void* e_label, void* methodCallPosLabel, ClassValue* currentObject, Value*& returnVal) :
+	Record(parent,parent, b_label, e_label, methodCallPosLabel, currentObject, returnVal) {}
 
-Record::Record(Record *staticParent, Record* dynamicParent, void* b_label, void* e_label, void* returnLabel) : 
-	Record(staticParent, dynamicParent, b_label, e_label, returnLabel, nullptr){}
+Record::Record(Record *staticParent, Record* dynamicParent, void* b_label, void* e_label, void* methodCallPosLabel, Value*& returnVal) :
+	Record(staticParent, dynamicParent, b_label, e_label, methodCallPosLabel, nullptr, returnVal){}
 
-Record::Record(Record *staticParent, Record* dynamicParent, void* b_label, void* e_label, void* returnLabel, ClassValue* currentObject){
+Record::Record(Record *staticParent, Record* dynamicParent, void* b_label, void* e_label, void* methodCallPosLabel, ClassValue* currentObject, Value*& returnVal) : returnVal(returnVal) {
 	this->b_label = b_label;
 	this->e_label = e_label;
-	this->returnLabel = returnLabel;
+	this->methodCallPosLabel = methodCallPosLabel;
 	this->dynamicParent = dynamicParent;
 	this->staticParent = staticParent;
 	this->currentObject = currentObject;
+	this->returnVal = returnVal;
 }
 
 Record::~Record() {}
@@ -25,7 +26,7 @@ ClassValue* Record::getCurrentObject(){
 }
 
 bool Record::isMethodBlock(){
-	return !(returnLabel == nullptr);
+	return !(methodCallPosLabel == nullptr);
 }
 
 Value* Record::getVarVal(string id) {
@@ -71,7 +72,7 @@ Record* Record::getStaticParent(){
 	return staticParent;
 }
 
-Value* Record::getReturn() {
+Value*& Record::getReturnValue() {
 	return returnVal;
 }
 
@@ -104,8 +105,8 @@ void* Record::getb_label(){
 	return this->b_label;
 }
 
-void* Record::getReturnLabel() {
-	return this->returnLabel;
+void* Record::getMethodCallPosLabel() {
+	return this->methodCallPosLabel;
 }
 
 // RecordStack
@@ -113,10 +114,10 @@ RecordStack::RecordStack() {}
 
 RecordStack::~RecordStack() {}
 
-void RecordStack::createRecord(void* b_label, void* e_label, void* returnLabel, ClassValue* currentObject) {
+void RecordStack::createRecord(void* b_label, void* e_label, void* returnLabel, ClassValue* currentObject, Value* returnVal) {
 	Record* dynamicParent = records.empty() ? nullptr : records.top();
 	Record* staticParent = returnLabel == nullptr ? dynamicParent : nullptr ;
-	records.push(new Record(staticParent, dynamicParent , b_label, e_label, returnLabel,currentObject));
+	records.push(new Record(staticParent, dynamicParent , b_label, e_label, returnLabel,currentObject, returnVal));
 }
 
 Record* RecordStack::top() {
@@ -133,3 +134,19 @@ void* RecordStack::searchContinue() {
 	}
 	return records.top()->getb_label();
 }
+
+
+void* RecordStack::searchBreak() {
+	while(records.top()->gete_label() != nullptr){
+		records.pop();
+	}
+	return records.top()->gete_label();
+}
+
+void* RecordStack::searchMethodCallLabel() {
+	while(records.top()->getMethodCallPosLabel() != nullptr){
+		records.pop();
+	}
+	return records.top()->getMethodCallPosLabel();
+}
+

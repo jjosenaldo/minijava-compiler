@@ -36,28 +36,28 @@ private:
 
 	Record* dynamicParent;
 	Record* staticParent;
-	Value* returnVal;
 	ClassValue* currentObject;
+
+	Value*& returnVal;
 
 	void* b_label;
 
 	void* e_label;
-	void* returnLabel;
-
+	void* methodCallPosLabel;
 	Value* getVarVal(string id);
 
 public:
-	Record(Record* staticParent, Record* dynamicParent, void* b_label, void* e_label, void* returnLabel, ClassValue* currentObject);
-	Record(Record* staticParent, Record* dynamicParent, void* b_label, void* e_label, void* returnLabel);
+	Record(Record* staticParent, Record* dynamicParent, void* b_label, void* e_label, void* methodCallPosLabel, ClassValue* currentObject, Value*& returnVal);
+	Record(Record* staticParent, Record* dynamicParent, void* b_label, void* e_label, void* methodCallPosLabel, Value*& returnVal);
 
 	// Sets both parents to be the same record
-	Record(Record* parent, void* b_label, void* e_label, void* returnLabel, ClassValue* currentObject);
-	Record(Record* parent, void* b_label, void* e_label, void* returnLabel);
+	Record(Record* parent, void* b_label, void* e_label, void* methodCallPosLabel, ClassValue* currentObject, Value*& returnVal);
+	Record(Record* parent, void* b_label, void* e_label, void* methodCallPosLabel, Value*& returnVal);
 	~Record();
 
 	Value* lookupStatic(string id);
 	Value* lookupDynamic(string id);
-	Value* getReturn();
+	Value*& getReturnValue();
 	ClassValue* getCurrentObject();
 	void insertVar(string id, Value *v);
 	void insertVar(string id, int v);
@@ -65,17 +65,19 @@ public:
 	void* gete_label();
 	void* getb_label();
 	void* getReturnLabel();
-	
+
 	/**
 	 * @brief Checks if the block contained in the record is a regular block or is the statement
 	 * list of a method
-	 * 
-	 * @return true 
-	 * @return false 
+	 *
+	 * @return true
+	 * @return false
 	 */
 	bool isMethodBlock();
 
 	Record* getStaticParent();
+	void* getMethodCallPosLabel();
+
 	Record* getDynamicParent();
 
 	// TODO: Remove after
@@ -102,11 +104,12 @@ class RecordStack
 public:
 	RecordStack();
 	~RecordStack();
-	void createRecord(void* b_label = nullptr, void* e_label = nullptr, void* returnLabel = nullptr, ClassValue* currentObject = nullptr);
+	void createRecord(void* b_label = nullptr, void* e_label = nullptr, void* methodCallPosLabel = nullptr, ClassValue* currentObject = nullptr, Value* returnVal = nullptr);
 	Record* top();
 	void pop();
 	void* searchContinue();
 	void* searchBreak();
+	void* searchMethodCallLabel();
 
 };
 

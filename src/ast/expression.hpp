@@ -43,7 +43,7 @@ class Expression{
         bool isObject();
         virtual bool isLvalue();
         virtual bool accept(StaticVisitor&);
-        virtual string accept(CodeVisitor&) {return "ERROR";}; // TODO: implement this for all subclasses
+        virtual string accept(CodeVisitor&) = 0;
         virtual string toString() = 0;
 };
 
@@ -116,7 +116,7 @@ class ObjExpression : public Expression{
         ObjExpression(Type* type) : Expression(type){}
 
         virtual bool accept(StaticVisitor&) = 0;
-        virtual string accept(CodeVisitor&) {return "";} // TODO: implement in subclasses
+        virtual string accept(CodeVisitor&) = 0;
 };
 
 // Example: new int
@@ -127,6 +127,8 @@ class ArrayDeclExpression : public ObjExpression{
         string toString();
 
         bool accept(StaticVisitor&);
+        string accept(CodeVisitor&){return "";} // The CodeVisitor doesn't really visit this class
+
         friend class StaticVisitor;
         friend class CodeVisitor;
 };
@@ -172,6 +174,7 @@ class ThisExpression : public ObjExpression{
         string toString();
 
         bool accept(StaticVisitor&);
+        string accept(CodeVisitor&);
 
         friend class StaticVisitor;
         friend class CodeVisitor;

@@ -57,6 +57,17 @@ Value** ArrayValue::getArray() const{
     return value;
 }
 
+void ArrayValue::setAt(int* dims, int n, Value* newVal){
+    setAt(dims, 0, n, newVal, this);    
+}
+
+void ArrayValue::setAt(int* dims, int i, int n, Value* newVal, ArrayValue* currentArray){
+    if(i == n-1)
+        currentArray->value[dims[i]] = newVal;
+    else 
+        setAt(dims, i+1, n, newVal, dynamic_cast<ArrayValue*>(this->value[dims[i]]));
+}
+
 string ArrayValue::toString(){
     string res = "{";
 

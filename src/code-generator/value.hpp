@@ -56,7 +56,7 @@ public:
 	IntValue();
 	IntValue(int v);
 	int getInt() const;
-	
+
 	string toString();
 
 	static Value* newInt(){return new IntValue();}
@@ -141,11 +141,14 @@ private:
 	Value** value;
 	int n;
 	ArrayValue(int* dims, int i, int n, Value* ctor() = nullptr);
+	void setAt(int* dims, int i, int n, Value* newVal, ArrayValue* currentArray);
 
 public:
 	ArrayValue(Value** v, int n);
 	ArrayValue(int* dims, int n, Value* ctor() = nullptr);
 	Value** getArray() const;
+
+	void setAt(int* dims, int n, Value* newVal);
 
 	string toString();
 
