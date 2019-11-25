@@ -2,21 +2,45 @@ class Main{
     void main(String[] args){
         /* Assignment to local variables */
         int a = 1;
-        System.print(String.intToString(a));
+        System.print(String.intToString(a) + "\n");
         {
             a = 2;
-            System.print(String.intToString(a));
+            System.print(String.intToString(a) + "\n");
         }
-        System.print(String.intToString(a));
+        System.print(String.intToString(a) + "\n");
 
         System.print("\n\nPersons\n");
 
         /* Assignment to THIS fields */
         Person[] ps = new Person[2];
-        ps[0].setAge(42);
-        ps[0].setAge(37);
-        ps[1].setAge(20);
-        ps[1].setAge(10);
+        ps[0].setAge(10);
+        ps[0].setAge(20);
+        ps[0] = new Person();
+        ps[0].setAge(10);
+        ps[0].setAge(20);
+
+        int cont = 0;
+        int[][] m = new int[5][5];
+        while(cont < 25){
+            m[cont/5][cont%5] = cont;
+            System.print(String.intToString(m[cont/5][cont%5])+  "\n");
+            cont = cont+1;
+        }
+
+        int i = 0;
+        int j;
+        while(i < 5){
+            j = 0;
+            while(j < 5){
+                System.print((String.intToString(i)) + "  " + (String.intToString(j))+ "\n");
+                System.print(String.intToString(m[i][j]));
+                System.print(" ");
+                j = j+1;
+            }
+            System.print("\n");
+            i = i+1;
+        }
+        
     }
 }
 
@@ -25,8 +49,8 @@ class Person{
     int money = -1-1+1;
 
     void setAge(int newAge){
-        System.print("old: " + (String.intToString(this.yearsOfAge))); 
+        System.print("old: " + (String.intToString(this.yearsOfAge))+ "\n"); 
         this.yearsOfAge = newAge;
-        System.print("new: " + (String.intToString(this.yearsOfAge))); 
+        System.print("new: " + (String.intToString(this.yearsOfAge))+ "\n"); 
     }
 }

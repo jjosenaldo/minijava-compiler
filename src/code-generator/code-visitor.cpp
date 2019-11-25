@@ -270,7 +270,7 @@ string CodeVisitor::visit(While *whilestmt) {
     // Goto begin while
     cout << GOTO(lab1) << ";\n";
 
-    cout << lab2 << ":\n";
+    cout << lab2 << ":;\n";
 
     cout << "}\n";
 
@@ -295,8 +295,21 @@ string CodeVisitor::visit(Assignment *assign){
         FieldAccessExpression* fae = dynamic_cast<FieldAccessExpression*>(assign->lvalue);
         if(fae != nullptr)
             cout << UPDATE_CURRENT_OBJ_FIELD("\""+fae->id+"\"", tmp_rvalue) << "\n";
-        else // TODO: the third assignment kind!  */ 
-            ;
+        else{
+            ArrayAccessExpression* aae = dynamic_cast<ArrayAccessExpression*>(assign->lvalue);
+            auto tmpDimsVar = getNewTmpVar();
+            cout << "int* " << tmpDimsVar << " = new int[" << aae->dimensions->size() << "];\n";
+
+            for(int i = 0; i < aae->dimensions->size(); ++i){
+                auto tmpDimVar = ((*(aae->dimensions))[i])->accept(*this);
+                cout << tmpDimsVar << "[" << i << "] = " << tmpDimVar << "->getInt();\n";
+            }
+
+            auto tmpArr = getNewTmpVar();
+            auto tmpLvalue = aae->left->accept(*this);
+            cout << "ArrayValue* " << tmpArr << " = dynamic_cast<ArrayValue*>(" << tmpLvalue  << ");\n";
+            cout << tmpArr << "->setAt(" << tmpDimsVar << "," << aae->dimensions->size() << "," << tmp_rvalue << ");\n";
+        }
     }
 
     cout << "}\n";
@@ -319,7 +332,7 @@ string CodeVisitor::visit(StaticMethodCallExpression *exp) {
         if(exp->method == "print"){
             std::cout << "{\n";
             string argFirstVar =  exp->arguments->at(0)->accept(*this);
-            std::cout << "cout << " << argFirstVar << "->toString() << endl;\n";
+            std::cout << "cout << " << argFirstVar << "->toString();\n";
             std::cout << "}\n";
             resetCountTmpVars();
         }
@@ -431,8 +444,10 @@ string CodeVisitor::visit(NewObjExpression *exp) {
 }
 
 string CodeVisitor::visit(IdExpression *exp) {
-    cout << TYPE << " _" << exp->getId() << " = " << LOOKUP_STATIC("\"" + exp->getId() + "\"")<< ";\n";
-    return "_"+exp->getId();
+    auto tmpVar = getNewTmpVar();
+    // cout << TYPE << " _" << exp->getId() << " = " << LOOKUP_STATIC("\"" + exp->getId() + "\"")<< ";\n";
+    cout << TYPE << " " << tmpVar << " = " << LOOKUP_STATIC("\"" + exp->getId() + "\"")<< ";\n";
+    return tmpVar;
 }
 
 string CodeVisitor::visit(FieldAccessExpression *exp) {
@@ -471,16 +486,15 @@ string CodeVisitor::visit(LitArrayExpression *exp) {
 }
 
 string CodeVisitor::visit(ArrayAccessExpression *exp) {
-    auto lvalue = exp->left->accept(*this);
-    string dimAccesses =  "";
+    string dimAccesses = exp->left->accept(*this);
 
     for(auto dim : *(exp->dimensions)){
         auto tmpVarDim = dim->accept(*this);
-        dimAccesses += "[" + tmpVarDim + "->getInt()" + "]";
+        dimAccesses = "(*"+dimAccesses+")" + "[" + tmpVarDim + "->getInt()" + "]";
     }
 
     auto returnTmpVar = getNewTmpVar();
-    cout << TYPE << " " << returnTmpVar << " = " << "(*" << lvalue << ")" << dimAccesses << ";\n";
+    cout << TYPE << " " << returnTmpVar << " = " << dimAccesses << ";\n";
     return returnTmpVar;
 }
 
