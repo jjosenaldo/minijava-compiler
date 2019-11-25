@@ -58,6 +58,9 @@ Value** ArrayValue::getArray() const{
 }
 
 void ArrayValue::setAt(int* dims, int n, Value* newVal){
+    std::cout << "setAt({";
+    for(int i = 0; i < n; ++i) std::cout << dims[i] << ",";
+    std::cout << "}, " << n << "," << newVal->toString() << ")\n";
     setAt(dims, 0, n, newVal, this);    
 }
 
@@ -72,7 +75,7 @@ string ArrayValue::toString(){
     string res = "{";
 
     for(int i = 0; i < n; ++i)
-        res += value[i]->toString();
+        res += value[i]->toString()+",";
 
     return res+"}";
 }
@@ -83,6 +86,8 @@ ArrayValue::ArrayValue(int* dims, int i, int n, Value* ctor ()){
     // TODO: put this constructor in a separate recursive method so that this assignment
     // doesn't get executed every single time
     this->className = "ArrayValue";
+
+    this->n = dims[i-1];
 
     this->value = new Value*[dims[i-1]];
     if(i == n)
