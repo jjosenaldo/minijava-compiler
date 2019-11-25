@@ -264,7 +264,7 @@ string StaticMethodCallExpression::toString(){
     string ret = className + "." + method + "(";
     if(arguments == nullptr || arguments->size() == 0)
         ret += ")";
-    else 
+    else
         for(auto arg : *arguments) ret += arg->toString()+",";
     return ret;
 }
