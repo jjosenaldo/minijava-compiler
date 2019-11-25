@@ -1,0 +1,6 @@
+class Main{
+    void main(String[] args){
+        /* Note that, ideally, the string would need to be in parenthesis... */
+        System.print(String.intToString("oi"+"tudo"+"bom".length()));
+    }
+}

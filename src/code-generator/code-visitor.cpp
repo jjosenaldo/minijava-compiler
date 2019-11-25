@@ -427,6 +427,12 @@ string CodeVisitor::visit(MethodCallExpression *call)
         return tmpReturn;
     }
 
+    // <string>.length()
+    if(call->left->getType()->toString() == "String" && call->method == "length"){
+        out << TYPE << " " << tmpReturn << " = new IntValue(dynamic_cast<StringValue*>(" <<  tmpLvalueVarName << ")->getString().length());\n";
+        return tmpReturn;
+    }
+
     out << "{\n";
     // Get formal parameters' names
 
