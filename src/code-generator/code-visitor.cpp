@@ -427,10 +427,21 @@ string CodeVisitor::visit(MethodCallExpression *call)
         return tmpReturn;
     }
 
-    // <string>.length()
-    if(call->left->getType()->toString() == "String" && call->method == "length"){
-        out << TYPE << " " << tmpReturn << " = new IntValue(dynamic_cast<StringValue*>(" <<  tmpLvalueVarName << ")->getString().length());\n";
-        return tmpReturn;
+    // <string>
+    if(call->left->getType()->toString() == "String"){
+        // .length()
+        if(call->method == "length"){
+            out << TYPE << " " << tmpReturn << " = new IntValue(dynamic_cast<StringValue*>(" <<  tmpLvalueVarName << ")->getString().length());\n";
+            return tmpReturn;
+        }
+
+        // .substring(l , r)
+        if(call->method == "substring"){
+            auto tmpArg1 = call->arguments->at(0)->accept(*this);
+            auto tmpArg2 = call->arguments->at(1)->accept(*this);
+            out << TYPE << " " << tmpReturn << " = new StringValue(dynamic_cast<StringValue*>(" <<  tmpLvalueVarName << ")->getString().substr(dynamic_cast<IntValue*>(" << tmpArg1 << ")->getInt(),dynamic_cast<IntValue*>(" << tmpArg2 << ")->getInt()));\n";
+            return tmpReturn;
+        }
     }
 
     out << "{\n";
