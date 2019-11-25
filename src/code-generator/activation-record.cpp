@@ -49,7 +49,7 @@ Value* Record::lookupStatic(string id) {
 		currentRecord = currentRecord->getStaticParent();
 	} while(v == nullptr && currentRecord != nullptr);
 
-	return v;
+	return v->copy();
 }
 
 Value* Record::lookupDynamic(string id) {
@@ -61,7 +61,7 @@ Value* Record::lookupDynamic(string id) {
 		currentRecord = currentRecord->getDynamicParent();
 	} while(v == nullptr && currentRecord != nullptr);
 
-	return v;
+	return v->copy();
 }
 
 Record* Record::getDynamicParent(){
@@ -116,38 +116,42 @@ RecordStack::~RecordStack() {}
 
 // TODO: Transformar em escopo estático
 void RecordStack::createRecord(void* b_label, void* e_label, void* returnLabel, ClassValue* currentObject, Value* returnVal) {
-	Record* dynamicParent = records.empty() ? nullptr : records.top();
+	Record* dynamicParent = records.empty() ? nullptr : records.front();
 	Record* staticParent = returnLabel == nullptr ? dynamicParent : nullptr ;
-	records.push(new Record(staticParent, dynamicParent , b_label, e_label, returnLabel,currentObject, returnVal));
+	records.push_back(new Record(staticParent, dynamicParent , b_label, e_label, returnLabel,currentObject, returnVal));
 }
 
 Record* RecordStack::top() {
-	return records.top();
+	return records.front();
 }
 
 void RecordStack::pop() {
-	records.pop();
+	records.pop_back();
+}
+
+void* Record::getReturnLabel(){
+	return returnLabel;
 }
 
 void* RecordStack::searchContinue() {
-	while(records.top()->getb_label() != nullptr){
-		records.pop();
+	while(records.front()->getb_label() != nullptr){
+		records.pop_back();
 	}
-	return records.top()->getb_label();
+	return records.front()->getb_label();
 }
 
 
 void* RecordStack::searchBreak() {
-	while(records.top()->gete_label() != nullptr){
-		records.pop();
+	while(records.front()->gete_label() != nullptr){
+		records.pop_back();
 	}
-	return records.top()->gete_label();
+	return records.front()->gete_label();
 }
 
 void* RecordStack::searchMethodCallLabel() {
-	while(records.top()->getMethodCallPosLabel() != nullptr){
-		records.pop();
+	while(records.front()->getMethodCallPosLabel() != nullptr){
+		records.pop_back();
 	}
-	return records.top()->getMethodCallPosLabel();
+	return records.front()->getMethodCallPosLabel();
 }
 
