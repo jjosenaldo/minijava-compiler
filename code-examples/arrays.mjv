@@ -1,9 +1,0 @@
-class Main{
-    void main(String[] args){
-        /*int[][][][][] a = new int[15][2][4][1+1][5+5+5];*/
-        /* int[][][] b = new int[3][4][5]; */
-        boolean[] a = new boolean[10];
-        System.print(String.booleanToString(a[7]));
-
-    }
-}

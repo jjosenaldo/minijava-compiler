@@ -1,0 +1,16 @@
+class Main{
+    void main(String[] args){
+        boolean[] a = new boolean[10];
+        System.print(String.booleanToString(a[7])+"\n");
+        int[][] b = {{1,2,3}};
+        System.print(String.intToString(b[0][0])+"\n");
+        System.print(String.intToString(b[0][1])+"\n");
+        System.print(String.intToString(b[0][2])+"\n");
+
+
+        /*
+            uncomment for error:
+            System.print(String.intToString(b[1][0])+"\n");
+        */
+    }
+}
