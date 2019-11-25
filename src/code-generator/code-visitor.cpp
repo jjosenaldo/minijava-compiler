@@ -176,7 +176,9 @@ string CodeVisitor::visit(ElselessIf *elselessIf) {
     cout << IFNOT_GOTO(tmp_guard, lab) << ";\n";
 
     // Visit statement
+    cout << "{ \n";
     elselessIf->statement->accept(*this);
+    cout << "} \n";
 
     // End if
     cout << lab << ":;\n";
@@ -216,19 +218,24 @@ string CodeVisitor::visit(IfElse *ifElse) {
     cout << IFNOT_GOTO(tmp_guard, lab1) << ";\n";
 
     // Visit first statement
+    cout << "{ \n";
     ifElse->statementIf->accept(*this);
+    cout << "} \n";
 
     // Goto second label
     cout << GOTO(lab2) << ";\n";
 
     // Begin else
+    cout << "{ \n";
     cout << lab1 + ":\n";
 
     // Visit second statement
     ifElse->statementElse->accept(*this);
 
-    cout << lab2 + ":\n";
+    cout << "} \n";
     cout << "}\n";
+    cout << lab2 + ":;\n";
+
     return "";
 }
 
