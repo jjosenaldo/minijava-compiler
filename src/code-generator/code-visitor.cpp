@@ -413,7 +413,7 @@ string CodeVisitor::visit(StaticMethodCallExpression *exp)
     return "";
 }
 
-// TODO: implement the predefined nonstatic methods (such as <array>.length() and <string>.substring())
+// TODO: implement the predefined nonstatic methods (namely: <array>.length(), <string>.length() and <string>.substring())
 string CodeVisitor::visit(MethodCallExpression *call)
 {
     cout << "{\n";
@@ -542,7 +542,6 @@ string CodeVisitor::visit(FieldAccessExpression *exp)
     return tmp;
 }
 
-// TODO: Pegar referência para a classe em que o código está sendo executado (caso não seja um método estático)
 string CodeVisitor::visit(ThisExpression *exp)
 {
     auto tmpVar = getNewTmpVar();
