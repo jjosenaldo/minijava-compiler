@@ -409,7 +409,6 @@ string CodeVisitor::visit(MethodCallExpression *call) {
     return "";
 }
 
-// Expressions
 string CodeVisitor::visit(BinExpression *exp) {
     string tmp1 = exp->first->accept(*this);
     string tmp2 = exp->second->accept(*this);
@@ -478,8 +477,9 @@ string CodeVisitor::visit(FieldAccessExpression *exp) {
 
 // TODO: Pegar referência para a classe em que o código está sendo executado (caso não seja um método estático)
 string CodeVisitor::visit(ThisExpression *exp) {
-    cout << "// ThisExpression\n";
- return ""; //"r.getInstance()->";
+    auto tmpVar = getNewTmpVar();
+    cout << TYPE << " " << tmpVar << " = " << CURRENT_OBJ << ";\n";
+    return tmpVar;
 }
 
 string CodeVisitor::visit(ParenExpression *exp) {
