@@ -46,6 +46,8 @@ public:
 	virtual bool getBool() const {return false;}
 	string getClassName(){return className;}
 
+	virtual Value* copy() {return this;}
+
 	Value* operator[](const int i);
 };
 
@@ -57,6 +59,7 @@ public:
 	IntValue(int v);
 	int getInt() const;
 
+	Value* copy();
 	string toString();
 
 	static Value* newInt(){return new IntValue();}
@@ -85,6 +88,7 @@ public:
 	BoolValue(bool v);
 	bool getBool() const;
 
+	Value* copy();
 	string toString();
 
 	static Value* newBool(){return new BoolValue();}
@@ -105,6 +109,7 @@ public:
 	StringValue(string v);
 	string getString() const;
 
+	Value* copy();
 	string toString();
 
 	static Value* newInt(){return new StringValue();}

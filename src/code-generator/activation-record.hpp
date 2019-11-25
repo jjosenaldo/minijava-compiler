@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <string>
 #include <stack>
+#include <vector>
 #include <iostream> // TODO: Remove after
 #include "value.hpp"
 
@@ -101,11 +102,14 @@ public:
 
 class RecordStack
 {
-	stack<Record*> records;
+	vector<Record*> records;
 
 public:
 	RecordStack();
 	~RecordStack();
+	void print(){
+		for(auto r : records) r->print();
+	}
 	void createRecord(void* b_label = nullptr, void* e_label = nullptr, void* methodCallPosLabel = nullptr, ClassValue* currentObject = nullptr, Value* returnVal = nullptr);
 	Record* top();
 	void pop();
