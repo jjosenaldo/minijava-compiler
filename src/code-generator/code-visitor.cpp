@@ -71,7 +71,7 @@ string CodeVisitor::visit(Method *method) {
 
     // Get a temp var containing the label to last method call point
     string tmpReturn = getNewTmpVar();
-    cout << "void* " << tmpReturn << " = " << RS_TOP << "getReturnLabel();\n";
+    cout << "void* " << tmpReturn << " = " << RS_TOP << "getMethodCallPosLabel();\n";
 
     // Pop the record
     cout << POPRECORD << "\n";
@@ -176,11 +176,14 @@ string CodeVisitor::visit(ElselessIf *elselessIf) {
     cout << IFNOT_GOTO(tmp_guard, lab) << ";\n";
 
     // Visit statement
+    cout << "{ \n";
     elselessIf->statement->accept(*this);
+    cout << "} \n";
+    cout << "} \n";
 
     // End if
     cout << lab << ":;\n";
-    cout << "}\n";
+
 
     return "";
 }
@@ -216,19 +219,24 @@ string CodeVisitor::visit(IfElse *ifElse) {
     cout << IFNOT_GOTO(tmp_guard, lab1) << ";\n";
 
     // Visit first statement
+    cout << "{ \n";
     ifElse->statementIf->accept(*this);
+    cout << "} \n";
 
     // Goto second label
     cout << GOTO(lab2) << ";\n";
 
     // Begin else
+    cout << "{ \n";
     cout << lab1 + ":\n";
 
     // Visit second statement
     ifElse->statementElse->accept(*this);
 
-    cout << lab2 + ":\n";
-    cout << "}\n";
+    cout << "} \n";
+    cout << "} \n";
+    cout << lab2 + ":;\n";
+
     return "";
 }
 
@@ -270,9 +278,11 @@ string CodeVisitor::visit(While *whilestmt) {
     // Goto begin while
     cout << GOTO(lab1) << ";\n";
 
+    cout << "}\n";
+
     cout << lab2 << ":;\n";
 
-    cout << "}\n";
+
 
     cout << POPRECORD << "\n";
 
