@@ -56,7 +56,7 @@ public:
 	IntValue();
 	IntValue(int v);
 	int getInt() const;
-	
+
 	string toString();
 
 	static Value* newInt(){return new IntValue();}
