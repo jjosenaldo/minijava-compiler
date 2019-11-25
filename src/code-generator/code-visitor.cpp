@@ -15,6 +15,7 @@ using std::endl;
 #define RS string("rs->")
 #define RS_TOP string("rs->top()->")
 #define LOOKUP_DYN(x) string(RS_TOP+"lookupDynamic(" + x + ")")
+#define LOOKUP_STATIC(x) string(RS_TOP+"lookupStatic(" + x + ")")
 #define TYPE string("Value*")
 #define CREATERECORD(b_label, e_label, returnLabel, currentObject) \
     string(RS + "createRecord(" + b_label + "," + e_label + "," + returnLabel + "," + currentObject + ");")
@@ -130,8 +131,14 @@ string CodeVisitor::visitClassDeclarationFields(ClassDeclaration* classDec){
 // Statements
 string CodeVisitor::visit(VarDec *vardec){
     cout << "{\n";
-    string tmp = vardec->value->accept(*this);
-    cout << RS_TOP + INSERTVAR(vardec->id, tmp) + "\n";
+    string tmp;
+
+    if(vardec->value != nullptr){
+        tmp = vardec->value->accept(*this);
+    } else
+        tmp = "new " + typeToValueString(vardec->type);
+    
+    cout << RS_TOP + INSERTVAR(vardec->id, tmp) + "\n";    
     cout << "}\n";
     resetCountTmpVars();
     return "";
@@ -329,6 +336,7 @@ string CodeVisitor::visit(StaticMethodCallExpression *exp) {
     return "";
 }
 
+// TODO: implement the predefined nonstatic methods (such as <array>.length() and <string>.substring())
 string CodeVisitor::visit(MethodCallExpression *call) {
     cout << "{\n";
     // Get formal parameters' names
@@ -342,6 +350,11 @@ string CodeVisitor::visit(MethodCallExpression *call) {
 
     // Processes the "lvalue"
     string tmpLvalueVarName = call->left->accept(*this);
+
+    // Checks if the lvalue is a null thing
+    cout << "if(dynamic_cast<NullValue*>(" << tmpLvalueVarName << ") != nullptr){\n";
+    cout << "std::cerr << \"ERROR: you cannot call a method on a null object!\\n\";\nexit(0);";
+    cout << "\n}\n";
 
     // Create a new record
     cout << "{\n" << CREATERECORD_CAST_OBJ("nullptr","nullptr","&&" + end_label, tmpLvalueVarName) << "\n";
@@ -359,6 +372,7 @@ string CodeVisitor::visit(MethodCallExpression *call) {
 
     cout << "}\n";
     cout << end_label << ":\n";
+    resetCountTmpVars();
     return "";
 }
 
@@ -419,7 +433,7 @@ string CodeVisitor::visit(NewObjExpression *exp) {
 }
 
 string CodeVisitor::visit(IdExpression *exp) {
-    cout << TYPE << " _" << exp->getId() << " = " << LOOKUP_DYN("\"" + exp->getId() + "\"")<< ";\n";
+    cout << TYPE << " _" << exp->getId() << " = " << LOOKUP_STATIC("\"" + exp->getId() + "\"")<< ";\n";
     return "_"+exp->getId();
 }
 
@@ -503,13 +517,18 @@ string typeToValueString(Type* t){
         switch(bt->kind){
             case TypeInt: return "IntValue";
             case TypeBoolean: return "BoolValue";
+            case TypeNull: return "NullValue";
             return "";
         }
     }
 
     ClassType* ct = dynamic_cast<ClassType*>(t);
-    if(ct != nullptr)
-        return ct->getClassName();
+    if(ct != nullptr){
+        if(ct->getClassName() == "String")
+            return "StringValue";
+        else 
+            return "NullValue";
+    }
 
     ArrayType* at = dynamic_cast<ArrayType*>(t);
     if(at != nullptr)

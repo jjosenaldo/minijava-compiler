@@ -1,0 +1,14 @@
+class Main{
+    void main(String[] args){
+        int a;
+        Cat c /*= new Cat()*/;
+        c.foo();
+    }
+}
+
+class Cat{
+    int x = 4;
+    void foo(){
+        System.print(String.intToString(this.x));
+    }
+}
