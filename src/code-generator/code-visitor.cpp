@@ -332,13 +332,13 @@ string CodeVisitor::visit(Return *stmt) {
     string methodCallLabel = getNewTmpVar();
     string varValueAdress = getNewTmpVar();
     cout << "void* " + methodCallLabel + " = rs->searchMethodCallLabel(); \n";
-    cout << "Value*& " + varValueAdress + " = rs->getReturnValue(); \n";
+    cout << "Value*& " + varValueAdress + " = rs->top()->getReturnValue(); \n";
 
     //solve exp
     string tmp_exp = stmt->optExp->accept(*this);
 
     //TODO possible error here. Value*& receiveing a string
-    cout << varValueAdress + " = " + tmp_exp;
+    cout << varValueAdress + " = " + tmp_exp + ";\n";
 
     cout << GOTO("*" + methodCallLabel) << ";\n";
     return "";
