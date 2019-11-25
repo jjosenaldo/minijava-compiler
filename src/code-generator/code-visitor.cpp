@@ -17,10 +17,10 @@ using std::endl;
 #define LOOKUP_DYN(x) string(RS_TOP+"lookupDynamic(" + x + ")")
 #define LOOKUP_STATIC(x) string(RS_TOP+"lookupStatic(" + x + ")")
 #define TYPE string("Value*")
-#define CREATERECORD(b_label, e_label, returnLabel, currentObject) \
-    string(RS + "createRecord(" + b_label + "," + e_label + "," + returnLabel + "," + currentObject + ");")
-#define CREATERECORD_CAST_OBJ(b_label, e_label, returnLabel, currentObject) \
-    string(RS + "createRecord(" + b_label + "," + e_label + "," + returnLabel + ",dynamic_cast<ClassValue*>(" + currentObject + "));")
+#define CREATERECORD(b_label, e_label, returnLabel, currentObject, returnVal) \
+    string(RS + "createRecord(" + b_label + "," + e_label + "," + returnLabel + "," + currentObject + "," + returnVal");")
+#define CREATERECORD_CAST_OBJ(b_label, e_label, returnLabel, currentObject, returnVal) \
+    string(RS + "createRecord(" + b_label + "," + e_label + "," + returnLabel + ",dynamic_cast<ClassValue*>(" + currentObject + ")," + returnVal + ");")
 #define POPRECORD string(RS + "pop();")
 #define GOTO(label) "goto " + string(label)
 #define IFNOT_GOTO(guard, label) string("if(!" + guard + "->getBool()) " + GOTO(label))
@@ -48,7 +48,7 @@ string CodeVisitor::visit(Program *program) {
 
     // Create a new record to main method
     string end_label = getNewLabel();
-    cout << CREATERECORD("nullptr", "nullptr", "&&" + end_label, "nullptr") << endl;
+    cout << CREATERECORD("nullptr", "nullptr", "&&" + end_label, "nullptr", "nullptr") << endl;
 
     for(auto classdec : *program->declarations)
         classdec->accept(*this);
@@ -144,7 +144,7 @@ string CodeVisitor::visit(VarDec *vardec){
 }
 
 string CodeVisitor::visit(Block *block) {
-    cout << CREATERECORD("nullptr", "nullptr","nullptr", CURRENT_OBJ) << "\n";
+    cout << CREATERECORD("nullptr", "nullptr","nullptr", CURRENT_OBJ, "nullptr") << "\n";
     for(auto &e : *(block->statements))
         e->accept(*this);
     cout << POPRECORD << "\n";
@@ -253,7 +253,7 @@ string CodeVisitor::visit(While *whilestmt) {
     string lab1 = getNewLabel();
     string lab2 = getNewLabel();
 
-    cout << CREATERECORD("&&"+ lab1,"&&"+lab2,"nullptr", CURRENT_OBJ) << "\n";
+    cout << CREATERECORD("&&"+ lab1,"&&"+lab2,"nullptr", CURRENT_OBJ, "nullptr") << "\n";
 
     cout << "{\n";
     cout << lab1 << ":\n";
@@ -389,8 +389,10 @@ string CodeVisitor::visit(MethodCallExpression *call) {
     cout << "std::cerr << \"ERROR: you cannot call a method on a null object!\\n\";\nexit(0);";
     cout << "\n}\n";
 
+    string returnTmpVar = getNewTmpVar();
+
     // Create a new record
-    cout << "{\n" << CREATERECORD_CAST_OBJ("nullptr","nullptr","&&" + end_label, tmpLvalueVarName) << "\n";
+    cout << "{\n" << CREATERECORD_CAST_OBJ("nullptr","nullptr","&&" + end_label, tmpLvalueVarName, returnTmpVar) << "\n";
 
     // Assign real parameters to formal parameters inserting then in the new record
     auto it = call->arguments->begin();
