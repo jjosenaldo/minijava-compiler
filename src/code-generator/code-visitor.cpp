@@ -17,10 +17,10 @@ using std::endl;
 #define LOOKUP_DYN(x) string(RS_TOP+"lookupDynamic(" + x + ")")
 #define LOOKUP_STATIC(x) string(RS_TOP+"lookupStatic(" + x + ")")
 #define TYPE string("Value*")
-#define CREATERECORD(b_label, e_label, returnLabel, currentObject) \
-    string(RS + "createRecord(" + b_label + "," + e_label + "," + returnLabel + "," + currentObject + ");")
-#define CREATERECORD_CAST_OBJ(b_label, e_label, returnLabel, currentObject) \
-    string(RS + "createRecord(" + b_label + "," + e_label + "," + returnLabel + ",dynamic_cast<ClassValue*>(" + currentObject + "));")
+#define CREATERECORD(b_label, e_label, returnLabel, currentObject, returnVal) \
+    string(RS + "createRecord(" + b_label + "," + e_label + "," + returnLabel + "," + currentObject + "," + returnVal");")
+#define CREATERECORD_CAST_OBJ(b_label, e_label, returnLabel, currentObject, returnVal) \
+    string(RS + "createRecord(" + b_label + "," + e_label + "," + returnLabel + ",dynamic_cast<ClassValue*>(" + currentObject + ")," + returnVal + ");")
 #define POPRECORD string(RS + "pop();")
 #define GOTO(label) "goto " + string(label)
 #define IFNOT_GOTO(guard, label) string("if(!" + guard + "->getBool()) " + GOTO(label))
@@ -45,10 +45,10 @@ string CodeVisitor::getNewLabel() {
 string CodeVisitor::visit(Program *program) {
     // initMethodInfo
     initMethodsInfo(program);
-    
+
     // Create a new record to main method
     string end_label = getNewLabel();
-    cout << CREATERECORD("nullptr", "nullptr", "&&" + end_label, "nullptr") << endl;
+    cout << CREATERECORD("nullptr", "nullptr", "&&" + end_label, "nullptr", "nullptr") << endl;
 
     for(auto classdec : *program->declarations)
         classdec->accept(*this);
@@ -60,7 +60,7 @@ string CodeVisitor::visit(Program *program) {
 
     // for(auto it = ++(program->declarations->begin()); it != program->declarations->end(); it++)
     //     (**it).accept(*this);
-    
+
     return "";
 }
 
@@ -97,7 +97,7 @@ string CodeVisitor::visitClassDeclarationsFields(Program* program){
     return "";
 }
 
-// TODO: implement inheritance 
+// TODO: implement inheritance
 // TODO: do not create methods for the Main class at all
 string CodeVisitor::visitClassDeclarationFields(ClassDeclaration* classDec){
     cout << "struct " << classDec->name << " : ClassValue ";
@@ -112,7 +112,7 @@ string CodeVisitor::visitClassDeclarationFields(ClassDeclaration* classDec){
         if(field->initValue != nullptr) {
             auto initVal = field->initValue->accept(*this);
             cout << "fields->emplace(\"" << field->name  << "\"," << initVal << ");\n";
-        } else 
+        } else
             cout << "fields->emplace(\"" << field->name  << "\", new " << typeToValueString(field->type) << ");\n";
     }
     cout << "\n}\n";
@@ -121,7 +121,7 @@ string CodeVisitor::visitClassDeclarationFields(ClassDeclaration* classDec){
     cout << "static Value* new" << classDec->name << "(){\n";
     cout << classDec->name << "* c = new " << classDec->name << "();\n";
     cout << "c->initFields();\nreturn c;\n}\n";
-    
+
     cout << "};\n";
 
     return "";
@@ -136,15 +136,15 @@ string CodeVisitor::visit(VarDec *vardec){
         tmp = vardec->value->accept(*this);
     } else
         tmp = "new " + typeToValueString(vardec->type);
-    
-    cout << RS_TOP + INSERTVAR(vardec->id, tmp) + "\n";    
+
+    cout << RS_TOP + INSERTVAR(vardec->id, tmp) + "\n";
     cout << "}\n";
     resetCountTmpVars();
     return "";
 }
 
 string CodeVisitor::visit(Block *block) {
-    cout << CREATERECORD("nullptr", "nullptr","nullptr", CURRENT_OBJ) << "\n";
+    cout << CREATERECORD("nullptr", "nullptr","nullptr", CURRENT_OBJ, "nullptr") << "\n";
     for(auto &e : *(block->statements))
         e->accept(*this);
     cout << POPRECORD << "\n";
@@ -253,7 +253,7 @@ string CodeVisitor::visit(While *whilestmt) {
     string lab1 = getNewLabel();
     string lab2 = getNewLabel();
 
-    cout << CREATERECORD("&&"+ lab1,"&&"+lab2,"nullptr", CURRENT_OBJ) << "\n";
+    cout << CREATERECORD("&&"+ lab1,"&&"+lab2,"nullptr", CURRENT_OBJ, "nullptr") << "\n";
 
     cout << "{\n";
     cout << lab1 << ":\n";
@@ -283,7 +283,7 @@ string CodeVisitor::visit(While *whilestmt) {
 //     a = <exp>
 //     a[i_1]...[i_n] = <exp>
 //     this.a = <exp>
-string CodeVisitor::visit(Assignment *assign){    
+string CodeVisitor::visit(Assignment *assign){
     // a = <exp>
     cout << "{\n";
     string tmp_rvalue = assign->rvalue->accept(*this);
@@ -323,9 +323,43 @@ string CodeVisitor::visit(Continue *stmt) {
     return "";
 }
 
-string CodeVisitor::visit(Break *stmt) { return ""; }      // TODO: Implement later
-string CodeVisitor::visit(Return *stmt) { return ""; }     // TODO: Implement later
-string CodeVisitor::visit(Skip *stmt) { return ""; }       // TODO: Implement later
+string CodeVisitor::visit(Break *stmt) {
+    string tmp = getNewTmpVar();
+    cout << "void* " + tmp + " = rs->searchBreak(); \n";
+    cout << GOTO("*" + tmp) << ";\n";
+    return "";
+}
+
+string CodeVisitor::visit(Return *stmt) {
+    /*
+        "     return 5+2;     "
+
+        void* methodCallLabel = rs->searchMethodCallLabel();
+        Value*& varValueAdress = rs->getReturnValue();
+        varValueAdress = tmp_exp;
+        goto methodCallLabel;
+
+
+    */
+
+    string methodCallLabel = getNewTmpVar();
+    string varValueAdress = getNewTmpVar();
+    cout << "void* " + methodCallLabel + " = rs->searchMethodCallLabel(); \n";
+    cout << "Value*& " + varValueAdress + " = rs->top()->getReturnValue(); \n";
+
+    //solve exp
+    string tmp_exp = stmt->optExp->accept(*this);
+
+    //TODO possible error here. Value*& receiveing a string
+    cout << varValueAdress + " = " + tmp_exp + ";\n";
+
+    cout << GOTO("*" + methodCallLabel) << ";\n";
+    return "";
+}
+
+string CodeVisitor::visit(Skip *stmt) {
+    return "";
+}
 
 string CodeVisitor::visit(StaticMethodCallExpression *exp) {
     if(exp->className == "System"){
@@ -356,7 +390,7 @@ string CodeVisitor::visit(MethodCallExpression *call) {
     // TODO: If you pass the subclass name here, it can solve the polimorphism problem
     string className = call->left->getType()->getClassName();
     vector<string> formal_params = this->getRealParams(className, call->method);
-    
+
     // Get return label
     string end_label = getNewLabel();
 
@@ -368,8 +402,10 @@ string CodeVisitor::visit(MethodCallExpression *call) {
     cout << "std::cerr << \"ERROR: you cannot call a method on a null object!\\n\";\nexit(0);";
     cout << "\n}\n";
 
+    string returnTmpVar = getNewTmpVar();
+
     // Create a new record
-    cout << "{\n" << CREATERECORD_CAST_OBJ("nullptr","nullptr","&&" + end_label, tmpLvalueVarName) << "\n";
+    cout << "{\n" << CREATERECORD_CAST_OBJ("nullptr","nullptr","&&" + end_label, tmpLvalueVarName, returnTmpVar) << "\n";
 
     // Assign real parameters to formal parameters inserting then in the new record
     auto it = call->arguments->begin();
@@ -433,7 +469,7 @@ string CodeVisitor::visit(AtomExpression *exp) {
         toBePrinted += "\"";
         cout << TYPE << " " << tmp << " = new StringValue(" << toBePrinted << ");\n";
     }
-    
+
     return tmp;
 }
 
@@ -539,7 +575,7 @@ string typeToValueString(Type* t){
     if(ct != nullptr){
         if(ct->getClassName() == "String")
             return "StringValue";
-        else 
+        else
             return "NullValue";
     }
 
