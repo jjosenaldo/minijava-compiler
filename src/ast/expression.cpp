@@ -203,6 +203,10 @@ bool ThisExpression::accept(StaticVisitor& visitor){
     return visitor.visit(this);
 }
 
+string ThisExpression::accept(CodeVisitor& visitor){
+    return visitor.visit(this);
+}
+
 ParenExpression::ParenExpression(Expression* fst){
     this->first = fst;
 }
