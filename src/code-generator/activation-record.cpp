@@ -1,13 +1,13 @@
 #include "activation-record.hpp"
 
-Record::Record(Record *parent, void* b_label, void* e_label, void* methodCallPosLabel, Value* returnVal) :
-	Record(parent,parent, b_label, e_label, methodCallPosLabel, nullptr, returnVal) {}
+// Record::Record(Record *parent, void* b_label, void* e_label, void* methodCallPosLabel, Value* returnVal) :
+// 	Record(parent,parent, b_label, e_label, methodCallPosLabel, nullptr, returnVal) {}
 
-Record::Record(Record *parent, void* b_label, void* e_label, void* methodCallPosLabel, ClassValue* currentObject, Value* returnVal) :
-	Record(parent,parent, b_label, e_label, methodCallPosLabel, currentObject, returnVal) {}
+// Record::Record(Record *parent, void* b_label, void* e_label, void* methodCallPosLabel, ClassValue* currentObject, Value* returnVal) :
+// 	Record(parent,parent, b_label, e_label, methodCallPosLabel, currentObject, returnVal) {}
 
-Record::Record(Record *staticParent, Record* dynamicParent, void* b_label, void* e_label, void* methodCallPosLabel, Value* returnVal) :
-	Record(staticParent, dynamicParent, b_label, e_label, methodCallPosLabel, nullptr, returnVal){}
+// Record::Record(Record *staticParent, Record* dynamicParent, void* b_label, void* e_label, void* methodCallPosLabel, Value* returnVal) :
+// 	Record(staticParent, dynamicParent, b_label, e_label, methodCallPosLabel, nullptr, returnVal){}
 
 Record::Record(Record *staticParent, Record* dynamicParent, void* b_label, void* e_label, void* methodCallPosLabel, ClassValue* currentObject, Value* returnVal) {
 	this->b_label = b_label;
@@ -43,11 +43,18 @@ Value* Record::getVarVal(string id) {
 Value* Record::lookupStatic(string id) {
 	Value *v = nullptr;
 	Record* currentRecord = this;
-
+	
 	do{
+		// std::cout << "procurando: " << id << " no registro\n";
+		// currentRecord->print();
 		v = currentRecord->getVarVal(id);
 		currentRecord = currentRecord->getStaticParent();
+		// std::cout << "proximo regisitro: " << std::endl;
+		// if(currentRecord == nullptr) std::cout << "null\n";
+		// else currentRecord->print();
 	} while(v == nullptr && currentRecord != nullptr);
+
+	// std::cout << "cabou/desisto\n";
 
 	return v->copy();
 }
@@ -132,11 +139,20 @@ RecordStack::RecordStack() {}
 
 RecordStack::~RecordStack() {}
 
-// TODO: Transformar em escopo estático
 void RecordStack::createRecord(void* b_label, void* e_label, void* returnLabel, ClassValue* currentObject, Value* returnVal) {
+	// std::cout << "quero inserir um registro. pilha atual:\n";
+	// this->print();
 	Record* dynamicParent = records.empty() ? nullptr : records.back();
-	Record* staticParent = returnLabel == nullptr ? dynamicParent : nullptr ;
+	Record* staticParent;
+
+	if(dynamicParent == nullptr) 
+		staticParent = nullptr;
+	
+	else 
+		staticParent = returnLabel != nullptr ? nullptr : dynamicParent ;
 	records.push_back(new Record(staticParent, dynamicParent , b_label, e_label, returnLabel,currentObject, returnVal));
+	// std::cout << "após inserir:\n";
+	// this->print();
 }
 
 Record* RecordStack::top() {

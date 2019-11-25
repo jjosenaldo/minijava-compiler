@@ -49,11 +49,11 @@ private:
 
 public:
 	Record(Record* staticParent, Record* dynamicParent, void* b_label, void* e_label, void* methodCallPosLabel, ClassValue* currentObject, Value* returnVal);
-	Record(Record* staticParent, Record* dynamicParent, void* b_label, void* e_label, void* methodCallPosLabel, Value* returnVal);
+	// Record(Record* staticParent, Record* dynamicParent, void* b_label, void* e_label, void* methodCallPosLabel, Value* returnVal);
 
 	// Sets both parents to be the same record
-	Record(Record* parent, void* b_label, void* e_label, void* methodCallPosLabel, ClassValue* currentObject, Value* returnVal);
-	Record(Record* parent, void* b_label, void* e_label, void* methodCallPosLabel, Value* returnVal);
+	// Record(Record* parent, void* b_label, void* e_label, void* methodCallPosLabel, ClassValue* currentObject, Value* returnVal);
+	// Record(Record* parent, void* b_label, void* e_label, void* methodCallPosLabel, Value* returnVal);
 	~Record();
 
 	Value* lookupStatic(string id);
@@ -84,6 +84,8 @@ public:
 
 	// TODO: Remove after
 	void print() {
+		cout << "tenho label? "<< (methodCallPosLabel != nullptr) << "\n";
+		cout << "tenho pai estatico? " << (staticParent != nullptr) << "\n";
 		cout << "{\n";
 		for(auto &e : table)
 			cout << "\t" << e.first << ", " << (e.second == nullptr ? "nullptr" : e.second->toString()) << endl;

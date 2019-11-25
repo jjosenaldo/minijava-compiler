@@ -434,17 +434,23 @@ string CodeVisitor::visit(MethodCallExpression *call)
     cout << "std::cerr << \"ERROR: you cannot call a method on a null object!\\n\";\nexit(0);";
     cout << "\n}\n";
 
-    // Create a new record
-    cout << "{\n"
-         << CREATERECORD_CAST_OBJ("nullptr", "nullptr", "&&" + end_label, tmpLvalueVarName, "nullptr") << "\n";
+    // Process the parameters
+    string paramListVarName = getNewLabel();
+    cout << "Value** " << paramListVarName << " = new Value*[" << formal_params.size()  << "];\n";
 
-    // Assign real parameters to formal parameters inserting then in the new record
     auto it = call->arguments->begin();
-    for (auto &e : formal_params)
-    {
+    int cont = 0;
+    for (auto &e : formal_params){
         string tmpVar = (**(it++)).accept(*this);
-        cout << RS_TOP << INSERTVAR(e, tmpVar) << endl;
+        cout << paramListVarName << "[" << (cont++) << "] = " << tmpVar << ";\n"; 
     }
+
+    // Creates a new record
+    cout << "{\n" << CREATERECORD_CAST_OBJ("nullptr", "nullptr", "&&" + end_label, tmpLvalueVarName, "nullptr") << "\n";
+
+    // Inserts the params in the record
+    for(int i = 0; i < formal_params.size(); ++i)
+        cout << RS_TOP << "insertVar(\"" << formal_params[i] << "\"," << paramListVarName << "[" << i << "]);\n";
 
     string tmp_label = this->getMethodLabel(className, call->method);
     cout << GOTO(tmp_label) << ";\n";

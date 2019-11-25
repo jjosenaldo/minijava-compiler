@@ -70,9 +70,6 @@ Value** ArrayValue::getArray() const{
 }
 
 void ArrayValue::setAt(int* dims, int n, Value* newVal){
-    std::cout << "setAt({";
-    for(int i = 0; i < n; ++i) std::cout << dims[i] << ",";
-    std::cout << "}, " << n << "," << newVal->toString() << ")\n";
     setAt(dims, 0, n, newVal, this);    
 }
 
