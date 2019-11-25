@@ -107,7 +107,6 @@ string CodeVisitor::visitClassDeclarationFields(ClassDeclaration* classDec){
     cout << classDec->name << "() : ClassValue( \"" << classDec->name << "\"){\ninitFields();\n}\n";
 
     // Generate initFields method
-    // TODO: arrays
     cout << "void initFields(){\n";
     for(auto field : *(classDec->fields)){
         if(field->initValue != nullptr) {
@@ -290,7 +289,8 @@ string CodeVisitor::visit(Assignment *assign){
         FieldAccessExpression* fae = dynamic_cast<FieldAccessExpression*>(assign->lvalue);
         if(fae != nullptr)
             cout << UPDATE_CURRENT_OBJ_FIELD("\""+fae->id+"\"", tmp_rvalue) << "\n";
-        else /* TODO */ ;
+        else // TODO: the third assignment kind!  */ 
+            ;
     }
 
     cout << "}\n";
@@ -304,9 +304,9 @@ string CodeVisitor::visit(Continue *stmt) {
     return "";
 }
 
-string CodeVisitor::visit(Break *stmt) { return ""; }      // TODO: Implement after
-string CodeVisitor::visit(Return *stmt) { return ""; }     // TODO: Implement after
-string CodeVisitor::visit(Skip *stmt) { return ""; }       // TODO: Implement after
+string CodeVisitor::visit(Break *stmt) { return ""; }      // TODO: Implement later
+string CodeVisitor::visit(Return *stmt) { return ""; }     // TODO: Implement later
+string CodeVisitor::visit(Skip *stmt) { return ""; }       // TODO: Implement later
 
 string CodeVisitor::visit(StaticMethodCallExpression *exp) {
     if(exp->className == "System"){
@@ -380,7 +380,7 @@ string CodeVisitor::visit(UnExpression *exp) {
     return tmp;
 }
 
-// TODO: implement the remaining atomic expressions (TypeNull is missing)
+// TODO: implement TypeNull
 string CodeVisitor::visit(AtomExpression *exp) {
     string tmp = getNewTmpVar();
 
@@ -423,7 +423,6 @@ string CodeVisitor::visit(IdExpression *exp) {
     return "_"+exp->getId();
 }
 
-// TODO: Pegar referência para a classe em que o código está sendo executado (caso não seja um método estático)
 string CodeVisitor::visit(FieldAccessExpression *exp) {
     auto tmp = getNewTmpVar();
     cout << TYPE << " " <<  tmp << " = " << CURRENT_OBJ << "->get(\"" << exp->id << "\");\n";
@@ -514,7 +513,7 @@ string typeToValueString(Type* t){
 
     ArrayType* at = dynamic_cast<ArrayType*>(t);
     if(at != nullptr)
-        return "ArrayValue";
+        return "NullValue";
 
     return "";
 }

@@ -1,9 +1,16 @@
 class Main{
     void main(String[] args){
-        
+        Array a = new Array();
+        a.foo();
     }
 }
 
 class Array{
     int[] arrayOfInts;
+
+    void foo(){
+        this.arrayOfInts = new int[1]; /* Comment this line for error */
+        int a = this.arrayOfInts[0];
+        System.print(String.intToString(a));
+    }
 }

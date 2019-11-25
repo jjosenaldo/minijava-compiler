@@ -155,6 +155,14 @@ public:
 	friend Value* operator!=(const Value& v1, const Value& v2);
 };
 
+class NullValue : public Value{
+public:
+	friend Value* operator==(const Value& v1, const Value& v2);
+	friend Value* operator!=(const Value& v1, const Value& v2);
+
+	string toString(){return "null";}
+};
+
 // int
 Value* operator-(const Value& v1, const Value& v2);
 Value* operator-(const Value& v1);
