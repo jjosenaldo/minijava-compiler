@@ -18,10 +18,10 @@ INC := -I $(PARSER_PATH) -I $(SYMTABLE_PATH) -I $(SYMTABLE_PATH) -I $(SYMTABLE_P
 
 OBJS = $(OBJ)/activation-record.o $(OBJ)/ast.o $(OBJ)/code-generator.o $(OBJ)/code-visitor.o $(OBJ)/error.o $(OBJ)/expression.o $(OBJ)/global.o $(OBJ)/operator.o $(OBJ)/statement.o $(OBJ)/symtable.o $(OBJ)/type.o $(OBJ)/value.o $(OBJ)/static-visitor.o
 
-all: $(BIN)/main.out
+all: $(BIN)/mjv
 
-$(BIN)/main.out: $(OBJ)/lex.yy.c $(PARSER_PATH)/yaccer.cpp $(OBJS) $(SRC)/main.cpp
-	g++ $(SRC)/main.cpp $(PARSER_PATH)/yaccer.cpp $(OBJ)/lex.yy.c $(OBJS) -ly -ll -o $(BIN)/main.out $(INC) $(FLAGS)
+$(BIN)/mjv: $(OBJ)/lex.yy.c $(PARSER_PATH)/yaccer.cpp $(OBJS) $(SRC)/main.cpp
+	g++ $(SRC)/main.cpp $(PARSER_PATH)/yaccer.cpp $(OBJ)/lex.yy.c $(OBJS) -ly -ll -o $(BIN)/mjv $(INC) $(FLAGS)
 
 $(OBJ)/lex.yy.c: $(PARSER_PATH)/lexer.l
 	$(LEX) -o $(OBJ)/lex.yy.c $(PARSER_PATH)/lexer.l
@@ -80,9 +80,9 @@ clean:
 	@rm $(PARSER_PATH)/*.cpp $(PARSER_PATH)/*.hpp
 
 # Run all code examples
-test: $(BIN)/main.out
+test: $(BIN)/mjv
 	@for filename in ./code-examples/*; do \
 		echo "------ TEST --------------------------\nFile: $$filename\n"; \
-		./bin/main.out < "$$filename"; \
+		./bin/mjv < "$$filename"; \
 		echo "--------------------------------------\n\n"; \
 	done

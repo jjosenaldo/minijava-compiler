@@ -40,7 +40,7 @@ protected:
 	string className;
 
 public:
-	~Value() {}
+	virtual ~Value() {}
 	virtual string toString() {return "";}
 	virtual int getInt() const {return 0;}
 	virtual bool getBool() const {return false;}

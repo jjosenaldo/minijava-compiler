@@ -92,8 +92,8 @@ void Record::updateStatic(string id, Value* newValue) {
 		v = currentRecord->getVarVal(id);
 	}
 
-	delete currentRecord->table[id];
 	currentRecord->table[id] = newValue;
+	delete v;
 }
 
 void* Record::gete_label(){
@@ -113,7 +113,6 @@ RecordStack::RecordStack() {}
 
 RecordStack::~RecordStack() {}
 
-// TODO: Transformar em escopo estático
 void RecordStack::createRecord(void* b_label, void* e_label, void* returnLabel, ClassValue* currentObject) {
 	Record* dynamicParent = records.empty() ? nullptr : records.top();
 	Record* staticParent = returnLabel == nullptr ? dynamicParent : nullptr ;

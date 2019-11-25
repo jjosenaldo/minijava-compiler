@@ -3,18 +3,21 @@
 
 #include "ast.hpp"
 #include "code-visitor.hpp"
+#include <iostream>
+
+using std::ostream;
+using std::cout;
 
 class CodeGenerator{
     private:
         CodeVisitor codeVisitor;
         Program* program;
         void generateClassDecls();
-
-    public:
-        CodeGenerator(Program* program);
-        void generateCode();
         void generatePreamble();
         void generateMainMethod();
+    public:
+        CodeGenerator(Program* program, ostream& out = cout);
+        void generateCode();
 };
 
 

@@ -7,10 +7,12 @@
 #include "symtable.hpp"
 #include "statement.hpp"
 
+#include <iostream>
 #include <vector>
 #include <string>
 #include <unordered_map>
 
+using std::ostream;
 using std::string;
 using std::vector;
 using std::unordered_map;
@@ -25,6 +27,8 @@ class CodeVisitor {
 private:
 	unsigned long int countTmpVars = 0u;
 	unsigned long int countLabels = 0u;
+
+	ostream &out;
 
 	void resetCountTmpVars();
 	string getNewTmpVar();
@@ -68,6 +72,8 @@ private:
 	}
 
 public:
+	CodeVisitor(ostream &out) : out(out) {}
+
 	// AST base
 	string visit(Program*);
 	string visit(Method*);

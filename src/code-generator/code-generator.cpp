@@ -6,11 +6,11 @@
 using std::cout;
 using std::endl;
 using std::string;
+using std::ostream;
 
 #define TAB string("    ")
 
-CodeGenerator::CodeGenerator(Program* program){
-    codeVisitor = CodeVisitor();
+CodeGenerator::CodeGenerator(Program* program, ostream& out) : codeVisitor(out) {
     this->program = program;
 }
 
@@ -21,8 +21,8 @@ void CodeGenerator::generateCode(){
 
 void CodeGenerator::generatePreamble(){
     // #includes
-    cout << "#include \"src/code-generator/activation-record.hpp\"" << endl;
-    cout << "#include \"src/code-generator/value.hpp\"" << endl;
+    cout << "#include \"activation-record.hpp\"" << endl;
+    cout << "#include \"value.hpp\"" << endl;
 
     // usings 
     cout << "using std::cout;" << endl;
@@ -37,9 +37,8 @@ void CodeGenerator::generateMainMethod(){
 
     // Declares the activation record stack
     cout << "RecordStack* rs = new RecordStack();" << endl;
-    
-    CodeVisitor visitor = CodeVisitor();
-    visitor.visit(program);
+
+    codeVisitor.visit(program);
 
     cout << "return 0;" << endl;
     cout << "}" << endl;

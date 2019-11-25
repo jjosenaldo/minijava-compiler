@@ -44,6 +44,8 @@ private:
 	void* e_label;
 	void* returnLabel;
 
+	Value* getVarVal(string id);
+
 public:
 	Record(Record* staticParent, Record* dynamicParent, void* b_label, void* e_label, void* returnLabel, ClassValue* currentObject);
 	Record(Record* staticParent, Record* dynamicParent, void* b_label, void* e_label, void* returnLabel);
@@ -53,7 +55,6 @@ public:
 	Record(Record* parent, void* b_label, void* e_label, void* returnLabel);
 	~Record();
 
-	Value* getVarVal(string id);
 	Value* lookupStatic(string id);
 	Value* lookupDynamic(string id);
 	Value* getReturn();

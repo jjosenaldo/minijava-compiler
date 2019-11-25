@@ -317,10 +317,10 @@ string CodeVisitor::visit(Skip *stmt) { return ""; }       // TODO: Implement la
 string CodeVisitor::visit(StaticMethodCallExpression *exp) {
     if(exp->className == "System"){
         if(exp->method == "print"){
-            std::cout << "{\n";
+            cout << "{\n";
             string argFirstVar =  exp->arguments->at(0)->accept(*this);
-            std::cout << "cout << " << argFirstVar << "->toString() << endl;\n";
-            std::cout << "}\n";
+            cout << "cout << " << argFirstVar << "->toString() << endl;\n";
+            cout << "}\n";
             resetCountTmpVars();
         }
     } else if(exp->className == "String"){
@@ -328,7 +328,7 @@ string CodeVisitor::visit(StaticMethodCallExpression *exp) {
         string tmp = getNewTmpVar();
 
         if(exp->method == "intToString" || exp->method == "booleanToString"){
-            std::cout << TYPE << " " << tmp << " = new StringValue( " << argFirstVar << "->toString()" <<  ");\n";
+            cout << TYPE << " " << tmp << " = new StringValue( " << argFirstVar << "->toString()" <<  ");\n";
             return tmp;
         }
     }

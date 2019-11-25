@@ -237,6 +237,7 @@ Value* operator!(const Value& v1) {
     const BoolValue* b1 = dynamic_cast<const BoolValue*>(&v1);
     if(b1 != nullptr)
         return new BoolValue(!b1->value);
+    throw "Invalid type!\n";
 }
 
 Value* operator||(const BoolValue& v1, const BoolValue& v2) {
