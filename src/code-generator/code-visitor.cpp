@@ -83,7 +83,6 @@ string CodeVisitor::visit(Method *method) {
     return "";
 }
 
-// TODO
 string CodeVisitor::visit(ClassDeclaration *classdec) {
     for(auto &method : *(classdec->methods)) {
         cout << this->getMethodLabel(classdec->name, method->id) << ": ";
