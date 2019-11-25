@@ -3,8 +3,8 @@
 
 #include <unordered_map>
 #include <string>
-#include <stack>
 #include <vector>
+#include <stack>
 #include <iostream> // TODO: Remove after
 #include "value.hpp"
 
@@ -67,7 +67,6 @@ public:
 	void updateStatic(string id, Value* v);
 	void* gete_label();
 	void* getb_label();
-	void* getReturnLabel();
 
 	/**
 	 * @brief Checks if the block contained in the record is a regular block or is the statement

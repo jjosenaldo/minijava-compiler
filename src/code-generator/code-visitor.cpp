@@ -7,43 +7,46 @@
 #include "operator.hpp"
 #include "value.hpp"
 
-using std::to_string;
 using std::cout;
 using std::endl;
-
+using std::to_string;
 
 #define RS string("rs->")
 #define RS_TOP string("rs->top()->")
-#define LOOKUP_DYN(x) string(RS_TOP+"lookupDynamic(" + x + ")")
-#define LOOKUP_STATIC(x) string(RS_TOP+"lookupStatic(" + x + ")")
-#define LOOKUP_STATIC_REFERENCE(x) string(RS_TOP+"lookupStaticReference(" + x + ")")
+#define LOOKUP_DYN(x) string(RS_TOP + "lookupDynamic(" + x + ")")
+#define LOOKUP_STATIC(x) string(RS_TOP + "lookupStatic(" + x + ")")
+#define LOOKUP_STATIC_REFERENCE(x) string(RS_TOP + "lookupStaticReference(" + x + ")")
 #define TYPE string("Value*")
 #define CREATERECORD(b_label, e_label, returnLabel, currentObject, returnVal) \
-    string(RS + "createRecord(" + b_label + "," + e_label + "," + returnLabel + "," + currentObject + "," + returnVal");")
+    string(RS + "createRecord(" + b_label + "," + e_label + "," + returnLabel + "," + currentObject + "," + returnVal ");")
 #define CREATERECORD_CAST_OBJ(b_label, e_label, returnLabel, currentObject, returnVal) \
     string(RS + "createRecord(" + b_label + "," + e_label + "," + returnLabel + ",dynamic_cast<ClassValue*>(" + currentObject + ")," + returnVal + ");")
 #define POPRECORD string(RS + "pop();")
 #define GOTO(label) "goto " + string(label)
 #define IFNOT_GOTO(guard, label) string("if(!" + guard + "->getBool()) " + GOTO(label))
 #define UPDATE_STATIC(lvalue, rvalue) string(RS_TOP + "updateStatic(\"" + lvalue + "\"," + rvalue + ");")
-#define INSERTVAR(x,y) string("insertVar(\"" + x + "\"," + y + ");")
+#define INSERTVAR(x, y) string("insertVar(\"" + x + "\"," + y + ");")
 #define CURRENT_OBJ string(RS_TOP + "getCurrentObject()")
-#define UPDATE_CURRENT_OBJ_FIELD(field, rvalue)  \
+#define UPDATE_CURRENT_OBJ_FIELD(field, rvalue) \
     string(CURRENT_OBJ + "->set(" + field + ", " + rvalue + ");")
 
-void CodeVisitor::resetCountTmpVars() {
+void CodeVisitor::resetCountTmpVars()
+{
     this->countTmpVars = 0;
 }
 
-string CodeVisitor::getNewTmpVar() {
+string CodeVisitor::getNewTmpVar()
+{
     return "tmp" + to_string(this->countTmpVars++);
 }
 
-string CodeVisitor::getNewLabel() {
+string CodeVisitor::getNewLabel()
+{
     return "l" + to_string(this->countLabels++);
 }
 
-string CodeVisitor::visit(Program *program) {
+string CodeVisitor::visit(Program *program)
+{
     // initMethodInfo
     initMethodsInfo(program);
 
@@ -51,7 +54,7 @@ string CodeVisitor::visit(Program *program) {
     string end_label = getNewLabel();
     cout << CREATERECORD("nullptr", "nullptr", "&&" + end_label, "nullptr", "nullptr") << endl;
 
-    for(auto classdec : *program->declarations)
+    for (auto classdec : *program->declarations)
         classdec->accept(*this);
 
     cout << end_label << ":" << endl;
@@ -65,7 +68,8 @@ string CodeVisitor::visit(Program *program) {
     return "";
 }
 
-string CodeVisitor::visit(Method *method) {
+string CodeVisitor::visit(Method *method)
+{
     cout << "{\n";
     // Generate block code
     method->statement->accept(*this);
@@ -81,23 +85,27 @@ string CodeVisitor::visit(Method *method) {
     return "";
 }
 
-string CodeVisitor::visit(ClassDeclaration *classdec) {
-    for(auto &method : *(classdec->methods)) {
+string CodeVisitor::visit(ClassDeclaration *classdec)
+{
+    for (auto &method : *(classdec->methods))
+    {
         cout << this->getMethodLabel(classdec->name, method->id) << ": ";
         method->accept(*this);
     }
     return "";
 }
 
-string CodeVisitor::visitClassDeclarationsFields(Program* program){
-    for(auto decl : *(program->declarations))
+string CodeVisitor::visitClassDeclarationsFields(Program *program)
+{
+    for (auto decl : *(program->declarations))
         visitClassDeclarationFields(decl);
     return "";
 }
 
 // TODO: implement inheritance
 // TODO: do not create methods for the Main class at all
-string CodeVisitor::visitClassDeclarationFields(ClassDeclaration* classDec){
+string CodeVisitor::visitClassDeclarationFields(ClassDeclaration *classDec)
+{
     cout << "struct " << classDec->name << " : ClassValue ";
     cout << "{\n";
 
@@ -106,12 +114,15 @@ string CodeVisitor::visitClassDeclarationFields(ClassDeclaration* classDec){
 
     // Generate initFields method
     cout << "void initFields(){\n";
-    for(auto field : *(classDec->fields)){
-        if(field->initValue != nullptr) {
+    for (auto field : *(classDec->fields))
+    {
+        if (field->initValue != nullptr)
+        {
             auto initVal = field->initValue->accept(*this);
-            cout << "fields->emplace(\"" << field->name  << "\"," << initVal << ");\n";
-        } else
-            cout << "fields->emplace(\"" << field->name  << "\", new " << typeToValueString(field->type) << ");\n";
+            cout << "fields->emplace(\"" << field->name << "\"," << initVal << ");\n";
+        }
+        else
+            cout << "fields->emplace(\"" << field->name << "\", new " << typeToValueString(field->type) << ");\n";
     }
     cout << "\n}\n";
 
@@ -126,13 +137,16 @@ string CodeVisitor::visitClassDeclarationFields(ClassDeclaration* classDec){
 }
 
 // Statements
-string CodeVisitor::visit(VarDec *vardec){
+string CodeVisitor::visit(VarDec *vardec)
+{
     cout << "{\n";
     string tmp;
 
-    if(vardec->value != nullptr){
+    if (vardec->value != nullptr)
+    {
         tmp = vardec->value->accept(*this);
-    } else
+    }
+    else
         tmp = "new " + typeToValueString(vardec->type);
 
     cout << RS_TOP + INSERTVAR(vardec->id, tmp) + "\n";
@@ -142,16 +156,18 @@ string CodeVisitor::visit(VarDec *vardec){
     return "";
 }
 
-string CodeVisitor::visit(Block *block) {
-    cout << CREATERECORD("nullptr", "nullptr","nullptr", CURRENT_OBJ, "nullptr") << "\n";
-    for(auto &e : *(block->statements))
+string CodeVisitor::visit(Block *block)
+{
+    cout << CREATERECORD("nullptr", "nullptr", "nullptr", CURRENT_OBJ, "nullptr") << "\n";
+    for (auto &e : *(block->statements))
         e->accept(*this);
     cout << POPRECORD << "\n";
 
     return "";
 }
 
-string CodeVisitor::visit(ElselessIf *elselessIf) {
+string CodeVisitor::visit(ElselessIf *elselessIf)
+{
     /* Code generaton example:
 
         MiniJava Code:
@@ -183,11 +199,11 @@ string CodeVisitor::visit(ElselessIf *elselessIf) {
     // End if
     cout << lab << ":;\n";
 
-
     return "";
 }
 
-string CodeVisitor::visit(IfElse *ifElse) {
+string CodeVisitor::visit(IfElse *ifElse)
+{
     /* Code generaton example:
 
         MiniJava Code:
@@ -239,7 +255,8 @@ string CodeVisitor::visit(IfElse *ifElse) {
     return "";
 }
 
-string CodeVisitor::visit(While *whilestmt) {
+string CodeVisitor::visit(While *whilestmt)
+{
     /* Code generaton example:
 
         MiniJava Code:
@@ -260,7 +277,7 @@ string CodeVisitor::visit(While *whilestmt) {
     string lab1 = getNewLabel();
     string lab2 = getNewLabel();
 
-    cout << CREATERECORD("&&"+ lab1,"&&"+lab2,"nullptr", CURRENT_OBJ, "nullptr") << "\n";
+    cout << CREATERECORD("&&" + lab1, "&&" + lab2, "nullptr", CURRENT_OBJ, "nullptr") << "\n";
 
     cout << "{\n";
     cout << lab1 << ":\n";
@@ -281,8 +298,6 @@ string CodeVisitor::visit(While *whilestmt) {
 
     cout << lab2 << ":;\n";
 
-
-
     cout << POPRECORD << "\n";
 
     return "";
@@ -292,31 +307,35 @@ string CodeVisitor::visit(While *whilestmt) {
 //     a = <exp>
 //     a[i_1]...[i_n] = <exp>
 //     this.a = <exp>
-string CodeVisitor::visit(Assignment *assign){
+string CodeVisitor::visit(Assignment *assign)
+{
     // a = <exp>
     cout << "{\n";
     string tmp_rvalue = assign->rvalue->accept(*this);
 
-    IdExpression* ie = dynamic_cast<IdExpression*>(assign->lvalue);
-    if(ie != nullptr)
+    IdExpression *ie = dynamic_cast<IdExpression *>(assign->lvalue);
+    if (ie != nullptr)
         cout << UPDATE_STATIC(ie->id, tmp_rvalue) << "\n";
-    else{
-        FieldAccessExpression* fae = dynamic_cast<FieldAccessExpression*>(assign->lvalue);
-        if(fae != nullptr)
-            cout << UPDATE_CURRENT_OBJ_FIELD("\""+fae->id+"\"", tmp_rvalue) << "\n";
-        else{
-            ArrayAccessExpression* aae = dynamic_cast<ArrayAccessExpression*>(assign->lvalue);
+    else
+    {
+        FieldAccessExpression *fae = dynamic_cast<FieldAccessExpression *>(assign->lvalue);
+        if (fae != nullptr)
+            cout << UPDATE_CURRENT_OBJ_FIELD("\"" + fae->id + "\"", tmp_rvalue) << "\n";
+        else
+        {
+            ArrayAccessExpression *aae = dynamic_cast<ArrayAccessExpression *>(assign->lvalue);
             auto tmpDimsVar = getNewTmpVar();
             cout << "int* " << tmpDimsVar << " = new int[" << aae->dimensions->size() << "];\n";
 
-            for(int i = 0; i < aae->dimensions->size(); ++i){
+            for (int i = 0; i < aae->dimensions->size(); ++i)
+            {
                 auto tmpDimVar = ((*(aae->dimensions))[i])->accept(*this);
                 cout << tmpDimsVar << "[" << i << "] = " << tmpDimVar << "->getInt();\n";
             }
 
             auto tmpArr = getNewTmpVar();
             auto tmpLvalue = aae->left->accept(*this);
-            cout << "ArrayValue* " << tmpArr << " = dynamic_cast<ArrayValue*>(" << tmpLvalue  << ");\n";
+            cout << "ArrayValue* " << tmpArr << " = dynamic_cast<ArrayValue*>(" << tmpLvalue << ");\n";
             cout << tmpArr << "->setAt(" << tmpDimsVar << "," << aae->dimensions->size() << "," << tmp_rvalue << ");\n";
         }
     }
@@ -325,57 +344,69 @@ string CodeVisitor::visit(Assignment *assign){
     return "";
 }
 
-string CodeVisitor::visit(Continue *stmt) {
+string CodeVisitor::visit(Continue *stmt)
+{
     string tmp = getNewTmpVar();
     cout << "void* " + tmp + " = rs->searchContinue(); \n";
     cout << GOTO("*" + tmp) << ";\n";
     return "";
 }
 
-string CodeVisitor::visit(Break *stmt) {
+string CodeVisitor::visit(Break *stmt)
+{
     string tmp = getNewTmpVar();
     cout << "void* " + tmp + " = rs->searchBreak(); \n";
     cout << GOTO("*" + tmp) << ";\n";
     return "";
 }
 
-string CodeVisitor::visit(Return *stmt) {
+string CodeVisitor::visit(Return *stmt)
+{
     string methodCallLabel = getNewTmpVar();
     string varValueAdress = getNewTmpVar();
-    string tmp = getNewTmpVar();
-
-    cout << "void* " + methodCallLabel + " = rs->searchMethodCallLabel(); \n";
-    //cout << "Value* " + varValueAdress + " = rs->top()->getReturnValue(); \n";
+    string tmp_exp;
 
     //solve exp
-    if(stmt->optExp != nullptr) {
-        string tmp_exp = stmt->optExp->accept(*this);
+    if (stmt->optExp != nullptr)
+    {
+        tmp_exp = stmt->optExp->accept(*this);
+        cout << "void* " + methodCallLabel + " = rs->searchMethodCallLabel(); \n";
         cout << "rs->top()->setReturnValue(" + tmp_exp + "); \n";
     }
+    else
+        cout << "void* " + methodCallLabel + " = rs->searchMethodCallLabel(); \n";
 
     cout << GOTO("*" + methodCallLabel) << ";\n";
     return "";
 }
 
-string CodeVisitor::visit(Skip *stmt) {
+string CodeVisitor::visit(Skip *stmt)
+{
     return "";
 }
 
-string CodeVisitor::visit(StaticMethodCallExpression *exp) {
-    if(exp->className == "System"){
-        if(exp->method == "print"){
+string CodeVisitor::visit(StaticMethodCallExpression *exp)
+{
+    if (exp->className == "System")
+    {
+        if (exp->method == "print")
+        {
             cout << "{\n";
-            string argFirstVar =  exp->arguments->at(0)->accept(*this);
+            string argFirstVar = exp->arguments->at(0)->accept(*this);
             cout << "cout << " << argFirstVar << "->toString();\n";
             cout << "}\n";
             resetCountTmpVars();
         }
-    } else if(exp->className == "String"){
-        string argFirstVar =  exp->arguments->at(0)->accept(*this);
+    }
+    else if (exp->className == "String")
+    {
+        string argFirstVar = exp->arguments->at(0)->accept(*this);
         string tmp = getNewTmpVar();
 
-        if(exp->method == "intToString" || exp->method == "booleanToString"){
-            cout << TYPE << " " << tmp << " = new StringValue( " << argFirstVar << "->toString()" <<  ");\n";
+        if (exp->method == "intToString" || exp->method == "booleanToString")
+        {
+            cout << TYPE << " " << tmp << " = new StringValue( " << argFirstVar << "->toString()"
+                 << ");\n";
             return tmp;
         }
     }
@@ -383,7 +414,8 @@ string CodeVisitor::visit(StaticMethodCallExpression *exp) {
 }
 
 // TODO: implement the predefined nonstatic methods (such as <array>.length() and <string>.substring())
-string CodeVisitor::visit(MethodCallExpression *call) {
+string CodeVisitor::visit(MethodCallExpression *call)
+{
     cout << "{\n";
     // Get formal parameters' names
 
@@ -403,11 +435,13 @@ string CodeVisitor::visit(MethodCallExpression *call) {
     cout << "\n}\n";
 
     // Create a new record
-    cout << "{\n" << CREATERECORD_CAST_OBJ("nullptr","nullptr","&&" + end_label, tmpLvalueVarName, "nullptr") << "\n";
+    cout << "{\n"
+         << CREATERECORD_CAST_OBJ("nullptr", "nullptr", "&&" + end_label, tmpLvalueVarName, "nullptr") << "\n";
 
     // Assign real parameters to formal parameters inserting then in the new record
     auto it = call->arguments->begin();
-    for (auto &e : formal_params) {
+    for (auto &e : formal_params)
+    {
         string tmpVar = (**(it++)).accept(*this);
         cout << RS_TOP << INSERTVAR(e, tmpVar) << endl;
     }
@@ -420,13 +454,14 @@ string CodeVisitor::visit(MethodCallExpression *call) {
     cout << end_label << ":\n";
     string tmpReturn = getNewTmpVar();
     cout << TYPE << " " << tmpReturn << " = rs->top()->getReturnValue();\n";
-     // Pop the record
+    // Pop the record
     cout << POPRECORD << "\n";
 
     return tmpReturn;
 }
 
-string CodeVisitor::visit(BinExpression *exp) {
+string CodeVisitor::visit(BinExpression *exp)
+{
     string tmp1 = exp->first->accept(*this);
     string tmp2 = exp->second->accept(*this);
 
@@ -435,7 +470,8 @@ string CodeVisitor::visit(BinExpression *exp) {
     return tmp;
 }
 
-string CodeVisitor::visit(UnExpression *exp) {
+string CodeVisitor::visit(UnExpression *exp)
+{
     string tmp1 = exp->first->accept(*this);
 
     string tmp = getNewTmpVar();
@@ -444,24 +480,27 @@ string CodeVisitor::visit(UnExpression *exp) {
 }
 
 // TODO: implement TypeNull
-string CodeVisitor::visit(AtomExpression *exp) {
+string CodeVisitor::visit(AtomExpression *exp)
+{
     string tmp = getNewTmpVar();
 
-    if(exp->type->kind == TypeInt)
+    if (exp->type->kind == TypeInt)
         cout << TYPE << " " << tmp << " = new IntValue(" << exp->val.intval << ");\n";
-    else if(exp->type->kind == TypeBoolean)
-        cout << TYPE << " " << tmp << " = new BoolValue(" << (exp->val.boolval ? "true" :  "false") << ");\n";
-    else {
+    else if (exp->type->kind == TypeBoolean)
+        cout << TYPE << " " << tmp << " = new BoolValue(" << (exp->val.boolval ? "true" : "false") << ");\n";
+    else
+    {
         string toBePrinted = "\"";
         int it = 0;
-        while(exp->val.strval[it] != '\0'){
-            if(exp->val.strval[it] == '\\')
+        while (exp->val.strval[it] != '\0')
+        {
+            if (exp->val.strval[it] == '\\')
                 toBePrinted += "\\\\";
-            else if(exp->val.strval[it] == '\n')
+            else if (exp->val.strval[it] == '\n')
                 toBePrinted += "\\n";
-            else if(exp->val.strval[it] == '\t')
+            else if (exp->val.strval[it] == '\t')
                 toBePrinted += "\\t";
-            else if(exp->val.strval[it] == '\"')
+            else if (exp->val.strval[it] == '\"')
                 toBePrinted += "\\\"";
             else
                 toBePrinted += exp->val.strval[it];
@@ -475,46 +514,52 @@ string CodeVisitor::visit(AtomExpression *exp) {
     return tmp;
 }
 
-string CodeVisitor::visit(NewObjExpression *exp) {
+string CodeVisitor::visit(NewObjExpression *exp)
+{
     string tmp = getNewTmpVar();
     cout << TYPE << " " << tmp << " = new " << exp->getType()->toString() << "();\n";
     return tmp;
 }
 
-string CodeVisitor::visit(IdExpression *exp) {
+string CodeVisitor::visit(IdExpression *exp)
+{
     auto tmpVar = getNewTmpVar();
     // cout << TYPE << " _" << exp->getId() << " = " << LOOKUP_STATIC("\"" + exp->getId() + "\"")<< ";\n";
-    cout << TYPE << " " << tmpVar << " = " << LOOKUP_STATIC("\"" + exp->getId() + "\"")<< ";\n";
+    cout << TYPE << " " << tmpVar << " = " << LOOKUP_STATIC("\"" + exp->getId() + "\"") << ";\n";
     return tmpVar;
 }
 
-string CodeVisitor::visit(FieldAccessExpression *exp) {
+string CodeVisitor::visit(FieldAccessExpression *exp)
+{
     auto tmp = getNewTmpVar();
-    cout << TYPE << " " <<  tmp << " = " << CURRENT_OBJ << "->get(\"" << exp->id << "\");\n";
+    cout << TYPE << " " << tmp << " = " << CURRENT_OBJ << "->get(\"" << exp->id << "\");\n";
     return tmp;
 }
 
 // TODO: Pegar referência para a classe em que o código está sendo executado (caso não seja um método estático)
-string CodeVisitor::visit(ThisExpression *exp) {
+string CodeVisitor::visit(ThisExpression *exp)
+{
     auto tmpVar = getNewTmpVar();
     cout << TYPE << " " << tmpVar << " = " << CURRENT_OBJ << ";\n";
     return tmpVar;
 }
 
-string CodeVisitor::visit(ParenExpression *exp) {
+string CodeVisitor::visit(ParenExpression *exp)
+{
     return exp->first->accept(*this);
 }
 
-
 // TODO: literal multidimensional arrays
-string CodeVisitor::visit(LitArrayExpression *exp) {
+string CodeVisitor::visit(LitArrayExpression *exp)
+{
     string litArrTempVar = getNewTmpVar();
     string arrValTempVar = getNewTmpVar();
     int n = exp->expressions->size();
 
-    cout << TYPE << "* " << litArrTempVar << " = new " << TYPE << "[" << n  << "];\n";
+    cout << TYPE << "* " << litArrTempVar << " = new " << TYPE << "[" << n << "];\n";
 
-    for(int i = 0; i != n; ++i){
+    for (int i = 0; i != n; ++i)
+    {
         string tmpExpVar = exp->expressions->at(i)->accept(*this);
         cout << litArrTempVar << "[" << i << "] = " << tmpExpVar << ";\n";
     }
@@ -523,12 +568,14 @@ string CodeVisitor::visit(LitArrayExpression *exp) {
     return arrValTempVar;
 }
 
-string CodeVisitor::visit(ArrayAccessExpression *exp) {
+string CodeVisitor::visit(ArrayAccessExpression *exp)
+{
     string dimAccesses = exp->left->accept(*this);
 
-    for(auto dim : *(exp->dimensions)){
+    for (auto dim : *(exp->dimensions))
+    {
         auto tmpVarDim = dim->accept(*this);
-        dimAccesses = "(*"+dimAccesses+")" + "[" + tmpVarDim + "->getInt()" + "]";
+        dimAccesses = "(*" + dimAccesses + ")" + "[" + tmpVarDim + "->getInt()" + "]";
     }
 
     auto returnTmpVar = getNewTmpVar();
@@ -536,53 +583,69 @@ string CodeVisitor::visit(ArrayAccessExpression *exp) {
     return returnTmpVar;
 }
 
-string CodeVisitor::visit(NewArrayExpression *exp) {
+string CodeVisitor::visit(NewArrayExpression *exp)
+{
     auto n = exp->dimensions->size();
     auto varDimsName = getNewTmpVar();
     cout << "int* " << varDimsName << " = new int[" << n << "];\n";
 
-    for(int i = 0; i < n; ++i){
+    for (int i = 0; i < n; ++i)
+    {
         auto dimVarName = exp->dimensions->at(i)->accept(*this);
         cout << varDimsName << "[" << i << "] = " << dimVarName << "->getInt();\n";
     }
 
     string arrVarName = getNewTmpVar();
 
-    cout << TYPE << " " << arrVarName << " = new ArrayValue(" << varDimsName << ","<<n << ",";
-    switch(exp->baseType->kind){
-        case TypeInt: cout << "IntValue::newInt";break;
-        case TypeBoolean: cout << "BoolValue::newBool";break;
-        case TypeClass:
-            if(exp->baseType->toString() == "String") cout << "StringValue::newString";
-            else cout << exp->baseType->toString() << "::new" << exp->baseType->toString();
-            break;
+    cout << TYPE << " " << arrVarName << " = new ArrayValue(" << varDimsName << "," << n << ",";
+    switch (exp->baseType->kind)
+    {
+    case TypeInt:
+        cout << "IntValue::newInt";
+        break;
+    case TypeBoolean:
+        cout << "BoolValue::newBool";
+        break;
+    case TypeClass:
+        if (exp->baseType->toString() == "String")
+            cout << "StringValue::newString";
+        else
+            cout << exp->baseType->toString() << "::new" << exp->baseType->toString();
+        break;
     }
 
     cout << ");\n";
     return arrVarName;
 }
 
-string typeToValueString(Type* t){
-    BasicType* bt = dynamic_cast<BasicType*>(t);
-    if(bt != nullptr){
-        switch(bt->kind){
-            case TypeInt: return "IntValue";
-            case TypeBoolean: return "BoolValue";
-            case TypeNull: return "NullValue";
+string typeToValueString(Type *t)
+{
+    BasicType *bt = dynamic_cast<BasicType *>(t);
+    if (bt != nullptr)
+    {
+        switch (bt->kind)
+        {
+        case TypeInt:
+            return "IntValue";
+        case TypeBoolean:
+            return "BoolValue";
+        case TypeNull:
+            return "NullValue";
             return "";
         }
     }
 
-    ClassType* ct = dynamic_cast<ClassType*>(t);
-    if(ct != nullptr){
-        if(ct->getClassName() == "String")
+    ClassType *ct = dynamic_cast<ClassType *>(t);
+    if (ct != nullptr)
+    {
+        if (ct->getClassName() == "String")
             return "StringValue";
         else
             return "NullValue";
     }
 
-    ArrayType* at = dynamic_cast<ArrayType*>(t);
-    if(at != nullptr)
+    ArrayType *at = dynamic_cast<ArrayType *>(t);
+    if (at != nullptr)
         return "NullValue";
 
     return "";

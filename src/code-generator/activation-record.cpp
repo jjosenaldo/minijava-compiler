@@ -134,42 +134,39 @@ RecordStack::~RecordStack() {}
 
 // TODO: Transformar em escopo estático
 void RecordStack::createRecord(void* b_label, void* e_label, void* returnLabel, ClassValue* currentObject, Value* returnVal) {
-	Record* dynamicParent = records.empty() ? nullptr : records.front();
+	Record* dynamicParent = records.empty() ? nullptr : records.back();
 	Record* staticParent = returnLabel == nullptr ? dynamicParent : nullptr ;
 	records.push_back(new Record(staticParent, dynamicParent , b_label, e_label, returnLabel,currentObject, returnVal));
 }
 
 Record* RecordStack::top() {
-	return records.front();
+	return records.back();
 }
 
 void RecordStack::pop() {
 	records.pop_back();
 }
 
-void* Record::getReturnLabel(){
-	return returnLabel;
-}
-
 void* RecordStack::searchContinue() {
-	while(records.front()->getb_label() != nullptr){
+	while(records.back()->getb_label() != nullptr){
 		records.pop_back();
 	}
-	return records.front()->getb_label();
+	return records.back()->getb_label();
 }
 
 
 void* RecordStack::searchBreak() {
-	while(records.front()->gete_label() != nullptr){
+	while(records.back()->gete_label() != nullptr){
 		records.pop_back();
 	}
-	return records.front()->gete_label();
+	return records.back()->gete_label();
 }
 
 void* RecordStack::searchMethodCallLabel() {
-	while(records.front()->getMethodCallPosLabel() != nullptr){
+	while(records.back()->getMethodCallPosLabel() == nullptr){
 		records.pop_back();
 	}
-	return records.front()->getMethodCallPosLabel();
+	
+	return records.back()->getMethodCallPosLabel();
 }
 

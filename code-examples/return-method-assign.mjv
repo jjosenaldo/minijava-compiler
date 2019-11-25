@@ -1,19 +1,16 @@
 class Main{
     void main(String[] args){
         Animal animal = new Animal();
-        int a = animal.meow();
-        int b = animal.eat();
-        System.print(String.intToString(a));
+        int a = animal.meow("oi");
+        int b = a + 1;
         System.print(String.intToString(b));
     }
 }
 
 class Animal{
-    int eat(){
-        return 2;
-    }
 
-    int meow(){
-        return 1;
+    int meow(String var){
+        int x = 2;
+        return x+1;
     }
 }
