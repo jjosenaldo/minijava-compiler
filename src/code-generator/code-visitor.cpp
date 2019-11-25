@@ -7,7 +7,6 @@
 #include "operator.hpp"
 #include "value.hpp"
 
-using std::cout;
 using std::endl;
 using std::to_string;
 
@@ -52,12 +51,12 @@ string CodeVisitor::visit(Program *program)
 
     // Create a new record to main method
     string end_label = getNewLabel();
-    cout << CREATERECORD("nullptr", "nullptr", "&&" + end_label, "nullptr", "nullptr") << endl;
+    out << CREATERECORD("nullptr", "nullptr", "&&" + end_label, "nullptr", "nullptr") << endl;
 
     for (auto classdec : *program->declarations)
         classdec->accept(*this);
 
-    cout << end_label << ":" << endl;
+    out << end_label << ":" << endl;
 
     // auto main_class = program->declarations->begin();
     // (**main_class).accept(*this);
@@ -70,17 +69,17 @@ string CodeVisitor::visit(Program *program)
 
 string CodeVisitor::visit(Method *method)
 {
-    cout << "{\n";
+    out << "{\n";
     // Generate block code
     method->statement->accept(*this);
 
     // Get a temp var containing the label to last method call point
     string tmpReturn = getNewTmpVar();
-    cout << "void* " << tmpReturn << " = " << RS_TOP << "getMethodCallPosLabel();\n";
+    out << "void* " << tmpReturn << " = " << RS_TOP << "getMethodCallPosLabel();\n";
 
     // Goto last method call point
-    cout << GOTO("*" + tmpReturn) << ";\n";
-    cout << "}\n";
+    out << GOTO("*" + tmpReturn) << ";\n";
+    out << "}\n";
     resetCountTmpVars();
     return "";
 }
@@ -89,7 +88,7 @@ string CodeVisitor::visit(ClassDeclaration *classdec)
 {
     for (auto &method : *(classdec->methods))
     {
-        cout << this->getMethodLabel(classdec->name, method->id) << ": ";
+        out << this->getMethodLabel(classdec->name, method->id) << ": ";
         method->accept(*this);
     }
     return "";
@@ -106,32 +105,32 @@ string CodeVisitor::visitClassDeclarationsFields(Program *program)
 // TODO: do not create methods for the Main class at all
 string CodeVisitor::visitClassDeclarationFields(ClassDeclaration *classDec)
 {
-    cout << "struct " << classDec->name << " : ClassValue ";
-    cout << "{\n";
+    out << "struct " << classDec->name << " : ClassValue ";
+    out << "{\n";
 
     // Generate constructor
-    cout << classDec->name << "() : ClassValue( \"" << classDec->name << "\"){\ninitFields();\n}\n";
+    out << classDec->name << "() : ClassValue( \"" << classDec->name << "\"){\ninitFields();\n}\n";
 
     // Generate initFields method
-    cout << "void initFields(){\n";
+    out << "void initFields(){\n";
     for (auto field : *(classDec->fields))
     {
         if (field->initValue != nullptr)
         {
             auto initVal = field->initValue->accept(*this);
-            cout << "fields->emplace(\"" << field->name << "\"," << initVal << ");\n";
+            out << "fields->emplace(\"" << field->name << "\"," << initVal << ");\n";
         }
         else
-            cout << "fields->emplace(\"" << field->name << "\", new " << typeToValueString(field->type) << ");\n";
+            out << "fields->emplace(\"" << field->name << "\", new " << typeToValueString(field->type) << ");\n";
     }
-    cout << "\n}\n";
+    out << "\n}\n";
 
     // Generate newObj method
-    cout << "static Value* new" << classDec->name << "(){\n";
-    cout << classDec->name << "* c = new " << classDec->name << "();\n";
-    cout << "c->initFields();\nreturn c;\n}\n";
+    out << "static Value* new" << classDec->name << "(){\n";
+    out << classDec->name << "* c = new " << classDec->name << "();\n";
+    out << "c->initFields();\nreturn c;\n}\n";
 
-    cout << "};\n";
+    out << "};\n";
 
     return "";
 }
@@ -139,7 +138,7 @@ string CodeVisitor::visitClassDeclarationFields(ClassDeclaration *classDec)
 // Statements
 string CodeVisitor::visit(VarDec *vardec)
 {
-    cout << "{\n";
+    out << "{\n";
     string tmp;
 
     if (vardec->value != nullptr)
@@ -149,8 +148,8 @@ string CodeVisitor::visit(VarDec *vardec)
     else
         tmp = "new " + typeToValueString(vardec->type);
 
-    cout << RS_TOP + INSERTVAR(vardec->id, tmp) + "\n";
-    cout << "}\n";
+    out << RS_TOP + INSERTVAR(vardec->id, tmp) + "\n";
+    out << "}\n";
     resetCountTmpVars();
 
     return "";
@@ -158,10 +157,10 @@ string CodeVisitor::visit(VarDec *vardec)
 
 string CodeVisitor::visit(Block *block)
 {
-    cout << CREATERECORD("nullptr", "nullptr", "nullptr", CURRENT_OBJ, "nullptr") << "\n";
+    out << CREATERECORD("nullptr", "nullptr", "nullptr", CURRENT_OBJ, "nullptr") << "\n";
     for (auto &e : *(block->statements))
         e->accept(*this);
-    cout << POPRECORD << "\n";
+    out << POPRECORD << "\n";
 
     return "";
 }
@@ -181,23 +180,23 @@ string CodeVisitor::visit(ElselessIf *elselessIf)
             <lab>:
     */
 
-    cout << "{\n";
+    out << "{\n";
     string lab = getNewLabel();
 
     // Solve guard
     string tmp_guard = elselessIf->guard->accept(*this);
 
     // Test guard
-    cout << IFNOT_GOTO(tmp_guard, lab) << ";\n";
+    out << IFNOT_GOTO(tmp_guard, lab) << ";\n";
 
     // Visit statement
-    cout << "{ \n";
+    out << "{ \n";
     elselessIf->statement->accept(*this);
-    cout << "} \n";
-    cout << "} \n";
+    out << "} \n";
+    out << "} \n";
 
     // End if
-    cout << lab << ":;\n";
+    out << lab << ":;\n";
 
     return "";
 }
@@ -226,31 +225,31 @@ string CodeVisitor::visit(IfElse *ifElse)
     string lab1 = getNewLabel();
     string lab2 = getNewLabel();
 
-    cout << "{\n";
+    out << "{\n";
     // Solve guard
     string tmp_guard = ifElse->guard->accept(*this);
 
     // Test guard
-    cout << IFNOT_GOTO(tmp_guard, lab1) << ";\n";
+    out << IFNOT_GOTO(tmp_guard, lab1) << ";\n";
 
     // Visit first statement
-    cout << "{ \n";
+    out << "{ \n";
     ifElse->statementIf->accept(*this);
-    cout << "} \n";
+    out << "} \n";
 
     // Goto second label
-    cout << GOTO(lab2) << ";\n";
+    out << GOTO(lab2) << ";\n";
 
     // Begin else
-    cout << "{ \n";
-    cout << lab1 + ":\n";
+    out << "{ \n";
+    out << lab1 + ":\n";
 
     // Visit second statement
     ifElse->statementElse->accept(*this);
 
-    cout << "} \n";
-    cout << "} \n";
-    cout << lab2 + ":;\n";
+    out << "} \n";
+    out << "} \n";
+    out << lab2 + ":;\n";
 
     return "";
 }
@@ -277,28 +276,28 @@ string CodeVisitor::visit(While *whilestmt)
     string lab1 = getNewLabel();
     string lab2 = getNewLabel();
 
-    cout << CREATERECORD("&&" + lab1, "&&" + lab2, "nullptr", CURRENT_OBJ, "nullptr") << "\n";
+    out << CREATERECORD("&&" + lab1, "&&" + lab2, "nullptr", CURRENT_OBJ, "nullptr") << "\n";
 
-    cout << "{\n";
-    cout << lab1 << ":\n";
+    out << "{\n";
+    out << lab1 << ":\n";
 
     // Solve guard
     string tmp_guard = whilestmt->guard->accept(*this);
 
     // Test guard
-    cout << IFNOT_GOTO(tmp_guard, lab2) << ";\n";
+    out << IFNOT_GOTO(tmp_guard, lab2) << ";\n";
 
     // Visit statement
     whilestmt->statement->accept(*this);
 
     // Goto begin while
-    cout << GOTO(lab1) << ";\n";
+    out << GOTO(lab1) << ";\n";
 
-    cout << "}\n";
+    out << "}\n";
 
-    cout << lab2 << ":;\n";
+    out << lab2 << ":;\n";
 
-    cout << POPRECORD << "\n";
+    out << POPRECORD << "\n";
 
     return "";
 }
@@ -310,53 +309,53 @@ string CodeVisitor::visit(While *whilestmt)
 string CodeVisitor::visit(Assignment *assign)
 {
     // a = <exp>
-    cout << "{\n";
+    out << "{\n";
     string tmp_rvalue = assign->rvalue->accept(*this);
 
     IdExpression *ie = dynamic_cast<IdExpression *>(assign->lvalue);
     if (ie != nullptr)
-        cout << UPDATE_STATIC(ie->id, tmp_rvalue) << "\n";
+        out << UPDATE_STATIC(ie->id, tmp_rvalue) << "\n";
     else
     {
         FieldAccessExpression *fae = dynamic_cast<FieldAccessExpression *>(assign->lvalue);
         if (fae != nullptr)
-            cout << UPDATE_CURRENT_OBJ_FIELD("\"" + fae->id + "\"", tmp_rvalue) << "\n";
+            out << UPDATE_CURRENT_OBJ_FIELD("\"" + fae->id + "\"", tmp_rvalue) << "\n";
         else
         {
             ArrayAccessExpression *aae = dynamic_cast<ArrayAccessExpression *>(assign->lvalue);
             auto tmpDimsVar = getNewTmpVar();
-            cout << "int* " << tmpDimsVar << " = new int[" << aae->dimensions->size() << "];\n";
+            out << "int* " << tmpDimsVar << " = new int[" << aae->dimensions->size() << "];\n";
 
             for (int i = 0; i < aae->dimensions->size(); ++i)
             {
                 auto tmpDimVar = ((*(aae->dimensions))[i])->accept(*this);
-                cout << tmpDimsVar << "[" << i << "] = " << tmpDimVar << "->getInt();\n";
+                out << tmpDimsVar << "[" << i << "] = " << tmpDimVar << "->getInt();\n";
             }
 
             auto tmpArr = getNewTmpVar();
             auto tmpLvalue = aae->left->accept(*this);
-            cout << "ArrayValue* " << tmpArr << " = dynamic_cast<ArrayValue*>(" << tmpLvalue << ");\n";
-            cout << tmpArr << "->setAt(" << tmpDimsVar << "," << aae->dimensions->size() << "," << tmp_rvalue << ");\n";
+            out << "ArrayValue* " << tmpArr << " = dynamic_cast<ArrayValue*>(" << tmpLvalue << ");\n";
+            out << tmpArr << "->setAt(" << tmpDimsVar << "," << aae->dimensions->size() << "," << tmp_rvalue << ");\n";
         }
     }
 
-    cout << "}\n";
+    out << "}\n";
     return "";
 }
 
 string CodeVisitor::visit(Continue *stmt)
 {
     string tmp = getNewTmpVar();
-    cout << "void* " + tmp + " = rs->searchContinue(); \n";
-    cout << GOTO("*" + tmp) << ";\n";
+    out << "void* " + tmp + " = rs->searchContinue(); \n";
+    out << GOTO("*" + tmp) << ";\n";
     return "";
 }
 
 string CodeVisitor::visit(Break *stmt)
 {
     string tmp = getNewTmpVar();
-    cout << "void* " + tmp + " = rs->searchBreak(); \n";
-    cout << GOTO("*" + tmp) << ";\n";
+    out << "void* " + tmp + " = rs->searchBreak(); \n";
+    out << GOTO("*" + tmp) << ";\n";
     return "";
 }
 
@@ -370,13 +369,13 @@ string CodeVisitor::visit(Return *stmt)
     if (stmt->optExp != nullptr)
     {
         tmp_exp = stmt->optExp->accept(*this);
-        cout << "void* " + methodCallLabel + " = rs->searchMethodCallLabel(); \n";
-        cout << "rs->top()->setReturnValue(" + tmp_exp + "); \n";
+        out << "void* " + methodCallLabel + " = rs->searchMethodCallLabel(); \n";
+        out << "rs->top()->setReturnValue(" + tmp_exp + "); \n";
     }
     else
-        cout << "void* " + methodCallLabel + " = rs->searchMethodCallLabel(); \n";
+        out << "void* " + methodCallLabel + " = rs->searchMethodCallLabel(); \n";
 
-    cout << GOTO("*" + methodCallLabel) << ";\n";
+    out << GOTO("*" + methodCallLabel) << ";\n";
     return "";
 }
 
@@ -391,10 +390,10 @@ string CodeVisitor::visit(StaticMethodCallExpression *exp)
     {
         if (exp->method == "print")
         {
-            cout << "{\n";
+            out << "{\n";
             string argFirstVar = exp->arguments->at(0)->accept(*this);
-            cout << "cout << " << argFirstVar << "->toString();\n";
-            cout << "}\n";
+            out << "cout << " << argFirstVar << "->toString();\n";
+            out << "}\n";
             resetCountTmpVars();
         }
     }
@@ -405,7 +404,7 @@ string CodeVisitor::visit(StaticMethodCallExpression *exp)
 
         if (exp->method == "intToString" || exp->method == "booleanToString")
         {
-            cout << TYPE << " " << tmp << " = new StringValue( " << argFirstVar << "->toString()"
+            out << TYPE << " " << tmp << " = new StringValue( " << argFirstVar << "->toString()"
                  << ");\n";
             return tmp;
         }
@@ -416,7 +415,7 @@ string CodeVisitor::visit(StaticMethodCallExpression *exp)
 // TODO: implement the predefined nonstatic methods (namely: <array>.length(), <string>.length() and <string>.substring())
 string CodeVisitor::visit(MethodCallExpression *call)
 {
-    cout << "{\n";
+    out << "{\n";
     // Get formal parameters' names
 
     // TODO: If you pass the subclass name here, it can solve the polimorphism problem
@@ -430,38 +429,38 @@ string CodeVisitor::visit(MethodCallExpression *call)
     string tmpLvalueVarName = call->left->accept(*this);
 
     // Checks if the lvalue is a null thing
-    cout << "if(dynamic_cast<NullValue*>(" << tmpLvalueVarName << ") != nullptr){\n";
-    cout << "std::cerr << \"ERROR: you cannot call a method on a null object!\\n\";\nexit(0);";
-    cout << "\n}\n";
+    out << "if(dynamic_cast<NullValue*>(" << tmpLvalueVarName << ") != nullptr){\n";
+    out << "std::cerr << \"ERROR: you cannot call a method on a null object!\\n\";\nexit(0);";
+    out << "\n}\n";
 
     // Process the parameters
     string paramListVarName = getNewLabel();
-    cout << "Value** " << paramListVarName << " = new Value*[" << formal_params.size()  << "];\n";
+    out << "Value** " << paramListVarName << " = new Value*[" << formal_params.size()  << "];\n";
 
     auto it = call->arguments->begin();
     int cont = 0;
     for (auto &e : formal_params){
         string tmpVar = (**(it++)).accept(*this);
-        cout << paramListVarName << "[" << (cont++) << "] = " << tmpVar << ";\n"; 
+        out << paramListVarName << "[" << (cont++) << "] = " << tmpVar << ";\n"; 
     }
 
     // Creates a new record
-    cout << "{\n" << CREATERECORD_CAST_OBJ("nullptr", "nullptr", "&&" + end_label, tmpLvalueVarName, "nullptr") << "\n";
+    out << "{\n" << CREATERECORD_CAST_OBJ("nullptr", "nullptr", "&&" + end_label, tmpLvalueVarName, "nullptr") << "\n";
 
     // Inserts the params in the record
     for(int i = 0; i < formal_params.size(); ++i)
-        cout << RS_TOP << "insertVar(\"" << formal_params[i] << "\"," << paramListVarName << "[" << i << "]);\n";
+        out << RS_TOP << "insertVar(\"" << formal_params[i] << "\"," << paramListVarName << "[" << i << "]);\n";
 
     string tmp_label = this->getMethodLabel(className, call->method);
-    cout << GOTO(tmp_label) << ";\n";
-    cout << "}\n";
+    out << GOTO(tmp_label) << ";\n";
+    out << "}\n";
 
-    cout << "}\n";
-    cout << end_label << ":\n";
+    out << "}\n";
+    out << end_label << ":\n";
     string tmpReturn = getNewTmpVar();
-    cout << TYPE << " " << tmpReturn << " = rs->top()->getReturnValue();\n";
+    out << TYPE << " " << tmpReturn << " = rs->top()->getReturnValue();\n";
     // Pop the record
-    cout << POPRECORD << "\n";
+    out << POPRECORD << "\n";
 
     return tmpReturn;
 }
@@ -472,7 +471,7 @@ string CodeVisitor::visit(BinExpression *exp)
     string tmp2 = exp->second->accept(*this);
 
     string tmp = getNewTmpVar();
-    cout << TYPE << " " << tmp << " = *" << tmp1 << " " << binOpSymbol(exp->getOp()) << " *" << tmp2 << ";\n";
+    out << TYPE << " " << tmp << " = *" << tmp1 << " " << binOpSymbol(exp->getOp()) << " *" << tmp2 << ";\n";
     return tmp;
 }
 
@@ -481,7 +480,7 @@ string CodeVisitor::visit(UnExpression *exp)
     string tmp1 = exp->first->accept(*this);
 
     string tmp = getNewTmpVar();
-    cout << TYPE << " " << tmp << " = " << unOpSymbol(exp->op) << " *" << tmp1 << ";\n";
+    out << TYPE << " " << tmp << " = " << unOpSymbol(exp->op) << " *" << tmp1 << ";\n";
     return tmp;
 }
 
@@ -491,9 +490,9 @@ string CodeVisitor::visit(AtomExpression *exp)
     string tmp = getNewTmpVar();
 
     if (exp->type->kind == TypeInt)
-        cout << TYPE << " " << tmp << " = new IntValue(" << exp->val.intval << ");\n";
+        out << TYPE << " " << tmp << " = new IntValue(" << exp->val.intval << ");\n";
     else if (exp->type->kind == TypeBoolean)
-        cout << TYPE << " " << tmp << " = new BoolValue(" << (exp->val.boolval ? "true" : "false") << ");\n";
+        out << TYPE << " " << tmp << " = new BoolValue(" << (exp->val.boolval ? "true" : "false") << ");\n";
     else
     {
         string toBePrinted = "\"";
@@ -514,7 +513,7 @@ string CodeVisitor::visit(AtomExpression *exp)
         }
 
         toBePrinted += "\"";
-        cout << TYPE << " " << tmp << " = new StringValue(" << toBePrinted << ");\n";
+        out << TYPE << " " << tmp << " = new StringValue(" << toBePrinted << ");\n";
     }
 
     return tmp;
@@ -523,29 +522,29 @@ string CodeVisitor::visit(AtomExpression *exp)
 string CodeVisitor::visit(NewObjExpression *exp)
 {
     string tmp = getNewTmpVar();
-    cout << TYPE << " " << tmp << " = new " << exp->getType()->toString() << "();\n";
+    out << TYPE << " " << tmp << " = new " << exp->getType()->toString() << "();\n";
     return tmp;
 }
 
 string CodeVisitor::visit(IdExpression *exp)
 {
     auto tmpVar = getNewTmpVar();
-    // cout << TYPE << " _" << exp->getId() << " = " << LOOKUP_STATIC("\"" + exp->getId() + "\"")<< ";\n";
-    cout << TYPE << " " << tmpVar << " = " << LOOKUP_STATIC("\"" + exp->getId() + "\"") << ";\n";
+    // out << TYPE << " _" << exp->getId() << " = " << LOOKUP_STATIC("\"" + exp->getId() + "\"")<< ";\n";
+    out << TYPE << " " << tmpVar << " = " << LOOKUP_STATIC("\"" + exp->getId() + "\"") << ";\n";
     return tmpVar;
 }
 
 string CodeVisitor::visit(FieldAccessExpression *exp)
 {
     auto tmp = getNewTmpVar();
-    cout << TYPE << " " << tmp << " = " << CURRENT_OBJ << "->get(\"" << exp->id << "\");\n";
+    out << TYPE << " " << tmp << " = " << CURRENT_OBJ << "->get(\"" << exp->id << "\");\n";
     return tmp;
 }
 
 string CodeVisitor::visit(ThisExpression *exp)
 {
     auto tmpVar = getNewTmpVar();
-    cout << TYPE << " " << tmpVar << " = " << CURRENT_OBJ << ";\n";
+    out << TYPE << " " << tmpVar << " = " << CURRENT_OBJ << ";\n";
     return tmpVar;
 }
 
@@ -561,15 +560,15 @@ string CodeVisitor::visit(LitArrayExpression *exp)
     string arrValTempVar = getNewTmpVar();
     int n = exp->expressions->size();
 
-    cout << TYPE << "* " << litArrTempVar << " = new " << TYPE << "[" << n << "];\n";
+    out << TYPE << "* " << litArrTempVar << " = new " << TYPE << "[" << n << "];\n";
 
     for (int i = 0; i != n; ++i)
     {
         string tmpExpVar = exp->expressions->at(i)->accept(*this);
-        cout << litArrTempVar << "[" << i << "] = " << tmpExpVar << ";\n";
+        out << litArrTempVar << "[" << i << "] = " << tmpExpVar << ";\n";
     }
 
-    cout << TYPE << " " << arrValTempVar << " = new ArrayValue(" << litArrTempVar << "," << n << ");\n";
+    out << TYPE << " " << arrValTempVar << " = new ArrayValue(" << litArrTempVar << "," << n << ");\n";
     return arrValTempVar;
 }
 
@@ -584,7 +583,7 @@ string CodeVisitor::visit(ArrayAccessExpression *exp)
     }
 
     auto returnTmpVar = getNewTmpVar();
-    cout << TYPE << " " << returnTmpVar << " = " << dimAccesses << ";\n";
+    out << TYPE << " " << returnTmpVar << " = " << dimAccesses << ";\n";
     return returnTmpVar;
 }
 
@@ -592,34 +591,34 @@ string CodeVisitor::visit(NewArrayExpression *exp)
 {
     auto n = exp->dimensions->size();
     auto varDimsName = getNewTmpVar();
-    cout << "int* " << varDimsName << " = new int[" << n << "];\n";
+    out << "int* " << varDimsName << " = new int[" << n << "];\n";
 
     for (int i = 0; i < n; ++i)
     {
         auto dimVarName = exp->dimensions->at(i)->accept(*this);
-        cout << varDimsName << "[" << i << "] = " << dimVarName << "->getInt();\n";
+        out << varDimsName << "[" << i << "] = " << dimVarName << "->getInt();\n";
     }
 
     string arrVarName = getNewTmpVar();
 
-    cout << TYPE << " " << arrVarName << " = new ArrayValue(" << varDimsName << "," << n << ",";
+    out << TYPE << " " << arrVarName << " = new ArrayValue(" << varDimsName << "," << n << ",";
     switch (exp->baseType->kind)
     {
     case TypeInt:
-        cout << "IntValue::newInt";
+        out << "IntValue::newInt";
         break;
     case TypeBoolean:
-        cout << "BoolValue::newBool";
+        out << "BoolValue::newBool";
         break;
     case TypeClass:
         if (exp->baseType->toString() == "String")
-            cout << "StringValue::newString";
+            out << "StringValue::newString";
         else
-            cout << exp->baseType->toString() << "::new" << exp->baseType->toString();
+            out << exp->baseType->toString() << "::new" << exp->baseType->toString();
         break;
     }
 
-    cout << ");\n";
+    out << ");\n";
     return arrVarName;
 }
 

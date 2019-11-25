@@ -12,6 +12,7 @@ class CodeGenerator{
     private:
         CodeVisitor codeVisitor;
         Program* program;
+        ostream& out;
         void generateClassDecls();
         void generatePreamble();
         void generateMainMethod();
