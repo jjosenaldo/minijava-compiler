@@ -133,8 +133,8 @@ int main(int argc, char const *argv[]) {
     openInput(inFile);
 
     string gen_infile = inFile.substr(inFile.find_last_of('/')+1) + ".cpp";
-    ofstream out(gen_infile);
     if(yyparse() != 1){
+        ofstream out(gen_infile);
         // program->print();
         auto pool = buildClassSymtablePool(program);
 
