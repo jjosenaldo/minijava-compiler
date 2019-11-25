@@ -1,14 +1,5 @@
 #include "activation-record.hpp"
 
-// Record::Record(Record *parent, void* b_label, void* e_label, void* methodCallPosLabel, Value* returnVal) :
-// 	Record(parent,parent, b_label, e_label, methodCallPosLabel, nullptr, returnVal) {}
-
-// Record::Record(Record *parent, void* b_label, void* e_label, void* methodCallPosLabel, ClassValue* currentObject, Value* returnVal) :
-// 	Record(parent,parent, b_label, e_label, methodCallPosLabel, currentObject, returnVal) {}
-
-// Record::Record(Record *staticParent, Record* dynamicParent, void* b_label, void* e_label, void* methodCallPosLabel, Value* returnVal) :
-// 	Record(staticParent, dynamicParent, b_label, e_label, methodCallPosLabel, nullptr, returnVal){}
-
 Record::Record(Record *staticParent, Record* dynamicParent, void* b_label, void* e_label, void* methodCallPosLabel, ClassValue* currentObject, Value* returnVal) {
 	this->b_label = b_label;
 	this->e_label = e_label;
@@ -45,16 +36,9 @@ Value* Record::lookupStatic(string id) {
 	Record* currentRecord = this;
 	
 	do{
-		// std::cout << "procurando: " << id << " no registro\n";
-		// currentRecord->print();
 		v = currentRecord->getVarVal(id);
 		currentRecord = currentRecord->getStaticParent();
-		// std::cout << "proximo regisitro: " << std::endl;
-		// if(currentRecord == nullptr) std::cout << "null\n";
-		// else currentRecord->print();
 	} while(v == nullptr && currentRecord != nullptr);
-
-	// std::cout << "cabou/desisto\n";
 
 	return v->copy();
 }
@@ -70,20 +54,6 @@ Value* Record::lookupDynamic(string id) {
 
 	return v->copy();
 }
-/*
-Value** Record::lookupStaticReference(string id) {
-	Value **v = new Value*;
-	Record* currentRecord = this;
-
-	do{
-		*v = currentRecord->getVarVal(id);
-		currentRecord = currentRecord->getStaticParent();
-	} while(v == nullptr && currentRecord != nullptr);
-
-	return v;
-}
-*/
-
 
 Record* Record::getDynamicParent(){
 	return dynamicParent;
@@ -134,14 +104,21 @@ void* Record::getMethodCallPosLabel() {
 	return this->methodCallPosLabel;
 }
 
+void Record::print() {
+	cout << "tenho label? "<< (methodCallPosLabel != nullptr) << "\n";
+	cout << "tenho pai estatico? " << (staticParent != nullptr) << "\n";
+	cout << "{\n";
+	for(auto &e : table)
+		cout << "\t" << e.first << ", " << (e.second == nullptr ? "nullptr" : e.second->toString()) << endl;
+	cout << "}\n";
+}
+
 // RecordStack
 RecordStack::RecordStack() {}
 
 RecordStack::~RecordStack() {}
 
 void RecordStack::createRecord(void* b_label, void* e_label, void* returnLabel, ClassValue* currentObject, Value* returnVal) {
-	// std::cout << "quero inserir um registro. pilha atual:\n";
-	// this->print();
 	Record* dynamicParent = records.empty() ? nullptr : records.back();
 	Record* staticParent;
 
@@ -151,8 +128,6 @@ void RecordStack::createRecord(void* b_label, void* e_label, void* returnLabel, 
 	else 
 		staticParent = returnLabel != nullptr ? nullptr : dynamicParent ;
 	records.push_back(new Record(staticParent, dynamicParent , b_label, e_label, returnLabel,currentObject, returnVal));
-	// std::cout << "após inserir:\n";
-	// this->print();
 }
 
 Record* RecordStack::top() {
@@ -186,3 +161,6 @@ void* RecordStack::searchMethodCallLabel() {
 	return records.back()->getMethodCallPosLabel();
 }
 
+void RecordStack::print(){
+	for(auto r : records) r->print();
+}

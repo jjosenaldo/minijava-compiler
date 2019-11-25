@@ -1,11 +1,11 @@
 #ifndef ACTIVATION_RECORD_HPP
 #define ACTIVATION_RECORD_HPP
 
-#include <unordered_map>
+#include <iostream> 
 #include <string>
+#include <unordered_map>
 #include <vector>
-#include <stack>
-#include <iostream> // TODO: Remove after
+
 #include "value.hpp"
 
 using namespace std;
@@ -49,16 +49,10 @@ private:
 
 public:
 	Record(Record* staticParent, Record* dynamicParent, void* b_label, void* e_label, void* methodCallPosLabel, ClassValue* currentObject, Value* returnVal);
-	// Record(Record* staticParent, Record* dynamicParent, void* b_label, void* e_label, void* methodCallPosLabel, Value* returnVal);
-
-	// Sets both parents to be the same record
-	// Record(Record* parent, void* b_label, void* e_label, void* methodCallPosLabel, ClassValue* currentObject, Value* returnVal);
-	// Record(Record* parent, void* b_label, void* e_label, void* methodCallPosLabel, Value* returnVal);
 	~Record();
 
 	Value* lookupStatic(string id);
 	Value* lookupDynamic(string id);
-	//Value* lookupStaticReference(string id);
 	Value* getReturnValue();
 	void setReturnValue(Value* value);
 	ClassValue* getCurrentObject();
@@ -81,16 +75,7 @@ public:
 	void* getMethodCallPosLabel();
 
 	Record* getDynamicParent();
-
-	// TODO: Remove after
-	void print() {
-		cout << "tenho label? "<< (methodCallPosLabel != nullptr) << "\n";
-		cout << "tenho pai estatico? " << (staticParent != nullptr) << "\n";
-		cout << "{\n";
-		for(auto &e : table)
-			cout << "\t" << e.first << ", " << (e.second == nullptr ? "nullptr" : e.second->toString()) << endl;
-		cout << "}\n";
-	}
+	void print();
 };
 
 class RecordClass
@@ -108,9 +93,7 @@ class RecordStack
 public:
 	RecordStack();
 	~RecordStack();
-	void print(){
-		for(auto r : records) r->print();
-	}
+	void print();
 	void createRecord(void* b_label = nullptr, void* e_label = nullptr, void* methodCallPosLabel = nullptr, ClassValue* currentObject = nullptr, Value* returnVal = nullptr);
 	Record* top();
 	void pop();
