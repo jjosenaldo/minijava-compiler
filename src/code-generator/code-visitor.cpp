@@ -16,6 +16,7 @@ using std::endl;
 #define RS_TOP string("rs->top()->")
 #define LOOKUP_DYN(x) string(RS_TOP+"lookupDynamic(" + x + ")")
 #define LOOKUP_STATIC(x) string(RS_TOP+"lookupStatic(" + x + ")")
+#define LOOKUP_STATIC_REFERENCE(x) string(RS_TOP+"lookupStaticReference(" + x + ")")
 #define TYPE string("Value*")
 #define CREATERECORD(b_label, e_label, returnLabel, currentObject, returnVal) \
     string(RS + "createRecord(" + b_label + "," + e_label + "," + returnLabel + "," + currentObject + "," + returnVal");")
@@ -72,9 +73,6 @@ string CodeVisitor::visit(Method *method) {
     // Get a temp var containing the label to last method call point
     string tmpReturn = getNewTmpVar();
     cout << "void* " << tmpReturn << " = " << RS_TOP << "getMethodCallPosLabel();\n";
-
-    // Pop the record
-    cout << POPRECORD << "\n";
 
     // Goto last method call point
     cout << GOTO("*" + tmpReturn) << ";\n";
@@ -140,6 +138,7 @@ string CodeVisitor::visit(VarDec *vardec){
     cout << RS_TOP + INSERTVAR(vardec->id, tmp) + "\n";
     cout << "}\n";
     resetCountTmpVars();
+
     return "";
 }
 
@@ -341,27 +340,18 @@ string CodeVisitor::visit(Break *stmt) {
 }
 
 string CodeVisitor::visit(Return *stmt) {
-    /*
-        "     return 5+2;     "
-
-        void* methodCallLabel = rs->searchMethodCallLabel();
-        Value*& varValueAdress = rs->getReturnValue();
-        varValueAdress = tmp_exp;
-        goto methodCallLabel;
-
-
-    */
-
     string methodCallLabel = getNewTmpVar();
     string varValueAdress = getNewTmpVar();
+    string tmp = getNewTmpVar();
+
     cout << "void* " + methodCallLabel + " = rs->searchMethodCallLabel(); \n";
-    cout << "Value*& " + varValueAdress + " = rs->top()->getReturnValue(); \n";
+    //cout << "Value* " + varValueAdress + " = rs->top()->getReturnValue(); \n";
 
     //solve exp
-    string tmp_exp = stmt->optExp->accept(*this);
-
-    //TODO possible error here. Value*& receiveing a string
-    cout << varValueAdress + " = " + tmp_exp + ";\n";
+    if(stmt->optExp != nullptr) {
+        string tmp_exp = stmt->optExp->accept(*this);
+        cout << "rs->top()->setReturnValue(" + tmp_exp + "); \n";
+    }
 
     cout << GOTO("*" + methodCallLabel) << ";\n";
     return "";
@@ -412,10 +402,8 @@ string CodeVisitor::visit(MethodCallExpression *call) {
     cout << "std::cerr << \"ERROR: you cannot call a method on a null object!\\n\";\nexit(0);";
     cout << "\n}\n";
 
-    string returnTmpVar = getNewTmpVar();
-
     // Create a new record
-    cout << "{\n" << CREATERECORD_CAST_OBJ("nullptr","nullptr","&&" + end_label, tmpLvalueVarName, returnTmpVar) << "\n";
+    cout << "{\n" << CREATERECORD_CAST_OBJ("nullptr","nullptr","&&" + end_label, tmpLvalueVarName, "nullptr") << "\n";
 
     // Assign real parameters to formal parameters inserting then in the new record
     auto it = call->arguments->begin();
@@ -430,8 +418,12 @@ string CodeVisitor::visit(MethodCallExpression *call) {
 
     cout << "}\n";
     cout << end_label << ":\n";
-    resetCountTmpVars();
-    return "";
+    string tmpReturn = getNewTmpVar();
+    cout << TYPE << " " << tmpReturn << " = rs->top()->getReturnValue();\n";
+     // Pop the record
+    cout << POPRECORD << "\n";
+
+    return tmpReturn;
 }
 
 string CodeVisitor::visit(BinExpression *exp) {

@@ -1,15 +1,15 @@
 #include "activation-record.hpp"
 
-Record::Record(Record *parent, void* b_label, void* e_label, void* methodCallPosLabel, Value** returnVal) :
+Record::Record(Record *parent, void* b_label, void* e_label, void* methodCallPosLabel, Value* returnVal) :
 	Record(parent,parent, b_label, e_label, methodCallPosLabel, nullptr, returnVal) {}
 
-Record::Record(Record *parent, void* b_label, void* e_label, void* methodCallPosLabel, ClassValue* currentObject, Value** returnVal) :
+Record::Record(Record *parent, void* b_label, void* e_label, void* methodCallPosLabel, ClassValue* currentObject, Value* returnVal) :
 	Record(parent,parent, b_label, e_label, methodCallPosLabel, currentObject, returnVal) {}
 
-Record::Record(Record *staticParent, Record* dynamicParent, void* b_label, void* e_label, void* methodCallPosLabel, Value** returnVal) :
+Record::Record(Record *staticParent, Record* dynamicParent, void* b_label, void* e_label, void* methodCallPosLabel, Value* returnVal) :
 	Record(staticParent, dynamicParent, b_label, e_label, methodCallPosLabel, nullptr, returnVal){}
 
-Record::Record(Record *staticParent, Record* dynamicParent, void* b_label, void* e_label, void* methodCallPosLabel, ClassValue* currentObject, Value** returnVal) {
+Record::Record(Record *staticParent, Record* dynamicParent, void* b_label, void* e_label, void* methodCallPosLabel, ClassValue* currentObject, Value* returnVal) {
 	this->b_label = b_label;
 	this->e_label = e_label;
 	this->methodCallPosLabel = methodCallPosLabel;
@@ -63,6 +63,20 @@ Value* Record::lookupDynamic(string id) {
 
 	return v;
 }
+/*
+Value** Record::lookupStaticReference(string id) {
+	Value **v = new Value*;
+	Record* currentRecord = this;
+
+	do{
+		*v = currentRecord->getVarVal(id);
+		currentRecord = currentRecord->getStaticParent();
+	} while(v == nullptr && currentRecord != nullptr);
+
+	return v;
+}
+*/
+
 
 Record* Record::getDynamicParent(){
 	return dynamicParent;
@@ -72,8 +86,12 @@ Record* Record::getStaticParent(){
 	return staticParent;
 }
 
-Value** Record::getReturnValue() {
+Value* Record::getReturnValue() {
 	return returnVal;
+}
+
+void Record::setReturnValue(Value* value) {
+	this->returnVal = value;
 }
 
 void Record::insertVar(string id, Value *v) {
@@ -115,7 +133,7 @@ RecordStack::RecordStack() {}
 RecordStack::~RecordStack() {}
 
 // TODO: Transformar em escopo estático
-void RecordStack::createRecord(void* b_label, void* e_label, void* returnLabel, ClassValue* currentObject, Value** returnVal) {
+void RecordStack::createRecord(void* b_label, void* e_label, void* returnLabel, ClassValue* currentObject, Value* returnVal) {
 	Record* dynamicParent = records.empty() ? nullptr : records.top();
 	Record* staticParent = returnLabel == nullptr ? dynamicParent : nullptr ;
 	records.push(new Record(staticParent, dynamicParent , b_label, e_label, returnLabel,currentObject, returnVal));

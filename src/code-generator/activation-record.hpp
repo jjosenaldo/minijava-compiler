@@ -38,7 +38,7 @@ private:
 	Record* staticParent;
 	ClassValue* currentObject;
 
-	Value** returnVal;
+	Value* returnVal;
 
 	void* b_label;
 
@@ -47,17 +47,19 @@ private:
 	Value* getVarVal(string id);
 
 public:
-	Record(Record* staticParent, Record* dynamicParent, void* b_label, void* e_label, void* methodCallPosLabel, ClassValue* currentObject, Value** returnVal);
-	Record(Record* staticParent, Record* dynamicParent, void* b_label, void* e_label, void* methodCallPosLabel, Value** returnVal);
+	Record(Record* staticParent, Record* dynamicParent, void* b_label, void* e_label, void* methodCallPosLabel, ClassValue* currentObject, Value* returnVal);
+	Record(Record* staticParent, Record* dynamicParent, void* b_label, void* e_label, void* methodCallPosLabel, Value* returnVal);
 
 	// Sets both parents to be the same record
-	Record(Record* parent, void* b_label, void* e_label, void* methodCallPosLabel, ClassValue* currentObject, Value** returnVal);
-	Record(Record* parent, void* b_label, void* e_label, void* methodCallPosLabel, Value** returnVal);
+	Record(Record* parent, void* b_label, void* e_label, void* methodCallPosLabel, ClassValue* currentObject, Value* returnVal);
+	Record(Record* parent, void* b_label, void* e_label, void* methodCallPosLabel, Value* returnVal);
 	~Record();
 
 	Value* lookupStatic(string id);
 	Value* lookupDynamic(string id);
-	Value** getReturnValue();
+	//Value* lookupStaticReference(string id);
+	Value* getReturnValue();
+	void setReturnValue(Value* value);
 	ClassValue* getCurrentObject();
 	void insertVar(string id, Value *v);
 	void insertVar(string id, int v);
@@ -104,7 +106,7 @@ class RecordStack
 public:
 	RecordStack();
 	~RecordStack();
-	void createRecord(void* b_label = nullptr, void* e_label = nullptr, void* methodCallPosLabel = nullptr, ClassValue* currentObject = nullptr, Value** returnVal = nullptr);
+	void createRecord(void* b_label = nullptr, void* e_label = nullptr, void* methodCallPosLabel = nullptr, ClassValue* currentObject = nullptr, Value* returnVal = nullptr);
 	Record* top();
 	void pop();
 	void* searchContinue();

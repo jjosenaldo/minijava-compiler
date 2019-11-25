@@ -21,10 +21,10 @@ void CodeGenerator::generateCode(){
 
 void CodeGenerator::generatePreamble(){
     // #includes
-    cout << "#include \"activation-record.hpp\"" << endl;
-    cout << "#include \"value.hpp\"" << endl;
+    cout << "#include \"src/code-generator/activation-record.hpp\"" << endl;
+    cout << "#include \"src/code-generator/value.hpp\"" << endl;
 
-    // usings 
+    // usings
     cout << "using std::cout;" << endl;
     cout << "using std::endl;" << endl;
 
