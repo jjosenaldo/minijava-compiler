@@ -1,0 +1,15 @@
+/* Be careful, this will eat up your entire pc's memory :) */
+
+class Main{
+    void main(String[] args){
+        Animal a = new Animal();
+        a.eat();
+    }
+}
+
+
+class Animal{
+    void eat(){
+        this.eat();
+    }
+}
