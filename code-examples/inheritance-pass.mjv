@@ -1,0 +1,16 @@
+class Main {
+	void main(String []args) {
+		Gato g = new Gato();
+		g.talk();
+	}
+}
+
+class Animal {
+	void talk() {
+		System.print("oxe\n");
+	}
+}
+
+class Gato extends Animal {
+	
+}
