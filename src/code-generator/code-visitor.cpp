@@ -582,7 +582,6 @@ string CodeVisitor::visit(ParenExpression *exp)
     return exp->first->accept(*this);
 }
 
-// TODO: literal multidimensional arrays (see file: multidimensional-array.mjv)
 string CodeVisitor::visit(LitArrayExpression *exp)
 {
     string litArrTempVar = getNewTmpVar();
