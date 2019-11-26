@@ -412,7 +412,6 @@ string CodeVisitor::visit(StaticMethodCallExpression *exp)
     return "";
 }
 
-// TODO: implement the predefined nonstatic methods (namely: <array>.length(), <string>.length() and <string>.substring())
 string CodeVisitor::visit(MethodCallExpression *call)
 {
     // Processes the "lvalue"
