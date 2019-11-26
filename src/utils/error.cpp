@@ -212,3 +212,8 @@ void returnPathError(string methodName) {
     errorMsgPrefix();
     cout << "The method " << methodName << " must have a return for all possible flows" << endl;
 }
+
+void notBooleanGuardError(){
+    errorMsgPrefix();
+    cout << "The guard must be a boolean expression!" << endl;
+}

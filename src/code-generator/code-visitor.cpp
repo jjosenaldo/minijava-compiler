@@ -145,7 +145,7 @@ string CodeVisitor::visit(Method *method)
     // Goto last method call point
     out << GOTO("*" + tmpReturn) << ";\n";
     out << "}\n";
-    resetCountTmpVars();
+    //resetCountTmpVars();
     return "";
 }
 
@@ -161,13 +161,13 @@ string CodeVisitor::visit(ClassDeclaration *classdec)
 
 string CodeVisitor::visitClassDeclarationsFields(Program *program)
 {
-    for (auto decl : *(program->declarations))
-        visitClassDeclarationFields(decl);
+    // Skips the main class (i.e., the first one!!)
+    for (auto it = program->declarations->begin()+1; it != program->declarations->end(); ++it)
+        visitClassDeclarationFields(*it);
     return "";
 }
 
 // TODO: implement inheritance
-// TODO: do not create methods for the Main class at all
 string CodeVisitor::visitClassDeclarationFields(ClassDeclaration *classDec)
 {
     out << "struct " << classDec->name << " : ClassValue ";
@@ -182,8 +182,10 @@ string CodeVisitor::visitClassDeclarationFields(ClassDeclaration *classDec)
     {
         if (field->initValue != nullptr)
         {
+            out << "{\n";
             auto initVal = field->initValue->accept(*this);
             out << "fields->emplace(\"" << field->name << "\"," << initVal << ");\n";
+            out << "}\n";
         }
         else
             out << "fields->emplace(\"" << field->name << "\", new " << typeToValueString(field->type) << ");\n";
@@ -196,6 +198,7 @@ string CodeVisitor::visitClassDeclarationFields(ClassDeclaration *classDec)
     out << "c->initFields();\nreturn c;\n}\n";
 
     out << "};\n";
+    //resetCountTmpVars();
 
     // store inheritance information
     inheritanceInfo[classDec->name] = classDec->parent;
@@ -218,7 +221,7 @@ string CodeVisitor::visit(VarDec *vardec)
 
     out << RS_TOP + INSERTVAR(vardec->id, tmp) + "\n";
     out << "}\n";
-    resetCountTmpVars();
+    //resetCountTmpVars();
 
     return "";
 }
@@ -265,6 +268,7 @@ string CodeVisitor::visit(ElselessIf *elselessIf)
 
     // End if
     out << lab << ":;\n";
+    //resetCountTmpVars();
 
     return "";
 }
@@ -318,6 +322,7 @@ string CodeVisitor::visit(IfElse *ifElse)
     out << "} \n";
     out << "} \n";
     out << lab2 + ":;\n";
+    //resetCountTmpVars();
 
     return "";
 }
@@ -366,6 +371,7 @@ string CodeVisitor::visit(While *whilestmt)
     out << lab2 << ":;\n";
 
     out << POPRECORD << "\n";
+    //resetCountTmpVars();
 
     return "";
 }
@@ -408,6 +414,7 @@ string CodeVisitor::visit(Assignment *assign)
     }
 
     out << "}\n";
+    //resetCountTmpVars();
     return "";
 }
 
@@ -432,6 +439,7 @@ string CodeVisitor::visit(Return *stmt)
     string methodCallLabel = getNewTmpVar();
     string varValueAdress = getNewTmpVar();
     string tmp_exp;
+    out << "{\n";
 
     //solve exp
     if (stmt->optExp != nullptr)
@@ -443,7 +451,9 @@ string CodeVisitor::visit(Return *stmt)
     else
         out << "void* " + methodCallLabel + " = rs->searchMethodCallLabel(); \n";
 
+    out << "}\n";
     out << GOTO("*" + methodCallLabel) << ";\n";
+    //resetCountTmpVars();
     return "";
 }
 
@@ -462,7 +472,7 @@ string CodeVisitor::visit(StaticMethodCallExpression *exp)
             string argFirstVar = exp->arguments->at(0)->accept(*this);
             out << "cout << " << argFirstVar << "->toString();\n";
             out << "}\n";
-            resetCountTmpVars();
+            //resetCountTmpVars();
         }
     }
     else if (exp->className == "String")
@@ -480,9 +490,37 @@ string CodeVisitor::visit(StaticMethodCallExpression *exp)
     return "";
 }
 
-// TODO: implement the predefined nonstatic methods (namely: <array>.length(), <string>.length() and <string>.substring())
 string CodeVisitor::visit(MethodCallExpression *call)
 {
+    // Processes the "lvalue"
+    string tmpLvalueVarName = call->left->accept(*this);
+
+    // Return tmp variable
+    string tmpReturn = getNewTmpVar();
+
+    // <array>.length()
+    if(call->left->getType()->kind == TypeArray && call->method == "length"){
+        out << TYPE << " " << tmpReturn << " = new IntValue(dynamic_cast<ArrayValue*>(" <<  tmpLvalueVarName << ")->getN());\n";
+        return tmpReturn;
+    }
+
+    // <string>
+    if(call->left->getType()->toString() == "String"){
+        // .length()
+        if(call->method == "length"){
+            out << TYPE << " " << tmpReturn << " = new IntValue(dynamic_cast<StringValue*>(" <<  tmpLvalueVarName << ")->getString().length());\n";
+            return tmpReturn;
+        }
+
+        // .substring(l , r)
+        if(call->method == "substring"){
+            auto tmpArg1 = call->arguments->at(0)->accept(*this);
+            auto tmpArg2 = call->arguments->at(1)->accept(*this);
+            out << TYPE << " " << tmpReturn << " = new StringValue(dynamic_cast<StringValue*>(" <<  tmpLvalueVarName << ")->getString().substr(dynamic_cast<IntValue*>(" << tmpArg1 << ")->getInt(),dynamic_cast<IntValue*>(" << tmpArg2 << ")->getInt()));\n";
+            return tmpReturn;
+        }
+    }
+
     out << "{\n";
     // Get formal parameters' names
 
@@ -493,8 +531,7 @@ string CodeVisitor::visit(MethodCallExpression *call)
     // Get return label
     string end_label = getNewLabel();
 
-    // Processes the "lvalue"
-    string tmpLvalueVarName = call->left->accept(*this);
+    
 
     // Checks if the lvalue is a null thing
     out << "if(dynamic_cast<NullValue*>(" << tmpLvalueVarName << ") != nullptr){\n";
@@ -525,7 +562,7 @@ string CodeVisitor::visit(MethodCallExpression *call)
 
     out << "}\n";
     out << end_label << ":\n";
-    string tmpReturn = getNewTmpVar();
+    
     out << TYPE << " " << tmpReturn << " = rs->top()->getReturnValue();\n";
     // Pop the record
     out << POPRECORD << "\n";
@@ -552,7 +589,6 @@ string CodeVisitor::visit(UnExpression *exp)
     return tmp;
 }
 
-// TODO: implement TypeNull
 string CodeVisitor::visit(AtomExpression *exp)
 {
     string tmp = getNewTmpVar();
@@ -561,6 +597,8 @@ string CodeVisitor::visit(AtomExpression *exp)
         out << TYPE << " " << tmp << " = new IntValue(" << exp->val.intval << ");\n";
     else if (exp->type->kind == TypeBoolean)
         out << TYPE << " " << tmp << " = new BoolValue(" << (exp->val.boolval ? "true" : "false") << ");\n";
+    else if(exp->type->kind == TypeNull)
+        out << TYPE << " " << tmp << " = new NullValue()\n;"; 
     else
     {
         string toBePrinted = "\"";
@@ -621,7 +659,6 @@ string CodeVisitor::visit(ParenExpression *exp)
     return exp->first->accept(*this);
 }
 
-// TODO: literal multidimensional arrays (see file: multidimensional-array.mjv)
 string CodeVisitor::visit(LitArrayExpression *exp)
 {
     string litArrTempVar = getNewTmpVar();
@@ -644,8 +681,7 @@ string CodeVisitor::visit(ArrayAccessExpression *exp)
 {
     string dimAccesses = exp->left->accept(*this);
 
-    for (auto dim : *(exp->dimensions))
-    {
+    for (auto dim : *(exp->dimensions)){
         auto tmpVarDim = dim->accept(*this);
         dimAccesses = "(*" + dimAccesses + ")" + "[" + tmpVarDim + "->getInt()" + "]";
     }

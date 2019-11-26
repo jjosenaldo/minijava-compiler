@@ -94,8 +94,8 @@ public:
 	static Value* newBool(){return new BoolValue();}
 
 	friend Value* operator!(const Value& v1);
-	friend Value* operator||(const BoolValue& v1, const BoolValue& v2);
-	friend Value* operator&&(const BoolValue& v1, const BoolValue& v2);
+	friend Value* operator||(const Value& v1, const Value& v2);
+	friend Value* operator&&(const Value& v1, const Value& v2);
 
 	friend Value* operator==(const Value& v1, const Value& v2);
 	friend Value* operator!=(const Value& v1, const Value& v2);
@@ -151,9 +151,10 @@ private:
 public:
 	ArrayValue(Value** v, int n);
 	ArrayValue(int* dims, int n, Value* ctor() = nullptr);
-	Value** getArray() const;
 
+	Value** getArray() const;
 	void setAt(int* dims, int n, Value* newVal);
+	int getN();
 
 	string toString();
 
@@ -186,8 +187,8 @@ Value* operator>(const Value& v1, const Value& v2);
 Value* operator>=(const Value& v1, const Value& v2);
 // bool
 Value* operator!(const Value& v1);
-Value* operator||(const BoolValue& v1, const BoolValue& v2);
-Value* operator&&(const BoolValue& v1, const BoolValue& v2);
+Value* operator||(const Value& v1, const Value& v2);
+Value* operator&&(const Value& v1, const Value& v2);
 
 // all
 Value* operator==(const Value& v1, const Value& v2);

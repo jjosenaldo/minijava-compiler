@@ -80,6 +80,10 @@ void ArrayValue::setAt(int* dims, int i, int n, Value* newVal, ArrayValue* curre
         setAt(dims, i+1, n, newVal, dynamic_cast<ArrayValue*>(this->value[dims[i]]));
 }
 
+int ArrayValue::getN(){
+    return n;
+}
+
 string ArrayValue::toString(){
     string res = "{";
 
@@ -92,8 +96,6 @@ string ArrayValue::toString(){
 ArrayValue::ArrayValue(int* dims, int n, Value* ctor ()) : ArrayValue(dims,1,n,ctor){}
 
 ArrayValue::ArrayValue(int* dims, int i, int n, Value* ctor ()){
-    // TODO: put this constructor in a separate recursive method so that this assignment
-    // doesn't get executed every single time
     this->className = "ArrayValue";
 
     this->n = dims[i-1];
@@ -257,7 +259,6 @@ Value* operator>=(const Value& v1, const Value& v2) {
     throw "Invalid type!\n";
 }
 
-// bool
 Value* operator!(const Value& v1) {
     const BoolValue* b1 = dynamic_cast<const BoolValue*>(&v1);
     if(b1 != nullptr)
@@ -265,7 +266,7 @@ Value* operator!(const Value& v1) {
     throw "Invalid type!\n";
 }
 
-Value* operator||(const BoolValue& v1, const BoolValue& v2) {
+Value* operator||(const Value& v1, const Value& v2) {
     const BoolValue* b1 = dynamic_cast<const BoolValue*>(&v1);
     const BoolValue* b2 = dynamic_cast<const BoolValue*>(&v2);
     if(b1 != nullptr and b2 != nullptr)
@@ -273,7 +274,7 @@ Value* operator||(const BoolValue& v1, const BoolValue& v2) {
     throw "Invalid type!\n";
 }
 
-Value* operator&&(const BoolValue& v1, const BoolValue& v2) {
+Value* operator&&(const Value& v1, const Value& v2) {
     const BoolValue* b1 = dynamic_cast<const BoolValue*>(&v1);
     const BoolValue* b2 = dynamic_cast<const BoolValue*>(&v2);
     if(b1 != nullptr and b2 != nullptr)

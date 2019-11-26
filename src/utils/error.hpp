@@ -89,4 +89,6 @@ void classAsMethodNameError(string methodName);
 
 void returnPathError(string methodName);
 
+void notBooleanGuardError();
+
 #endif
