@@ -142,7 +142,7 @@ int main(int argc, char const *argv[]) {
             system("g++ -Wall -std=c++11 ./src/code-generator/value.cpp -c -g -o value.o");
             system("g++ -Wall -std=c++11 ./src/code-generator/activation-record.cpp -c -o activation-record.o");
             system(string("g++ -std=c++11 -I src/code-generator/ value.o activation-record.o " + gen_infile + " -o " + outFile).c_str());
-            system(string("rm -f value.o activation-record.o " /*+ gen_infile*/).c_str());
+            system(string("rm -f value.o activation-record.o " + gen_infile).c_str());
         }
     }
 
