@@ -507,7 +507,7 @@ exprlistopt : exprlist  {
 
 filledbracks : filledbracks '[' expr ']'  {
     deque<Expression*>* newExprList = $1;
-    newExprList->push_front($3);
+    newExprList->push_back($3);
     $$ = newExprList;
 } | '[' expr ']' {
     deque<Expression*>* newExprList = new deque<Expression*>();

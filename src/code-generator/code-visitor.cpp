@@ -595,7 +595,6 @@ string CodeVisitor::visit(LitArrayExpression *exp)
     {
         string tmpExpVar = exp->expressions->at(i)->accept(*this);
         out << litArrTempVar << "[" << i << "] = " << tmpExpVar << ";\n";
-        // std::cout << litArrTempVar << "[" << i << "] = " << exp->expressions->at(i)->toString() << std::endl;
     }
 
     out << TYPE << " " << arrValTempVar << " = new ArrayValue(" << litArrTempVar << "," << n << ");\n";
@@ -606,8 +605,7 @@ string CodeVisitor::visit(ArrayAccessExpression *exp)
 {
     string dimAccesses = exp->left->accept(*this);
 
-    for (auto dim : *(exp->dimensions))
-    {
+    for (auto dim : *(exp->dimensions)){
         auto tmpVarDim = dim->accept(*this);
         dimAccesses = "(*" + dimAccesses + ")" + "[" + tmpVarDim + "->getInt()" + "]";
     }
