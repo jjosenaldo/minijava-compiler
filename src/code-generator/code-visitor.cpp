@@ -451,8 +451,8 @@ string CodeVisitor::visit(Return *stmt)
     else
         out << "void* " + methodCallLabel + " = rs->searchMethodCallLabel(); \n";
 
-    out << "}\n";
     out << GOTO("*" + methodCallLabel) << ";\n";
+    out << "}\n";
     //resetCountTmpVars();
     return "";
 }

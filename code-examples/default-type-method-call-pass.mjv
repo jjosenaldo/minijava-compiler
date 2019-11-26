@@ -1,8 +1,0 @@
-class Main{
-    void main(String[] args){
-        String a;
-        a.length();
-        int[] b;
-        b.length();
-    }
-}

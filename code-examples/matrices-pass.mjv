@@ -22,9 +22,9 @@ class Main{
         while(i < dim){
             j = 0;
             while(j < dim){
-               /* System.print("i: " + (String.intToString(i))+ "\n");
+                System.print("i: " + (String.intToString(i))+ "\n");
                 System.print("j: " + (String.intToString(j))+ "\n");
-                System.print("val: " + (String.intToString(m[i][j]))+ "\n");*/
+                System.print("val: " + (String.intToString(m[i][j]))+ "\n");
                 j = j+1;
             }
             i = i+1;

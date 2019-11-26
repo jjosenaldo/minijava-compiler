@@ -139,7 +139,7 @@ void RecordStack::pop() {
 }
 
 void* RecordStack::searchContinue() {
-	while(records.back()->getb_label() != nullptr){
+	while(records.back()->getb_label() == nullptr){
 		records.pop_back();
 	}
 	return records.back()->getb_label();
