@@ -80,7 +80,7 @@ string CodeVisitor::visit(Method *method)
     // Goto last method call point
     out << GOTO("*" + tmpReturn) << ";\n";
     out << "}\n";
-    resetCountTmpVars();
+    //resetCountTmpVars();
     return "";
 }
 
@@ -117,8 +117,10 @@ string CodeVisitor::visitClassDeclarationFields(ClassDeclaration *classDec)
     {
         if (field->initValue != nullptr)
         {
+            out << "{\n";
             auto initVal = field->initValue->accept(*this);
             out << "fields->emplace(\"" << field->name << "\"," << initVal << ");\n";
+            out << "}\n";
         }
         else
             out << "fields->emplace(\"" << field->name << "\", new " << typeToValueString(field->type) << ");\n";
@@ -131,6 +133,7 @@ string CodeVisitor::visitClassDeclarationFields(ClassDeclaration *classDec)
     out << "c->initFields();\nreturn c;\n}\n";
 
     out << "};\n";
+    //resetCountTmpVars();
 
     return "";
 }
@@ -150,7 +153,7 @@ string CodeVisitor::visit(VarDec *vardec)
 
     out << RS_TOP + INSERTVAR(vardec->id, tmp) + "\n";
     out << "}\n";
-    resetCountTmpVars();
+    //resetCountTmpVars();
 
     return "";
 }
@@ -197,6 +200,7 @@ string CodeVisitor::visit(ElselessIf *elselessIf)
 
     // End if
     out << lab << ":;\n";
+    //resetCountTmpVars();
 
     return "";
 }
@@ -250,6 +254,7 @@ string CodeVisitor::visit(IfElse *ifElse)
     out << "} \n";
     out << "} \n";
     out << lab2 + ":;\n";
+    //resetCountTmpVars();
 
     return "";
 }
@@ -298,6 +303,7 @@ string CodeVisitor::visit(While *whilestmt)
     out << lab2 << ":;\n";
 
     out << POPRECORD << "\n";
+    //resetCountTmpVars();
 
     return "";
 }
@@ -340,6 +346,7 @@ string CodeVisitor::visit(Assignment *assign)
     }
 
     out << "}\n";
+    //resetCountTmpVars();
     return "";
 }
 
@@ -364,6 +371,7 @@ string CodeVisitor::visit(Return *stmt)
     string methodCallLabel = getNewTmpVar();
     string varValueAdress = getNewTmpVar();
     string tmp_exp;
+    out << "{\n";
 
     //solve exp
     if (stmt->optExp != nullptr)
@@ -375,7 +383,9 @@ string CodeVisitor::visit(Return *stmt)
     else
         out << "void* " + methodCallLabel + " = rs->searchMethodCallLabel(); \n";
 
+    out << "}\n";
     out << GOTO("*" + methodCallLabel) << ";\n";
+    //resetCountTmpVars();
     return "";
 }
 
@@ -394,7 +404,7 @@ string CodeVisitor::visit(StaticMethodCallExpression *exp)
             string argFirstVar = exp->arguments->at(0)->accept(*this);
             out << "cout << " << argFirstVar << "->toString();\n";
             out << "}\n";
-            resetCountTmpVars();
+            //resetCountTmpVars();
         }
     }
     else if (exp->className == "String")
