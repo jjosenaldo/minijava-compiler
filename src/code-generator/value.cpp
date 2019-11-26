@@ -96,8 +96,6 @@ string ArrayValue::toString(){
 ArrayValue::ArrayValue(int* dims, int n, Value* ctor ()) : ArrayValue(dims,1,n,ctor){}
 
 ArrayValue::ArrayValue(int* dims, int i, int n, Value* ctor ()){
-    // TODO: put this constructor in a separate recursive method so that this assignment
-    // doesn't get executed every single time
     this->className = "ArrayValue";
 
     this->n = dims[i-1];

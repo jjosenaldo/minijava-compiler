@@ -96,13 +96,13 @@ string CodeVisitor::visit(ClassDeclaration *classdec)
 
 string CodeVisitor::visitClassDeclarationsFields(Program *program)
 {
-    for (auto decl : *(program->declarations))
-        visitClassDeclarationFields(decl);
+    // Skips the main class (i.e., the first one!!)
+    for (auto it = program->declarations->begin()+1; it != program->declarations->end(); ++it)
+        visitClassDeclarationFields(*it);
     return "";
 }
 
 // TODO: implement inheritance
-// TODO: do not create methods for the Main class at all
 string CodeVisitor::visitClassDeclarationFields(ClassDeclaration *classDec)
 {
     out << "struct " << classDec->name << " : ClassValue ";
@@ -511,7 +511,6 @@ string CodeVisitor::visit(UnExpression *exp)
     return tmp;
 }
 
-// TODO: implement TypeNull
 string CodeVisitor::visit(AtomExpression *exp)
 {
     string tmp = getNewTmpVar();
