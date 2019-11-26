@@ -147,7 +147,7 @@ void* RecordStack::searchContinue() {
 
 
 void* RecordStack::searchBreak() {
-	while(records.back()->gete_label() != nullptr){
+	while(records.back()->gete_label() == nullptr){
 		records.pop_back();
 	}
 	return records.back()->gete_label();
