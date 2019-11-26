@@ -1,10 +1,11 @@
 #ifndef ACTIVATION_RECORD_HPP
 #define ACTIVATION_RECORD_HPP
 
-#include <unordered_map>
+#include <iostream> 
 #include <string>
-#include <stack>
-#include <iostream> // TODO: Remove after
+#include <unordered_map>
+#include <vector>
+
 #include "value.hpp"
 
 using namespace std;
@@ -35,36 +36,46 @@ private:
 	unordered_map<string,Value*> table;
 
 	Record* dynamicParent;
+	Record* staticParent;
+	ClassValue* currentObject;
 
 	Value* returnVal;
 
 	void* b_label;
 
 	void* e_label;
+	void* methodCallPosLabel;
+	Value* getVarVal(string id);
 
 public:
-	Record(Record* parent, void* b_label, void* e_label);
+	Record(Record* staticParent, Record* dynamicParent, void* b_label, void* e_label, void* methodCallPosLabel, ClassValue* currentObject, Value* returnVal);
 	~Record();
 
-	Value* getVarVal(string id);
-	Value* lookupVarVal(string id);
-	Value* getReturn();
+	Value* lookupStatic(string id);
+	Value* lookupDynamic(string id);
+	Value* getReturnValue();
+	void setReturnValue(Value* value);
+	ClassValue* getCurrentObject();
 	void insertVar(string id, Value *v);
 	void insertVar(string id, int v);
-	void updateVar(string id, Value* v); // TODO: Free old value
+	void updateStatic(string id, Value* v);
 	void* gete_label();
 	void* getb_label();
 
+	/**
+	 * @brief Checks if the block contained in the record is a regular block or is the statement
+	 * list of a method
+	 *
+	 * @return true
+	 * @return false
+	 */
+	bool isMethodBlock();
+
+	Record* getStaticParent();
+	void* getMethodCallPosLabel();
 
 	Record* getDynamicParent();
-
-	// TODO: Remove after
-	void print() {
-		cout << "{\n";
-		for(auto &e : table)
-			cout << "\t" << e.first << ", " << (e.second == nullptr ? "nullptr" : e.second->toString()) << endl;
-		cout << "}\n";
-	}
+	void print();
 };
 
 class RecordClass
@@ -77,16 +88,18 @@ public:
 
 class RecordStack
 {
-	stack<Record*> records;
+	vector<Record*> records;
 
 public:
 	RecordStack();
 	~RecordStack();
-	void createRecord(void* b_label = nullptr, void* e_label = nullptr);
+	void print();
+	void createRecord(void* b_label = nullptr, void* e_label = nullptr, void* methodCallPosLabel = nullptr, ClassValue* currentObject = nullptr, Value* returnVal = nullptr);
 	Record* top();
 	void pop();
 	void* searchContinue();
 	void* searchBreak();
+	void* searchMethodCallLabel();
 
 };
 

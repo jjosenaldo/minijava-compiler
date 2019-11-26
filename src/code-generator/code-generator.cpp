@@ -3,16 +3,16 @@
 #include "code-generator.hpp"
 #include "code-visitor.hpp"
 
-using std::cout;
 using std::endl;
 using std::string;
+using std::ostream;
 
 #define TAB string("    ")
 
-CodeGenerator::CodeGenerator(Program* program){
-    codeVisitor = CodeVisitor();
-    this->program = program;
-}
+CodeGenerator::CodeGenerator(Program* program, ostream& out) 
+    : codeVisitor(out)
+    , program(program)
+    , out(out) {}
 
 void CodeGenerator::generateCode(){
     generatePreamble();
@@ -21,28 +21,27 @@ void CodeGenerator::generateCode(){
 
 void CodeGenerator::generatePreamble(){
     // #includes
-    cout << "#include \"src/code-generator/activation-record.hpp\"" << endl;
-    cout << "#include \"src/code-generator/value.hpp\"" << endl;
+    out << "#include \"activation-record.hpp\"" << endl;
+    out << "#include \"value.hpp\"" << endl;
 
-    // usings 
-    cout << "using std::cout;" << endl;
-    cout << "using std::endl;" << endl;
+    // usings
+    out << "using std::cout;" << endl;
+    out << "using std::endl;" << endl;
 
     // class declarations
     generateClassDecls();
 }
 
 void CodeGenerator::generateMainMethod(){
-    cout << "int main(){" << endl;
+    out << "int main(){" << endl;
 
     // Declares the activation record stack
-    cout << "RecordStack* rs = new RecordStack();" << endl;
-    
-    CodeVisitor visitor = CodeVisitor();
-    visitor.visit(program);
+    out << "RecordStack* rs = new RecordStack();" << endl;
 
-    cout << "return 0;" << endl;
-    cout << "}" << endl;
+    codeVisitor.visit(program);
+
+    out << "return 0;" << endl;
+    out << "}" << endl;
 }
 
 void CodeGenerator::generateClassDecls(){

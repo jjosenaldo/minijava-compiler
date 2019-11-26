@@ -1,0 +1,36 @@
+class Main{
+    void main(String[] args){
+        int dim = 3;
+        int[][] m = new int[dim][dim];
+        m[0][0] = 10;
+
+        System.print("a: " + (String.intToString(m[0][0]))+"\n");
+        m[1][1] = 20;
+        m[2][2] = 30;
+
+        int cont = 0;
+
+        while(cont < dim*dim){
+            m[cont/dim][cont%dim] = cont;
+            cont = cont+1;
+        }
+
+        System.print("a: " + (String.intToString(m[0][0]))+"\n");
+
+        int i = 0;
+        int j;
+        while(i < dim){
+            j = 0;
+            while(j < dim){
+                System.print("i: " + (String.intToString(i))+ "\n");
+                System.print("j: " + (String.intToString(j))+ "\n");
+                System.print("val: " + (String.intToString(m[i][j]))+ "\n");
+                j = j+1;
+            }
+            i = i+1;
+        }
+
+        
+        
+    }
+}

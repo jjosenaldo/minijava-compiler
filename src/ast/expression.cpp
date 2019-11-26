@@ -146,6 +146,11 @@ bool NewObjExpression::accept(StaticVisitor& visitor){
     return visitor.visit(this);
 }
 
+
+string NewObjExpression::accept(CodeVisitor& visitor){
+    return visitor.visit(this);
+}
+
 IdExpression::IdExpression(string id){
     this->id = id;
 }
@@ -186,11 +191,19 @@ bool FieldAccessExpression::accept(StaticVisitor& visitor){
     return visitor.visit(this);
 }
 
+string FieldAccessExpression::accept(CodeVisitor& visitor){
+    return visitor.visit(this);
+}
+
 string ThisExpression::toString(){
     return "this";
 }
 
 bool ThisExpression::accept(StaticVisitor& visitor){
+    return visitor.visit(this);
+}
+
+string ThisExpression::accept(CodeVisitor& visitor){
     return visitor.visit(this);
 }
 

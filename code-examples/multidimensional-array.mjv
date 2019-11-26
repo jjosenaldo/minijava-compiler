@@ -1,0 +1,14 @@
+class Main{
+    void main(String[] args){
+        /*boolean[][] m_bool = new boolean[10][10];
+        m_bool[0][1] = true;
+        System.print(String.booleanToString(m_bool[0][1])+"\n");*/
+
+        int[][] b = {   {1,2,3}   };
+
+        System.print(String.intToString(b[0][1])+"\n");
+        
+        /* uncomment for segfault */
+        /* System.print(String.intToString(b[1][0])+"\n"); */
+    }
+}

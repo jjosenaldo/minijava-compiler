@@ -47,7 +47,7 @@ S_FINAL                   \"
     char aux[yyleng];
     int pointer = 1;
     int writing = 0;
-    while(pointer < yyleng-2){
+    while(pointer < yyleng-1){
         if(yytext[pointer] == '\\'){
             ++pointer;
 
@@ -74,7 +74,7 @@ S_FINAL                   \"
     strcpy (yytext,aux);
     yyleng = writing;
     yylval._str = (char*) malloc(sizeof(char)*yyleng);
-    strcpy(yylval._str ,yytext); 
+    strcpy(yylval._str ,yytext);
     return LIT_STR; }
 
 {digit}+        { yylval._int = atoi(yytext); return LIT_INT; }

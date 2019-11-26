@@ -14,8 +14,18 @@ class Main {
 			a = a-1;
 			continue;
 			int b = 3;
-		}*/
+		}
 
 		System.print("eu so feio?  " + (String.booleanToString(true)));
+		*/
+
+		Test t = new Test();
+		t.method("Junior");
+	}
+}
+
+class Test {
+	void method(String str) {
+		System.print("Meu nome é " + str + "\n");
 	}
 }

@@ -18,15 +18,15 @@ INC := -I $(PARSER_PATH) -I $(SYMTABLE_PATH) -I $(SYMTABLE_PATH) -I $(SYMTABLE_P
 
 OBJS = $(OBJ)/activation-record.o $(OBJ)/ast.o $(OBJ)/code-generator.o $(OBJ)/code-visitor.o $(OBJ)/error.o $(OBJ)/expression.o $(OBJ)/global.o $(OBJ)/operator.o $(OBJ)/statement.o $(OBJ)/symtable.o $(OBJ)/type.o $(OBJ)/value.o $(OBJ)/static-visitor.o
 
-all: $(BIN)/main.out
+all: $(BIN)/mjv
 
-$(BIN)/main.out: lexer yaccer $(OBJS) $(SRC)/main.cpp
-	g++ $(SRC)/main.cpp $(PARSER_PATH)/yaccer.cpp $(OBJ)/lex.yy.c $(OBJS) -ly -ll -o $(BIN)/main.out $(INC) $(FLAGS)
+$(BIN)/mjv: $(OBJ)/lex.yy.c $(PARSER_PATH)/yaccer.cpp $(OBJS) $(SRC)/main.cpp
+	g++ $(SRC)/main.cpp $(PARSER_PATH)/yaccer.cpp $(OBJ)/lex.yy.c $(OBJS) -ly -ll -o $(BIN)/mjv $(INC) $(FLAGS)
 
-lexer: $(PARSER_PATH)/lexer.l
+$(OBJ)/lex.yy.c: $(PARSER_PATH)/lexer.l
 	$(LEX) -o $(OBJ)/lex.yy.c $(PARSER_PATH)/lexer.l
 
-yaccer: $(PARSER_PATH)/yaccer.y
+$(PARSER_PATH)/yaccer.cpp: $(PARSER_PATH)/yaccer.y
 	$(YACC) --defines=$(PARSER_PATH)/yaccer.hpp $(PARSER_PATH)/yaccer.y -o $(PARSER_PATH)/yaccer.cpp
 
 $(OBJ)/activation-record.o: $(CG_PATH)/activation-record.cpp $(CG_PATH)/activation-record.hpp
@@ -68,7 +68,6 @@ $(OBJ)/type.o: $(AST_PATH)/type.cpp $(AST_PATH)/type.hpp
 $(OBJ)/value.o: $(CG_PATH)/value.cpp $(CG_PATH)/value.hpp
 	g++ -c -o $(OBJ)/value.o $(CG_PATH)/value.cpp $(INC) $(FLAGS)
 
-
 # Clean project
 clean:
 	@# @ symbol at beginning indicates that it will not be printed
@@ -81,9 +80,9 @@ clean:
 	@rm $(PARSER_PATH)/*.cpp $(PARSER_PATH)/*.hpp
 
 # Run all code examples
-test: $(BIN)/main.out
+test: $(BIN)/mjv
 	@for filename in ./code-examples/*; do \
 		echo "------ TEST --------------------------\nFile: $$filename\n"; \
-		./bin/main.out < "$$filename"; \
+		./bin/mjv < "$$filename"; \
 		echo "--------------------------------------\n\n"; \
 	done

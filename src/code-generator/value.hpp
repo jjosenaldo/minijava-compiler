@@ -11,7 +11,8 @@ enum EnumValue{
     EV_IntValue,
     EV_StringValue,
     EV_BoolValue,
-    EV_ArrayValue
+    EV_ArrayValue,
+	EV_ClassValue
 };
 
 class BoolValue;
@@ -35,12 +36,17 @@ class BoolValue;
 
 class Value
 {
+protected:
+	string className;
+
 public:
-	~Value() {}
-	virtual string getClassName() = 0;
-	virtual string toString() = 0;
+	virtual ~Value() {}
+	virtual string toString() {return "";}
 	virtual int getInt() const {return 0;}
 	virtual bool getBool() const {return false;}
+	string getClassName(){return className;}
+
+	virtual Value* copy() {return this;}
 
 	Value* operator[](const int i);
 };
@@ -52,31 +58,26 @@ public:
 	IntValue();
 	IntValue(int v);
 	int getInt() const;
-	
+
+	Value* copy();
 	string toString();
-	string getClassName();
 
-	friend IntValue* operator-(const IntValue& v1, const IntValue& v2);
-	friend IntValue* operator-(const IntValue& v1);
-	friend IntValue* operator*(const IntValue& v1, const IntValue& v2);
-	friend IntValue* operator/(const IntValue& v1, const IntValue& v2);
-	friend IntValue* operator%(const IntValue& v1, const IntValue& v2);
+	static Value* newInt(){return new IntValue();}
 
-	template<typename Val>
-	friend Val* operator+(const Val& v1, const Val& v2);
-	template<typename Val>
-	friend Val* operator<(const Val& v1, const Val& v2);
-	template<typename Val>
-	friend Val* operator<=(const Val& v1, const Val& v2);
-	template<typename Val>
-	friend Val* operator>(const Val& v1, const Val& v2);
-	template<typename Val>
-	friend Val* operator>=(const Val& v1, const Val& v2);
+	friend Value* operator-(const Value& v1, const Value& v2);
+	friend Value* operator-(const Value& v1);
+	friend Value* operator*(const Value& v1, const Value& v2);
+	friend Value* operator/(const Value& v1, const Value& v2);
+	friend Value* operator%(const Value& v1, const Value& v2);
 
-	template<typename Val>
-	friend BoolValue* operator==(const Val& v1, const Val& v2);
-	template<typename Val>
-	friend BoolValue* operator!=(const Val& v1, const Val& v2);
+	friend Value* operator+(const Value& v1, const Value& v2);
+	friend Value* operator<(const Value& v1, const Value& v2);
+	friend Value* operator<=(const Value& v1, const Value& v2);
+	friend Value* operator>(const Value& v1, const Value& v2);
+	friend Value* operator>=(const Value& v1, const Value& v2);
+
+	friend Value* operator==(const Value& v1, const Value& v2);
+	friend Value* operator!=(const Value& v1, const Value& v2);
 };
 
 class BoolValue : public Value {
@@ -87,17 +88,17 @@ public:
 	BoolValue(bool v);
 	bool getBool() const;
 
+	Value* copy();
 	string toString();
-	string getClassName();
 
-	friend BoolValue* operator!(const BoolValue& v1);
-	friend BoolValue* operator||(const BoolValue& v1, const BoolValue& v2);
-	friend BoolValue* operator&&(const BoolValue& v1, const BoolValue& v2);
+	static Value* newBool(){return new BoolValue();}
 
-	template<typename Val>
-	friend BoolValue* operator==(const Val& v1, const Val& v2);
-	template<typename Val>
-	friend BoolValue* operator!=(const Val& v1, const Val& v2);
+	friend Value* operator!(const Value& v1);
+	friend Value* operator||(const Value& v1, const Value& v2);
+	friend Value* operator&&(const Value& v1, const Value& v2);
+
+	friend Value* operator==(const Value& v1, const Value& v2);
+	friend Value* operator!=(const Value& v1, const Value& v2);
 };
 
 class StringValue : public Value {
@@ -108,55 +109,89 @@ public:
 	StringValue(string v);
 	string getString() const;
 
+	Value* copy();
 	string toString();
-	string getClassName();
 
-	template<typename Val>
-	friend Val* operator+(const Val& v1, const Val& v2);
-	template<typename Val>
-	friend Val* operator<(const Val& v1, const Val& v2);
-	template<typename Val>
-	friend Val* operator<=(const Val& v1, const Val& v2);
-	template<typename Val>
-	friend Val* operator>(const Val& v1, const Val& v2);
-	template<typename Val>
-	friend Val* operator>=(const Val& v1, const Val& v2);
+	static Value* newInt(){return new StringValue();}
 
-	template<typename Val>
-	friend BoolValue* operator==(const Val& v1, const Val& v2);
-	template<typename Val>
-	friend BoolValue* operator!=(const Val& v1, const Val& v2);
+	friend Value* operator+(const Value& v1, const Value& v2);
+	friend Value* operator<(const Value& v1, const Value& v2);
+	friend Value* operator<=(const Value& v1, const Value& v2);
+	friend Value* operator>(const Value& v1, const Value& v2);
+	friend Value* operator>=(const Value& v1, const Value& v2);
+
+	friend Value* operator==(const Value& v1, const Value& v2);
+	friend Value* operator!=(const Value& v1, const Value& v2);
 };
 
 class ClassValue : public Value {
-private:
+protected:
 	string actualClassName;
 	string apparentClassName;
+	unordered_map<string, Value*>* fields;
 public:
-	ClassValue();
-	~ClassValue();
+	ClassValue(string className);
+
+	Value* get(string field);
+	void set(string field, Value* value);
+
+	virtual void initFields() {}
+
+	friend Value* operator==(const Value& v1, const Value& v2);
+	friend Value* operator!=(const Value& v1, const Value& v2);
 };
 
 class ArrayValue : public Value{
 private:
 	Value** value;
 	int n;
-	ArrayValue(int* dims, int i, int n, EnumValue ev);
+	ArrayValue(int* dims, int i, int n, Value* ctor() = nullptr);
+	void setAt(int* dims, int i, int n, Value* newVal, ArrayValue* currentArray);
 
 public:
 	ArrayValue(Value** v, int n);
-	ArrayValue(int* dims, int n, EnumValue ev);
+	ArrayValue(int* dims, int n, Value* ctor() = nullptr);
+
 	Value** getArray() const;
+	void setAt(int* dims, int n, Value* newVal);
+	int getN();
 
 	string toString();
-	string getClassName();
 
 	friend class Value;
 
-	template<typename Val>
-	friend BoolValue* operator==(const Val& v1, const Val& v2);
-	template<typename Val>
-	friend BoolValue* operator!=(const Val& v1, const Val& v2);
+	friend Value* operator==(const Value& v1, const Value& v2);
+	friend Value* operator!=(const Value& v1, const Value& v2);
 };
+
+class NullValue : public Value{
+public:
+	friend Value* operator==(const Value& v1, const Value& v2);
+	friend Value* operator!=(const Value& v1, const Value& v2);
+
+	string toString(){return "null";}
+};
+
+// int
+Value* operator-(const Value& v1, const Value& v2);
+Value* operator-(const Value& v1);
+Value* operator*(const Value& v1, const Value& v2);
+Value* operator/(const Value& v1, const Value& v2);
+Value* operator%(const Value& v1, const Value& v2);
+
+// String and int
+Value* operator+(const Value& v1, const Value& v2);
+Value* operator<(const Value& v1, const Value& v2);
+Value* operator<=(const Value& v1, const Value& v2);
+Value* operator>(const Value& v1, const Value& v2);
+Value* operator>=(const Value& v1, const Value& v2);
+// bool
+Value* operator!(const Value& v1);
+Value* operator||(const Value& v1, const Value& v2);
+Value* operator&&(const Value& v1, const Value& v2);
+
+// all
+Value* operator==(const Value& v1, const Value& v2);
+Value* operator!=(const Value& v1, const Value& v2);
 
 #endif

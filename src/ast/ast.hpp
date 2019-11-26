@@ -131,6 +131,7 @@ class Parameter{
         void print();
         
         friend class StaticVisitor;
+        friend class CodeVisitor;
 };
 
 #endif

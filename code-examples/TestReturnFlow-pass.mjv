@@ -19,7 +19,7 @@ class TestReturnFlow {
 		if(a == b)
 			return a;
 		else
-			return b;	
+			return b;
 	}
 
 	int whileMethod(int a, int b) {

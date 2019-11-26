@@ -7,8 +7,9 @@ class Main{
         sorter.quickSort(v, 0, 7);
 
         int i = 0;
-        while(i < v.length()){
+        while(i < (v.length())){
             System.print(String.intToString(v[i]));
+            System.print("\n");
             i = i+1;
         }
     }

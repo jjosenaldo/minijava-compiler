@@ -4,10 +4,13 @@ using std::to_string;
 
 IntValue::IntValue(int v){
     value = v;
+    className = "IntValue";
 }
 
-IntValue::IntValue(){
-    value = 0;
+IntValue::IntValue() : IntValue(0){}
+
+Value* IntValue::copy(){
+    return new IntValue(value);
 }
 
 string IntValue::toString(){
@@ -18,14 +21,15 @@ int IntValue::getInt() const {
     return this->value;
 }
 
-string IntValue::getClassName(){
-    return "IntValue";
-}
-
 BoolValue::BoolValue() : BoolValue(false){}
+
+Value* BoolValue::copy(){
+    return new BoolValue(value);
+}
 
 BoolValue::BoolValue(bool v){
     value = v;
+    className = "BoolValue";
 }
 
 string BoolValue::toString(){
@@ -36,14 +40,15 @@ bool BoolValue::getBool() const {
     return this->value;
 }
 
-string BoolValue::getClassName(){
-    return "BoolValue";
-}
-
 StringValue::StringValue() : StringValue(""){}
 
 StringValue::StringValue(string v){
     this->value = v;
+    className = "StringValue";
+}
+
+Value* StringValue::copy(){
+    return new StringValue(value);
 }
 
 string StringValue::getString() const{
@@ -54,130 +59,268 @@ string StringValue::toString(){
     return getString();
 }
 
-string StringValue::getClassName(){
-    return "StringValue";
-}
-
 ArrayValue::ArrayValue(Value** v, int n){
-    value = v;
+    this->value = v;
     this->n = n;
+    this->className = "ArrayValue";
 }
 
 Value** ArrayValue::getArray() const{
     return value;
 }
 
+void ArrayValue::setAt(int* dims, int n, Value* newVal){
+    setAt(dims, 0, n, newVal, this);    
+}
+
+void ArrayValue::setAt(int* dims, int i, int n, Value* newVal, ArrayValue* currentArray){
+    if(i == n-1)
+        currentArray->value[dims[i]] = newVal;
+    else 
+        setAt(dims, i+1, n, newVal, dynamic_cast<ArrayValue*>(this->value[dims[i]]));
+}
+
+int ArrayValue::getN(){
+    return n;
+}
+
 string ArrayValue::toString(){
-    // TODO
-    return "";
+    string res = "{";
+
+    for(int i = 0; i < n; ++i)
+        res += value[i]->toString()+",";
+
+    return res+"}";
 }
 
-string ArrayValue::getClassName(){
-    return "ArrayValue";
-}
+ArrayValue::ArrayValue(int* dims, int n, Value* ctor ()) : ArrayValue(dims,1,n,ctor){}
 
-ArrayValue::ArrayValue(int* dims, int n, EnumValue ev) : ArrayValue(dims,1,n,ev){}
+ArrayValue::ArrayValue(int* dims, int i, int n, Value* ctor ()){
+    this->className = "ArrayValue";
 
-// TODO: are we allowed to use loops here? if we are not, then we should use
-// goto's or something similar
-ArrayValue::ArrayValue(int* dims, int i, int n, EnumValue ev){
+    this->n = dims[i-1];
+
     this->value = new Value*[dims[i-1]];
-    if(i == n){
-        for(int j = 0; j < dims[i-1]; ++j){ 
-            // TODO: ClassValue
-            switch(ev){
-                case EnumValue::EV_IntValue:
-                    this->value[j] = new IntValue();
-                    break;
-                case EnumValue::EV_StringValue:
-                    this->value[j] = new StringValue();
-                    break;
-                case EnumValue::EV_BoolValue:
-                    this->value[j] = new BoolValue();
-                    break;
-            }
-        }
-    } else{
-        for(int j = 0; j < dims[i-1]; ++j) {
-            this->value[j] = new ArrayValue(dims, i+1,n,ev);
-        }
-    }
+    if(i == n)
+        for(int j = 0; j < dims[i-1]; ++j)
+            this->value[j] = ctor();
+    else
+        for(int j = 0; j < dims[i-1]; ++j) 
+            this->value[j] = new ArrayValue(dims, i+1,n,ctor);
+        
+    
 }
 
-
-// int operators
-IntValue* operator-(const IntValue& v1, const IntValue& v2) {
-    return new IntValue(v1.value - v2.value);
+ClassValue::ClassValue(string className){
+    this->fields = new unordered_map<string, Value*>;
+    this->className = className;
 }
 
-IntValue* operator-(const IntValue& v1) {
-    return new IntValue(-v1.value);
+void ClassValue::set(string field, Value* value){
+    (*this->fields)[field] = value;
 }
 
-IntValue* operator*(const IntValue& v1, const IntValue& v2) {
-    return new IntValue(v1.value * v2.value);
-}
-
-IntValue* operator/(const IntValue& v1, const IntValue& v2) {
-    return new IntValue(v1.value / v2.value);
-}
-
-IntValue* operator%(const IntValue& v1, const IntValue& v2) {
-    return new IntValue(v1.value % v2.value);
-}
-
-// int and String operators
-template<typename Val>
-Val* operator+(const Val& v1, const Val& v2) {
-    return new Val(v1.value + v2.value);
-}
-
-template<typename Val>
-BoolValue* operator<(const Val& v1, const Val& v2) {
-    return new BoolValue(v1.value < v2.value);
-}
-
-template<typename Val>
-BoolValue* operator<=(const Val& v1, const Val& v2) {
-    return new BoolValue(v1.value <= v2.value);
-}
-
-template<typename Val>
-BoolValue* operator>(const Val& v1, const Val& v2) {
-    return new BoolValue(v1.value > v2.value);
-}
-
-template<typename Val>
-BoolValue* operator>=(const Val& v1, const Val& v2) {
-    return new BoolValue(v1.value >= v2.value);
-}
-
-// boolean operators
-BoolValue* operator!(const BoolValue& v1) {
-    return new BoolValue(!v1.value);
-}
-
-BoolValue* operator||(const BoolValue& v1, const BoolValue& v2) {
-    return new BoolValue(v1.value || v2.value);
-}
-
-BoolValue* operator&&(const BoolValue& v1, const BoolValue& v2) {
-    return new BoolValue(v1.value && v2.value);
+Value* ClassValue::get(string field){
+    return this->fields->at(field);
 }
 
 // array operators
 Value* Value::operator[](const int i){
+    NullValue* nv = dynamic_cast<NullValue*>(this);
+    if(nv != nullptr){
+        std::cerr << "ERROR: trying to access a position of a null array!\n";
+        exit(0);
+    }
+
     ArrayValue* arr = dynamic_cast<ArrayValue*>(this);
     return (arr->value)[i];
 }
 
-// all types operators
-template<typename Val>
-BoolValue* operator==(const Val& v1, const Val& v2) {
-    return new BoolValue(v1.value == v2.value);
+// int
+Value* operator-(const Value& v1, const Value& v2) {
+    const IntValue* i1 = dynamic_cast<const IntValue*>(&v1);
+    const IntValue* i2 = dynamic_cast<const IntValue*>(&v2);
+
+    if(i1 != nullptr and i2 != nullptr)
+        return new IntValue(i1->value - i2->value);
+    throw "Invalid type!\n";
 }
 
-template<typename Val>
-BoolValue* operator!=(const Val& v1, const Val& v2) {
-    return new BoolValue(v1.value != v2.value);
+Value* operator-(const Value& v1) {
+    const IntValue* i1 = dynamic_cast<const IntValue*>(&v1);
+
+    if(i1 != nullptr)
+        return new IntValue(-i1->value);
+    throw "Invalid type!\n";
+}
+Value* operator*(const Value& v1, const Value& v2) {
+    const IntValue* i1 = dynamic_cast<const IntValue*>(&v1);
+    const IntValue* i2 = dynamic_cast<const IntValue*>(&v2);
+
+    if(i1 != nullptr and i2 != nullptr)
+        return new IntValue(i1->value * i2->value);
+    throw "Invalid type!\n";
+}
+Value* operator/(const Value& v1, const Value& v2) {
+    const IntValue* i1 = dynamic_cast<const IntValue*>(&v1);
+    const IntValue* i2 = dynamic_cast<const IntValue*>(&v2);
+
+    if(i1 != nullptr and i2 != nullptr)
+        return new IntValue(i1->value / i2->value);
+    throw "Invalid type!\n";
+}
+Value* operator%(const Value& v1, const Value& v2) {
+    const IntValue* i1 = dynamic_cast<const IntValue*>(&v1);
+    const IntValue* i2 = dynamic_cast<const IntValue*>(&v2);
+
+    if(i1 != nullptr and i2 != nullptr)
+        return new IntValue(i1->value % i2->value);
+    throw "Invalid type!\n";
+}
+
+// String and int
+Value* operator+(const Value& v1, const Value& v2) {
+    const IntValue* i1 = dynamic_cast<const IntValue*>(&v1);
+    const IntValue* i2 = dynamic_cast<const IntValue*>(&v2);
+
+    if(i1 != nullptr and i2 != nullptr)
+        return new IntValue(i1->value + i2->value);
+
+    const StringValue* s1 = dynamic_cast<const StringValue*>(&v1);
+    const StringValue* s2 = dynamic_cast<const StringValue*>(&v2);
+
+    if(s1 != nullptr and s2 != nullptr)
+        return new StringValue(s1->value + s2->value);
+
+    throw "Invalid type!\n";
+}
+
+Value* operator<(const Value& v1, const Value& v2) {
+    const IntValue* i1 = dynamic_cast<const IntValue*>(&v1);
+    const IntValue* i2 = dynamic_cast<const IntValue*>(&v2);
+
+    if(i1 != nullptr and i2 != nullptr)
+        return new BoolValue(i1->value < i2->value);
+
+    const StringValue* s1 = dynamic_cast<const StringValue*>(&v1);
+    const StringValue* s2 = dynamic_cast<const StringValue*>(&v2);
+
+    if(s1 != nullptr and s2 != nullptr)
+        return new BoolValue(s1->value < s2->value);
+
+    throw "Invalid type!\n";
+}
+
+Value* operator<=(const Value& v1, const Value& v2) {
+    const IntValue* i1 = dynamic_cast<const IntValue*>(&v1);
+    const IntValue* i2 = dynamic_cast<const IntValue*>(&v2);
+
+    if(i1 != nullptr and i2 != nullptr)
+        return new BoolValue(i1->value <= i2->value);
+
+    const StringValue* s1 = dynamic_cast<const StringValue*>(&v1);
+    const StringValue* s2 = dynamic_cast<const StringValue*>(&v2);
+
+    if(s1 != nullptr and s2 != nullptr)
+        return new BoolValue(s1->value <= s2->value);
+
+    throw "Invalid type!\n";
+}
+
+Value* operator>(const Value& v1, const Value& v2) {
+    const IntValue* i1 = dynamic_cast<const IntValue*>(&v1);
+    const IntValue* i2 = dynamic_cast<const IntValue*>(&v2);
+
+    if(i1 != nullptr and i2 != nullptr)
+        return new BoolValue(i1->value > i2->value);
+
+    const StringValue* s1 = dynamic_cast<const StringValue*>(&v1);
+    const StringValue* s2 = dynamic_cast<const StringValue*>(&v2);
+
+    if(s1 != nullptr and s2 != nullptr)
+        return new BoolValue(s1->value > s2->value);
+
+    throw "Invalid type!\n";
+}
+
+Value* operator>=(const Value& v1, const Value& v2) {
+    const IntValue* i1 = dynamic_cast<const IntValue*>(&v1);
+    const IntValue* i2 = dynamic_cast<const IntValue*>(&v2);
+
+    if(i1 != nullptr and i2 != nullptr)
+        return new BoolValue(i1->value >= i2->value);
+
+    const StringValue* s1 = dynamic_cast<const StringValue*>(&v1);
+    const StringValue* s2 = dynamic_cast<const StringValue*>(&v2);
+
+    if(s1 != nullptr and s2 != nullptr)
+        return new BoolValue(s1->value >= s2->value);
+
+    throw "Invalid type!\n";
+}
+
+Value* operator!(const Value& v1) {
+    const BoolValue* b1 = dynamic_cast<const BoolValue*>(&v1);
+    if(b1 != nullptr)
+        return new BoolValue(!b1->value);
+    throw "Invalid type!\n";
+}
+
+Value* operator||(const Value& v1, const Value& v2) {
+    const BoolValue* b1 = dynamic_cast<const BoolValue*>(&v1);
+    const BoolValue* b2 = dynamic_cast<const BoolValue*>(&v2);
+    if(b1 != nullptr and b2 != nullptr)
+        return new BoolValue(b1->value || b2->value);
+    throw "Invalid type!\n";
+}
+
+Value* operator&&(const Value& v1, const Value& v2) {
+    const BoolValue* b1 = dynamic_cast<const BoolValue*>(&v1);
+    const BoolValue* b2 = dynamic_cast<const BoolValue*>(&v2);
+    if(b1 != nullptr and b2 != nullptr)
+        return new BoolValue(b1->value && b2->value);
+    throw "Invalid type!\n";
+}
+
+// all
+Value* operator==(const Value& v1, const Value& v2) {
+    const IntValue* i1 = dynamic_cast<const IntValue*>(&v1);
+    const IntValue* i2 = dynamic_cast<const IntValue*>(&v2);
+    if(i1 != nullptr and i2 != nullptr)
+        return new BoolValue(i1->value == i2->value);
+
+    const StringValue* s1 = dynamic_cast<const StringValue*>(&v1);
+    const StringValue* s2 = dynamic_cast<const StringValue*>(&v2);
+    if(s1 != nullptr and s2 != nullptr)
+        return new BoolValue(s1->value == s2->value);
+
+    const BoolValue* b1 = dynamic_cast<const BoolValue*>(&v1);
+    const BoolValue* b2 = dynamic_cast<const BoolValue*>(&v2);
+    if(b1 != nullptr and b2 != nullptr)
+        return new BoolValue(b1->value == b2->value);
+
+    const ClassValue* c1 = dynamic_cast<const ClassValue*>(&v1);
+    const ClassValue* c2 = dynamic_cast<const ClassValue*>(&v2);
+    if(c1 != nullptr and c2 != nullptr)
+        return new BoolValue(c1 == c2);
+
+    const ArrayValue* a1 = dynamic_cast<const ArrayValue*>(&v1);
+    const ArrayValue* a2 = dynamic_cast<const ArrayValue*>(&v2);
+    if(a1 != nullptr and a2 != nullptr)
+        return new BoolValue(a1->value == a2->value);
+    
+    const NullValue* n1 = dynamic_cast<const NullValue*>(&v1);
+    const NullValue* n2 = dynamic_cast<const NullValue*>(&v2);
+
+    if(n1 != nullptr && n2 != nullptr)
+        return new BoolValue(true); 
+    
+    if((n1 != nullptr && n2 == nullptr) || (n2 != nullptr && n1 == nullptr))
+        return new BoolValue(false); 
+
+    throw "Invalid type!\n";
+}
+
+Value* operator!=(const Value& v1, const Value& v2) {
+    return !*(v1 == v2);
 }

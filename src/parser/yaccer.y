@@ -194,7 +194,11 @@ vardec : type ID ';' {
 };
 
 methoddec : type ID '(' params ')' '{' blockstmts '}' {
-    Method* m = new Method($2, $1, $4, $7);
+    Method* m;
+    if($4 == nullptr)
+        m = new Method($2, $1, $7);
+    else 
+        m = new Method($2, $1, $4, $7);
     $$ = m;
 } ;
 
@@ -298,12 +302,18 @@ stmt : '{' blockstmts '}' {
 
     if(idExpr != nullptr){
         if(!g_defaultSymbolHandler.isDefaultClass(idExpr->getId())){
-            $$ = new MethodCallExpression($1, $3, $5);
+            if($5 == nullptr)
+                $$ = new MethodCallExpression($1, $3);
+            else
+                $$ = new MethodCallExpression($1, $3, $5);
         } else{
             $$ = new StaticMethodCallExpression(idExpr->getId(), $3, $5);
         }
     } else{
-        $$ = new MethodCallExpression($1, $3, $5);
+        if($5 == nullptr)
+            $$ = new MethodCallExpression($1, $3);
+        else
+            $$ = new MethodCallExpression($1, $3, $5);
     }
 }
 | ';' {
@@ -455,12 +465,18 @@ object : NEW type {
 
     if(idExpr != nullptr){
         if(!g_defaultSymbolHandler.isDefaultClass(idExpr->getId())){
-            $$ = new MethodCallExpression($1, $3, $5);
+            if($5 == nullptr)
+                $$ = new MethodCallExpression($1, $3);
+            else
+                $$ = new MethodCallExpression($1, $3, $5);
         } else{
             $$ = new StaticMethodCallExpression(idExpr->getId(), $3, $5);
         }
     } else{
-        $$ = new MethodCallExpression($1, $3, $5);
+        if($5 == nullptr)
+            $$ = new MethodCallExpression($1, $3);
+        else
+            $$ = new MethodCallExpression($1, $3, $5);
     }
 } | '(' expr ')' {
     $$ = new ParenExpression($2);
@@ -491,7 +507,7 @@ exprlistopt : exprlist  {
 
 filledbracks : filledbracks '[' expr ']'  {
     deque<Expression*>* newExprList = $1;
-    newExprList->push_front($3);
+    newExprList->push_back($3);
     $$ = newExprList;
 } | '[' expr ']' {
     deque<Expression*>* newExprList = new deque<Expression*>();

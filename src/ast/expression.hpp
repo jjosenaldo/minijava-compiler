@@ -43,7 +43,7 @@ class Expression{
         bool isObject();
         virtual bool isLvalue();
         virtual bool accept(StaticVisitor&);
-        virtual string accept(CodeVisitor&) {return "ERROR";}; // TODO: implement this for all subclasses
+        virtual string accept(CodeVisitor&) = 0;
         virtual string toString() = 0;
 };
 
@@ -63,6 +63,7 @@ class BinExpression : public Expression{
 
         bool accept(StaticVisitor&);
         string accept(CodeVisitor&);
+        
         friend class StaticVisitor;
         friend class CodeVisitor;
 };
@@ -84,6 +85,7 @@ class AtomExpression : public Expression{
 
         bool accept(StaticVisitor&);
         string accept(CodeVisitor&);
+
         friend class StaticVisitor;
         friend class CodeVisitor;
 };
@@ -103,6 +105,7 @@ class UnExpression : public Expression{
 
         bool accept(StaticVisitor&);
         string accept(CodeVisitor&);
+
         friend class StaticVisitor;
         friend class CodeVisitor;
 };
@@ -113,7 +116,7 @@ class ObjExpression : public Expression{
         ObjExpression(Type* type) : Expression(type){}
 
         virtual bool accept(StaticVisitor&) = 0;
-        virtual string accept(CodeVisitor&) {return "";} // TODO: implement in subclasses
+        virtual string accept(CodeVisitor&) = 0;
 };
 
 // Example: new int
@@ -124,6 +127,8 @@ class ArrayDeclExpression : public ObjExpression{
         string toString();
 
         bool accept(StaticVisitor&);
+        string accept(CodeVisitor&){return "";} // The CodeVisitor doesn't really visit this class
+
         friend class StaticVisitor;
         friend class CodeVisitor;
 };
@@ -138,8 +143,10 @@ class IdExpression : public ObjExpression{
         string getId();
         string toString();
         bool isLvalue();
+
         bool accept(StaticVisitor&);
         string accept(CodeVisitor&);
+
         friend class StaticVisitor;
         friend class CodeVisitor;
 };
@@ -153,7 +160,10 @@ class FieldAccessExpression : public ObjExpression{
         FieldAccessExpression(string id);
         string toString();
         bool isLvalue();
+
         bool accept(StaticVisitor&);
+        string accept(CodeVisitor&);
+
         friend class StaticVisitor;
         friend class CodeVisitor;
 };
@@ -162,7 +172,10 @@ class FieldAccessExpression : public ObjExpression{
 class ThisExpression : public ObjExpression{
     public:
         string toString();
+
         bool accept(StaticVisitor&);
+        string accept(CodeVisitor&);
+
         friend class StaticVisitor;
         friend class CodeVisitor;
 };
@@ -177,8 +190,10 @@ class ParenExpression : public ObjExpression{
         string toString();
         bool isLvalue();
         Expression* getFirst();
+
         bool accept(StaticVisitor&);
         string accept(CodeVisitor&);
+
         friend class StaticVisitor;
         friend class CodeVisitor;
 };
@@ -189,8 +204,10 @@ class LitArrayExpression : public ObjExpression{
     public:
         LitArrayExpression(deque<Expression*>* exprs);
         string toString();
+
         bool accept(StaticVisitor&);
         string accept(CodeVisitor&);
+
         friend class StaticVisitor;
         friend class CodeVisitor;
 };
@@ -204,8 +221,10 @@ class ArrayAccessExpression : public Expression{
         ArrayAccessExpression(ObjExpression* left, deque<Expression*>* dimensions);
         string toString();
         bool isLvalue();
+
         bool accept(StaticVisitor&);
         string accept(CodeVisitor&);
+        
         friend class StaticVisitor;
         friend class CodeVisitor;
 };
@@ -218,8 +237,10 @@ class NewArrayExpression : public Expression{
     public:
         NewArrayExpression(ArrayDeclExpression* decl, deque<Expression*>* dimensions);
         string toString();
+
         bool accept(StaticVisitor&);
         string accept(CodeVisitor&);
+
         friend class StaticVisitor;
         friend class CodeVisitor;
 };
@@ -234,6 +255,8 @@ class NewObjExpression : public ObjExpression{
         string toString();
 
         bool accept(StaticVisitor&);
+        string accept(CodeVisitor&);
+
         friend class StaticVisitor;
         friend class CodeVisitor;
 };
