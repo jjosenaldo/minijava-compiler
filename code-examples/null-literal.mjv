@@ -1,0 +1,12 @@
+class Main{
+    void main(String[] args){
+        Cat c = null;
+        c.meow();
+    }
+}
+
+class Cat{
+    void meow(){
+        System.print("meows!\n");
+    }
+}

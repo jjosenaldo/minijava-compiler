@@ -520,6 +520,8 @@ string CodeVisitor::visit(AtomExpression *exp)
         out << TYPE << " " << tmp << " = new IntValue(" << exp->val.intval << ");\n";
     else if (exp->type->kind == TypeBoolean)
         out << TYPE << " " << tmp << " = new BoolValue(" << (exp->val.boolval ? "true" : "false") << ");\n";
+    else if(exp->type->kind == TypeNull)
+        out << TYPE << " " << tmp << " = new NullValue()\n;"; 
     else
     {
         string toBePrinted = "\"";
@@ -593,6 +595,7 @@ string CodeVisitor::visit(LitArrayExpression *exp)
     {
         string tmpExpVar = exp->expressions->at(i)->accept(*this);
         out << litArrTempVar << "[" << i << "] = " << tmpExpVar << ";\n";
+        // std::cout << litArrTempVar << "[" << i << "] = " << exp->expressions->at(i)->toString() << std::endl;
     }
 
     out << TYPE << " " << arrValTempVar << " = new ArrayValue(" << litArrTempVar << "," << n << ");\n";
