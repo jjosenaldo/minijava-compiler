@@ -29,6 +29,71 @@ using std::to_string;
 #define UPDATE_CURRENT_OBJ_FIELD(field, rvalue) \
     string(CURRENT_OBJ + "->set(" + field + ", " + rvalue + ");")
 
+// TODO: Solve problem described in Trello (Polimorphism)
+// See TODO in visit(MethodCallExpression*)
+vector<string> CodeVisitor::getRealParams(string className, string methodName) {
+    if(className == "")
+        throw "Invalid Class!";
+
+    // Search for className
+    auto it_class = methodsInfo->find(className);
+
+    // If className exists
+    if(it_class == methodsInfo->end()) // Never enter here
+        throw "Class " + className + " doesn't exist!";
+
+    // Search for methodName
+    auto it_method = it_class->second.find(methodName);
+
+    // If method doesn't exist
+    if(it_method == it_class->second.end())
+        // Search in parents
+        return getRealParams(inheritanceInfo[className], methodName);
+    else
+        return it_method->second.second;
+    //return methodsInfo->at(className).at(methodName).second;
+}
+
+// TODO: Solve problem described in Trello (Polimorphism)
+// See TODO in visit(MethodCallExpression*)
+string CodeVisitor::getMethodLabel(string className, string methodName) {
+    if(className == "")
+        throw "Invalid Class!";
+
+    // Search for className
+    auto it_class = methodsInfo->find(className);
+
+    // If className exists
+    if(it_class == methodsInfo->end()) // Never enter here
+        throw "Class " + className + " doesn't exist!";
+
+    // Search for methodName
+    auto it_method = it_class->second.find(methodName);
+
+    // If method doesn't exist
+    if(it_method == it_class->second.end())
+        // Search in parents
+        return getMethodLabel(inheritanceInfo[className], methodName);
+    else
+        return it_method->second.first;
+
+    //return methodsInfo->at(className).at(methodName).first;
+}
+
+void CodeVisitor::initMethodsInfo(Program* program) {
+    methodsInfo = new unordered_map<string, unordered_map<string, pair<string,vector<string>>>>();
+    for(auto &classDec : *(program->declarations)) {
+        unordered_map< string, pair<string, vector<string>> > methods;
+        for(auto &method : *(classDec->methods)) {
+            vector<string> vec;
+            for(auto &params : *(method->parameters))
+                vec.push_back(params->name);
+            methods.insert( make_pair(method->id, make_pair(getNewLabel(), vec)) );
+        }
+        methodsInfo->insert(make_pair(classDec->name, methods));
+    }
+}
+
 void CodeVisitor::resetCountTmpVars()
 {
     this->countTmpVars = 0;
@@ -131,6 +196,9 @@ string CodeVisitor::visitClassDeclarationFields(ClassDeclaration *classDec)
     out << "c->initFields();\nreturn c;\n}\n";
 
     out << "};\n";
+
+    // store inheritance information
+    inheritanceInfo[classDec->name] = classDec->parent;
 
     return "";
 }

@@ -45,31 +45,11 @@ private:
 		>
 	> *methodsInfo;
 
-	// TODO: Solve problem described in Trello (Polimorphism)
-	// See TODO in visit(MethodCallExpression*)
-	vector<string> getRealParams(string className, string methodName) {
-		return methodsInfo->at(className).at(methodName).second;
-	}
-	
-	// TODO: Solve problem described in Trello (Polimorphism)
-	// See TODO in visit(MethodCallExpression*)
-	string getMethodLabel(string className, string methodName) {
-		return methodsInfo->at(className).at(methodName).first;
-	}
+	unordered_map<string, string> inheritanceInfo;
 
-	void initMethodsInfo(Program* program) {
-		methodsInfo = new unordered_map<string, unordered_map<string, pair<string,vector<string>>>>();
-		for(auto &classDec : *(program->declarations)) {
-			unordered_map< string, pair<string, vector<string>> > methods;
-			for(auto &method : *(classDec->methods)) {
-				vector<string> vec;
-				for(auto &params : *(method->parameters))
-					vec.push_back(params->name);
-				methods.insert( make_pair(method->id, make_pair(getNewLabel(), vec)) );
-			}
-			methodsInfo->insert(make_pair(classDec->name, methods));
-		}
-	}
+	vector<string> getRealParams(string className, string methodName);
+	string getMethodLabel(string className, string methodName);
+	void initMethodsInfo(Program* program);
 
 public:
 	CodeVisitor(ostream &out) : out(out) {}

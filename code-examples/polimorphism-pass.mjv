@@ -1,0 +1,33 @@
+class Main {
+	void main(String []args) {
+		Animal a = { new Gato(), new Cachorro(), new Vaca() };
+
+		int i = 0;
+		while(i < 3) {
+			a[i].talk();
+			i = i+1;
+		}
+	}
+}
+
+class Animal {
+	void talk() {}
+}
+
+class Gato extends Animal {
+	void talk() {
+		System.print("miau\n");
+	}
+}
+
+class Cachorro extends Animal {
+	void talk() {
+		System.print("auau\n");
+	}
+}
+
+class Vaca extends Animal {
+	void talk() {
+		System.print("mu\n");
+	}
+}
